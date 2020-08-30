@@ -1,0 +1,237 @@
+import 'date-fns';
+import React, { useState, useRef, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/styles';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import Box from '@material-ui/core/Box';
+import { Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
+import HomeworkService from './HomeworkService';
+import AddIcon from '../../assets/images/Add.svg';
+import AnnouncementCard from '../home/studentHome/AnnouncementCard';
+import NewsCard from './teacher/NewsCard';
+
+const useStyles = makeStyles((theme) => ({
+  datePicker: {
+    width: '25%',
+    paddingRight: '10px',
+  },
+  sectionContainer: {
+    height: '100%',
+    width: '100%',
+  },
+
+  header: {
+    paddingRight: '15px',
+    paddingLeft: '15px',
+    paddingTop: '10px',
+    display: 'inline block',
+  },
+  cardBoxPadding: {
+    padding: '24px',
+    [theme.breakpoints.down('sm')]: {
+      padding: '16px',
+    },
+  },
+  addNew: {
+    color: theme.palette.common.deluge,
+    float: 'right',
+    marginTop: '15px',
+    marginRight: '15px',
+    cursor: 'pointer',
+    '& .new': {
+      float: 'right',
+      fontSize: '14px',
+      padding: '5px',
+    },
+    '& img': {
+      margin: '5px',
+      height: '20px',
+      cursor: 'pointer',
+    },
+  },
+  loading: {
+    width: '100%',
+    textAlign: 'center',
+    paddingTop: '8px',
+    fontSize: '20px',
+  },
+}));
+
+const AnnouncementSection = (props) => {
+  const classes = useStyles();
+  const history = useHistory();
+  const [selectedFromDate, setFromDate] = useState(null);
+  const [selectedToDate, setToDate] = useState(null);
+  const selectedRole = props.selectedRole;
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [announcements, setAnnouncements] = useState([]);
+
+  // const [isAnnouncementLoading, setIsAnnouncementLoading] = useState(true);
+  useEffect(() => {
+    let isAnnouncementLoading = true;
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const selectedRole = props.selectedRole;
+        const response = await HomeworkService.fetchAnnouncements(
+          { selectedRole, currentPage },
+          token
+        );
+        if (response.status === 200) {
+          if (
+            response.data.data.current_page === response.data.data.last_page
+          ) {
+            if (isAnnouncementLoading) {
+              setAnnouncements([...announcements, ...response.data.data.data]);
+              setHasMore(false);
+            }
+          } else {
+            if (isAnnouncementLoading) {
+              setAnnouncements([...announcements, ...response.data.data.data]);
+              setCurrentPage(currentPage + 1);
+            }
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+
+    return () => {
+      isAnnouncementLoading = false;
+    };
+  }, []);
+
+  const fetchAnnouncementOnScroll = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      const selectedRole = props.selectedRole;
+      const response = await HomeworkService.fetchAnnouncements(
+        { selectedRole, currentPage },
+        token
+      );
+
+      if (response.status === 200) {
+        // console.log(response);
+        if (response.data.data.current_page !== response.data.data.last_page) {
+          setAnnouncements([...announcements, ...response.data.data.data]);
+          setCurrentPage(currentPage + 1);
+        } else {
+          setAnnouncements([...announcements, ...response.data.data.data]);
+          setHasMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFromDateChange = (date) => {
+    setFromDate(date);
+  };
+  const handleToDateChange = (date) => {
+    setToDate(date);
+  };
+  const handleCreateAnnouncement = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      const response = await HomeworkService.createAnnouncement(token);
+      // console.log(response);
+      history.push(`/create-homework/${response.data.homework_id}`);
+      // history.push(`/create-announcement/${65}`);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  let content = announcements.map((announcement, index) => {
+    return <NewsCard key={announcement.id} announcement={announcement} />;
+  });
+
+  return (
+    <div className={classes.sectionContainer}>
+      <div className={classes.header}>
+        <div className={classes.filterForm}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              disableToolbar
+              format='MM/dd/yyyy'
+              id='fromDate'
+              label='From'
+              variant='inline'
+              value={selectedFromDate}
+              onChange={handleFromDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+              className={classes.datePicker}
+            />
+            <KeyboardDatePicker
+              disableToolbar
+              id='toDate'
+              label='To'
+              variant='inline'
+              format='MM/dd/yyyy'
+              value={selectedToDate}
+              onChange={handleToDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+              className={classes.datePicker}
+            />
+          </MuiPickersUtilsProvider>
+          {selectedRole === 'teacher' || selectedRole === 'admin' ? (
+            <div className={classes.addNew} onClick={handleCreateAnnouncement}>
+              <img src={AddIcon} alt='add' />
+              <Typography className='new'>New</Typography>
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+      </div>
+      <Box className={classes.cardBoxPadding}>
+        <InfiniteScroll
+          dataLength={announcements.length}
+          next={fetchAnnouncementOnScroll}
+          hasMore={hasMore}
+          loader={
+            <>
+              <div className={classes.loading}>
+                {/* <Typography>Loading...</Typography> */}
+                <CircularProgress color='primary' size={30} />
+              </div>
+              <br />
+            </>
+          }
+          scrollableTarget='scrollable'
+          scrollThreshold={0.2}
+        >
+          {content}
+        </InfiniteScroll>
+        <br />
+        <br />
+        <br />
+      </Box>
+    </div>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return {
+    selectedRole: state.auth.selectedRole,
+  };
+};
+
+export default connect(mapStateToProps)(AnnouncementSection);

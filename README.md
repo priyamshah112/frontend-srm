@@ -1,3 +1,1 @@
-# Frontend SRM
-
-React Js website and laravel apis integration
+SRM front end. Presentation layer code for SRM
