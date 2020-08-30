@@ -15,8 +15,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 import HomeworkService from './HomeworkService';
 import AddIcon from '../../assets/images/Add.svg';
-import AnnouncementCard from '../home/studentHome/AnnouncementCard';
-import NewsCard from './teacher/NewsCard';
+import HomeworkCard from './teacher/HomeworkCard';
 
 const useStyles = makeStyles((theme) => ({
   datePicker: {
@@ -57,6 +56,12 @@ const useStyles = makeStyles((theme) => ({
       cursor: 'pointer',
     },
   },
+  InfiniteScroll: {
+    overflow: 'revert !important',
+    '& .infinite-scroll-component': {
+      overflow: 'revert !important',
+    },
+  },
   loading: {
     width: '100%',
     textAlign: 'center',
@@ -65,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AnnouncementSection = (props) => {
+const HomeworkSection = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedFromDate, setFromDate] = useState(null);
@@ -74,16 +79,15 @@ const AnnouncementSection = (props) => {
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [announcements, setAnnouncements] = useState([]);
+  const [homeworks, setHomeworks] = useState([]);
 
-  // const [isAnnouncementLoading, setIsAnnouncementLoading] = useState(true);
   useEffect(() => {
-    let isAnnouncementLoading = true;
+    let isHomeworkLoading = true;
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('srmToken');
         const selectedRole = props.selectedRole;
-        const response = await HomeworkService.fetchAnnouncements(
+        const response = await HomeworkService.fetchHomework(
           { selectedRole, currentPage },
           token
         );
@@ -91,13 +95,13 @@ const AnnouncementSection = (props) => {
           if (
             response.data.data.current_page === response.data.data.last_page
           ) {
-            if (isAnnouncementLoading) {
-              setAnnouncements([...announcements, ...response.data.data.data]);
+            if (isHomeworkLoading) {
+              setHomeworks([...homeworks, ...response.data.data.data]);
               setHasMore(false);
             }
           } else {
-            if (isAnnouncementLoading) {
-              setAnnouncements([...announcements, ...response.data.data.data]);
+            if (isHomeworkLoading) {
+              setHomeworks([...homeworks, ...response.data.data.data]);
               setCurrentPage(currentPage + 1);
             }
           }
@@ -109,15 +113,15 @@ const AnnouncementSection = (props) => {
     fetchData();
 
     return () => {
-      isAnnouncementLoading = false;
+      isHomeworkLoading = false;
     };
   }, []);
 
-  const fetchAnnouncementOnScroll = async () => {
+  const fetchHomeworkOnScroll = async () => {
     try {
       const token = localStorage.getItem('srmToken');
       const selectedRole = props.selectedRole;
-      const response = await HomeworkService.fetchAnnouncements(
+      const response = await HomeworkService.fetchHomework(
         { selectedRole, currentPage },
         token
       );
@@ -125,10 +129,10 @@ const AnnouncementSection = (props) => {
       if (response.status === 200) {
         // console.log(response);
         if (response.data.data.current_page !== response.data.data.last_page) {
-          setAnnouncements([...announcements, ...response.data.data.data]);
+          setHomeworks([...homeworks, ...response.data.data.data]);
           setCurrentPage(currentPage + 1);
         } else {
-          setAnnouncements([...announcements, ...response.data.data.data]);
+          setHomeworks([...homeworks, ...response.data.data.data]);
           setHasMore(false);
         }
       }
@@ -143,56 +147,28 @@ const AnnouncementSection = (props) => {
   const handleToDateChange = (date) => {
     setToDate(date);
   };
-  const handleCreateAnnouncement = async () => {
+
+  const handleCreateHomework = async () => {
     try {
       const token = localStorage.getItem('srmToken');
-      const response = await HomeworkService.createAnnouncement(token);
+      const response = await HomeworkService.createHomework(token);
       // console.log(response);
       history.push(`/create-homework/${response.data.homework_id}`);
-      // history.push(`/create-announcement/${65}`);
     } catch (e) {
       console.log(e);
     }
   };
 
-  let content = announcements.map((announcement, index) => {
-    return <NewsCard key={announcement.id} announcement={announcement} />;
+  let content = homeworks.map((homework, index) => {
+    return <HomeworkCard key={homework.id} homework={homework} />;
   });
 
   return (
     <div className={classes.sectionContainer}>
       <div className={classes.header}>
         <div className={classes.filterForm}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              format='MM/dd/yyyy'
-              id='fromDate'
-              label='From'
-              variant='inline'
-              value={selectedFromDate}
-              onChange={handleFromDateChange}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-              className={classes.datePicker}
-            />
-            <KeyboardDatePicker
-              disableToolbar
-              id='toDate'
-              label='To'
-              variant='inline'
-              format='MM/dd/yyyy'
-              value={selectedToDate}
-              onChange={handleToDateChange}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-              className={classes.datePicker}
-            />
-          </MuiPickersUtilsProvider>
           {selectedRole === 'teacher' || selectedRole === 'admin' ? (
-            <div className={classes.addNew} onClick={handleCreateAnnouncement}>
+            <div className={classes.addNew} onClick={handleCreateHomework}>
               <img src={AddIcon} alt='add' />
               <Typography className='new'>New</Typography>
             </div>
@@ -201,10 +177,12 @@ const AnnouncementSection = (props) => {
           )}
         </div>
       </div>
+      <br />
       <Box className={classes.cardBoxPadding}>
         <InfiniteScroll
-          dataLength={announcements.length}
-          next={fetchAnnouncementOnScroll}
+          className={classes.InfiniteScroll}
+          dataLength={homeworks.length}
+          next={fetchHomeworkOnScroll}
           hasMore={hasMore}
           loader={
             <>
@@ -234,4 +212,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(AnnouncementSection);
+export default connect(mapStateToProps)(HomeworkSection);

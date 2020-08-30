@@ -97,6 +97,17 @@ const useStyle = makeStyles((theme) => ({
     marginLeft: "auto",
     cursor: "pointer",
   },
+  announcementImg: {
+    justifyContent: "center",
+    textAlign: "center",
+    paddingBottom: "10px",
+    margin: "0",
+    "& img": {
+      maxWidth: "100%",
+      border: `1px solid ${theme.palette.common.deluge}`,
+      borderRadius: "4px",
+    },
+  },
 }));
 
 const NewsCard = (props) => {
@@ -115,6 +126,7 @@ const NewsCard = (props) => {
     media_url,
     created_at,
   } = props.announcement;
+
   const handleEditAnnouncement = () => {
     history.push(`/create-announcement/${id}`);
   };
@@ -157,16 +169,18 @@ const NewsCard = (props) => {
             }
           />
 
-          {media_url ? (
-            <CardMedia
-              className={classes.media}
-              image="/static/images/cards/paella.jpg"
-              title="Paella dish"
-            />
-          ) : (
-            ""
-          )}
+          {/* {media_url ? <img src={media_url} /> : ""} */}
+
           <CardContent className={classes.cardContent}>
+            {media_url && (
+              <Grid
+                container
+                direction="row"
+                className={`${classes.announcementImg} ${classes.contentMargin}`}
+              >
+                <img src={media_url} alt="Announcement"></img>
+              </Grid>
+            )}
             {summary ? (
               <Typography>{summary}</Typography>
             ) : (

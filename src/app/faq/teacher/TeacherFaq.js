@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Container from '@material-ui/core/Container';
@@ -11,6 +11,7 @@ import {
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 import FaqCard from '../FaqCard';
+import FaqService from '../FaqService';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,45 +51,79 @@ const TeacherFaq = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [hasMore, setHasMore] = useState(true);
-  const [allFaqs, setFaq] = useState([
-    {
-      id: 1,
-      question: 'What are features of this system?',
-      answer: '<p>This system provides .....</p>',
-    },
-    {
-      id: 2,
-      question: 'How we can Login?',
-      answer: '<p>Using your credentials provided by he school<p>',
-    },
-    {
-      id: 3,
-      question: 'How we can see the announcements ',
-      answer:
-        '<ul><li>On the left sidebar you will see the news and announcement section you can login from that</li></ul>',
-    },
-    {
-      id: 4,
-      question: 'How we can see the announcements ',
-      answer:
-        '<ul><li>On the left sidebar you will see the news and announcement section you can login from that</li></ul>',
-    },
-    {
-      id: 5,
-      question: 'How we can see the announcements ',
-      answer:
-        '<ul><li>On the left sidebar you will see the news and announcement section you can login from that</li></ul>',
-    },
-    {
-      id: 6,
-      question: 'How we can see the announcements ',
-      answer:
-        '<ul><li>On the left sidebar you will see the news and announcement section you can login from that</li></ul>',
-    },
-  ]);
+  const [allFaqs, setFaq] = useState([]);
+  const [nextUrl, setNextUrl] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchMoreFaqs = () => {
-    console.log('Fetch More Task');
+  const fetchFaqAfterDelete = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      const response = await FaqService.fetchAllFaqs(token);
+      setFaq(response.data.data.data);
+      let next_page_url = response.data.data.next_page_url;
+      let last_page_url = response.data.data.last_page_url;
+      if (next_page_url === null) {
+        setHasMore(false);
+      } else {
+        setNextUrl(next_page_url);
+        setCurrentPage(currentPage + 1);
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    let isLoading = true;
+    const fetchFaq = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await FaqService.fetchAllFaqs(token);
+        if (isLoading) {
+          setFaq(response.data.data.data);
+          let next_page_url = response.data.data.next_page_url;
+          let last_page_url = response.data.data.last_page_url;
+          console.log(response);
+          if (next_page_url === null) {
+            setHasMore(false);
+          } else {
+            setNextUrl(next_page_url);
+            setCurrentPage(currentPage + 1);
+            setHasMore(true);
+          }
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+    };
+    fetchFaq();
+    return () => {
+      isLoading = false;
+    };
+  }, []);
+
+  const handleDelete = (id) => {
+    fetchFaqAfterDelete();
+  };
+
+  const fetchMoreFaqs = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      const response = await FaqService.fetchMoreFaqs(token, nextUrl);
+      setFaq([...allFaqs, ...response.data.data.data]);
+      let next_page_url = response.data.data.next_page_url;
+      if (next_page_url === null) {
+        setHasMore(false);
+      } else {
+        setNextUrl(next_page_url);
+        setCurrentPage(currentPage + 1);
+
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
   };
   return (
     <>
@@ -127,6 +162,7 @@ const TeacherFaq = (props) => {
                   question={faq.question}
                   answer={faq.answer}
                   showActions={true}
+                  handleDelete={handleDelete}
                 />
               </Grid>
             ))}

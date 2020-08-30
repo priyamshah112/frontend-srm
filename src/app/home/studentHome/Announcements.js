@@ -20,28 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const Announcements = (props) => {
   const location = useLocation();
   const classes = useStyles();
-  const [announcements, setAnnouncements] = useState([
-    {
-      id: 1,
-      title: "Tempora.",
-      summary:
-        "Voluptatem dicta minus quisquam quo qui. Nemo libero maiores nihil doloribus aut commodi. Possimus repellat et odio aut recusandae. Itaque non odio vero culpa aliquid ea. Aut non est veritatis.",
-      main_content:
-        '<html><head><title>Ut eos.</title></head><body><form action="example.com" method="POST"><label for="username">impedit</label><input type="text" id="username"><label for="password">commodi</label><input type="password" id="password"></form><div class="quod"></div></body></html>\n',
-      category_id: 20,
-      published_to: "[76, 16, 19, 81, 2, 87]",
-      published_date: "2020-08-22",
-      event_date: "2020-08-30",
-      sorting_date: "2020-08-22",
-      reminder_date: "2020-08-25",
-      media_url: "https://lorempixel.com/640/480/?45842",
-      created_by: 5,
-      updated_by: 5,
-      created_at: null,
-      updated_at: null,
-      deleted_at: null,
-    },
-  ]);
+  const [announcements, setAnnouncements] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -134,7 +113,7 @@ const Announcements = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    selectedRole: state.selectedRole,
+    selectedRole: state.auth.selectedRole,
   };
 };
 

@@ -3,7 +3,8 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { DropzoneArea } from "material-ui-dropzone";
 import Button from "@material-ui/core/Button";
-
+import axios from "axios";
+const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 const useStyles = makeStyles((theme) => ({
   snackBar: {
     "&.MuiSnackbar-root": {
@@ -25,9 +26,32 @@ const ImageUpload = (props) => {
   const handleChange = (files) => {
     setFileList(files);
   };
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
-  const handleUpload = () => {
-    console.log(fileList);
+  const handleUpload = async () => {
+    console.log();
+    // console.log(await toBase64(fileList[0]));
+    const base=await toBase64(fileList[0])
+    const token = localStorage.getItem("srmToken");
+    // const response = await axios.post(
+    //   `${BACKEND_API_URL}/feed-gallery`,
+    //   {
+    //     file: `data:image/png;base64,${blobInfo.base64()}`,
+    //     type: "news",
+    //   },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${props.token}`,
+    //     },
+    //   }
+    // );
   };
 
   const handleCancel = () => {

@@ -40,7 +40,7 @@ class AnnouncementService {
       },
       params: {
         page: params.currentPage,
-        created_by: true,
+        created_by: params.createdBy,
       },
     });
     // return true;

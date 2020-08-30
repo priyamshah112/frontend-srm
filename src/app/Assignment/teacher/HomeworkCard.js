@@ -7,9 +7,17 @@ import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
 import * as moment from 'moment';
 import { dateDiff } from '../../../shared/datediff';
+import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '../../../assets/images/Edit Button.svg';
-import { Box, CardHeader, CardMedia, CardActions } from '@material-ui/core';
+import {
+  Box,
+  CardHeader,
+  CardMedia,
+  CardActions,
+  IconButton,
+} from '@material-ui/core';
 // import testImg from "../../assets/images/home/testImg.png";
+import HomeworkService from '../HomeworkService';
 
 const useStyle = makeStyles((theme) => ({
   card: {
@@ -41,6 +49,7 @@ const useStyle = makeStyles((theme) => ({
   },
   cardContent: {
     padding: '0px 16px 0px 16px',
+    overflow: 'auto',
   },
   contentMargin: {
     marginTop: '16px',
@@ -93,13 +102,16 @@ const useStyle = makeStyles((theme) => ({
   editBtnGrid: {
     textAlign: 'right',
   },
+  deleteIcon: {
+    marginLeft: '10px',
+  },
   editBtn: {
     marginLeft: 'auto',
     cursor: 'pointer',
   },
 }));
 
-const NewsCard = (props) => {
+const HomeworkCard = (props) => {
   const classes = useStyle();
   const history = useHistory();
   const statusColors = {
@@ -107,16 +119,28 @@ const NewsCard = (props) => {
     published: '#7B72AF',
     active: 'green',
   };
-  const {
-    id,
-    status,
-    title,
-    main_content,
-    submission_date,
-  } = props.announcement;
-  const handleEditAnnouncement = () => {
+  const { id, status, title, main_content, submission_date } = props.homework;
+
+  const handleEditHomework = () => {
     history.push(`/create-homework/${id}`);
   };
+
+  async function deleteHw(id) {
+    const token = localStorage.getItem('srmToken');
+    try {
+      const response = await HomeworkService.deleteHomework(token, id);
+      console.log(response);
+      if (response.status === 200) {
+        console.log('Successfully Deleted');
+        props.deleteHomework(id);
+      } else {
+        console.log('Failed to delete');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <Grid
@@ -154,30 +178,32 @@ const NewsCard = (props) => {
 
           <CardContent className={classes.cardContent}>
             {main_content ? (
-              <Typography>
-                <div dangerouslySetInnerHTML={{ __html: main_content }} />
-              </Typography>
+              <div dangerouslySetInnerHTML={{ __html: main_content }} />
             ) : (
               <Typography>N/A</Typography>
             )}
           </CardContent>
           <CardActions className={classes.cardActionStyle}>
             <Grid container>
-              <Grid item xs={6}>
-                <Typography
-                  className={classes.createdDate}
-                >{`Submission Date: ${moment(submission_date).format(
-                  'DD MMM YY'
-                )}`}</Typography>
+              <Grid item xs={9}>
+                <Typography className={classes.createdDate}>
+                  {submission_date
+                    ? `Submission Date: ${moment(submission_date).format(
+                        'DD MMM YY'
+                      )}`
+                    : 'Submission Date: N/A'}
+                </Typography>
               </Grid>
-              <Grid item xs={6} className={classes.editBtnGrid}>
+              <Grid item xs={3} className={classes.editBtnGrid}>
                 <Box className={classes.editBtn}>
                   {status !== 'published' ? (
-                    <img
-                      src={EditIcon}
-                      alt='Edit Icon'
-                      onClick={handleEditAnnouncement}
-                    />
+                    <>
+                      <img
+                        src={EditIcon}
+                        alt='Edit Icon'
+                        onClick={handleEditHomework}
+                      />
+                    </>
                   ) : (
                     ''
                   )}
@@ -185,75 +211,10 @@ const NewsCard = (props) => {
               </Grid>
             </Grid>
           </CardActions>
-          {/* <CardContent className={classes.cardContent}>
-            <Grid container direction="row">
-              <Grid item xs={10} className={classes.content}>
-                {title ? (
-                  <Grid container direction="row">
-                    <Typography variant="h6" className={classes.title}>
-                      {title}
-                    </Typography>
-                  </Grid>
-                ) : (
-                  <Typography variant="h6" className={classes.title}>
-                    N/A
-                  </Typography>
-                )}
-                {media_url ? (
-                  <Grid
-                    container
-                    direction="row"
-                    className={classes.announcementImg}
-                  >
-                    <img src={media_url} alt="Announcement"></img>
-                  </Grid>
-                ) : (
-                  ""
-                )}
-                {summary ? (
-                  <Grid container direction="row">
-                    <Typography className={classes.announcementText}>
-                      {summary}
-                    </Typography>
-                  </Grid>
-                ) : (
-                  <Typography className={classes.announcementText}>
-                    N/A
-                  </Typography>
-                )}
-                <Typography>{`Created at: ${moment(submission_date).format(
-                  "DD MMM YY"
-                )}`}</Typography>
-              </Grid>
-              <Grid item xs={2} className={classes.actions}>
-                <Box className={classes.contentCenter}>
-                  <Typography
-                    style={{
-                      color: statusColors[status],
-                    }}
-                    className={classes.statusText}
-                  >
-                    {status}
-                  </Typography>
-                </Box>
-                <Box className={classes.contentCenter}>
-                  {status !== "published" ? (
-                    <img
-                      src={EditIcon}
-                      alt="Edit Icon"
-                      onClick={handleEditAnnouncement}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </Box>
-              </Grid>
-            </Grid>
-          </CardContent> */}
         </Card>
       </Grid>
     </>
   );
 };
 
-export default NewsCard;
+export default HomeworkCard;

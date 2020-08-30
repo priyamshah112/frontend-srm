@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
@@ -7,7 +7,7 @@ class HomeService {
     // console.log(token);
     return axios.get(`${BACKEND_API_URL}/news`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       params: {
@@ -20,7 +20,7 @@ class HomeService {
   fetchAnnouncementDetail(id, token) {
     return axios.get(`${BACKEND_API_URL}/news/${id}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -30,7 +30,7 @@ class HomeService {
     // console.log(token);
     return axios.get(`${BACKEND_API_URL}/homework`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -40,7 +40,7 @@ class HomeService {
     // console.log(token);
     return axios.get(url, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -49,7 +49,7 @@ class HomeService {
   getTask(token) {
     return axios.get(`${BACKEND_API_URL}/task`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -58,7 +58,7 @@ class HomeService {
   getMoreTask(token, url) {
     return axios.get(url, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -67,7 +67,7 @@ class HomeService {
   createTask(token, payload) {
     return axios.post(`${BACKEND_API_URL}/task`, payload, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -76,7 +76,7 @@ class HomeService {
   updateTask(token, taskId, payload) {
     return axios.put(`${BACKEND_API_URL}/task/${taskId}`, payload, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -85,7 +85,32 @@ class HomeService {
   deleteTask(token, taskId) {
     return axios.delete(`${BACKEND_API_URL}/task/${taskId}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  setReminder(payload, token) {
+    return axios.post(`${BACKEND_API_URL}/reminder`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  updateReminder(payload, token, id) {
+    return axios.put(`${BACKEND_API_URL}/reminder/${id}`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  fetchReminder(token, type, id) {
+    return axios.get(`${BACKEND_API_URL}/feed-reminder/${type}/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });

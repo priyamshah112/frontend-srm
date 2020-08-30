@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
+
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
-import { useHistory } from "react-router-dom";
-
+import * as moment from "moment";
 import Reminder from "./Reminder";
+import HomeService from "../HomeSerivce";
 import { dateDiff } from "../../../shared/datediff";
 import remindersvg from "../../../assets/images/home/reminder.svg";
 // import testImg from "../../assets/images/home/testImg.png";
@@ -62,6 +65,8 @@ const AnnouncementCard = (props) => {
   const [openReminder, setOpenReminder] = useState(false);
   const [reminderDays, setReminderDays] = useState(null);
   const [reminderIcon, setReminderIcon] = useState(true);
+  const [entityReminderDate, setEntityReminderDate] = useState(null);
+  const [reminderId, setReminderId] = useState(null);
   // const [announcementShow, setShow] = useState(false);
   // useEffect(() => {
   //   if (announcementShow) {
@@ -70,6 +75,21 @@ const AnnouncementCard = (props) => {
   // }, [announcementShow]);
 
   useEffect(() => {
+    const fetchReminder = async () => {
+      try {
+        const response = await HomeService.fetchReminder(
+          props.token,
+          "news",
+          props.announcement.id
+        );
+        if (response.data.data) {
+          setEntityReminderDate(response.data.data.entity_date);
+          setReminderId(response.data.data.id);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
     if (props.announcement.event_date) {
       const response = dateDiff(props.announcement.event_date);
       if (!response) {
@@ -78,6 +98,8 @@ const AnnouncementCard = (props) => {
     } else {
       setReminderIcon(false);
     }
+
+    fetchReminder();
   }, []);
 
   const handleReminderOpen = () => {
@@ -87,8 +109,58 @@ const AnnouncementCard = (props) => {
       setReminderDays(response);
     }
   };
-  const handleReminderClose = (checkboxes) => {
+  const handleReminderClose = async (checkboxes) => {
     setOpenReminder(false);
+    try {
+      if (
+        checkboxes.oneDayBefore === false &&
+        checkboxes.twoDayBefore === false &&
+        !checkboxes.threeDayBefore
+      ) {
+      } else {
+        let entityDate = {};
+        if (checkboxes.oneDayBefore === true) {
+          entityDate["1_day_before"] = moment(props.eventDate)
+            .subtract(1, "days")
+            .format("YYYY-MM-DD");
+        }
+        if (checkboxes.twoDayBefore === true) {
+          entityDate["2_day_before"] = moment(props.eventDate)
+            .subtract(2, "days")
+            .format("YYYY-MM-DD");
+        }
+        if (checkboxes.threeDayBefore === true) {
+          entityDate["3_day_before"] = moment(props.eventDate)
+            .subtract(3, "days")
+            .format("YYYY-MM-DD");
+        }
+        if (entityReminderDate) {
+          const response = await HomeService.updateReminder(
+            {
+              entity_id: props.announcement.id,
+              entity_date: entityDate,
+              entity_type: "news",
+            },
+            props.token,
+            reminderId
+          );
+          setEntityReminderDate({ ...response.data.data.entity_date });
+        } else {
+          const response = await HomeService.setReminder(
+            {
+              entity_id: props.announcement.id,
+              entity_date: entityDate,
+              entity_type: "news",
+            },
+            props.token
+          );
+          setEntityReminderDate({ ...response.data.data.entity_date });
+        }
+      }
+      // const response =await HomeService.setReminder()
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -166,6 +238,9 @@ const AnnouncementCard = (props) => {
           open={openReminder}
           onClose={handleReminderClose}
           days={reminderDays}
+          id={props.announcement.id}
+          eventDate={props.announcement.event_date}
+          entityDate={entityReminderDate}
         />
       ) : (
         ""
@@ -174,4 +249,9 @@ const AnnouncementCard = (props) => {
   );
 };
 
-export default AnnouncementCard;
+const mapStateToProps = (state) => {
+  return {
+    token: state.auth.token,
+  };
+};
+export default connect(mapStateToProps)(AnnouncementCard);

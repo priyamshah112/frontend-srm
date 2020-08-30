@@ -25,8 +25,18 @@ const useStyle = makeStyles((theme) => ({
       },
     },
   },
+  dueDate: {
+    fontStyle: 'normal',
+    textTransform: 'uppercase',
+    paddingTop: '10px',
+    color: '#AEAEB2',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '13px',
+    },
+  },
   cardContent: {
     padding: '0 16px 0 16px',
+    overflow: 'auto',
   },
   title: {
     fontWeight: 'bold',
@@ -58,13 +68,13 @@ const HomeworkCard = (props) => {
         <Card className={classes.card}>
           <CardHeader
             className={classes.NewsHeader}
+            action={
+              <Typography className={classes.dueDate}>{due_date}</Typography>
+            }
             title={<Typography variant='h6'>{title}</Typography>}
-            subheader={<Typography>Due: {due_date}</Typography>}
           />
           <CardContent className={classes.cardContent}>
-            <Typography>
-              <div dangerouslySetInnerHTML={{ __html: content }} />
-            </Typography>
+            <div dangerouslySetInnerHTML={{ __html: content }} />
           </CardContent>
         </Card>
       </Grid>

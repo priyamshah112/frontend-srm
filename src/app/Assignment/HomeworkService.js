@@ -3,7 +3,7 @@ import axios from 'axios';
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class HomeworkService {
-  createAnnouncement(token) {
+  createHomework(token) {
     return axios.post(
       `${BACKEND_API_URL}/homework`,
       {},
@@ -15,7 +15,8 @@ class HomeworkService {
       }
     );
   }
-  saveAnnouncement(params, payload, token) {
+  saveHomework(params, payload, token) {
+    console.log(payload);
     return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -23,7 +24,7 @@ class HomeworkService {
       },
     });
   }
-  publishAnnouncement(params, payload, token) {
+  publishHomework(params, payload, token) {
     console.log('From Services: ', params.id, payload);
     return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
       headers: {
@@ -32,7 +33,7 @@ class HomeworkService {
       },
     });
   }
-  fetchAnnouncements(params, token) {
+  fetchHomework(params, token) {
     console.log(params);
     return axios.get(`${BACKEND_API_URL}/homework`, {
       headers: {
@@ -46,7 +47,7 @@ class HomeworkService {
     });
     // return true;
   }
-  fetchDraftAnnouncement(params, token) {
+  fetchDraftHomework(params, token) {
     return axios.get(`${BACKEND_API_URL}/homework/${params.id}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -56,14 +57,6 @@ class HomeworkService {
   }
   fetchClasses(token) {
     return axios.get(`${BACKEND_API_URL}/classes`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  }
-  fetchCategories(token) {
-    return axios.get(`${BACKEND_API_URL}/category`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

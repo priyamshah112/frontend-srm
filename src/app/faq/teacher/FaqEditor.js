@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -6,8 +6,6 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-
-import FaqRichTextEditor from './FaqRichTextEditor';
 import {
   Container,
   FormControl,
@@ -18,13 +16,19 @@ import {
   CardHeader,
 } from '@material-ui/core';
 
+import RichTextEditor from '../../../shared/richTextEditor';
+
+import FaqService from '../FaqService';
+import { connect } from 'react-redux';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
+
 const useStyles = makeStyles((theme) => ({
   container: {
     width: '100%',
     height: '100%',
     margin: 0,
     padding: 0,
-    overflowY: 'auto',
+    overflow: 'auto',
   },
   editorCard: {
     marginTop: '20px',
@@ -63,6 +67,86 @@ const FaqEditor = (props) => {
   const classes = useStyles();
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+  const [isEditPage, setIsEditPage] = useState(false);
+  const params = useParams();
+  const history = useHistory();
+  const location = useLocation();
+
+  const fetchFaq = async (id) => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      const response = await FaqService.fetchFaq(token, id);
+      console.log(response);
+      if (response.status === 200) {
+        console.log('success');
+        setQuestion(response.data.data.question);
+        setAnswer(response.data.data.answer);
+      } else {
+        console.log('Failed to post faq');
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    let isLoading = true;
+    if (location.pathname === `/faq/edit/${params.id}`) {
+      setIsEditPage(true);
+      console.log('here', params.id);
+      if (isLoading) {
+        fetchFaq(params.id);
+      }
+    }
+    return () => {
+      isLoading = false;
+    };
+  }, [params.id]);
+
+  const handlePublish = () => {
+    const publishFaq = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await FaqService.postFaq(token, {
+          question: question,
+          answer: answer,
+        });
+        console.log(response);
+        if (response.status === 200) {
+          console.log('success');
+        } else {
+          console.log('Failed to post faq');
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+      history.push('/faq');
+    };
+
+    const updateFaq = async (id) => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await FaqService.updateFaq(token, id, {
+          question: question,
+          answer: answer,
+        });
+        if (response.status === 200) {
+          console.log('success', response);
+        } else {
+          console.log('Failed to post faq');
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+      history.push('/faq');
+    };
+
+    if (isEditPage) {
+      updateFaq(params.id);
+    } else {
+      publishFaq();
+    }
+  };
 
   const handleDescription = (data) => {
     setAnswer(data);
@@ -95,7 +179,11 @@ const FaqEditor = (props) => {
               </FormControl>
             </div>
             <div className={classes.inputMargin}>
-              <FaqRichTextEditor handleDescription={handleDescription} />
+              <RichTextEditor
+                handleDescription={handleDescription}
+                value={answer}
+                token={props.token}
+              />
             </div>
           </CardContent>
           <CardActions className={classes.cardAction}>
@@ -105,6 +193,9 @@ const FaqEditor = (props) => {
                   color='secondary'
                   variant='contained'
                   disableElevation={true}
+                  onClick={(event) => {
+                    history.push('/faq');
+                  }}
                 >
                   Cancel
                 </Button>
@@ -114,6 +205,7 @@ const FaqEditor = (props) => {
                   color='primary'
                   variant='contained'
                   disableElevation={true}
+                  onClick={handlePublish}
                 >
                   Publish
                 </Button>
@@ -122,8 +214,21 @@ const FaqEditor = (props) => {
           </CardActions>
         </Card>
       </Container>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
     </div>
   );
 };
 
-export default FaqEditor;
+const mapStateToProps = (state) => {
+  return {
+    selectedRole: state.auth.selectedRole,
+    token: state.auth.token,
+  };
+};
+
+export default connect(mapStateToProps)(FaqEditor);

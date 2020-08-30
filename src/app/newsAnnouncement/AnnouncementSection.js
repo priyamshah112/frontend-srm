@@ -32,17 +32,17 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "15px",
     paddingLeft: "15px",
     paddingTop: "10px",
-    display: "inline block",
+    textAlign: "right",
   },
   cardBoxPadding: {
-    padding: "24px",
+    padding: "0px 24px 24px 24px",
     [theme.breakpoints.down("sm")]: {
       padding: "16px",
     },
   },
   addNew: {
     color: theme.palette.common.deluge,
-    float: "right",
+
     marginTop: "15px",
     marginRight: "15px",
     cursor: "pointer",
@@ -83,10 +83,19 @@ const AnnouncementSection = (props) => {
       try {
         const token = localStorage.getItem("srmToken");
         const selectedRole = props.selectedRole;
+        const createdBy = props.createdBy;
+        let params = {};
+        if (createdBy) {
+          params = { selectedRole, currentPage, createdBy };
+        } else {
+          params = { selectedRole, currentPage };
+        }
+
         const response = await AnnouncementService.fetchAnnouncements(
-          { selectedRole, currentPage },
+          params,
           token
         );
+        console.log(response.data.data);
         if (response.status === 200) {
           if (
             response.data.data.current_page === response.data.data.last_page
@@ -117,8 +126,16 @@ const AnnouncementSection = (props) => {
     try {
       const token = localStorage.getItem("srmToken");
       const selectedRole = props.selectedRole;
+      const createdBy = props.createdBy;
+      let params = {};
+      if (createdBy) {
+        params = { selectedRole, currentPage, createdBy };
+      } else {
+        params = { selectedRole, currentPage };
+      }
+
       const response = await AnnouncementService.fetchAnnouncements(
-        { selectedRole, currentPage },
+        params,
         token
       );
 
@@ -160,36 +177,8 @@ const AnnouncementSection = (props) => {
   });
   return (
     <div className={classes.sectionContainer}>
-      <div className={classes.header}>
-        <div className={classes.filterForm}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              format="MM/dd/yyyy"
-              id="fromDate"
-              label="From"
-              variant="inline"
-              value={selectedFromDate}
-              onChange={handleFromDateChange}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              className={classes.datePicker}
-            />
-            <KeyboardDatePicker
-              disableToolbar
-              id="toDate"
-              label="To"
-              variant="inline"
-              format="MM/dd/yyyy"
-              value={selectedToDate}
-              onChange={handleToDateChange}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              className={classes.datePicker}
-            />
-          </MuiPickersUtilsProvider>
+      {props.createdBy ? (
+        <div className={classes.header}>
           {selectedRole === "teacher" || selectedRole === "admin" ? (
             <div className={classes.addNew} onClick={handleCreateAnnouncement}>
               <img src={AddIcon} alt="add" />
@@ -199,7 +188,9 @@ const AnnouncementSection = (props) => {
             ""
           )}
         </div>
-      </div>
+      ) : (
+        ""
+      )}
       <Box className={classes.cardBoxPadding}>
         <InfiniteScroll
           dataLength={announcements.length}
@@ -219,9 +210,6 @@ const AnnouncementSection = (props) => {
         >
           {content}
         </InfiniteScroll>
-        <br />
-        <br />
-        <br />
       </Box>
     </div>
   );
@@ -232,6 +220,5 @@ const mapStateToProps = (state) => {
     selectedRole: state.auth.selectedRole,
   };
 };
-
 
 export default connect(mapStateToProps)(AnnouncementSection);

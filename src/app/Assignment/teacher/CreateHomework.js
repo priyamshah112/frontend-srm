@@ -34,7 +34,7 @@ import { set } from 'date-fns';
 const useStyle = makeStyles((theme) => ({
   formStyle: {
     margin: 'auto',
-    width: '90%',
+    width: '95%',
     backgroundColor: 'white',
     justifyContent: 'center',
     textAlign: 'center',
@@ -128,7 +128,7 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const CreateAnnouncement = (props) => {
+const CreateHomework = (props) => {
   const classes = useStyle();
   const history = useHistory();
   const { id } = useParams();
@@ -136,19 +136,16 @@ const CreateAnnouncement = (props) => {
   const [scheduler, setScheduler] = useState(false);
   const [openPubLater, setOpenPubLater] = useState(false);
   const [eventDate, setEventDate] = useState(null);
-  const [submissionDate, setSubmissionDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
   const [errMessage, setError] = useState('');
   const [category, setCategory] = useState('');
+  const [submissionDate, setSubmissionDate] = useState();
   const [checkState, setCheckState] = useState({
     ...props.classState,
-    'All Teachers': false,
-    'All Parents': false,
     'Select All': false,
   });
-  const categoryValues = [...Object.keys(props.categories)];
   const checkStateLength = [
     ...Array(Object.keys(props.classState).length).keys(),
   ];
@@ -165,8 +162,6 @@ const CreateAnnouncement = (props) => {
     'Class 8': true,
     'Class 9': true,
     'Class 10': true,
-    'All Teachers': true,
-    'All Parents': true,
     'Select All': true,
   };
 
@@ -181,8 +176,6 @@ const CreateAnnouncement = (props) => {
     'Class 8': false,
     'Class 9': false,
     'Class 10': false,
-    'All Teachers': false,
-    'All Parents': false,
     'Select All': false,
   };
   let saveDataApi;
@@ -193,7 +186,7 @@ const CreateAnnouncement = (props) => {
     // api call to save
     const fetchDraft = async () => {
       try {
-        const response = await HomeworkService.fetchDraftAnnouncement(
+        const response = await HomeworkService.fetchDraftHomework(
           { id },
           props.token
         );
@@ -201,14 +194,6 @@ const CreateAnnouncement = (props) => {
           if (isFormLoading) {
             let tempClassCheckState = {};
             if (response.data.data.class_mapping) {
-              if (response.data.data.class_mapping.parents) {
-                tempClassCheckState['All Parents'] = true;
-                setChipData([...chipData, 'All Parents']);
-              }
-              if (response.data.data.class_mapping.teachers) {
-                tempClassCheckState['All Teachers'] = true;
-                setChipData([...chipData, 'All Teachers']);
-              }
               response.data.data.class_mapping.class.forEach((classId) => {
                 tempClassCheckState[`Class ${classId}`] = true;
 
@@ -222,7 +207,10 @@ const CreateAnnouncement = (props) => {
                 : ''
             );
             setTitle(response.data.data.title ? response.data.data.title : '');
-            setEventDate(response.data.data.submission_date);
+            // setEventDate(response.data.data.submission_date);
+            setSubmissionDate(
+              new Date(response.data.data.submission_date) || new Date()
+            );
           }
         }
       } catch (e) {
@@ -240,29 +228,19 @@ const CreateAnnouncement = (props) => {
       try {
         let classMapping = { class: [] };
         for (var state in checkState) {
-          if (
-            state !== 'All Parents' &&
-            state !== 'All Teachers' &&
-            state !== 'Select All'
-          )
+          if (state !== 'Select All')
             if (checkState[state] === true) {
-              console.log('here', state);
+              // console.log('here', state);
               classMapping.class.push(parseInt(state.split(' ')[1]));
             }
         }
-        if (checkState['All Parents'] === true) {
-          classMapping['parents'] = true;
-        }
-        if (checkState['All Teachers'] === true) {
-          classMapping['teachers'] = true;
-        }
-
-        const response = await HomeworkService.saveAnnouncement(
+        const response = await HomeworkService.saveHomework(
           { id },
           {
             title,
             submission_date: eventDate,
             main_content: description,
+            submission_date: submissionDate.toISOString(),
             published_to: classMapping,
           },
           props.token
@@ -277,10 +255,10 @@ const CreateAnnouncement = (props) => {
     };
     saveDataApi = setInterval(() => {
       // console.log(1);
-      saveDetails(title, eventDate, description, checkState);
+      saveDetails(title, eventDate, description, submissionDate, checkState);
     }, 10000);
     return () => clearInterval(saveDataApi);
-  }, [title, eventDate, description, checkState]);
+  }, [title, eventDate, description, submissionDate, checkState]);
 
   const handleChangeInput = (event) => {
     let name = event.target.name;
@@ -319,10 +297,6 @@ const CreateAnnouncement = (props) => {
   const handleDescription = (data) => {
     setDescription(data);
   };
-  const handleCategoryChange = (event) => {
-    console.log(event.target.value);
-    setCategory(event.target.value);
-  };
 
   // const handlePublish = (event) => {
   //   if (
@@ -353,24 +327,13 @@ const CreateAnnouncement = (props) => {
     try {
       let classMapping = { class: [] };
       for (var state in checkState) {
-        if (
-          state !== 'All Parents' &&
-          state !== 'All Teachers' &&
-          state !== 'Select All'
-        )
+        if (state !== 'Select All')
           if (checkState[state] === true) {
             classMapping.class.push(parseInt(state.split(' ')[1]));
           }
       }
-      if (checkState['All Parents'] === true) {
-        classMapping['parents'] = true;
-      }
-      if (checkState['All Teachers'] === true) {
-        classMapping['teachers'] = true;
-      }
-
       // console.log(classMapping, title, summary, eventDate, description);
-      const response = await HomeworkService.publishAnnouncement(
+      const response = await HomeworkService.publishHomework(
         { id },
         {
           title: title,
@@ -382,10 +345,10 @@ const CreateAnnouncement = (props) => {
         },
         props.token
       );
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
-        console.log('Publish');
-        console.log(response);
+        console.log('Published');
+        // console.log(response);
       }
     } catch (e) {
       console.log(e);
@@ -393,12 +356,11 @@ const CreateAnnouncement = (props) => {
   };
 
   const handlesubmissionDate = (date) => {
-    console.log('Submission Date', date);
     setSubmissionDate(date);
   };
 
   const handlePublishLater = (laterEventDate) => {
-    console.log(laterEventDate.toISOString());
+    // console.log(laterEventDate.toISOString());
     const status = 'active';
     publishData(laterEventDate.toISOString(), status);
     history.goBack();
@@ -462,7 +424,7 @@ const CreateAnnouncement = (props) => {
           <Box className={classes.margin}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
-                <Grid item sm={6} xs={12} className={classes.fieldStyle}>
+                <Grid item xs={12}>
                   <KeyboardDateTimePicker
                     id='eventDate'
                     label='Submission Date'
@@ -520,28 +482,6 @@ const CreateAnnouncement = (props) => {
                       />
                     );
                   })}
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checkState['All Teachers']}
-                        onChange={handleCheckbox}
-                        name='All Teachers'
-                        color='primary'
-                      />
-                    }
-                    label='All Teachers'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checkState['All Parents']}
-                        onChange={handleCheckbox}
-                        name='All Parents'
-                        color='primary'
-                      />
-                    }
-                    label='All Parents'
-                  />
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -633,4 +573,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(CreateAnnouncement);
+export default connect(mapStateToProps)(CreateHomework);

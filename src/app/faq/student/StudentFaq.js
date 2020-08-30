@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Container from '@material-ui/core/Container';
+import {
+  makeStyles,
+  Grid,
+  Typography,
+  CircularProgress,
+} from '@material-ui/core';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
-import { makeStyles, Grid, Typography } from '@material-ui/core';
-
-import FaqCard from '../FaqCard';
+import FaqCard from './FaqCard';
+import FaqService from '../FaqService';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -13,12 +20,20 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     padding: 0,
     overflowY: 'auto',
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
   },
   createHeader: {
     marginTop: '20px',
   },
   createTitle: {
     fontSize: '20px',
+  },
+  loading: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    margin: 'auto',
   },
   createButtonIcon: {
     // margin: 'auto',
@@ -33,42 +48,88 @@ const useStyles = makeStyles((theme) => ({
 
 const StudentFaq = (props) => {
   const classes = useStyles();
-  const [allFaqs, setFaq] = useState([
-    {
-      id: 1,
-      question: 'What are features of this system?',
-      answer: '<p>This system provides .....</p>',
-    },
-    {
-      id: 2,
-      question: 'How we can Login?',
-      answer: '<p>Using your credentials provided by he school<p>',
-    },
-    {
-      id: 3,
-      question: 'How we can see the announcements ',
-      answer:
-        '<ul><li>On the left sidebar you will see the news and announcement section you can login from that</li></ul>',
-    },
-  ]);
+  const [hasMore, setHasMore] = useState(true);
+  const [allFaqs, setFaq] = useState([]);
+  const [nextUrl, setNextUrl] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    let isLoading = true;
+    const fetchFaq = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await FaqService.fetchAllFaqs(token);
+        if (isLoading) {
+          setFaq(response.data.data.data);
+          let next_page_url = response.data.data.next_page_url;
+          let last_page_url = response.data.data.last_page_url;
+          console.log(response);
+          if (next_page_url === null) {
+            setHasMore(false);
+          } else {
+            setNextUrl(next_page_url);
+            setCurrentPage(currentPage + 1);
+            setHasMore(true);
+          }
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+    };
+    fetchFaq();
+    return () => {
+      isLoading = false;
+    };
+  }, []);
+
+  const fetchMoreFaqs = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      const response = await FaqService.fetchMoreFaqs(token, nextUrl);
+      setFaq([...allFaqs, ...response.data.data.data]);
+      let next_page_url = response.data.data.next_page_url;
+      if (next_page_url === null) {
+        setHasMore(false);
+      } else {
+        setNextUrl(next_page_url);
+        setCurrentPage(currentPage + 1);
+
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
   return (
     <>
-      <div className={classes.container}>
+      <div className={classes.container} id='scrollable'>
         <Container>
-          <Typography variant='h6' className={classes.createHeader}>
-            <span className={classes.createTitle}>FAQS</span>
-          </Typography>
-          {allFaqs.map((faq) => (
-            <Grid key={faq.id} className={classes.cardGridStyle}>
-              <FaqCard
-                id={faq.id}
-                question={faq.question}
-                answer={faq.answer}
-                showActions={false}
-              />
-            </Grid>
-          ))}
+          <InfiniteScroll
+            dataLength={allFaqs.length}
+            next={fetchMoreFaqs}
+            hasMore={hasMore}
+            loader={
+              <>
+                <br />
+                <div className={classes.loading}>
+                  <CircularProgress />
+                </div>
+                <br />
+              </>
+            }
+            scrollableTarget='scrollable'
+            scrollThreshold={0.5}
+          >
+            {allFaqs.map((faq) => (
+              <Grid key={faq.id} className={classes.cardGridStyle}>
+                <FaqCard
+                  id={faq.id}
+                  question={faq.question}
+                  answer={faq.answer}
+                />
+              </Grid>
+            ))}
+          </InfiniteScroll>
         </Container>
         <br />
         <br />

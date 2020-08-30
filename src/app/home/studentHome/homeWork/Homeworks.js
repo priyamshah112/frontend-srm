@@ -24,22 +24,21 @@ const Homework = (props) => {
 
   useEffect(() => {
     // console.log('Task Content');
-    let isAnnouncementLoading = true;
+    let isHomeworkLoading = true;
     const fetchHomework = async () => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await HomeSerivce.fetchHomework(token);
-        if (isAnnouncementLoading) {
+        if (isHomeworkLoading) {
           setHomework(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
           if (next_page_url === null) {
             setHasMore(false);
           } else {
-            setHasMore(true);
+            setNextUrl(response.data.data.next_page_url);
           }
           setIsLoading(false);
 
-          setNextUrl(response.data.data.next_page_url);
           console.log(response.data);
         }
       } catch (error) {
@@ -48,21 +47,25 @@ const Homework = (props) => {
     };
     fetchHomework();
     return () => {
-      isAnnouncementLoading = false;
+      isHomeworkLoading = false;
     };
   }, []);
 
   const fetchHomeworkOnScroll = () => {
-    console.log('Fetch More HW');
     const fetchMoreHomework = async () => {
       const token = localStorage.getItem('srmToken');
-      const response = await HomeSerivce.fetchMoreHomework(token, nextUrl);
-      setHomework([...homework, ...response.data.data.data]);
-      // setIsLoading(false);
-      let next_page_url = response.data.data.next_page_url;
-      if (next_page_url === null) {
-        setHasMore(false);
+      if (hasMore) {
+        const response = await HomeSerivce.fetchMoreHomework(token, nextUrl);
+        setHomework([...homework, ...response.data.data.data]);
+        let next_page_url = response.data.data.next_page_url;
+        let last_page_url = response.data.data.last_page_url;
+        if (next_page_url === last_page_url || next_page_url === null) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
       }
+      // setIsLoading(false);
     };
     fetchMoreHomework();
   };
@@ -84,9 +87,9 @@ const Homework = (props) => {
       scrollableTarget='scrollable'
       scrollThreshold={0.2}
     >
-      {homework.map((hw) => (
+      {homework.map((hw, index) => (
         <HomeworkCard
-          key={hw.id}
+          key={index}
           id={hw.id}
           title={hw.title}
           due_date={hw.submission_date}
