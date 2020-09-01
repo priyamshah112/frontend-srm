@@ -6,6 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import { CardHeader } from '@material-ui/core';
+import * as moment from 'moment';
 
 const useStyle = makeStyles((theme) => ({
   card: {
@@ -69,7 +70,11 @@ const HomeworkCard = (props) => {
           <CardHeader
             className={classes.NewsHeader}
             action={
-              <Typography className={classes.dueDate}>{due_date}</Typography>
+              <Typography className={classes.dueDate}>
+                {due_date
+                  ? `Due: ${moment(due_date).format('DD/MM/YY hh:mm A')}`
+                  : 'Due: N/A'}
+              </Typography>
             }
             title={<Typography variant='h6'>{title}</Typography>}
           />

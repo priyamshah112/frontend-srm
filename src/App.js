@@ -14,7 +14,7 @@ import ChangePwdUser from './app/auth/ChangePwdUser';
 import RoleSelection from './app/auth/RoleSelection';
 import Home from './app/home/Home';
 import NewsAnnouncement from './app/newsAnnouncement/NewsAnnouncement';
-import Homework from './app/Assignment/Homework';
+import Assignment from './app/Assignment/Assignment';
 import NewsDetails from './app/home/studentHome/NewsDetails';
 import Announcements from './app/home/studentHome/Announcements';
 import Gallery from './app/gallery/GalleryIndex';
@@ -42,8 +42,8 @@ function App(props) {
             exact
             component={() => <Typography>announcement</Typography>}
           />
-          <Route path='/assignment' exact component={Homework} />
-          <Route path='/create-homework/:id' exact component={Homework} />
+          <Route path='/assignment' exact component={Assignment} />
+          <Route path='/create-homework/:id' exact component={Assignment} />
 
           <Route
             path='/attendance'

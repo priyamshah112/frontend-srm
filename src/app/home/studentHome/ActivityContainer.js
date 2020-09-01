@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     // display: "flex",
     // flexDirection: "column",
+
+    '&::-webkit-scrollbar': {
+      width: 0,
+    },
   },
   tabBar: {
     backgroundColor: theme.palette.mainBackground,

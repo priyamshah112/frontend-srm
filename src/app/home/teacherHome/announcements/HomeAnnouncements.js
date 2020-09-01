@@ -55,7 +55,7 @@ const useStyle = makeStyles((theme) => ({
   },
   homeworkCard: {
     borderRadius: '10px',
-    minHeight: '100px',
+    minHeight: '100%',
     boxShadow: 'none',
     // backgroundColor: '#F7DDCC',
     '& .0': {
@@ -106,23 +106,18 @@ const useStyle = makeStyles((theme) => ({
 const Homework = () => {
   const classes = useStyle();
   const history = useHistory();
-  const [homework, setHomework] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [hasMore, setHasMore] = useState(false);
-  const [latestHw, setLatestHw] = useState([]);
-
-  const cardColors = ['#F7DDCC', '#F8E7C1', '#D4DbD8'];
 
   useEffect(() => {
-    let isHomeworkLoading = true;
+    let isAnnouncementsLoading = true;
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('srmToken');
-        const response = await HomeSerivce.fetchTeacherHomework(token);
+        const response = await HomeSerivce.fetchTeacherAnnouncement(token);
         if (response.status === 200) {
-          let homeworkSet = false;
-          if (isHomeworkLoading) {
-            setHomework(response.data.data.data);
-            homeworkSet = true;
+          if (isAnnouncementsLoading) {
+            setAnnouncements(response.data.data.data);
           }
         }
       } catch (e) {
@@ -131,73 +126,69 @@ const Homework = () => {
     };
     fetchData();
     return () => {
-      isHomeworkLoading = false;
+      isAnnouncementsLoading = false;
     };
   }, []);
 
-  const handleCreateHomework = async () => {
+  const handleCreateAnnouncement = async () => {
     try {
       const token = localStorage.getItem('srmToken');
-      const response = await HomeSerivce.createHomework(token);
-      history.push(`/create-homework/${response.data.homework_id}`);
+      const response = await HomeSerivce.createAnnouncement(token);
+      // console.log(response);
+      history.push(`/create-announcement/${response.data.news_id}`);
+      // history.push(`/create-announcement/${65}`);
     } catch (e) {
       console.log(e);
     }
   };
   return (
-    <div className={classes.homeworkDiv}>
-      <div className={classes.homeworkheader}>
-        <Typography className={classes.title}>
-          <img
-            src={taskBookIcon}
-            alt='homework Icon'
-            className={classes.homeworkIcon}
-          />
-          <span className={classes.titleName}>&nbsp;Homeworks</span>
-          <AddCircleRoundedIcon
-            color='primary'
-            className={classes.addhomeworkIcon}
-            onClick={handleCreateHomework}
-          />
-        </Typography>
-      </div>
-      <div className={classes.homeworks}>
-        <Grid container spacing={3}>
-          {homework.map((hw, index) => {
-            if (index < 3) {
-              return (
-                <Grid item sm={4} xs={12} key={index}>
-                  <Card
-                    className={`${classes.homeworkCard} ${index}`}
-                    style={{ backgroundColor: cardColors[index] }}
-                  >
-                    <CardContent className={classes.cardContentStyle}>
-                      <Typography className={classes.cardTitle}>
-                        {hw.title ? hw.title : 'N/A'}
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Typography>
-                        {hw.submission_date
-                          ? `Due: ${moment(hw.submission_date).format(
-                              'DD/MM/YY hh:mm A'
-                            )}`
-                          : 'Due: N/A'}
-                      </Typography>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              );
-            }
-          })}
-        </Grid>
-      </div>
+    <>
+      <div className={classes.homeworkDiv}>
+        <div className={classes.homeworkheader}>
+          <Typography className={classes.title}>
+            <img
+              src={taskBookIcon}
+              alt='Announcements Icon'
+              className={classes.homeworkIcon}
+            />
+            <span className={classes.titleName}>&nbsp;Announcements</span>
+            <AddCircleRoundedIcon
+              color='primary'
+              className={classes.addhomeworkIcon}
+              onClick={handleCreateAnnouncement}
+            />
+          </Typography>
+        </div>
+        <div className={classes.homeworks}>
+          <Card>
+            <CardContent>
+              {announcements.map((announcement, index) => {
+                if (index < 3) {
+                  return (
+                    <div key={index}>
+                      <div>
+                        <Typography variant='h6'>
+                          {announcement.title ? announcement.title : 'N/A'}
+                        </Typography>
+                        <Typography>
+                          {announcement.summary ? announcement.summary : 'N/A'}
+                        </Typography>
+                      </div>
+                      {index < 2 ? <hr /> : ''}
+                    </div>
+                  );
+                }
+              })}
+            </CardContent>
+          </Card>
+        </div>
 
-      <br />
-      <br />
-      <br />
-      <br />
-    </div>
+        <br />
+        <br />
+        <br />
+        <br />
+      </div>
+    </>
   );
 };
 

@@ -1,67 +1,67 @@
-import "date-fns";
-import React, { useState, useRef, useEffect } from "react";
-import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/styles";
-import DateFnsUtils from "@date-io/date-fns";
+import 'date-fns';
+import React, { useState, useRef, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/styles';
+import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
-} from "@material-ui/pickers";
-import Box from "@material-ui/core/Box";
-import { Typography } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import InfiniteScroll from "react-infinite-scroll-component";
+} from '@material-ui/pickers';
+import Box from '@material-ui/core/Box';
+import { Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
-import AnnouncementService from "./AnnouncementService";
-import AddIcon from "../../assets/images/Add.svg";
-import AnnouncementCard from "../home/studentHome/AnnouncementCard";
-import NewsCard from "./teacher/NewsCard";
+import AnnouncementService from './AnnouncementService';
+import AddIcon from '../../assets/images/Add.svg';
+import AnnouncementCard from '../home/studentHome/AnnouncementCard';
+import NewsCard from './teacher/NewsCard';
 
 const useStyles = makeStyles((theme) => ({
   datePicker: {
-    width: "25%",
-    paddingRight: "10px",
+    width: '25%',
+    paddingRight: '10px',
   },
   sectionContainer: {
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
 
   header: {
-    paddingRight: "15px",
-    paddingLeft: "15px",
-    paddingTop: "10px",
-    textAlign: "right",
+    paddingRight: '15px',
+    paddingLeft: '15px',
+    paddingTop: '10px',
+    textAlign: 'right',
   },
   cardBoxPadding: {
-    padding: "0px 24px 24px 24px",
-    [theme.breakpoints.down("sm")]: {
-      padding: "16px",
+    padding: '0px 24px 24px 24px',
+    [theme.breakpoints.down('sm')]: {
+      padding: '16px',
     },
   },
   addNew: {
     color: theme.palette.common.deluge,
 
-    marginTop: "15px",
-    marginRight: "15px",
-    cursor: "pointer",
-    "& .new": {
-      float: "right",
-      fontSize: "14px",
-      padding: "5px",
+    marginTop: '15px',
+    marginRight: '15px',
+    cursor: 'pointer',
+    '& .new': {
+      float: 'right',
+      fontSize: '14px',
+      padding: '5px',
     },
-    "& img": {
-      margin: "5px",
-      height: "20px",
-      cursor: "pointer",
+    '& img': {
+      margin: '5px',
+      height: '20px',
+      cursor: 'pointer',
     },
   },
   loading: {
-    width: "100%",
-    textAlign: "center",
-    paddingTop: "8px",
-    fontSize: "20px",
+    width: '100%',
+    textAlign: 'center',
+    paddingTop: '8px',
+    fontSize: '20px',
   },
 }));
 
@@ -81,7 +81,7 @@ const AnnouncementSection = (props) => {
     let isAnnouncementLoading = true;
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("srmToken");
+        const token = localStorage.getItem('srmToken');
         const selectedRole = props.selectedRole;
         const createdBy = props.createdBy;
         let params = {};
@@ -95,7 +95,7 @@ const AnnouncementSection = (props) => {
           params,
           token
         );
-        console.log(response.data.data);
+
         if (response.status === 200) {
           if (
             response.data.data.current_page === response.data.data.last_page
@@ -124,7 +124,7 @@ const AnnouncementSection = (props) => {
 
   const fetchAnnouncementOnScroll = async () => {
     try {
-      const token = localStorage.getItem("srmToken");
+      const token = localStorage.getItem('srmToken');
       const selectedRole = props.selectedRole;
       const createdBy = props.createdBy;
       let params = {};
@@ -162,7 +162,7 @@ const AnnouncementSection = (props) => {
   };
   const handleCreateAnnouncement = async () => {
     try {
-      const token = localStorage.getItem("srmToken");
+      const token = localStorage.getItem('srmToken');
       const response = await AnnouncementService.createAnnouncement(token);
       // console.log(response);
       history.push(`/create-announcement/${response.data.news_id}`);
@@ -173,23 +173,29 @@ const AnnouncementSection = (props) => {
   };
 
   let content = announcements.map((announcement, index) => {
-    return <NewsCard key={announcement.id} announcement={announcement} />;
+    return (
+      <NewsCard
+        key={announcement.id}
+        createdBy={props.createdBy}
+        announcement={announcement}
+      />
+    );
   });
   return (
     <div className={classes.sectionContainer}>
       {props.createdBy ? (
         <div className={classes.header}>
-          {selectedRole === "teacher" || selectedRole === "admin" ? (
+          {selectedRole === 'teacher' || selectedRole === 'admin' ? (
             <div className={classes.addNew} onClick={handleCreateAnnouncement}>
-              <img src={AddIcon} alt="add" />
-              <Typography className="new">New</Typography>
+              <img src={AddIcon} alt='add' />
+              <Typography className='new'>New</Typography>
             </div>
           ) : (
-            ""
+            ''
           )}
         </div>
       ) : (
-        ""
+        ''
       )}
       <Box className={classes.cardBoxPadding}>
         <InfiniteScroll
@@ -200,12 +206,12 @@ const AnnouncementSection = (props) => {
             <>
               <div className={classes.loading}>
                 {/* <Typography>Loading...</Typography> */}
-                <CircularProgress color="primary" size={30} />
+                <CircularProgress color='primary' size={30} />
               </div>
               <br />
             </>
           }
-          scrollableTarget="scrollable"
+          scrollableTarget='scrollable'
           scrollThreshold={0.2}
         >
           {content}

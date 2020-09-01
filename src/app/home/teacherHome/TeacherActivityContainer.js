@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 
 import Tasks from './tasks/Tasks';
 import Homework from './homework/Homework';
+import HomeAnnouncements from './announcements/HomeAnnouncements';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -31,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  marginTop: {
+    marginTop: '20px',
+  },
   topPanelRow: {
     marginTop: '20px',
   },
@@ -41,7 +45,10 @@ const useStyles = makeStyles((theme) => ({
     height: '400px',
   },
   homeworkCol: {
-    height: '200px',
+    height: '130px',
+    [theme.breakpoints.down('xs')]: {
+      height: '380px',
+    },
   },
 }));
 const ActivityContainer = (props) => {
@@ -58,18 +65,21 @@ const ActivityContainer = (props) => {
             >
               <Tasks />
             </Grid>
-            <hr />
             <Grid
               item
               xs={12}
-              className={`${classes.panelCol} ${classes.homeworkCol}`}
+              className={`${classes.panelCol} ${classes.marginTop} ${classes.homeworkCol}`}
             >
               <Homework />
             </Grid>
+            <Grid
+              item
+              xs={12}
+              className={`${classes.panelCol} ${classes.marginTop}`}
+            >
+              <HomeAnnouncements />
+            </Grid>
           </Grid>
-          <br />
-          <br />
-          <br />
         </Grid>
       </Grid>
     </div>

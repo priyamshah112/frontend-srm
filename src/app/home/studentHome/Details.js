@@ -7,6 +7,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
+import * as moment from "moment";
 import { dateDiff } from "../../../shared/datediff";
 import remindersvg from "../../../assets/images/home/reminder.svg";
 import HomeService from "../HomeSerivce";
@@ -33,9 +34,9 @@ const useStyle = makeStyles((theme) => ({
     marginTop: "16px",
   },
   title: {
-    fontWeight: "bold",
+    fontWeight: 600,
     fontStyle: "normal",
-    fontSize: "14px",
+    // fontSize: '14px',
   },
   media: {
     "& img": {
@@ -214,7 +215,9 @@ const Details = (props) => {
                 }
                 subheader={
                   <span className={classes.publishDate}>
-                    {`Event Date: ${details.event_date}`}
+                    {`Event Date: ${moment(details.event_date).format(
+                      "DD/MM/YYYY"
+                    )}`}
                   </span>
                 }
               />
@@ -258,7 +261,9 @@ const Details = (props) => {
                 </Grid>
                 <Typography className={classes.publishDate}>
                   <br />
-                  {`Published Date: ${details.published_date}`}
+                  {`Published Date: ${moment(details.published_date).format(
+                    "DD/MM/YYYY"
+                  )}`}
                 </Typography>
               </CardContent>
               {selectedRole === "teacher" && details.status !== "published" ? (

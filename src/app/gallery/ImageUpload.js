@@ -3,8 +3,10 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { DropzoneArea } from "material-ui-dropzone";
 import Button from "@material-ui/core/Button";
-import axios from "axios";
-const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+import { connect } from "react-redux";
+import GalleryService from "./GalleryService";
+import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
+
 const useStyles = makeStyles((theme) => ({
   snackBar: {
     "&.MuiSnackbar-root": {
@@ -22,6 +24,7 @@ const ImageUpload = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [fileList, setFileList] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (files) => {
     setFileList(files);
@@ -35,23 +38,24 @@ const ImageUpload = (props) => {
     });
 
   const handleUpload = async () => {
-    console.log();
-    // console.log(await toBase64(fileList[0]));
-    const base=await toBase64(fileList[0])
-    const token = localStorage.getItem("srmToken");
-    // const response = await axios.post(
-    //   `${BACKEND_API_URL}/feed-gallery`,
-    //   {
-    //     file: `data:image/png;base64,${blobInfo.base64()}`,
-    //     type: "news",
-    //   },
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${props.token}`,
-    //     },
-    //   }
-    // );
+    const imageFormData = new FormData();
+    for (var i in fileList) {
+      imageFormData.append("img_name[]", fileList[i]);
+    }
+    try {
+      setIsUploading(true);
+      const response = await GalleryService.uploadImage(
+        imageFormData,
+        props.token
+      );
+      console.log(response);
+      setIsUploading(false);
+
+      history.goBack();
+    } catch (e) {
+      setIsUploading(false);
+      console.log(e);
+    }
   };
 
   const handleCancel = () => {
@@ -104,9 +108,16 @@ const ImageUpload = (props) => {
             Cancel
           </Button>
         </div>
+        <BackdropLoader open={isUploading} />
       </div>
     </>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    selectedRole: state.auth.selectedRole,
+    token: state.auth.token,
+  };
+};
 
-export default ImageUpload;
+export default connect(mapStateToProps)(ImageUpload);

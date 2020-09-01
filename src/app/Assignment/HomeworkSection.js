@@ -125,9 +125,9 @@ const HomeworkSection = (props) => {
         { selectedRole, currentPage },
         token
       );
-
+      // console.log('Scroll response', response);
       if (response.status === 200) {
-        // console.log(response);
+        // console.log('On Scroll', response);
         if (response.data.data.current_page !== response.data.data.last_page) {
           setHomeworks([...homeworks, ...response.data.data.data]);
           setCurrentPage(currentPage + 1);

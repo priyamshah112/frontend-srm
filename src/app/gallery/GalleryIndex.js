@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
@@ -12,15 +13,26 @@ import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Lightbox from "react-image-lightbox";
+import Grid from "@material-ui/core/Grid";
+import InfiniteScroll from "react-infinite-scroll-component";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import GalleryService from "./GalleryService";
+
+const REACT_APP_BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "hidden",
+    height: "100%",
+    overflow: "auto",
+    width: "100%",
     //backgroundColor: theme.palette.background.paper,
   },
+  gridContainer: {
+    height: "100%",
+    overflow: "auto",
+    width: "100%",
+  },
+
   headingContainer: {
     display: "flex",
     alignItems: "right",
@@ -37,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "2px",
   },
   gridList: {
-    width: "auto",
-    height: "auto",
+    width: "100%",
+    height: "100%",
   },
   titleBar: {
     background:
@@ -62,29 +74,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const tileData = [
-  {
-    img_code: "img_1",
-    img_path: "https://picsum.photos/200/300",
-    img_name: "img_1",
-  },
-  {
-    img_code: "img_2",
-    img_path: "https://picsum.photos/200/300",
-    img_name: "img_2",
-  },
-  {
-    img_code: "img_3",
-    img_path: "https://picsum.photos/200/300",
-    img_name: "img_3",
-  },
-  {
-    img_code: "img_4",
-    img_path: "https://picsum.photos/id/1002/300",
-    img_name: "img_4",
-  },
-];
-
 const tileImageList = [
   "https://picsum.photos/200/300",
   "https://picsum.photos/200/300",
@@ -97,7 +86,34 @@ const GalleryIndex = (props) => {
   const history = useHistory();
   const [openLightbox, setOpenLightBox] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tileData, setTileData] = useState([]);
 
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await GalleryService.fetchImages(
+          props.token,
+          currentPage
+        );
+
+        if (response.status === 200) {
+          setTileData([...tileData, ...response.data.data.data]);
+          if (
+            response.data.data.current_page !== response.data.data.last_page
+          ) {
+            setCurrentPage(currentPage + 1);
+          } else {
+            setHasMore(false);
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchImages();
+  }, []);
   const handleFileUpload = () => {
     history.push("/gallery/upload");
   };
@@ -106,10 +122,49 @@ const GalleryIndex = (props) => {
     setOpenLightBox(true);
     setPhotoIndex(index);
   };
+  const handleDeleteImage = async (id) => {
+    try {
+      const response = await GalleryService.deleteImage(props.token, id);
+      if (response.status === 200) {
+        setTileData(
+          tileData.filter((tile) => {
+            return tile.id !== id;
+          })
+        );
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const fetchImagesOnScroll = async () => {
+    try {
+      const response = await GalleryService.fetchImages(
+        props.token,
+        currentPage
+      );
+      console.log(response);
+      if (response.status === 200) {
+        setTileData([...tileData, ...response.data.data.data]);
+        if (response.data.data.current_page !== response.data.data.last_page) {
+          setCurrentPage(currentPage + 1);
+        } else {
+          setHasMore(false);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <>
-      <div style={{ margin: "10px", backgroundColor: "transparent" }}>
+      <div
+        style={{
+          margin: "10px",
+          backgroundColor: "transparent",
+          height: "100%",
+        }}
+      >
         <div style={{ textAlign: "right" }}>
           <IconButton
             color="primary"
@@ -125,8 +180,30 @@ const GalleryIndex = (props) => {
           </IconButton>
         </div>
         <div style={{ marginBottom: "5px" }}></div>
-        <div className={classes.root}>
-          <div>
+        <div className={classes.root} id="scrollable">
+          <InfiniteScroll
+            dataLength={tileData.length}
+            next={fetchImagesOnScroll}
+            hasMore={hasMore}
+            loader={
+              <>
+                <div
+                  className={classes.loading}
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    marginTop: "8px",
+                  }}
+                >
+                  {/* <Typography>Loading...</Typography> */}
+                  <CircularProgress color="primary" size={30} />
+                </div>
+                <br />
+              </>
+            }
+            scrollableTarget="scrollable"
+            scrollThreshold={0.2}
+          >
             <GridList
               cellHeight={200}
               spacing={2}
@@ -134,9 +211,9 @@ const GalleryIndex = (props) => {
               className={classes.gridList}
             >
               {tileData.map((tile, index) => (
-                <GridListTile key={tile.img_code}>
+                <GridListTile key={tile.id} style={{ listStyleType: "none" }}>
                   <img
-                    src={tile.img_path}
+                    src={`${REACT_APP_BACKEND_IMAGE_URL}/${tile.img_path}/${tile.img_name}`}
                     alt={tile.img_name}
                     className={classes.image}
                     cols={2}
@@ -146,7 +223,10 @@ const GalleryIndex = (props) => {
                     title={""}
                     titlePosition="bottom"
                     actionIcon={
-                      <IconButton className={classes.icon}>
+                      <IconButton
+                        className={classes.icon}
+                        onClick={() => handleDeleteImage(tile.id)}
+                      >
                         <DeleteOutlineOutlinedIcon />
                       </IconButton>
                     }
@@ -156,28 +236,34 @@ const GalleryIndex = (props) => {
                 </GridListTile>
               ))}
             </GridList>
-          </div>
+          </InfiniteScroll>
+          <br />
+          <br /> <br /> <br />
         </div>
       </div>
 
       {openLightbox && (
         <div style={{ zIndex: 1800 }}>
           <Lightbox
-            mainSrc={tileImageList[photoIndex]}
-            nextSrc={tileImageList[(photoIndex + 1) % tileImageList.length]}
-            prevSrc={
-              tileImageList[
-                (photoIndex + tileImageList.length - 1) % tileImageList.length
-              ]
-            }
+            mainSrc={`${REACT_APP_BACKEND_IMAGE_URL}/${tileData[photoIndex].img_path}/${tileData[photoIndex].img_name}`}
+            nextSrc={`${REACT_APP_BACKEND_IMAGE_URL}/${
+              tileData[(photoIndex + 1) % tileData.length].img_path
+            }/${tileData[(photoIndex + 1) % tileData.length].img_name}`}
+            prevSrc={`${REACT_APP_BACKEND_IMAGE_URL}/${
+              tileData[(photoIndex + tileData.length - 1) % tileData.length]
+                .img_path
+            }/${
+              tileData[(photoIndex + tileData.length - 1) % tileData.length]
+                .img_name
+            }`}
             onCloseRequest={() => setOpenLightBox(false)}
             onMovePrevRequest={() =>
               setPhotoIndex(
-                (photoIndex + tileImageList.length - 1) % tileImageList.length
+                (photoIndex + tileData.length - 1) % tileData.length
               )
             }
             onMoveNextRequest={() =>
-              setPhotoIndex((photoIndex + 1) % tileImageList.length)
+              setPhotoIndex((photoIndex + 1) % tileData.length)
             }
             reactModalStyle={{
               overlay: {
@@ -191,4 +277,11 @@ const GalleryIndex = (props) => {
   );
 };
 
-export default GalleryIndex;
+const mapStateToProps = (state) => {
+  return {
+    selectedRole: state.auth.selectedRole,
+    token: state.auth.token,
+  };
+};
+
+export default connect(mapStateToProps)(GalleryIndex);

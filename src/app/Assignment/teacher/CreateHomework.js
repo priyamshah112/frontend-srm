@@ -30,6 +30,7 @@ import RichTextEditor from '../../../shared/richTextEditor';
 import PublishLater from './PublishLater';
 import HomeworkService from '../HomeworkService';
 import { set } from 'date-fns';
+import moment from 'moment';
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
@@ -191,6 +192,7 @@ const CreateHomework = (props) => {
           props.token
         );
         if (response.status === 200) {
+          console.log('Response', response);
           if (isFormLoading) {
             let tempClassCheckState = {};
             if (response.data.data.class_mapping) {
@@ -208,8 +210,17 @@ const CreateHomework = (props) => {
             );
             setTitle(response.data.data.title ? response.data.data.title : '');
             // setEventDate(response.data.data.submission_date);
+            // console.log(
+            //   'Submission date',
+            //   response.data.data.submission_date,
+            //   'Using Moment',
+            //   moment().zone(response.data.data.submission_date)
+            // );
+            // console.log('Date', new Date(), response.data.data.submission_date);
             setSubmissionDate(
-              new Date(response.data.data.submission_date) || new Date()
+              response.data.data.submission_date
+                ? new Date(response.data.data.submission_date)
+                : new Date()
             );
           }
         }
@@ -234,6 +245,7 @@ const CreateHomework = (props) => {
               classMapping.class.push(parseInt(state.split(' ')[1]));
             }
         }
+        console.log('Submission Date: ', submissionDate.toISOString());
         const response = await HomeworkService.saveHomework(
           { id },
           {
@@ -248,6 +260,7 @@ const CreateHomework = (props) => {
 
         if (response.status === 200) {
           console.log(response);
+          console.log('Saved');
         }
       } catch (e) {
         console.log(e);
@@ -312,7 +325,7 @@ const CreateHomework = (props) => {
   // };
 
   const handleOpenPubLater = (event) => {
-    if (chipData.length === 0 || title === '') {
+    if (chipData.length === 0 || title === '' || submissionDate === null) {
       setError('Fill All Data !');
     } else {
       setOpenPubLater(true);
@@ -347,6 +360,7 @@ const CreateHomework = (props) => {
       );
       // console.log(response);
       if (response.status === 200) {
+        console.log('Published: ', response);
         console.log('Published');
         // console.log(response);
       }
@@ -367,10 +381,14 @@ const CreateHomework = (props) => {
   };
   const submitForm = async (event) => {
     event.preventDefault();
-    clearInterval(saveDataApi);
-    const status = 'published';
-    publishData(new Date().toISOString(), status);
-    history.goBack();
+    if (chipData.length === 0 || title === '' || submissionDate === null) {
+      setError('Fill All Data !');
+    } else {
+      clearInterval(saveDataApi);
+      const status = 'published';
+      publishData(new Date().toISOString(), status);
+      history.goBack();
+    }
   };
 
   return (
@@ -557,6 +575,7 @@ const CreateHomework = (props) => {
       {openPubLater ? (
         <PublishLater
           open={openPubLater}
+          submissionDate={submissionDate}
           handleClose={handleClosePubLater}
           handlePublishLater={handlePublishLater}
         />

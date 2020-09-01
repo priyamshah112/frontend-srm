@@ -412,7 +412,11 @@ const CreateAnnouncement = (props) => {
     clearInterval(saveDataApi);
     let mediaUrlContainer = document.createElement('div');
     mediaUrlContainer.innerHTML = description;
-    let mediaURL = mediaUrlContainer.getElementsByTagName('img')[0].src;
+    let mediaURL = null;
+    if (mediaUrlContainer.getElementsByTagName('img').length > 0) {
+      mediaURL = mediaUrlContainer.getElementsByTagName('img')[0].src;
+    }
+
     const status = 'active';
 
     publishData(laterEventDate.toISOString(), status, mediaURL);
@@ -423,7 +427,10 @@ const CreateAnnouncement = (props) => {
     clearInterval(saveDataApi);
     let mediaUrlContainer = document.createElement('div');
     mediaUrlContainer.innerHTML = description;
-    let mediaURL = mediaUrlContainer.getElementsByTagName('img')[0].src;
+    let mediaURL = null;
+    if (mediaUrlContainer.getElementsByTagName('img').length > 0) {
+      mediaURL = mediaUrlContainer.getElementsByTagName('img')[0].src;
+    }
 
     const status = 'published';
     console.log(mediaURL);
@@ -529,8 +536,8 @@ const CreateAnnouncement = (props) => {
           </Box>
           <Box className={classes.margin}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container>
-                <Grid xs={12} className={classes.fieldStyle}>
+              <Grid container className={classes.fieldStyle}>
+                <Grid item xs={12}>
                   <KeyboardDatePicker
                     id='eventDate'
                     label='Event Date'

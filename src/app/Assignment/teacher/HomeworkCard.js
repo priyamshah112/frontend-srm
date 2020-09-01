@@ -36,9 +36,6 @@ const useStyle = makeStyles((theme) => ({
     padding: '8px 16px 8px 16px !important',
     '& span': {
       cursor: 'pointer',
-      '&:hover': {
-        textDecoration: 'underline',
-      },
     },
     [theme.breakpoints.down('sm')]: {
       padding: '8px 16px 8px 16px !important',
@@ -188,10 +185,10 @@ const HomeworkCard = (props) => {
               <Grid item xs={9}>
                 <Typography className={classes.createdDate}>
                   {submission_date
-                    ? `Submission Date: ${moment(submission_date).format(
-                        'DD MMM YY'
+                    ? `Due: ${moment(submission_date).format(
+                        'DD/MM/YY hh:mm A'
                       )}`
-                    : 'Submission Date: N/A'}
+                    : 'Due: N/A'}
                 </Typography>
               </Grid>
               <Grid item xs={3} className={classes.editBtnGrid}>

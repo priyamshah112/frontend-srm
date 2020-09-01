@@ -1,28 +1,26 @@
-import React, { useEffect } from "react";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/styles";
-import { connect } from "react-redux";
+import React, { useEffect } from 'react';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/styles';
+import { connect } from 'react-redux';
 
-import ActivityContainer from "./studentHome/ActivityContainer";
-import TchActivityContainer from "./teacherHome/ActivityContainer";
+import ActivityContainer from './studentHome/ActivityContainer';
+import TeacherActivityContainer from './teacherHome/TeacherActivityContainer';
 
 const useStyles = makeStyles((theme) => ({
   homeRoot: {
-    height: "100%",
+    height: '100%',
   },
 }));
 
 const Home = (props) => {
   const classes = useStyles();
   const selectedRole = props.selectedRole;
-  console.log("Selected Role from Home", selectedRole);
-  useEffect(() => {
-    console.log("home");
-  }, []);
+  // console.log("Selected Role from Home", selectedRole);
+
   return (
     <div className={classes.homeRoot}>
-      {selectedRole === "teacher" || selectedRole === "admin" ? (
-        <TchActivityContainer />
+      {selectedRole === 'teacher' || selectedRole === 'admin' ? (
+        <TeacherActivityContainer />
       ) : (
         <ActivityContainer />
       )}

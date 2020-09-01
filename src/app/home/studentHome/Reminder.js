@@ -63,42 +63,8 @@ const Reminder = (props) => {
     }
   }, []);
 
-  const handleReminderClose = async () => {
-    try {
-      if (
-        checkboxes.oneDayBefore === false &&
-        checkboxes.twoDayBefore === false &&
-        !checkboxes.threeDayBefore
-      ) {
-        onClose({ ...checkboxes });
-      } else {
-        let entityDate = {};
-        if (checkboxes.oneDayBefore === true) {
-          entityDate["1_day_before"] = moment(props.eventDate)
-            .subtract(1, "days")
-            .format("YYYY-MM-DD");
-        }
-        if (checkboxes.twoDayBefore === true) {
-          entityDate["2_day_before"] = moment(props.eventDate)
-            .subtract(2, "days")
-            .format("YYYY-MM-DD");
-        }
-        if (checkboxes.threeDayBefore === true) {
-          entityDate["3_day_before"] = moment(props.eventDate)
-            .subtract(3, "days")
-            .format("YYYY-MM-DD");
-        }
-        console.log(checkboxes, entityDate);
-        const response = await HomeService.setReminder(
-          { entity_id: props.id, entity_date: entityDate, entity_type: "news" },
-          props.token
-        );
-        onClose({ ...checkboxes });
-      }
-      // const response =await HomeService.setReminder()
-    } catch (e) {
-      console.log(e);
-    }
+  const handleReminderClose = () => {
+    onClose({ ...checkboxes });
   };
 
   const handleCheck = (event) => {

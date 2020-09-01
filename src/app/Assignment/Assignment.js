@@ -69,7 +69,7 @@ const Homework = (props) => {
       setIsClassLoading(false);
     }
   }, [classState]);
-  console.log(isClassLoading);
+  // console.log(isClassLoading);
   return (
     <div className={classes.container} id='scrollable'>
       {location.pathname === '/assignment' ? (

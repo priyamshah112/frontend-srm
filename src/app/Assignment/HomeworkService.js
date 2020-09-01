@@ -16,7 +16,6 @@ class HomeworkService {
     );
   }
   saveHomework(params, payload, token) {
-    console.log(payload);
     return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -25,7 +24,6 @@ class HomeworkService {
     });
   }
   publishHomework(params, payload, token) {
-    console.log('From Services: ', params.id, payload);
     return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +32,6 @@ class HomeworkService {
     });
   }
   fetchHomework(params, token) {
-    console.log(params);
     return axios.get(`${BACKEND_API_URL}/homework`, {
       headers: {
         'Content-Type': 'application/json',

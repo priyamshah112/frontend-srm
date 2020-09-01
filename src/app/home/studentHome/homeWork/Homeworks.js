@@ -30,6 +30,7 @@ const Homework = (props) => {
         const token = localStorage.getItem('srmToken');
         const response = await HomeSerivce.fetchHomework(token);
         if (isHomeworkLoading) {
+          console.log(response.data.data.data);
           setHomework(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
           if (next_page_url === null) {
@@ -56,13 +57,14 @@ const Homework = (props) => {
       const token = localStorage.getItem('srmToken');
       if (hasMore) {
         const response = await HomeSerivce.fetchMoreHomework(token, nextUrl);
+        console.log('Fetch More', response.data.data.data);
         setHomework([...homework, ...response.data.data.data]);
-        let next_page_url = response.data.data.next_page_url;
         let last_page_url = response.data.data.last_page_url;
-        if (next_page_url === last_page_url || next_page_url === null) {
+        if (nextUrl === last_page_url) {
           setHasMore(false);
         } else {
           setHasMore(true);
+          setNextUrl(response.data.data.next_page_url);
         }
       }
       // setIsLoading(false);

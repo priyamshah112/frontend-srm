@@ -12,6 +12,7 @@ import Reminder from "./Reminder";
 import HomeService from "../HomeSerivce";
 import { dateDiff } from "../../../shared/datediff";
 import remindersvg from "../../../assets/images/home/reminder.svg";
+import { CardHeader, CardActions } from "@material-ui/core";
 // import testImg from "../../assets/images/home/testImg.png";
 
 const useStyle = makeStyles((theme) => ({
@@ -35,10 +36,31 @@ const useStyle = makeStyles((theme) => ({
   cardHeader: {
     width: "100%",
   },
+
+  cardActionStyle: {
+    padding: "8px 16px 8px 16px",
+    color: "#6C757D",
+  },
+
+  NewsHeader: {
+    padding: "8px 16px 8px 16px !important",
+    "& span": {
+      cursor: "pointer",
+      "&:hover": {
+        textDecoration: "underline",
+      },
+    },
+    [theme.breakpoints.down("sm")]: {
+      padding: "8px 16px 8px 16px !important",
+      "& span": {
+        fontSize: "16px",
+      },
+    },
+  },
+  reminderIconStyle: {
+    padding: "5px 0 5px 0",
+  },
   title: {
-    fontWeight: "bold",
-    fontStyle: "normal",
-    fontSize: "14px",
     cursor: "pointer",
     "&:hover": {
       textDecoration: "underline",
@@ -119,18 +141,19 @@ const AnnouncementCard = (props) => {
       ) {
       } else {
         let entityDate = {};
+
         if (checkboxes.oneDayBefore === true) {
-          entityDate["1_day_before"] = moment(props.eventDate)
+          entityDate["1_day_before"] = moment(props.announcement.event_date)
             .subtract(1, "days")
             .format("YYYY-MM-DD");
         }
         if (checkboxes.twoDayBefore === true) {
-          entityDate["2_day_before"] = moment(props.eventDate)
+          entityDate["2_day_before"] = moment(props.announcement.event_date)
             .subtract(2, "days")
             .format("YYYY-MM-DD");
         }
         if (checkboxes.threeDayBefore === true) {
-          entityDate["3_day_before"] = moment(props.eventDate)
+          entityDate["3_day_before"] = moment(props.announcement.event_date)
             .subtract(3, "days")
             .format("YYYY-MM-DD");
         }
@@ -144,7 +167,9 @@ const AnnouncementCard = (props) => {
             props.token,
             reminderId
           );
-          setEntityReminderDate({ ...response.data.data.entity_date });
+          if (response.status === 200) {
+            setEntityReminderDate({ ...response.data.data.entity_date });
+          }
         } else {
           const response = await HomeService.setReminder(
             {
@@ -154,7 +179,10 @@ const AnnouncementCard = (props) => {
             },
             props.token
           );
-          setEntityReminderDate({ ...response.data.data.entity_date });
+          console.log(response.data.data);
+          if (response.status === 200) {
+            setEntityReminderDate({ ...entityDate });
+          }
         }
       }
       // const response =await HomeService.setReminder()
@@ -173,41 +201,41 @@ const AnnouncementCard = (props) => {
         className={classes.cardContainer}
       >
         <Card className={classes.card}>
+          <CardHeader
+            className={classes.NewsHeader}
+            action={
+              <>
+                {reminderIcon ? (
+                  <img
+                    className={classes.reminderIconStyle}
+                    src={remindersvg}
+                    alt="reminder"
+                    onClick={handleReminderOpen}
+                  ></img>
+                ) : (
+                  ""
+                )}
+              </>
+            }
+            title={
+              <>
+                <Typography
+                  className={classes.title}
+                  variant="h6"
+                  onClick={() => {
+                    history.push(`/news/${props.announcement.id}`);
+                  }}
+                >
+                  {props.announcement.title}
+                  {props.announcement.event_date
+                    ? " - " +
+                      moment(props.announcement.event_date).format("DD/MM/YYYY")
+                    : ""}
+                </Typography>
+              </>
+            }
+          />
           <CardContent className={classes.cardContent}>
-            <div className={classes.cardHeader}>
-              {/* <Link
-                to={{
-                  pathname: `/news/${props.announcement.id}`,
-                  announcementData: props.announcement,
-                }}
-              >
-                {props.announcement.title}
-              </Link> */}
-
-              {reminderIcon ? (
-                <img
-                  className={classes.reminder}
-                  src={remindersvg}
-                  alt="reminder"
-                  onClick={handleReminderOpen}
-                ></img>
-              ) : (
-                ""
-              )}
-              <Typography
-                variant="h6"
-                className={classes.title}
-                onClick={() => {
-                  history.push(`/news/${props.announcement.id}`);
-                }}
-              >
-                {props.announcement.title}
-                {props.announcement.event_date
-                  ? ":" + props.announcement.event_date
-                  : ""}
-              </Typography>
-            </div>
-
             {/* Conditional rendering of Grid based on availablity image */}
 
             {props.announcement.media_url && (
@@ -222,15 +250,22 @@ const AnnouncementCard = (props) => {
                 ></img>
               </Grid>
             )}
-            <Grid container direction="row" className={classes.contentMargin}>
+            <Grid>
               <Typography className={classes.announcementText}>
                 {props.announcement.summary}
                 <br />
                 <br />
-                {`Published Date:${props.announcement.published_date}`}
+                {/* {`Published Date:${props.announcement.published_date}`} */}
               </Typography>
             </Grid>
           </CardContent>
+          <CardActions className={classes.cardActionStyle}>
+            <Typography className={classes.createdDate}>
+              {`Published Date: ${moment(
+                props.announcement.published_date
+              ).format("DD MMM YYYY")}`}
+            </Typography>
+          </CardActions>
         </Card>
       </Grid>
       {openReminder ? (

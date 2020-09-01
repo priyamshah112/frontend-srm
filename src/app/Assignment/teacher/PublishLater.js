@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PublishLater = (props) => {
   const classes = useStyles();
-  const { open, handleClose, handlePublishLater } = props;
+  const { open, submissionDate, handleClose, handlePublishLater } = props;
   // const [selectedDate, handleDateChange, ...other] = useState(null);
   const [selectedDate, setSelectedDateChange] = useState(null);
   const handleSubmitDate = () => {
@@ -75,6 +75,7 @@ const PublishLater = (props) => {
                   }}
                   label='Publish Date and Time '
                   minDate={new Date()}
+                  maxDate={submissionDate}
                   format='yyyy/MM/dd hh:mm a'
                 />
               </Grid>
