@@ -41,6 +41,7 @@ class AnnouncementService {
       params: {
         page: params.currentPage,
         created_by: params.createdBy,
+        current_role: params.selectedRole,
       },
     });
     // return true;

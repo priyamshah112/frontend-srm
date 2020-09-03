@@ -125,20 +125,42 @@ const Details = (props) => {
   const [openReminder, setOpenReminder] = useState(false);
   const [reminderDays, setReminderDays] = useState(null);
   const [reminderIcon, setReminderIcon] = useState(true);
+  const [entityReminderDate, setEntityReminderDate] = useState(null);
+  const [reminderId, setReminderId] = useState(null);
   const selectedRole = props.selectedRole;
 
   async function getNewsDetails(newsId) {
     try {
       const token = localStorage.getItem("srmToken");
       const response = await HomeService.fetchAnnouncementDetail(newsId, token);
-
-      setDetails(response.data.data);
-      setIsLoading(false);
+      if (response.status === 200) {
+        setDetails(response.data.data);
+        setIsLoading(false);
+      }
     } catch (e) {
       console.log(e);
     }
   }
   useEffect(() => {
+    getNewsDetails(props.newsId);
+  }, []);
+
+  useEffect(() => {
+    const fetchReminder = async () => {
+      try {
+        const response = await HomeService.fetchReminder(
+          props.token,
+          "news",
+          details.id
+        );
+        if (response.data.data) {
+          setEntityReminderDate(response.data.data.entity_date);
+          setReminderId(response.data.data.id);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
     if (details.event_date && props.userId !== details.created_by) {
       const response = dateDiff(details.event_date);
 
@@ -147,14 +169,11 @@ const Details = (props) => {
       } else {
         setReminderIcon(true);
       }
+      fetchReminder();
     } else {
       setReminderIcon(false);
     }
   }, [details]);
-
-  useEffect(() => {
-    getNewsDetails(props.newsId);
-  }, []);
 
   const handleReminderOpen = () => {
     const response = dateDiff(details.event_date);
@@ -163,9 +182,62 @@ const Details = (props) => {
       setReminderDays(response);
     }
   };
-  const handleReminderClose = (checkboxes) => {
-    console.log(checkboxes);
+  const handleReminderClose = async (checkboxes) => {
     setOpenReminder(false);
+    try {
+      let entityDate = {};
+
+      if (checkboxes.oneDayBefore === true) {
+        entityDate["1_day_before"] = moment(details.event_date)
+          .subtract(1, "days")
+          .format("YYYY-MM-DD");
+      }
+      if (checkboxes.twoDayBefore === true) {
+        entityDate["2_day_before"] = moment(details.event_date)
+          .subtract(2, "days")
+          .format("YYYY-MM-DD");
+      }
+      if (checkboxes.threeDayBefore === true) {
+        entityDate["3_day_before"] = moment(details.event_date)
+          .subtract(3, "days")
+          .format("YYYY-MM-DD");
+      }
+      if (entityReminderDate) {
+        const response = await HomeService.updateReminder(
+          {
+            entity_id: details.id,
+            entity_date:
+              Object.keys(entityDate).length === 0 ? null : entityDate,
+            entity_type: "news",
+          },
+          props.token,
+          reminderId
+        );
+        if (response.status === 200) {
+          setEntityReminderDate({ ...response.data.data.entity_date });
+        }
+      } else {
+        if (Object.keys(entityDate).length !== 0) {
+          const response = await HomeService.setReminder(
+            {
+              entity_id: details.id,
+              entity_date: entityDate,
+              entity_type: "news",
+            },
+            props.token
+          );
+          if (response.status === 200) {
+            console.log(response.data);
+            setEntityReminderDate({ ...entityDate });
+            setReminderId(response.data.Reminder_id);
+          }
+        }
+      }
+
+      // const response =await HomeService.setReminder()
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <>
@@ -186,6 +258,7 @@ const Details = (props) => {
                     {details.status === "published" && reminderIcon ? (
                       <div className={classes.reminder}>
                         <img
+                          style={{ cursor: "pointer" }}
                           src={remindersvg}
                           alt="reminder"
                           onClick={handleReminderOpen}
@@ -216,7 +289,7 @@ const Details = (props) => {
                 subheader={
                   <span className={classes.publishDate}>
                     {`Event Date: ${moment(details.event_date).format(
-                      "DD/MM/YYYY"
+                      "DD MMM YYYY"
                     )}`}
                   </span>
                 }
@@ -262,7 +335,7 @@ const Details = (props) => {
                 <Typography className={classes.publishDate}>
                   <br />
                   {`Published Date: ${moment(details.published_date).format(
-                    "DD/MM/YYYY"
+                    "DD MMM YYYY"
                   )}`}
                 </Typography>
               </CardContent>
@@ -295,6 +368,9 @@ const Details = (props) => {
               open={openReminder}
               onClose={handleReminderClose}
               days={reminderDays}
+              id={details.id}
+              eventDate={details.event_date}
+              entityDate={entityReminderDate}
             />
           ) : (
             ""
@@ -311,6 +387,7 @@ const mapStateToProps = (state) => {
   return {
     selectedRole: state.auth.selectedRole,
     userId: state.auth.userInfo.id,
+    token: state.auth.token,
   };
 };
 

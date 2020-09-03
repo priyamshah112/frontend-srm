@@ -54,6 +54,22 @@ const useStyle = makeStyles((theme) => ({
     justifyContent: 'center',
     margin: 'auto',
   },
+  clickCard: {
+    cursor: 'pointer',
+    padding: '0 !important',
+    margin: 0,
+    width: '100%',
+    height: '100%',
+  },
+  clickHere: {
+    width: '100%',
+    transform: 'translateY(160px)',
+    // padding: '50%, 0',
+    textAlign: 'center',
+  },
+  clickContent: {
+    // paddingTop: '35%',
+  },
   CardContent: {
     padding: '0 0 0 10px !important',
     margin: '10px 0 0 0',
@@ -76,11 +92,11 @@ const useStyle = makeStyles((theme) => ({
     },
   },
   taskContentStyle: {
-    cursor: 'pointer',
     display: 'flex',
   },
   taskContDiv: {
     marginLeft: '20px',
+    cursor: 'pointer',
   },
 }));
 
@@ -91,6 +107,7 @@ const TaskContent = (props) => {
   const [tasks, setTasks] = useState([]);
   const [nextUrl, setNextUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showNoContent, setShowNoContent] = useState(false);
 
   const styleContent = {
     done: ['line-through', '#C0C0C3'],
@@ -128,6 +145,9 @@ const TaskContent = (props) => {
         const token = localStorage.getItem('srmToken');
         const response = await HomeSerivce.getTask(token);
         if (isAnnouncementLoading) {
+          if (response.data.data.data.length === 0) {
+            setShowNoContent(true);
+          }
           setTasks(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
           if (next_page_url === null) {
@@ -220,73 +240,92 @@ const TaskContent = (props) => {
 
   return (
     <>
-      <CardContent className={classes.CardContent} id='scrollable'>
-        <InfiniteScroll
-          dataLength={tasks.length}
-          next={fetchMoreTasks}
-          hasMore={hasMore}
-          loader={
-            <>
-              <div className={classes.loading}>
-                <CircularProgress />
-              </div>
-              <br />
-            </>
-          }
-          scrollableTarget='scrollable'
-          scrollThreshold={0.5}
+      {showNoContent ? (
+        <CardContent
+          className={classes.clickCard}
+          onClick={(event) => {
+            props.handleCreateNew();
+          }}
         >
-          {isLoading === false
-            ? tasks.map((task) => {
-                return (
-                  <Box key={task.id} className='taskContentDiv'>
-                    <Grid container>
-                      <Grid item xs={12} className={classes.taskContentStyle}>
-                        <div>
-                          <span>
-                            {setFlag(task.status, task.id, task.content)}
-                          </span>
-                        </div>
-                        <div className={classes.taskContDiv}>
-                          <Typography>
-                            <span
-                              className={classes.taskContent}
-                              onClick={(event) => {
-                                props.handleEditTask(
-                                  task.id,
-                                  task.content,
-                                  task.status
-                                );
-                              }}
-                              style={{
-                                textDecoration: styleContent[task.status][0],
-                                textDecorationColor: '#C0C0C3',
-                                color: styleContent[task.status][1],
-                              }}
-                            >
-                              {task.content}
+          <Box className={classes.clickHere}>
+            <Typography
+              color='primary'
+              variant='h6'
+              className={classes.clickContent}
+            >
+              Create your first task by clicking here
+            </Typography>
+          </Box>
+        </CardContent>
+      ) : (
+        <CardContent className={classes.CardContent} id='scrollable'>
+          <InfiniteScroll
+            dataLength={tasks.length}
+            next={fetchMoreTasks}
+            hasMore={hasMore}
+            loader={
+              <>
+                <div className={classes.loading}>
+                  <CircularProgress />
+                </div>
+                <br />
+              </>
+            }
+            scrollableTarget='scrollable'
+            scrollThreshold={0.5}
+          >
+            {isLoading === false
+              ? tasks.map((task) => {
+                  return (
+                    <Box key={task.id} className='taskContentDiv'>
+                      <Grid container>
+                        <Grid item xs={12} className={classes.taskContentStyle}>
+                          <div>
+                            <span>
+                              {setFlag(task.status, task.id, task.content)}
                             </span>
-                          </Typography>
-                        </div>
+                          </div>
+                          <div className={classes.taskContDiv}>
+                            <Typography>
+                              <span
+                                className={classes.taskContent}
+                                onClick={(event) => {
+                                  props.handleEditTask(
+                                    task.id,
+                                    task.content,
+                                    task.status
+                                  );
+                                }}
+                                style={{
+                                  textDecoration: styleContent[task.status][0],
+                                  textDecorationColor: '#C0C0C3',
+                                  color: styleContent[task.status][1],
+                                }}
+                              >
+                                {task.content}
+                              </span>
+                            </Typography>
+                          </div>
 
-                        {tasks.length === 0 && hasMore === false ? (
-                          <Typography variant='h6'>
-                            No task available
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
+                          {tasks.length === 0 && hasMore === false ? (
+                            <Typography variant='h6'>
+                              No task available
+                            </Typography>
+                          ) : (
+                            ''
+                          )}
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </Box>
-                );
-              })
-            : ''}
-        </InfiniteScroll>
+                    </Box>
+                  );
+                })
+              : ''}
+          </InfiniteScroll>
 
-        <br />
-        <br />
-      </CardContent>
+          <br />
+          <br />
+        </CardContent>
+      )}
     </>
   );
 };

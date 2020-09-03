@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   homeworkCol: {
     height: '130px',
     [theme.breakpoints.down('xs')]: {
-      height: '380px',
+      height: 'inherit',
     },
   },
 }));

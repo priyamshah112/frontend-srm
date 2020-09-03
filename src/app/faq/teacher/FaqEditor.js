@@ -179,6 +179,7 @@ const FaqEditor = (props) => {
               </FormControl>
             </div>
             <div className={classes.inputMargin}>
+              <Typography variant='h6'>Answer</Typography>
               <RichTextEditor
                 handleDescription={handleDescription}
                 value={answer}

@@ -6,6 +6,8 @@ import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import GalleryService from "./GalleryService";
 import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   snackBar: {
@@ -25,7 +27,7 @@ const ImageUpload = (props) => {
   const history = useHistory();
   const [fileList, setFileList] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const handleChange = (files) => {
     setFileList(files);
   };
@@ -54,10 +56,13 @@ const ImageUpload = (props) => {
       history.goBack();
     } catch (e) {
       setIsUploading(false);
+      setOpenSnackbar(true);
       console.log(e);
     }
   };
-
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
   const handleCancel = () => {
     history.goBack();
   };
@@ -110,6 +115,15 @@ const ImageUpload = (props) => {
         </div>
         <BackdropLoader open={isUploading} />
       </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="error">
+          Something went wrong!! Please try again.
+        </Alert>
+      </Snackbar>
     </>
   );
 };

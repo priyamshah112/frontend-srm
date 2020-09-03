@@ -8,6 +8,7 @@ import theme from './app/common/ui/theme/Theme';
 import Layout from './hoc/Layout';
 import * as authActions from './app/auth/store/actions';
 import LoginForm from './app/auth/LoginForm';
+import Register from './app/auth/registration/Register';
 import ChangePwd from './app/auth/ChangePwd';
 import Otp from './app/auth/Otp';
 import ChangePwdUser from './app/auth/ChangePwdUser';
@@ -19,6 +20,7 @@ import NewsDetails from './app/home/studentHome/NewsDetails';
 import Announcements from './app/home/studentHome/Announcements';
 import Gallery from './app/gallery/GalleryIndex';
 import ImageUpload from './app/gallery/ImageUpload';
+import Profile from './app/profile/Profile';
 
 import 'react-image-lightbox/style.css';
 import Faq from './app/faq/FaqContainer';
@@ -98,6 +100,7 @@ function App(props) {
           <Route path='/faq' exact component={Faq} />
           <Route path='/faq/create/' exact component={FaqEditor} />
           <Route path='/faq/edit/:id' exact component={FaqEditor} />
+          <Route path='/profile' exact component={Profile} />
         </Switch>
       </Layout>
     </>
@@ -107,6 +110,7 @@ function App(props) {
       <Switch>
         <Route path='/' exact component={LoginForm} />
         <Route path='/login' exact component={LoginForm} />
+        <Route path='/register' exact component={Register} />
         <Route path='/changepwd' exact component={ChangePwd} />
         <Route path='/otp' exact component={Otp} />
         <Route path='/changepwdotp' component={ChangePwdUser} />

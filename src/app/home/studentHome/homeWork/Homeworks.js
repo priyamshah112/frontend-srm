@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import HomeworkCard from './HomeworkCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { makeStyles } from '@material-ui/styles';
@@ -21,6 +22,7 @@ const Homework = (props) => {
 
   const [nextUrl, setNextUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const selectedRole = props.selectedRole;
 
   useEffect(() => {
     // console.log('Task Content');
@@ -28,7 +30,10 @@ const Homework = (props) => {
     const fetchHomework = async () => {
       try {
         const token = localStorage.getItem('srmToken');
-        const response = await HomeSerivce.fetchHomework(token);
+        const response = await HomeSerivce.fetchHomework(
+          token,
+          props.selectedRole
+        );
         if (isHomeworkLoading) {
           console.log(response.data.data.data);
           setHomework(response.data.data.data);
@@ -56,7 +61,11 @@ const Homework = (props) => {
     const fetchMoreHomework = async () => {
       const token = localStorage.getItem('srmToken');
       if (hasMore) {
-        const response = await HomeSerivce.fetchMoreHomework(token, nextUrl);
+        const response = await HomeSerivce.fetchMoreHomework(
+          token,
+          nextUrl,
+          props.selectedRole
+        );
         console.log('Fetch More', response.data.data.data);
         setHomework([...homework, ...response.data.data.data]);
         let last_page_url = response.data.data.last_page_url;
@@ -101,5 +110,10 @@ const Homework = (props) => {
     </InfiniteScroll>
   );
 };
-
-export default Homework;
+const mapStateToProps = (state) => {
+  return {
+    token: state.auth.token,
+    selectedRole: state.auth.selectedRole,
+  };
+};
+export default connect(mapStateToProps)(Homework);

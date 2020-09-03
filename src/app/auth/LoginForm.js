@@ -1,87 +1,91 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import Box from "@material-ui/core/Box";
-import { makeStyles } from "@material-ui/styles";
-import Typography from "@material-ui/core/Typography";
-import Link from "@material-ui/core/Link";
-import { connect } from "react-redux";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Box from '@material-ui/core/Box';
+import { makeStyles } from '@material-ui/styles';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import { connect } from 'react-redux';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
-import AuthContainer from "./AuthContainer";
-import * as actions from "./store/actions";
+import AuthContainer from './AuthContainer';
+import * as actions from './store/actions';
 
-import phoneSvg from "../../assets/images/Desktop Phone number.svg";
-import passwordSvg from "../../assets/images/Desktop Password.svg";
-import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
+import phoneSvg from '../../assets/images/Desktop Phone number.svg';
+import passwordSvg from '../../assets/images/Desktop Password.svg';
+import BackdropLoader from '../common/ui/backdropLoader/BackdropLoader';
+import { IconButton } from '@material-ui/core';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
+  return <MuiAlert elevation={6} variant='filled' {...props} />;
 }
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
-    margin: "auto",
-    width: "100%",
-    justifyContent: "center",
-    textAlign: "center",
+    margin: 'auto',
+    width: '100%',
+    justifyContent: 'center',
+    textAlign: 'center',
   },
   boxMargin: {
-    marginTop: "30px",
-    "@media (max-width:400px)": {
-      marginTop: "10px",
+    marginTop: '30px',
+    '@media (max-width:400px)': {
+      marginTop: '10px',
     },
   },
   fieldStyle: {
-    width: "80%",
-    margin: "auto",
-    "& .MuiInput-underline:before": {
-      borderBottom: "2px solid #eaeaea",
+    width: '80%',
+    margin: 'auto',
+    '& .MuiInput-underline:before': {
+      borderBottom: '2px solid #eaeaea',
     },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-      borderBottom: "2px solid #7B72AF",
-      transitionProperty: "border-bottom-color",
-      transitionDuration: "500ms",
-      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+      borderBottom: '2px solid #7B72AF',
+      transitionProperty: 'border-bottom-color',
+      transitionDuration: '500ms',
+      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
   inputBorder: {
-    height: "50px",
+    height: '50px',
   },
 
   fgtPass: {
-    marginBottom: "15px",
-    marginTop: "30px",
-    "& a": {
-      color: "#707070",
-      textDecoration: "none",
+    marginBottom: '15px',
+    marginTop: '30px',
+    cursor: 'pointer',
+    '& a': {
+      color: '#707070',
+      textDecoration: 'none',
     },
-    "& a:hover": {
-      textDecoration: "underline",
+    '& a:hover': {
+      textDecoration: 'underline',
     },
-    "@media (max-width:400px)": {
-      marginTop: "10px",
+    '@media (max-width:400px)': {
+      marginTop: '10px',
       marginBottom: 0,
     },
   },
   margin: {
-    marginTop: "30px",
-    "@media (max-width:400px)": {
-      marginTop: "10px",
+    marginTop: '30px',
+    '@media (max-width:400px)': {
+      marginTop: '10px',
     },
 
-    "& .loginBtn": {
-      borderRadius: "6px",
+    '& .loginBtn': {
+      borderRadius: '6px',
       // opacity: '0.5',
     },
   },
   error: {
-    color: "red",
+    color: 'red',
   },
 }));
 
@@ -89,10 +93,12 @@ const LoginForm = (props) => {
   const classes = useStyle();
   const history = useHistory();
   const [isDisable, setDisable] = useState(true);
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState('');
+  const [password, setPassword] = useState('');
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+  const [snackbarmsg, setSnackbarmsg] = useState('');
   const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const submitForm = (event) => {
     event.preventDefault();
@@ -119,12 +125,26 @@ const LoginForm = (props) => {
   useEffect(() => {
     let queryString = props.history.location.search;
     let params = new URLSearchParams(queryString);
-    let fgtpass = params.get("fgtpass");
+    let fgtpass = params.get('fgtpass');
+    let register = params.get('register');
+    console.log(params.get('register'));
     if (fgtpass !== null) {
-      if (fgtpass === "true") {
+      if (fgtpass === 'true') {
+        setSnackbarmsg('Password updated successfully');
         setSuccessSnackbarOpen(true);
       }
-      if (fgtpass === "false") {
+      if (fgtpass === 'false') {
+        setSnackbarmsg('Failed to update the password');
+        setErrorSnackbarOpen(true);
+      }
+    }
+    if (register !== null) {
+      if (register === 'true') {
+        setSnackbarmsg('User registered successfully');
+        setSuccessSnackbarOpen(true);
+      }
+      if (register === 'false') {
+        setSnackbarmsg('User registration failed');
         setErrorSnackbarOpen(true);
       }
     }
@@ -140,23 +160,36 @@ const LoginForm = (props) => {
 
   const validate = (event) => {
     let name = event.target.name;
-    if (name === "user") {
+    if (name === 'user') {
       setUser(event.target.value);
     }
-    if (name === "password") {
+    if (name === 'password') {
       setPassword(event.target.value);
     }
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   const handleForgotPassword = (event) => {
     event.preventDefault();
-    history.push("/changepwdotp");
+    history.push('/changepwdotp');
   };
+
+  const handleRegistration = (event) => {
+    event.preventDefault();
+    history.push('/register');
+  };
+
   const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
-
     setSuccessSnackbarOpen(false);
     setErrorSnackbarOpen(false);
   };
@@ -164,7 +197,7 @@ const LoginForm = (props) => {
     return <Redirect to={props.redirectUrl} />;
   } */
 
-  let errorDesc = "";
+  let errorDesc = '';
   if (props.error) {
     errorDesc = (
       <Typography className={classes.error}>{props.error}</Typography>
@@ -172,7 +205,7 @@ const LoginForm = (props) => {
   }
 
   return (
-    <AuthContainer title="LOGIN">
+    <AuthContainer title='LOGIN'>
       <div>
         <Box className={classes.boxMargin}></Box>
 
@@ -181,16 +214,16 @@ const LoginForm = (props) => {
             {errorDesc}
             <FormControl className={classes.fieldStyle}>
               <Input
-                id="user"
-                name="user"
+                id='user'
+                name='user'
                 className={classes.inputBorder}
-                type="text"
+                type='text'
                 value={user}
                 onChange={validate}
-                placeholder="Email, Phone or User ID"
+                placeholder='Email, Phone or User ID'
                 startAdornment={
-                  <InputAdornment position="start">
-                    <img src={phoneSvg} width="40px" alt="Phone SVG" />
+                  <InputAdornment position='start'>
+                    <img src={phoneSvg} width='40px' alt='Phone SVG' />
                   </InputAdornment>
                 }
               />
@@ -199,16 +232,26 @@ const LoginForm = (props) => {
           <Box className={classes.margin}>
             <FormControl className={classes.fieldStyle}>
               <Input
-                id="password"
-                name="password"
+                id='password'
+                name='password'
                 className={classes.inputBorder}
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={validate}
-                placeholder="Enter Password"
+                placeholder='Enter Password'
                 startAdornment={
-                  <InputAdornment position="start">
-                    <img src={passwordSvg} width="40px" alt="Phone SVG" />
+                  <InputAdornment position='start'>
+                    <img src={passwordSvg} width='40px' alt='Phone SVG' />
+                  </InputAdornment>
+                }
+                endAdornment={
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle password visibility'
+                      onClick={handleClickShowPassword}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
                   </InputAdornment>
                 }
               />
@@ -216,11 +259,11 @@ const LoginForm = (props) => {
           </Box>
           <Box className={classes.margin}>
             <Button
-              id="loginBtn"
-              type="submit"
-              variant="contained"
-              className={`${classes.fieldStyle} ${"loginBtn"}`}
-              color="primary"
+              id='loginBtn'
+              type='submit'
+              variant='contained'
+              className={`${classes.fieldStyle} ${'loginBtn'}`}
+              color='primary'
               disabled={isDisable}
               disableElevation
             >
@@ -228,8 +271,13 @@ const LoginForm = (props) => {
             </Button>
           </Box>
           <Box className={`${classes.Margin} ${classes.fgtPass}`}>
-            <Link href="#" onClick={handleForgotPassword}>
+            <Link onClick={handleForgotPassword}>
               <Typography>Forgot Password?</Typography>
+            </Link>
+          </Box>
+          <Box className={`${classes.Margin} ${classes.fgtPass}`}>
+            <Link onClick={handleRegistration}>
+              <Typography>User Registration</Typography>
             </Link>
           </Box>
         </form>
@@ -240,8 +288,8 @@ const LoginForm = (props) => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity="success">
-          Password updated successfully
+        <Alert onClose={handleSnackbarClose} severity='success'>
+          {snackbarmsg}
         </Alert>
       </Snackbar>
       <Snackbar
@@ -249,8 +297,8 @@ const LoginForm = (props) => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity="error">
-          Failed to update the password
+        <Alert onClose={handleSnackbarClose} severity='error'>
+          {snackbarmsg}
         </Alert>
       </Snackbar>
     </AuthContainer>

@@ -5,12 +5,12 @@ import {
   all,
   delay,
   takeLatest,
-} from 'redux-saga/effects';
-import { push } from 'connected-react-router';
-import * as actions from './actions';
-import * as actionTypes from './actionTypes';
-import AuthService from '../AuthService';
-import * as moment from 'moment';
+} from "redux-saga/effects";
+import { push } from "connected-react-router";
+import * as actions from "./actions";
+import * as actionTypes from "./actionTypes";
+import AuthService from "../AuthService";
+import * as moment from "moment";
 const USE_API = process.env.REACT_APP_USE_API;
 
 export function* watchAuth() {
@@ -34,21 +34,21 @@ export function* authUserSaga(action) {
   };
 
   try {
-    let response = '';
-    if (USE_API === 'Y') {
+    let response = "";
+    if (USE_API === "Y") {
       response = yield AuthService.login(authData);
     }
 
     if (response.status === 200) {
       const expirationDate = yield new Date(response.data.expires_at);
-      yield localStorage.setItem('srmToken', response.data.access_token);
+      yield localStorage.setItem("srmToken", response.data.access_token);
       yield localStorage.setItem(
-        'srmUserInfo',
+        "srmUserInfo",
         JSON.stringify(response.data.user)
       );
-      yield localStorage.setItem('srmExpirationDate', expirationDate);
+      yield localStorage.setItem("srmExpirationDate", expirationDate);
       yield localStorage.setItem(
-        'srmSelectedRole',
+        "srmSelectedRole",
         JSON.stringify(response.data.user.roles[0].name)
       );
 
@@ -57,7 +57,7 @@ export function* authUserSaga(action) {
         actions.authSuccess({
           token: response.data.access_token,
           userInfo: response.data.user,
-          redirectUrl: '/home',
+          redirectUrl: "/home",
           selectedRole: response.data.user.roles[0].name,
         })
       );
@@ -69,48 +69,48 @@ export function* authUserSaga(action) {
       //Initiate the Expiry Time of token
       yield put(actions.checkAuthTimeout(response.data.expires_at, true));
 
-      yield put(push('/home'));
+      yield put(push("/home"));
     } else {
       //Initiate AUTH_FAIL action for Invalid credentials
-      yield put(actions.authFail('Invalid Credentials'));
+      yield put(actions.authFail("Invalid Credentials"));
     }
   } catch (error) {
     //Initiate AUTH_FAIL action
     console.log(error);
     //clear local storage if created
     yield call([localStorage, localStorage.clear]);
-    yield put(actions.authFail('Invalid Credentials'));
+    yield put(actions.authFail("Invalid Credentials"));
   }
 }
 
 /*If token already exists, use the token. If the user token expired, logout. */
 export function* authCheckStateSaga(action) {
-  const token = yield localStorage.getItem('srmToken');
+  const token = yield localStorage.getItem("srmToken");
   if (!token) {
     yield put(actions.logout(action.isAuthenticated));
   } else {
     const expirationDate = yield new Date(
-      localStorage.getItem('srmExpirationDate')
+      localStorage.getItem("srmExpirationDate")
     );
 
     if (expirationDate <= new Date()) {
       yield put(actions.logout(action.isAuthenticated));
     } else {
-      const userInfo = yield JSON.parse(localStorage.getItem('srmUserInfo'));
+      const userInfo = yield JSON.parse(localStorage.getItem("srmUserInfo"));
       const selectedRole = yield JSON.parse(
-        localStorage.getItem('srmSelectedRole')
+        localStorage.getItem("srmSelectedRole")
       );
       yield put(
         actions.authSuccess({
           token: token,
           userInfo: userInfo,
-          redirectUrl: '/home',
+          redirectUrl: "/home",
           selectedRole: selectedRole,
         })
       );
-      const currentPath = yield localStorage.getItem('srmCurrentRoute');
+      const currentPath = yield localStorage.getItem("srmCurrentRoute");
       if (currentPath == null) {
-        yield put(push('/home'));
+        yield put(push("/home"));
       } else {
         yield put(push(currentPath));
       }
@@ -122,7 +122,7 @@ export function* authCheckStateSaga(action) {
 export function* logoutSaga(action) {
   yield call([localStorage, localStorage.clear]);
   if (action.isAuthenticated) {
-    yield put(push('/login'));
+    yield put(push("/login"));
   }
 
   yield put(actions.logoutSucceed());
@@ -137,8 +137,9 @@ export function* checkAuthTimeoutSaga(action) {
 /* Stores the selectedrole in local storage and calls the sucess action*/
 export function* authInitiateRoleSelectionSaga(action) {
   yield localStorage.setItem(
-    'srmSelectedRole',
+    "srmSelectedRole",
     JSON.stringify(action.selectedRole)
   );
   yield put(actions.authRoleSelectionSucceed(action.selectedRole));
+  yield put(push("/home"));
 }

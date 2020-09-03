@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import {
   Typography,
@@ -43,6 +44,7 @@ const useStyle = makeStyles((theme) => ({
     marginTop: '10px',
   },
   cardContentStyle: {
+    cursor: 'pointer',
     padding: '8px',
   },
   addhomeworkIcon: {
@@ -55,13 +57,25 @@ const useStyle = makeStyles((theme) => ({
   },
   homeworkCard: {
     borderRadius: '10px',
-    minHeight: '100px',
+    height: '100px',
+    overflow: 'none',
+    width: '95%',
+    margin: 'auto',
     boxShadow: 'none',
-    // backgroundColor: '#F7DDCC',
+    // overflow: 'none',
+    overflowY: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '0',
+    },
+    backgroundColor: '#F7DDCC',
     '& .0': {
       color: 'red',
 
       backgroundColor: '#F7DDCC',
+    },
+
+    [theme.breakpoints.down('sm')]: {
+      marginTop: '10px',
     },
   },
   loading: {
@@ -80,35 +94,32 @@ const useStyle = makeStyles((theme) => ({
   CardContent: {
     padding: '0 0 0 10px !important',
     margin: '10px 0 0 0',
-    height: '345px',
     overflow: 'auto',
     '&::-webkit-scrollbar': {
-      width: '0.4em',
+      width: '0',
     },
-    '&::-webkit-scrollbar-track': {
-      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
-      outline: 'none',
-      borderRadius: '5px',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: `${theme.palette.primary.main}`,
-      borderRadius: '5px',
-    },
-    '& .homeworkContentDiv': {
-      marginTop: '10px',
-    },
+    // '&::-webkit-scrollbar-track': {
+    //   '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+    //   outline: 'none',
+    //   borderRadius: '5px',
+    // },
+    // '&::-webkit-scrollbar-thumb': {
+    //   backgroundColor: `${theme.palette.primary.main}`,
+    //   borderRadius: '5px',
+    // },
   },
   homeworkContentStyle: {
     cursor: 'pointer',
   },
 }));
 
-const Homework = () => {
+const Homework = (props) => {
   const classes = useStyle();
   const history = useHistory();
   const [homework, setHomework] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [latestHw, setLatestHw] = useState([]);
+  const [showNoContent, setShowNoContent] = useState(false);
 
   const cardColors = ['#F7DDCC', '#F8E7C1', '#D4DbD8'];
 
@@ -117,9 +128,15 @@ const Homework = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('srmToken');
-        const response = await HomeSerivce.fetchTeacherHomework(token);
+        const response = await HomeSerivce.fetchTeacherHomework(
+          token,
+          props.selectedRole
+        );
         if (response.status === 200) {
           let homeworkSet = false;
+          if (response.data.data.data.length === 0) {
+            setShowNoContent(true);
+          }
           if (isHomeworkLoading) {
             setHomework(response.data.data.data);
             homeworkSet = true;
@@ -162,14 +179,39 @@ const Homework = () => {
         </Typography>
       </div>
       <div className={classes.homeworks}>
-        <Grid container spacing={3}>
+        <Grid container>
+          {showNoContent ? (
+            <Grid item sm={12} className={classes.homeworkCardGrid}>
+              <Card
+                className={`${classes.homeworkCard}`}
+                onClick={handleCreateHomework}
+              >
+                <CardContent className={classes.cardContentStyle}>
+                  <Typography className={classes.cardTitle}>
+                    Click here to create homework
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ) : (
+            ''
+          )}
           {homework.map((hw, index) => {
             if (index < 3) {
               return (
-                <Grid item sm={4} xs={12} key={index}>
+                <Grid
+                  item
+                  sm={4}
+                  xs={12}
+                  key={index}
+                  className={classes.homeworkCardGrid}
+                >
                   <Card
                     className={`${classes.homeworkCard} ${index}`}
                     style={{ backgroundColor: cardColors[index] }}
+                    onClick={(event) => {
+                      history.push('/assignment');
+                    }}
                   >
                     <CardContent className={classes.cardContentStyle}>
                       <Typography className={classes.cardTitle}>
@@ -200,5 +242,11 @@ const Homework = () => {
     </div>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    token: state.auth.token,
+    selectedRole: state.auth.selectedRole,
+  };
+};
 
-export default Homework;
+export default connect(mapStateToProps)(Homework);

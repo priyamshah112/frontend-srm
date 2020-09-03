@@ -7,11 +7,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/styles';
 import MuiAlert from '@material-ui/lab/Alert';
-import AuthContainer from './AuthContainer';
-import AuthService from './AuthService';
-import ChangePwd from './ChangePwd';
 
-import phoneSvg from '../../assets/images/Desktop Phone number.svg';
+import AuthContainer from '../AuthContainer';
+import RegisterService from './RegisterService';
+import RegisterPwd from './RegisterPwd';
+
+import phoneSvg from '../../../assets/images/Desktop Phone number.svg';
 import { Typography, Snackbar } from '@material-ui/core';
 
 function Alert(props) {
@@ -70,7 +71,6 @@ const useStyle = makeStyles((theme) => ({
       // opacity: '0.5',
     },
   },
-
   reOtp: {
     color: `${theme.palette.common.deluge}`,
     cursor: 'pointer',
@@ -80,7 +80,7 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const ChangePwdOTP = (props) => {
+const RegisterOTP = (props) => {
   const classes = useStyle();
   const otp_ref = useRef(null);
   let [isDisable, setdisable] = useState(true);
@@ -92,13 +92,17 @@ const ChangePwdOTP = (props) => {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [otpToken, setOtpToken] = useState(props.token);
 
   async function getOtpFunction() {
     try {
-      console.log('Regenerate OTP for: ', props.user);
-      const response = await AuthService.sendOtp({ username: props.user });
-      console.log('OTP is: ', response);
+      console.log('Re generate Otp for: ', props.user, props.school);
+      const response = await RegisterService.sendOtp(
+        { username: props.user },
+        props.school
+      );
+      // console.log('OTP is: ', response.data.data);
       if (response.status === 200) {
         console.log('OTP Sent Successfully');
         setOtpToken(response.data.data.access_token);
@@ -107,6 +111,7 @@ const ChangePwdOTP = (props) => {
       }
     } catch (error) {
       console.log(error);
+
       setSnackbarMessage('Failed to send OTP');
       setErrorSnackbarOpen(true);
     }
@@ -115,7 +120,9 @@ const ChangePwdOTP = (props) => {
   async function validateOtpFunction() {
     try {
       props.handleLoading(true);
-      const response = await AuthService.otpValidate(otpToken, { otp: otp });
+      const response = await RegisterService.otpValidate(otpToken, {
+        otp: otp,
+      });
       props.handleLoading(false);
       if (response.status === 200) {
         setPwdToken(response.data.data.token);
@@ -126,6 +133,7 @@ const ChangePwdOTP = (props) => {
       props.handleLoading(false);
     }
   }
+
   const submitForm = (event) => {
     event.preventDefault();
     console.log('OTP Submited');
@@ -154,7 +162,6 @@ const ChangePwdOTP = (props) => {
     if (reason === 'clickaway') {
       return;
     }
-
     setSuccessSnackbarOpen(false);
     setErrorSnackbarOpen(false);
   };
@@ -162,9 +169,9 @@ const ChangePwdOTP = (props) => {
   return (
     <>
       {otpSubmit ? (
-        <ChangePwd token={pwdToken} />
+        <RegisterPwd token={pwdToken} />
       ) : (
-        <AuthContainer title='Forgot Password?'>
+        <AuthContainer title='Register'>
           <div>
             <Box className={classes.boxMargin}></Box>
             <Typography className={`${classes.errorColor}`}>
@@ -236,4 +243,4 @@ const ChangePwdOTP = (props) => {
   );
 };
 
-export default ChangePwdOTP;
+export default RegisterOTP;

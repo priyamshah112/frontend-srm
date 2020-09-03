@@ -143,7 +143,10 @@ const Tasks = (props) => {
               createNew={createNew}
             />
           ) : (
-            <TaskContent handleEditTask={handleEditTask} />
+            <TaskContent
+              handleEditTask={handleEditTask}
+              handleCreateNew={handleCreateNew}
+            />
           )}
         </Card>
       </div>

@@ -8,9 +8,9 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/styles';
 
-import AuthContainer from './AuthContainer';
-import AuthService from './AuthService';
-import passwordSvg from '../../assets/images/Desktop Password.svg';
+import AuthContainer from '../AuthContainer';
+import RegisterService from './RegisterService';
+import passwordSvg from '../../../assets/images/Desktop Password.svg';
 import { Typography, IconButton } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -94,7 +94,7 @@ const ChangePwd = (props) => {
       try {
         const Bearertoken = props.token;
         const confirm_password = rePassword;
-        const response = await AuthService.changePassword(Bearertoken, {
+        const response = await RegisterService.changePassword(Bearertoken, {
           new_password: password,
           confirm_password: confirm_password,
         });
@@ -102,18 +102,23 @@ const ChangePwd = (props) => {
         if (response.data.message === 'Password updated successfully.') {
           history.push({
             pathname: '/login',
-            search: `?fgtpass=true`,
+            search: `?register=true`,
           });
         } else {
           history.push({
             pathname: '/login',
-            search: `?fgtpass=false`,
+            search: `?register=false`,
           });
         }
       } catch (error) {
         console.log(error);
       }
     }
+  };
+
+  const handlePassword = (event) => {
+    setError('');
+    setPassword(event.target.value);
   };
 
   const handleClickShowPassword = () => {
@@ -132,10 +137,6 @@ const ChangePwd = (props) => {
     event.preventDefault();
   };
 
-  const handlePassword = (event) => {
-    setError('');
-    setPassword(event.target.value);
-  };
   const handleConfirmPassword = (event) => {
     setError('');
     setRePassword(event.target.value);
@@ -143,7 +144,7 @@ const ChangePwd = (props) => {
 
   return (
     <>
-      <AuthContainer title={'Forgot Password ?'}>
+      <AuthContainer title={'Register'}>
         <div>
           <Typography className={`${classes.errorColor}`}>
             {errMessage}
@@ -202,7 +203,7 @@ const ChangePwd = (props) => {
                   value={rePassword}
                   onChange={handleConfirmPassword}
                   error={mismatchErr}
-                  placeholder='Re-enter passoword'
+                  placeholder='Confirm passoword'
                 />
                 <FormHelperText
                   ref={helperTextRef}

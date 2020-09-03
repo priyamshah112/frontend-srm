@@ -3,16 +3,17 @@ import axios from 'axios';
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class HomeService {
-  fetchAnnouncements(params, token) {
+  fetchAnnouncements(param, token) {
     // console.log(token);
+
     return axios.get(`${BACKEND_API_URL}/news`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       params: {
-        page: params.currentPage,
-        current_role: params.selectedRole,
+        page: param.currentPage,
+        current_role: param.selectedRole,
       },
     });
     // return true;
@@ -38,14 +39,14 @@ class HomeService {
       }
     );
   }
-  fetchTeacherAnnouncement(token) {
+  fetchTeacherAnnouncement(token, selectedRole) {
     return axios.get(`${BACKEND_API_URL}/news`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       params: {
-        created_by: true,
+        current_role: selectedRole,
       },
     });
     // return true;
@@ -62,7 +63,7 @@ class HomeService {
       }
     );
   }
-  fetchTeacherHomework(token) {
+  fetchTeacherHomework(token, selectedRole) {
     return axios.get(`${BACKEND_API_URL}/homework`, {
       headers: {
         'Content-Type': 'application/json',
@@ -70,13 +71,17 @@ class HomeService {
       },
       params: {
         created_by: true,
+        current_role: selectedRole,
       },
     });
     // return true;
   }
-  fetchHomework(token) {
+  fetchHomework(token, selectedRole) {
     // console.log(token);
     return axios.get(`${BACKEND_API_URL}/homework`, {
+      params: {
+        current_role: selectedRole,
+      },
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -84,9 +89,12 @@ class HomeService {
     });
   }
 
-  fetchMoreHomework(token, url) {
+  fetchMoreHomework(token, url, selectedRole) {
     // console.log(token);
     return axios.get(url, {
+      params: {
+        current_role: selectedRole,
+      },
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

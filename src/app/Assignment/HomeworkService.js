@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
@@ -9,7 +9,7 @@ class HomeworkService {
       {},
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
@@ -18,7 +18,7 @@ class HomeworkService {
   saveHomework(params, payload, token) {
     return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -26,7 +26,7 @@ class HomeworkService {
   publishHomework(params, payload, token) {
     return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -34,11 +34,12 @@ class HomeworkService {
   fetchHomework(params, token) {
     return axios.get(`${BACKEND_API_URL}/homework`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       params: {
         page: params.currentPage,
+        current_role: params.selectedRole,
         created_by: true,
       },
     });
@@ -47,7 +48,7 @@ class HomeworkService {
   fetchDraftHomework(params, token) {
     return axios.get(`${BACKEND_API_URL}/homework/${params.id}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -55,7 +56,7 @@ class HomeworkService {
   fetchClasses(token) {
     return axios.get(`${BACKEND_API_URL}/classes`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });

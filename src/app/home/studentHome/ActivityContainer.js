@@ -40,15 +40,28 @@ const useStyles = makeStyles((theme) => ({
   tabBar: {
     backgroundColor: theme.palette.mainBackground,
     color: theme.palette.common.deluge,
-    // boxShadow: 'none',
+    boxShadow: 'none',
+    // '& .Mui-selected': {
+    //   borderBottomWidth: '3px',
+    // },
   },
 
   eventsTab: {
+    padding: '6px 0px',
+    borderBottom: '1px solid #aeaeb2',
+
+    '& .MuiTab-wrapper': {
+      height: '30px',
+    },
     [theme.breakpoints.down('sm')]: {
       fontSize: '11px',
     },
-    // borderRight: '1px solid',
-    // borderBottom: '1px solid',
+  },
+
+  borderRight: {
+    '& .MuiTab-wrapper': {
+      borderRight: '1px solid  #aeaeb2',
+    },
   },
 }));
 
@@ -103,11 +116,12 @@ const ActivityContainer = (props) => {
           indicatorColor='primary'
           textColor='primary'
           variant='fullWidth'
+          className={classes.tabs}
         >
           <Tab
             label='Events/Announcements'
             {...a11yProps(0)}
-            className={classes.eventsTab}
+            className={`${classes.eventsTab} ${classes.borderRight}`}
           />
           <Tab
             label='Homework'

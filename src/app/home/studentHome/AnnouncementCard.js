@@ -28,7 +28,7 @@ const useStyle = makeStyles((theme) => ({
     padding: "2px",
   },
   cardContent: {
-    padding: "16px 16px 16px 16px",
+    padding: "0px 16px 0px 16px",
   },
   contentMargin: {
     marginTop: "16px",
@@ -59,6 +59,7 @@ const useStyle = makeStyles((theme) => ({
   },
   reminderIconStyle: {
     padding: "5px 0 5px 0",
+    cursor: "pointer",
   },
   title: {
     cursor: "pointer",
@@ -73,6 +74,8 @@ const useStyle = makeStyles((theme) => ({
   announcementImg: {
     justifyContent: "center",
     textAlign: "center",
+    paddingBottom: "10px",
+    margin: "0",
     "& img": {
       maxWidth: "100%",
       border: `1px solid ${theme.palette.common.deluge}`,
@@ -134,43 +137,39 @@ const AnnouncementCard = (props) => {
   const handleReminderClose = async (checkboxes) => {
     setOpenReminder(false);
     try {
-      if (
-        checkboxes.oneDayBefore === false &&
-        checkboxes.twoDayBefore === false &&
-        !checkboxes.threeDayBefore
-      ) {
-      } else {
-        let entityDate = {};
+      let entityDate = {};
 
-        if (checkboxes.oneDayBefore === true) {
-          entityDate["1_day_before"] = moment(props.announcement.event_date)
-            .subtract(1, "days")
-            .format("YYYY-MM-DD");
+      if (checkboxes.oneDayBefore === true) {
+        entityDate["1_day_before"] = moment(props.announcement.event_date)
+          .subtract(1, "days")
+          .format("YYYY-MM-DD");
+      }
+      if (checkboxes.twoDayBefore === true) {
+        entityDate["2_day_before"] = moment(props.announcement.event_date)
+          .subtract(2, "days")
+          .format("YYYY-MM-DD");
+      }
+      if (checkboxes.threeDayBefore === true) {
+        entityDate["3_day_before"] = moment(props.announcement.event_date)
+          .subtract(3, "days")
+          .format("YYYY-MM-DD");
+      }
+      if (entityReminderDate) {
+        const response = await HomeService.updateReminder(
+          {
+            entity_id: props.announcement.id,
+            entity_date:
+              Object.keys(entityDate).length === 0 ? null : entityDate,
+            entity_type: "news",
+          },
+          props.token,
+          reminderId
+        );
+        if (response.status === 200) {
+          setEntityReminderDate({ ...response.data.data.entity_date });
         }
-        if (checkboxes.twoDayBefore === true) {
-          entityDate["2_day_before"] = moment(props.announcement.event_date)
-            .subtract(2, "days")
-            .format("YYYY-MM-DD");
-        }
-        if (checkboxes.threeDayBefore === true) {
-          entityDate["3_day_before"] = moment(props.announcement.event_date)
-            .subtract(3, "days")
-            .format("YYYY-MM-DD");
-        }
-        if (entityReminderDate) {
-          const response = await HomeService.updateReminder(
-            {
-              entity_id: props.announcement.id,
-              entity_date: entityDate,
-              entity_type: "news",
-            },
-            props.token,
-            reminderId
-          );
-          if (response.status === 200) {
-            setEntityReminderDate({ ...response.data.data.entity_date });
-          }
-        } else {
+      } else {
+        if (Object.keys(entityDate).length !== 0) {
           const response = await HomeService.setReminder(
             {
               entity_id: props.announcement.id,
@@ -179,12 +178,13 @@ const AnnouncementCard = (props) => {
             },
             props.token
           );
-          console.log(response.data.data);
           if (response.status === 200) {
             setEntityReminderDate({ ...entityDate });
+            setReminderId(response.data.Reminder_id);
           }
         }
       }
+
       // const response =await HomeService.setReminder()
     } catch (e) {
       console.log(e);
@@ -229,7 +229,9 @@ const AnnouncementCard = (props) => {
                   {props.announcement.title}
                   {props.announcement.event_date
                     ? " - " +
-                      moment(props.announcement.event_date).format("DD/MM/YYYY")
+                      moment(props.announcement.event_date).format(
+                        "DD MMM YYYY"
+                      )
                     : ""}
                 </Typography>
               </>
@@ -253,8 +255,7 @@ const AnnouncementCard = (props) => {
             <Grid>
               <Typography className={classes.announcementText}>
                 {props.announcement.summary}
-                <br />
-                <br />
+
                 {/* {`Published Date:${props.announcement.published_date}`} */}
               </Typography>
             </Grid>

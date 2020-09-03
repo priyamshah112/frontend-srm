@@ -3,6 +3,8 @@ import 'date-fns';
 import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+
+import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
@@ -21,16 +23,17 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
   MuiPickersUtilsProvider,
-  KeyboardDateTimePicker,
+  DateTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-
+import EventIcon from '@material-ui/icons/Event';
 import BackIcon from '../../../assets/images/Back.svg';
 import RichTextEditor from '../../../shared/richTextEditor';
 import PublishLater from './PublishLater';
 import HomeworkService from '../HomeworkService';
 import { set } from 'date-fns';
 import moment from 'moment';
+import { IconButton } from '@material-ui/core';
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
@@ -47,7 +50,7 @@ const useStyle = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   adornmentColor: {
-    color: `${theme.palette.common.adornment}`,
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   themeColor: {
     color: `${theme.palette.common.deluge}`,
@@ -90,6 +93,18 @@ const useStyle = makeStyles((theme) => ({
     padding: theme.spacing(0.5),
     margin: 'auto',
   },
+
+  paperShowIn: {
+    display: 'flex',
+    minHeight: '40px',
+    backgroundColor: 'none',
+    justifyContent: 'left',
+    flexWrap: 'wrap',
+    listStyle: 'none',
+
+    padding: theme.spacing(0.5),
+    margin: 'auto',
+  },
   chip: {
     margin: theme.spacing(0.5),
   },
@@ -98,6 +113,7 @@ const useStyle = makeStyles((theme) => ({
   },
   textAlignLeft: {
     textAlign: 'left',
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   contentCenter: {
     justifyContent: 'center',
@@ -142,7 +158,7 @@ const CreateHomework = (props) => {
   const [description, setDescription] = useState('');
   const [errMessage, setError] = useState('');
   const [category, setCategory] = useState('');
-  const [submissionDate, setSubmissionDate] = useState();
+  const [submissionDate, setSubmissionDate] = useState(null);
   const [checkState, setCheckState] = useState({
     ...props.classState,
     'Select All': false,
@@ -209,14 +225,12 @@ const CreateHomework = (props) => {
                 : ''
             );
             setTitle(response.data.data.title ? response.data.data.title : '');
-            // setEventDate(response.data.data.submission_date);
-            // console.log(
-            //   'Submission date',
-            //   response.data.data.submission_date,
-            //   'Using Moment',
-            //   moment().zone(response.data.data.submission_date)
+            // Uncomment below if submission date is not to be set tocurrent time as default and change default state of submissionDate from null to blank and also remove from the saveDetails function
+            // setSubmissionDate(
+            //   response.data.data.submission_date
+            //     ? new Date(response.data.data.submission_date)
+            //     : null
             // );
-            // console.log('Date', new Date(), response.data.data.submission_date);
             setSubmissionDate(
               response.data.data.submission_date
                 ? new Date(response.data.data.submission_date)
@@ -234,44 +248,47 @@ const CreateHomework = (props) => {
       // clearInterval(saveDataApi);
     };
   }, []);
-  useEffect(() => {
-    const saveDetails = async () => {
-      try {
-        let classMapping = { class: [] };
-        for (var state in checkState) {
-          if (state !== 'Select All')
-            if (checkState[state] === true) {
-              // console.log('here', state);
-              classMapping.class.push(parseInt(state.split(' ')[1]));
-            }
-        }
-        console.log('Submission Date: ', submissionDate.toISOString());
-        const response = await HomeworkService.saveHomework(
-          { id },
-          {
-            title,
-            submission_date: eventDate,
-            main_content: description,
-            submission_date: submissionDate.toISOString(),
-            published_to: classMapping,
-          },
-          props.token
-        );
 
-        if (response.status === 200) {
-          console.log(response);
-          console.log('Saved');
-        }
-      } catch (e) {
-        console.log(e);
+  const saveDetails = async (isBack) => {
+    try {
+      let classMapping = { class: [] };
+      for (var state in checkState) {
+        if (state !== 'Select All')
+          if (checkState[state] === true) {
+            // console.log('here', state);
+            classMapping.class.push(parseInt(state.split(' ')[1]));
+          }
       }
-    };
+      const response = await HomeworkService.saveHomework(
+        { id },
+        {
+          title,
+          main_content: description,
+          submission_date: submissionDate.toISOString(),
+          published_to: classMapping,
+        },
+        props.token
+      );
+
+      if (response.status === 200) {
+        console.log(response);
+        console.log('Saved');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    if (isBack) {
+      history.push('/assignment');
+    }
+  };
+
+  useEffect(() => {
     saveDataApi = setInterval(() => {
       // console.log(1);
-      saveDetails(title, eventDate, description, submissionDate, checkState);
+      saveDetails(false);
     }, 10000);
     return () => clearInterval(saveDataApi);
-  }, [title, eventDate, description, submissionDate, checkState]);
+  }, [title, description, submissionDate, checkState]);
 
   const handleChangeInput = (event) => {
     let name = event.target.name;
@@ -310,25 +327,15 @@ const CreateHomework = (props) => {
   const handleDescription = (data) => {
     setDescription(data);
   };
-
-  // const handlePublish = (event) => {
-  //   if (
-  //     chipData.length === 0 ||
-  //     title === "" ||
-  //     summary === "" ||
-  //     eventDate === null
-  //   ) {
-  //     setError("Fill All Data !");
-  //   } else {
-  //     console.log("Submit Publish Now");
-  //   }
-  // };
-
   const handleOpenPubLater = (event) => {
-    if (chipData.length === 0 || title === '' || submissionDate === null) {
-      setError('Fill All Data !');
+    if (moment(submissionDate).isAfter(new Date())) {
+      if (chipData.length === 0 || title === '' || submissionDate === null) {
+        setError('Fill All Data !');
+      } else {
+        setOpenPubLater(true);
+      }
     } else {
-      setOpenPubLater(true);
+      setError('Check submission date');
     }
   };
 
@@ -346,6 +353,7 @@ const CreateHomework = (props) => {
           }
       }
       // console.log(classMapping, title, summary, eventDate, description);
+
       const response = await HomeworkService.publishHomework(
         { id },
         {
@@ -360,8 +368,7 @@ const CreateHomework = (props) => {
       );
       // console.log(response);
       if (response.status === 200) {
-        console.log('Published: ', response);
-        console.log('Published');
+        history.replace('/assignment');
         // console.log(response);
       }
     } catch (e) {
@@ -373,24 +380,40 @@ const CreateHomework = (props) => {
     setSubmissionDate(date);
   };
 
+  const handleBack = (event) => {
+    saveDetails(true);
+    // setTimeout(() => {
+    //   console.log('Timeout');
+    //   history.push('/assignment');
+    // }, 2000);
+  };
+
   const handlePublishLater = (laterEventDate) => {
     // console.log(laterEventDate.toISOString());
     const status = 'active';
     publishData(laterEventDate.toISOString(), status);
-    history.goBack();
-  };
-  const submitForm = async (event) => {
-    event.preventDefault();
-    if (chipData.length === 0 || title === '' || submissionDate === null) {
-      setError('Fill All Data !');
-    } else {
-      clearInterval(saveDataApi);
-      const status = 'published';
-      publishData(new Date().toISOString(), status);
-      history.goBack();
-    }
   };
 
+  const handleClassChipDelete = (data) => {
+    const newChipData = chipData.filter((chip) => chip !== data);
+    setChipData([...newChipData]);
+    setCheckState({ ...checkState, [data]: false });
+  };
+
+  const submitForm = async (event) => {
+    event.preventDefault();
+    if (moment(submissionDate).isAfter(new Date())) {
+      if (chipData.length === 0 || title === '' || submissionDate === null) {
+        setError('Fill All Data !');
+      } else {
+        clearInterval(saveDataApi);
+        const status = 'published';
+        publishData(new Date().toISOString(), status);
+      }
+    } else {
+      setError('Check submission date');
+    }
+  };
   return (
     <>
       <div>
@@ -401,9 +424,7 @@ const CreateHomework = (props) => {
                 src={BackIcon}
                 alt='Back'
                 className={classes.backImg}
-                onClick={() => {
-                  history.push('/assignment');
-                }}
+                onClick={handleBack}
               />
               <Typography
                 variant='h5'
@@ -413,29 +434,27 @@ const CreateHomework = (props) => {
               </Typography>
             </div>
           </Box>
-          <Box className={classes.margin} pt={2}>
-            <div>
-              <Typography className={`${classes.errorColor}`}>
-                {errMessage}
-              </Typography>
-            </div>
-          </Box>
+          {errMessage ? (
+            <Box className={classes.margin} pt={2}>
+              <div>
+                <Typography className={`${classes.errorColor}`}>
+                  {errMessage}
+                </Typography>
+              </div>
+            </Box>
+          ) : (
+            ''
+          )}
           <Box className={classes.margin}>
             <FormControl className={classes.fieldStyle}>
-              <Input
+              <TextField
                 id='title'
                 name='title'
                 className={classes.inputBorder}
                 value={title}
                 onChange={handleChangeInput}
                 required={true}
-                startAdornment={
-                  <InputAdornment position='start'>
-                    <Typography className={classes.adornmentColor}>
-                      Title
-                    </Typography>
-                  </InputAdornment>
-                }
+                label='Title'
               />
             </FormControl>
           </Box>
@@ -443,16 +462,22 @@ const CreateHomework = (props) => {
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
                 <Grid item xs={12}>
-                  <KeyboardDateTimePicker
-                    id='eventDate'
+                  <DateTimePicker
+                    id='submission_date'
                     label='Submission Date'
-                    variant='inline'
+                    variant='dialog'
                     minDate={new Date()}
                     format='yyyy/MM/dd hh:mm a'
                     value={submissionDate}
                     onChange={handlesubmissionDate}
-                    KeyboardButtonProps={{
-                      'aria-label': 'change date',
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <IconButton>
+                            <EventIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
                     }}
                     className={classes.datePicker}
                   />
@@ -463,7 +488,7 @@ const CreateHomework = (props) => {
           <Box className={classes.margin}>
             <Box
               component='ul'
-              className={`${classes.paper} ${classes.fieldStyle}`}
+              className={`${classes.paperShowIn} ${classes.fieldStyle}`}
             >
               <Typography variant='h6' p={3} className={classes.adornmentColor}>
                 Show in:
@@ -471,13 +496,17 @@ const CreateHomework = (props) => {
               {chipData.map((data, index) => {
                 return (
                   <li key={index}>
-                    <Chip label={data} className={classes.chip} />
+                    <Chip
+                      label={data}
+                      className={classes.chip}
+                      onDelete={() => handleClassChipDelete(data)}
+                    />
                   </li>
                 );
               })}
             </Box>
           </Box>
-          <Box mt={1}>
+          <Box>
             <Paper
               component='ul'
               className={`${classes.paper} ${classes.paperBoxShadow} ${classes.fieldStyle}`}
@@ -491,6 +520,7 @@ const CreateHomework = (props) => {
                         control={
                           <Checkbox
                             checked={checkState[`Class ${value + 1}`]}
+                            style={{ paddingLeft: '10px' }}
                             onChange={handleCheckbox}
                             name={`Class ${value + 1}`}
                             color='primary'

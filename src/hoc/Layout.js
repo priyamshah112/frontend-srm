@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect, Link, useHistory } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -260,6 +260,7 @@ const useStyles = makeStyles((theme) => ({
 const Layout = (props) => {
   const classes = useStyles();
   const theme = useTheme();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -275,6 +276,11 @@ const Layout = (props) => {
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfile = (event) => {
+    localStorage.setItem('srmCurrentRoute', '/profile');
+    history.push('/profile');
   };
 
   const handleOpenLogoutDialog = () => {
@@ -296,7 +302,7 @@ const Layout = (props) => {
   };
 
   const handleChange = (newValue) => {
-    setSelectedItem(newValue);
+    setSelectedItem(() => newValue);
   };
 
   const listItems = [
@@ -385,7 +391,10 @@ const Layout = (props) => {
       switch (window.location.pathname) {
         case `${route.linkTo}`:
           if (selectedItem !== route.itemIndex) {
+            // console.log("use effect", selectedItem, route.itemIndex);
             setSelectedItem(route.itemIndex);
+            localStorage.setItem('srmCurrentRoute', route.linkTo);
+          } else if (selectedItem === 0 && route.itemIndex === 0) {
             localStorage.setItem('srmCurrentRoute', route.linkTo);
           }
           break;
@@ -415,7 +424,7 @@ const Layout = (props) => {
       onClose={handleMenuClose}
       marginThreshold={0}
     >
-      <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
+      <MenuItem onClick={handleProfile} classes={{ root: classes.menuItem }}>
         Profile
       </MenuItem>
       <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
@@ -458,7 +467,7 @@ const Layout = (props) => {
       marginThreshold={0}
       style={{ zIndex: 1301 }}
     >
-      <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
+      <MenuItem onClick={handleProfile} classes={{ root: classes.menuItem }}>
         Profile
       </MenuItem>
       <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
