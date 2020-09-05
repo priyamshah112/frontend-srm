@@ -202,7 +202,7 @@ const GalleryIndex = (props) => {
               </>
             }
             scrollableTarget="scrollable"
-            scrollThreshold={0.2}
+            scrollThreshold={0.5}
           >
             <GridList
               cellHeight={200}

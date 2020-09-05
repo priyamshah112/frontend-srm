@@ -94,6 +94,10 @@ const useStyle = makeStyles((theme) => ({
     margin: 'auto',
   },
 
+  showIn: {
+    paddingTop: '5px',
+  },
+
   paperShowIn: {
     display: 'flex',
     minHeight: '40px',
@@ -109,14 +113,14 @@ const useStyle = makeStyles((theme) => ({
     margin: theme.spacing(0.5),
   },
   paperBoxShadow: {
-    boxShadow: `2px 2px 2px 0 ${theme.palette.common.deluge} `,
+    boxShadow: `2px 2px 2px 0 #E5E5EA`,
   },
   textAlignLeft: {
     textAlign: 'left',
     color: 'rgba(0, 0, 0, 0.54)',
   },
   contentCenter: {
-    justifyContent: 'center',
+    justifyContent: 'left',
   },
   chips: {
     display: 'flex',
@@ -125,7 +129,10 @@ const useStyle = makeStyles((theme) => ({
   chip: {
     margin: 2,
   },
-
+  publishBtns: {
+    textAlign: 'right',
+    justifyContent: 'right',
+  },
   margin: {
     marginTop: '30px',
     [theme.breakpoints.down('xs')]: {
@@ -134,8 +141,12 @@ const useStyle = makeStyles((theme) => ({
     '& .publishBtn': {
       borderRadius: '3px',
       width: 'inherit',
-      // opacity: '0.5',
-      marginBottom: '30px',
+      margin: 0,
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
+        marginRight: 0,
+        width: '100%',
+      },
     },
     '& .publishLaterBtn': {
       backgroundColor: `${theme.palette.common.white}`,
@@ -490,7 +501,10 @@ const CreateHomework = (props) => {
               component='ul'
               className={`${classes.paperShowIn} ${classes.fieldStyle}`}
             >
-              <Typography variant='h6' p={3} className={classes.adornmentColor}>
+              <Typography
+                p={3}
+                className={`${classes.adornmentColor} ${classes.showIn}`}
+              >
                 Show in:
               </Typography>
               {chipData.map((data, index) => {
@@ -558,23 +572,12 @@ const CreateHomework = (props) => {
             </Grid>
           </Box>
           <Box className={classes.margin}>
-            <Grid container spacing={3} className={classes.fieldStyle}>
-              <Grid item xs={6} className={classes.textAlignLeft}>
-                <Button
-                  id='cancelBtn'
-                  variant='contained'
-                  onClick={() => {
-                    history.push('/assignment');
-                  }}
-                  className={`${
-                    classes.fieldStyle
-                  } ${'publishBtn'} ${'publishLaterBtn'}`}
-                  disableElevation
-                >
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
+            <Grid
+              container
+              className={classes.fieldStyle}
+              direction='row-reverse'
+            >
+              <Grid item sm={6} xs={12} className={classes.publishBtns}>
                 <Button
                   id='publishLaterBtn'
                   variant='contained'
@@ -598,10 +601,31 @@ const CreateHomework = (props) => {
                   Publish Now
                 </Button>
               </Grid>
+              <Grid item sm={6} xs={12} className={classes.textAlignLeft}>
+                <Button
+                  id='cancelBtn'
+                  variant='contained'
+                  onClick={() => {
+                    history.push('/assignment');
+                  }}
+                  className={`${
+                    classes.fieldStyle
+                  } ${'publishBtn'} ${'publishLaterBtn'}`}
+                  disableElevation
+                >
+                  Cancel
+                </Button>
+              </Grid>
+
+              <br />
+              <br />
+              <br />
             </Grid>
           </Box>
         </form>
       </div>
+      <br />
+      <br />
       {openPubLater ? (
         <PublishLater
           open={openPubLater}

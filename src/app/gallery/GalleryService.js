@@ -6,7 +6,7 @@ class GalleryService {
   uploadImage(formData, token) {
     return axios.post(`${BACKEND_API_URL}/gallery`, formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });

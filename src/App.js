@@ -14,6 +14,7 @@ import Otp from './app/auth/Otp';
 import ChangePwdUser from './app/auth/ChangePwdUser';
 import RoleSelection from './app/auth/RoleSelection';
 import Home from './app/home/Home';
+import Notification from './app/notification/Notification';
 import NewsAnnouncement from './app/newsAnnouncement/NewsAnnouncement';
 import Assignment from './app/Assignment/Assignment';
 import NewsDetails from './app/home/studentHome/NewsDetails';
@@ -38,6 +39,7 @@ function App(props) {
       <Layout>
         <Switch>
           <Route path='/home' exact component={Home} />
+          <Route path='/notifications' exact component={Notification} />
           <Route path='/news/:id' exact component={NewsDetails} />
           <Route
             path='/announcement'

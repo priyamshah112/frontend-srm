@@ -40,25 +40,23 @@ const ImageUpload = (props) => {
     });
 
   const handleUpload = async () => {
-    const imageFormData = new FormData();
-    for (var i in fileList) {
-      imageFormData.append("img_name[]", fileList[i]);
-    }
-    try {
-      setIsUploading(true);
-      const response = await GalleryService.uploadImage(
-        imageFormData,
-        props.token
-      );
-      console.log(response);
-      setIsUploading(false);
+    setIsUploading(true);
+    for (var image in fileList) {
+      try {
+        const imageString = await toBase64(fileList[image]);
 
-      history.goBack();
-    } catch (e) {
-      setIsUploading(false);
-      setOpenSnackbar(true);
-      console.log(e);
+        const response = await GalleryService.uploadImage(
+          { img_name: imageString },
+          props.token
+        );
+        console.log(response);
+      } catch (e) {
+        setOpenSnackbar(true);
+        console.log(e);
+      }
     }
+    setIsUploading(false);
+    history.goBack();
   };
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);

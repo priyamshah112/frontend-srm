@@ -48,6 +48,7 @@ const useStyle = makeStyles((theme) => ({
   },
   adornmentColor: {
     color: "rgba(0, 0, 0, 0.54)",
+    paddingTop: "6px",
   },
   themeColor: {
     color: `${theme.palette.common.deluge}`,
@@ -92,7 +93,6 @@ const useStyle = makeStyles((theme) => ({
   },
   paperShowIn: {
     display: "flex",
-    minHeight: "40px",
     backgroundColor: "none",
     justifyContent: "left",
     flexWrap: "wrap",
@@ -101,6 +101,7 @@ const useStyle = makeStyles((theme) => ({
     padding: theme.spacing(0.5),
     margin: "auto",
   },
+
   chip: {
     margin: theme.spacing(0.5),
   },
@@ -121,7 +122,10 @@ const useStyle = makeStyles((theme) => ({
   chip: {
     margin: 2,
   },
-
+  publishBtns: {
+    textAlign: "right",
+    justifyContent: "right",
+  },
   margin: {
     marginTop: "30px",
     [theme.breakpoints.down("xs")]: {
@@ -130,8 +134,12 @@ const useStyle = makeStyles((theme) => ({
     "& .publishBtn": {
       borderRadius: "3px",
       width: "inherit",
-      // opacity: '0.5',
-      marginBottom: "30px",
+      margin: 0,
+      [theme.breakpoints.down("xs")]: {
+        marginTop: "10px",
+        marginRight: 0,
+        width: "100%",
+      },
     },
     "& .publishLaterBtn": {
       backgroundColor: `${theme.palette.common.white}`,
@@ -566,12 +574,12 @@ const CreateAnnouncement = (props) => {
               </Grid>
             </MuiPickersUtilsProvider>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.showInContainer}`}>
             <Box
               component="ul"
               className={`${classes.paperShowIn} ${classes.fieldStyle}`}
             >
-              <Typography variant="h6" p={3} className={classes.adornmentColor}>
+              <Typography className={classes.adornmentColor}>
                 Show in:
               </Typography>
               {chipData.map((data, index) => {
@@ -593,7 +601,7 @@ const CreateAnnouncement = (props) => {
               className={`${classes.paper}  ${classes.fieldStyle}`}
             >
               <FormControl>
-                <FormGroup row className={classes.contentCenter}>
+                <FormGroup row>
                   {checkStateLength.map((value, index) => {
                     return (
                       <FormControlLabel
@@ -653,7 +661,7 @@ const CreateAnnouncement = (props) => {
           </Box>
           <Box className={classes.margin}>
             <Grid className={classes.fieldStyle}>
-              <Typography variant="h6" className={classes.textAlignLeft}>
+              <Typography className={classes.textAlignLeft}>
                 Description
               </Typography>
               <RichTextEditor
@@ -664,23 +672,12 @@ const CreateAnnouncement = (props) => {
             </Grid>
           </Box>
           <Box className={classes.margin}>
-            <Grid container spacing={3} className={classes.fieldStyle}>
-              <Grid item xs={6} className={classes.textAlignLeft}>
-                <Button
-                  id="cancelBtn"
-                  variant="contained"
-                  onClick={() => {
-                    history.push("/news");
-                  }}
-                  className={`${
-                    classes.fieldStyle
-                  } ${"publishBtn"} ${"publishLaterBtn"}`}
-                  disableElevation
-                >
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
+            <Grid
+              container
+              className={classes.fieldStyle}
+              direction="row-reverse"
+            >
+              <Grid item sm={6} xs={12} className={classes.publishBtns}>
                 <Button
                   id="publishLaterBtn"
                   variant="contained"
@@ -704,10 +701,54 @@ const CreateAnnouncement = (props) => {
                   Publish Now
                 </Button>
               </Grid>
+              <Grid item sm={6} xs={12} className={classes.textAlignLeft}>
+                <Button
+                  id="cancelBtn"
+                  variant="contained"
+                  onClick={() => {
+                    history.push("/news");
+                  }}
+                  className={`${
+                    classes.fieldStyle
+                  } ${"publishBtn"} ${"publishLaterBtn"}`}
+                  disableElevation
+                >
+                  Cancel
+                </Button>
+              </Grid>
+              <br />
+              <br />
+              <br />
+              {/* <Grid item sm={6} xs={12} className={classes.publishBtns}>
+                <Button
+                  id='publishLaterBtn'
+                  variant='contained'
+                  onClick={handleOpenPubLater}
+                  className={`${
+                    classes.fieldStyle
+                  } ${'publishBtn'} ${'publishLaterBtn'}`}
+                  disableElevation
+                >
+                  Publish Later
+                </Button>
+                <Button
+                  id='publishBtn'
+                  variant='contained'
+                  className={`${classes.fieldStyle} ${'publishBtn'}`}
+                  color='primary'
+                  // onClick={handlePublish}
+                  type='submit'
+                  disableElevation
+                >
+                  Publish Now
+                </Button>
+              </Grid> */}
             </Grid>
           </Box>
         </form>
       </div>
+      <br />
+      <br />
       {openPubLater ? (
         <PublishLater
           open={openPubLater}

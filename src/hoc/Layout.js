@@ -25,6 +25,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ChevronRightSharpIcon from '@material-ui/icons/ChevronRightSharp';
 
 import HomeIcon from '../assets/images/navigation/DesktopHome.svg';
+import NotificationIcon from '../assets/images/navigation/DesktopNotification.svg';
 import AssignmentIcon from '../assets/images/navigation/DesktopAssignment.svg';
 import EventsIcon from '../assets/images/navigation/DesktopEvents.svg';
 import NewsIcon from '../assets/images/navigation/DesktopNews.svg';
@@ -44,8 +45,9 @@ import RoleSelection from '../app/auth/RoleSelection';
 import * as actions from '../app/auth/store/actions';
 import ChatIndex from '../app/chat/ChatIndex';
 
-const drawerWidth = 360;
-const drawerRightWidth = 360;
+// default was 360
+const drawerWidth = 340;
+const drawerRightWidth = 340;
 
 function ElevationScroll(props) {
   const { children } = props;
@@ -65,7 +67,10 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
   },
   grow: {
-    flexGrow: 1,
+    flexGrow: 2,
+  },
+  grow2: {
+    flexGrow: 1.5,
   },
   title: {
     display: 'block',
@@ -313,10 +318,16 @@ const Layout = (props) => {
       itemIndex: 0,
     },
     {
+      name: 'Notifications',
+      icon: <img src={NotificationIcon} alt='Menu' width='24' height='24' />,
+      linkTo: '/notifications',
+      itemIndex: 1,
+    },
+    {
       name: 'Assignment',
       icon: <img src={AssignmentIcon} alt='Menu' width='24' height='24' />,
       linkTo: '/assignment',
-      itemIndex: 1,
+      itemIndex: 2,
     },
     {
       name: 'Attendance',
@@ -324,7 +335,7 @@ const Layout = (props) => {
         <img src={DesktopAttendanceIcon} alt='Menu' width='24' height='24' />
       ),
       linkTo: '/attendance',
-      itemIndex: 2,
+      itemIndex: 3,
     },
 
     {
@@ -619,14 +630,18 @@ const Layout = (props) => {
               <Typography className={classes.title} variant='h6' noWrap>
                 {matchesSm ? 'PSBB' : 'PSBB Learning Leadership Academy'}
               </Typography>
-              <div className={classes.grow} />
+              <div className={classes.grow2} />
               <div className={classes.sectionDesktop}>
                 <IconButton
                   aria-label='show 2 new notifications'
                   color='inherit'
                 >
                   <Badge badgeContent={2} color='secondary'>
-                    <NotificationsNoneIcon />
+                    <NotificationsNoneIcon
+                      onClick={(event) => {
+                        history.push('/notifications');
+                      }}
+                    />
                   </Badge>
                 </IconButton>
                 <div
@@ -666,7 +681,11 @@ const Layout = (props) => {
                   color='inherit'
                 >
                   <Badge badgeContent={2} color='secondary'>
-                    <NotificationsNoneIcon />
+                    <NotificationsNoneIcon
+                      onClick={(event) => {
+                        history.push('/notifications');
+                      }}
+                    />
                   </Badge>
                 </IconButton>
                 <IconButton color='inherit'>
