@@ -1,110 +1,110 @@
-import React, { useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import React, { useState } from "react";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import {
   IconButton,
   Typography,
   makeStyles,
   Grid,
   Button,
-} from '@material-ui/core';
-import EditIcon from '../../../assets/images/Edit.svg';
-import DoneIcon from '../../../assets/images/notifications/Done.svg';
-import WarningIcon from '../../../assets/images/notifications/Warning.svg';
+} from "@material-ui/core";
+import EditIcon from "../../../assets/images/Edit.svg";
+import DoneIcon from "../../../assets/images/notifications/Done.svg";
+import WarningIcon from "../../../assets/images/notifications/Warning.svg";
 
 const useStyles = makeStyles((theme) => ({
   card: {
-    boxShadow: 'none',
-    background: '#FFFFFF 0% 0% no-repeat padding-box',
-    borderRadius: '10px',
-    marginTop: '10px',
+    boxShadow: "none",
+    background: "#FFFFFF 0% 0% no-repeat padding-box",
+    borderRadius: "10px",
+    marginTop: "10px",
   },
   cardHeader: {
-    padding: '20px 20px 0 20px',
+    padding: "20px 20px 0 20px",
   },
   iconButtonRoot: {
-    padding: '8px',
+    padding: "8px",
   },
   titleIconSpan: {
-    marginRight: '8px',
+    marginRight: "8px",
   },
   editIconSpan: {
-    paddingLeft: '10px',
+    paddingLeft: "10px",
   },
   titleIcon: {
-    transform: 'translateY(3px)',
+    transform: "translateY(3px)",
   },
   cardTitle: {
-    fontSize: '16px',
-    fontStyle: 'normal',
+    fontSize: "16px",
+    fontStyle: "normal",
     fontWeight: 500,
   },
   cardActions: {
-    padding: '0 20px 20px 20px',
+    padding: "0 20px 20px 20px",
   },
   cardContent: {
-    padding: '10px 20px 20px 20px',
-    '&:last-child': {
-      paddingBottom: '20px',
+    padding: "10px 20px 20px 20px",
+    "&:last-child": {
+      paddingBottom: "20px",
     },
   },
   menuItem: {
-    paddingLeft: '10px',
-    paddingRight: '10px',
+    paddingLeft: "10px",
+    paddingRight: "10px",
   },
   borderBottomDiv: {
-    width: '90%',
-    height: '30px',
-    margin: 'auto',
-    marginTop: '5px',
-    borderBottom: '1px solid #D1D1D6',
+    width: "90%",
+    height: "30px",
+    margin: "auto",
+    marginTop: "5px",
+    borderBottom: "1px solid #D1D1D6",
   },
   borderBottomLastDiv: {
-    width: '90%',
-    height: '30px',
-    margin: 'auto',
-    marginTop: '5px',
+    width: "90%",
+    height: "30px",
+    margin: "auto",
+    marginTop: "5px",
   },
   menuTopItemMargin: {
-    marginTop: '5px',
+    marginTop: "5px",
   },
   menuItemRoot: {
     padding: 0,
   },
   menuContainer: {
     backgroundColor: theme.palette.common.darkGray,
-    color: 'black',
-    minWidth: '150px',
-    '&.MuiPaper-rounded': {
-      boxShadow: '0px 6px 6px #00000029',
+    color: "black",
+    minWidth: "150px",
+    "&.MuiPaper-rounded": {
+      boxShadow: "0px 6px 6px #00000029",
     },
-    [theme.breakpoints.down('md')]: {
-      minWidth: '150px',
+    [theme.breakpoints.down("md")]: {
+      minWidth: "150px",
     },
-    [theme.breakpoints.down('sm')]: {
-      minWidth: '150px',
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "150px",
     },
   },
   menuList: {
-    width: '100% !important',
+    width: "100% !important",
     padding: 0,
   },
   contentStyle: {
-    color: '#8E8E93',
-    fontSize: '14px',
-    fontStyle: 'normal',
+    color: "#8E8E93",
+    fontSize: "14px",
+    fontStyle: "normal",
   },
   readClass: {
-    textAlign: 'right',
+    textAlign: "right",
   },
   payBtn: {
-    width: '113px',
-    height: '36px',
+    width: "113px",
+    height: "36px",
   },
 }));
 
