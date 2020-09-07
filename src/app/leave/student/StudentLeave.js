@@ -21,16 +21,20 @@ import DateFnsUtils from "@date-io/date-fns";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
-
 import BackIcon from "../../../assets/images/Back.svg";
 import RichTextEditor from "../../../shared/richTextEditor";
-//import PublishLater from "./PublishLater";
 import { set } from "date-fns";
 import LeaveService from "../LeaveService";
+const height = 85
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
@@ -180,6 +184,9 @@ const StudentLeave = (props) => {
   const [errMessage, setError] = useState("");
   const [category, setCategory] = useState("");
   const status = "active";
+  const [age, setAge] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState('female');
 
   useEffect(() => {
     let isFormLoading = true;
@@ -192,10 +199,6 @@ const StudentLeave = (props) => {
       isFormLoading = false;
       // clearInterval(saveDataApi);
     };
-  }, []);
-  
-  useEffect(() => {
-    
   }, []);
 
   const handleChangeInput = (event) => {
@@ -224,34 +227,41 @@ const StudentLeave = (props) => {
   };
 
   const publishData = async (publisedDate, status='', data) => {
-    try {
-      
+    try {   
+
+      let data11 = {
+        "leavearr" : {
+            "start_date": data.target.eventDate.value,
+            "end_date": data.target.enddate.value,
+            "half_day": data.target.enddate.leave=='h_day'?true:false,
+            "full_day": data.target.enddate.leave=='f_day'?true:false,
+            "half_day_half": data.target.enddate.slot,
+            "sanctioner_id": 5,
+            "reason": data.target.enddate.content
+            }
+        };
+        
      
-      const response = await LeaveService.postLeave(
-        { id },
-        {
-          "id": 0,
-          "leave_code": "string",
-          "school_id": 0,
-          "user_id": 0,
-          "start_date": "2020-09-06",
-          "end_date": "2020-09-06",
-          "half_day": true,
-          "full_day": true,
-          "half_day_half": 0,
-          "sanctioner_id": 0,
-          "reason": "string",
-          "created_at": "2020-09-06T16:42:47.255Z",
-          "deleted_at": "2020-09-06T16:42:47.255Z",
-          "updated_at": "2020-09-06T16:42:47.255Z",
-          "updated_by": 0
-        },
-        props.token
-      );
-      console.log(response,'------------------------')
-      if (response.status === 200) {
-        history.replace("/leave");
-      }
+      console.log(data11,'------------------------')
+      // const response = await LeaveService.postLeave(
+      //   { id },
+      //   {
+      //     "leavearr" : {
+      //         "start_date": data.target.eventDate.value,
+      //         "end_date": data.target.enddate.value,
+      //         "half_day": data.target.enddate.content=='h_day'?true:false,
+      //         "full_day": data.target.enddate.content=='f_day'?true:false,
+      //         "half_day_half": data.target.enddate.slot,
+      //         "sanctioner_id": 5,
+      //         "reason": data.target.enddate.content
+      //         }
+      //     },
+      //   props.token
+      // );
+      
+      // if (response.status === 200) {
+      //   history.replace("/leave");
+      // }
     } catch (e) {
       console.log(e);
     }
@@ -268,6 +278,21 @@ const submitForm = async (event) => {
   publishData(new Date().toISOString(), status, event);
   event.preventDefault();
 }
+
+const handleChange = (event) => {
+  setAge(event.target.value);
+};
+const handleChangeredio = (event) => {
+  setValue(event.target.value);
+};
+
+const handleClose = () => {
+  setOpen(false);
+};
+
+const handleOpen = () => {
+  setOpen(true);
+};
  
 
   return (
@@ -284,7 +309,7 @@ const submitForm = async (event) => {
                     label="From Date"
                     variant="dialog"
                     minDate={new Date()}
-                    format="MM/dd/yyyy"
+                    format="yyyy/MM/dd"
                     value={eventDate}
                     onChange={handleEventDate}
                     KeyboardButtonProps={{
@@ -305,7 +330,7 @@ const submitForm = async (event) => {
                   <KeyboardDatePicker
                      minDate={new Date()}
                      variant="dialog"
-                     format="MM/dd/yyyy"
+                     format="yyyy/MM/dd"
                      id="enddate"
                      label="End Date"
                      value={selectedDate}
@@ -326,40 +351,50 @@ const submitForm = async (event) => {
             <Grid className={classes.fieldStyle}>
               
               <div className={classes.form_row}>
-                <div className={classes.form_radio}>
-
-                <Typography variant="h5"className={`${classes.titleText}`}
+              <Typography variant="h5"className={`${classes.titleText}`}
               >
-                 <input type="radio" value="f_day" name="leave" className={classes.radio} /> 
-                  <label for="f_day" className={classes.label}>Full day</label>
-                  <input type="radio" value="h_day" name="leave" className={classes.radio} /> 
-                  <label for="h_day" className={classes.label}>Half Day</label>
+                <FormControl component="fieldset">
+                  <RadioGroup row aria-label="position" name="slot" defaultValue="top">
+                    <FormControlLabel value="f_day" control={<Radio color="primary" />} label="Full day" />
+                    <FormControlLabel value="h_day" control={<Radio color="primary" />} label="Half Day" />
+                  </RadioGroup>
+                </FormControl>
+
               </Typography>
-
-                </div>
-                <div className={classes.form_select}>
-                  <select name="slot" className={classes.select}>
-                    <option value="1stslot">First Half</option>
-                    <option value="2ndtslot">Second Half</option>
-                  </select>
-                 </div>
+              <FormControl className={classes.formControl}>
+                  <Select
+                    value={age}
+                    onChange={handleChange}
+                    displayEmpty
+                    className={classes.select}
+                    inputProps={{ 'aria-label': 'Without label' }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Leave
+                    </MenuItem>
+                    <MenuItem value='1stslot'>First Half</MenuItem>
+                    <MenuItem value='2ndtslot'>Second Half</MenuItem>
+                  </Select>
+                  <FormHelperText>Select Leave</FormHelperText>
+                </FormControl>
               </div>
-
             </Grid>
           </Box>
           <Box className={classes.margin}>
             <Grid className={classes.fieldStyle}>
-              
               <div className={classes.form_txtarea}>
-                <textarea className={classes.textarea} >Reason</textarea>
+                <TextareaAutosize
+                  className={classes.textarea}
+                  rowsMax={4}
+                  aria-label="maximum height"
+                  placeholder="reason Here!!"
+                  style={{ height }}
+                />
              </div>
             </Grid>
           </Box>
-
           <Box className={classes.margin}>
-            <Grid container spacing={12} className={classes.fieldStyle}>
-
-
+            <Grid container  className={classes.fieldStyle}>
             <Grid item xs={12}>
 
                 <Button
