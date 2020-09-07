@@ -21,6 +21,9 @@ import DateFnsUtils from "@date-io/date-fns";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+
+import Autocomplete from "@material-ui/lab/Autocomplete";
+
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -28,10 +31,8 @@ import {
 
 import BackIcon from "../../../assets/images/Back.svg";
 import RichTextEditor from "../../../shared/richTextEditor";
-import PublishLater from "./PublishLater";
-import AnnouncementService from "../AnnouncementService";
-import { set } from "date-fns";
-
+import PublishLater from "../../newsAnnouncement/teacher/PublishLater";
+import NumberFormatCustom from "../../../shared/NumberFormatCustom";
 const useStyle = makeStyles((theme) => ({
   formStyle: {
     margin: "auto",
@@ -147,9 +148,16 @@ const useStyle = makeStyles((theme) => ({
       marginRight: "5px",
     },
   },
+  optionContainer: {
+    borderBottom: "1px solid #DCDCE0",
+    width: "100%",
+  },
+  optionBody: {
+    color: "rgba(0, 0, 0, 0.54)",
+  },
 }));
 
-const CreateAnnouncement = (props) => {
+const CreateNotification = (props) => {
   const classes = useStyle();
   const history = useHistory();
   const { id } = useParams();
@@ -162,12 +170,33 @@ const CreateAnnouncement = (props) => {
   const [description, setDescription] = useState("");
   const [errMessage, setError] = useState("");
   const [category, setCategory] = useState("");
+  const [payment, setPayment] = useState("");
+  const [openPayment, setOpenPayment] = useState(false);
   const [checkState, setCheckState] = useState({
     ...props.classState,
     "All Teachers": false,
     "All Parents": false,
     "Select All": false,
   });
+  const [searchData, setSearchData] = useState([
+    {
+      username: "devanshslnk98@gmail.com",
+      role: [{ name: "parent" }],
+      name: "Devansh Solanki",
+    },
+    {
+      username: "devanshStudent",
+      role: [{ name: "student" }],
+      name: "Devansh Student",
+      class: "Class 1",
+    },
+    {
+      username: "mihirshah@gmail.com",
+      role: [{ name: "parent" }, { name: "teacher" }],
+      name: "Mihir Shah",
+    },
+  ]);
+
   const categoryValues = [...Object.values(props.categories)];
 
   const checkStateLength = [
@@ -208,114 +237,81 @@ const CreateAnnouncement = (props) => {
   };
   let saveDataApi;
   useEffect(() => {
-    let isFormLoading = true;
-    // give first api call to create
-
-    // api call to save
-    const fetchDraft = async () => {
-      try {
-        const response = await AnnouncementService.fetchDraftAnnouncement(
-          { id },
-          props.token
-        );
-        if (response.status === 200) {
-          if (isFormLoading) {
-            let tempClassCheckState = {};
-            if (response.data.data.class_mapping) {
-              if (response.data.data.class_mapping.parents) {
-                tempClassCheckState["All Parents"] = true;
-                setChipData([...chipData, "All Parents"]);
-              }
-              if (response.data.data.class_mapping.teachers) {
-                tempClassCheckState["All Teachers"] = true;
-                setChipData([...chipData, "All Teachers"]);
-              }
-              response.data.data.class_mapping.class.forEach((classId) => {
-                tempClassCheckState[`Class ${classId}`] = true;
-
-                setChipData((chipData) => [...chipData, `Class ${classId}`]);
-              });
-            }
-            setCheckState({ ...checkState, ...tempClassCheckState });
-            setDescription(
-              response.data.data.main_content
-                ? response.data.data.main_content
-                : ""
-            );
-            setTitle(response.data.data.title ? response.data.data.title : "");
-            setSummary(
-              response.data.data.summary ? response.data.data.summary : ""
-            );
-            setEventDate(response.data.data.event_date);
-            setCategory(
-              props.categories[response.data.data.category_id]
-                ? props.categories[response.data.data.category_id]
-                : ""
-            );
-          }
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchDraft();
-    return () => {
-      isFormLoading = false;
-      // clearInterval(saveDataApi);
-    };
+    console.log("loaded");
+    //  Add fetchDraft when api is ready
   }, []);
   const saveDetails = async () => {
-    try {
-      let classMapping = { class: [] };
-      for (var state in checkState) {
-        if (
-          state !== "All Parents" &&
-          state !== "All Teachers" &&
-          state !== "Select All"
-        )
-          if (checkState[state] === true) {
-            classMapping.class.push(parseInt(state.split(" ")[1]));
-          }
-      }
-      if (checkState["All Parents"] === true) {
-        classMapping["parents"] = true;
-      }
-      if (checkState["All Teachers"] === true) {
-        classMapping["teachers"] = true;
-      }
-
-      const response = await AnnouncementService.saveAnnouncement(
-        { id },
-        {
-          title,
-          summary,
-          event_date: eventDate,
-          main_content: description,
-          published_to: classMapping,
-          category_id: parseInt(
-            Object.keys(props.categories).find(
-              (category_id) => props.categories[category_id] === category
-            )
-          ),
-        },
-        props.token
-      );
-
-      if (response.status === 200) {
-        console.log(response);
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    // try {
+    //   let classMapping = { class: [] };
+    //   for (var state in checkState) {
+    //     if (
+    //       state !== "All Parents" &&
+    //       state !== "All Teachers" &&
+    //       state !== "Select All"
+    //     )
+    //       if (checkState[state] === true) {
+    //         classMapping.class.push(parseInt(state.split(" ")[1]));
+    //       }
+    //   }
+    //   if (checkState["All Parents"] === true) {
+    //     classMapping["parents"] = true;
+    //   }
+    //   if (checkState["All Teachers"] === true) {
+    //     classMapping["teachers"] = true;
+    //   }
+    //   const response = await AnnouncementService.saveAnnouncement(
+    //     { id },
+    //     {
+    //       title,
+    //       summary,
+    //       event_date: eventDate,
+    //       main_content: description,
+    //       published_to: classMapping,
+    //       category_id: parseInt(
+    //         Object.keys(props.categories).find(
+    //           (category_id) => props.categories[category_id] === category
+    //         )
+    //       ),
+    //     },
+    //     props.token
+    //   );
+    //   if (response.status === 200) {
+    //     console.log(response);
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    // }
   };
   useEffect(() => {
-    saveDataApi = setInterval(() => {
-      // console.log(1);
-      saveDetails();
-    }, 10000);
-    return () => clearInterval(saveDataApi);
+    // call save data api when it is ready
+    // saveDataApi = setInterval(() => {
+    //   // console.log(1);
+    //   saveDetails();
+    // }, 10000);
+    // return () => clearInterval(saveDataApi);
   }, [title, eventDate, description, summary, checkState, category]);
+  const styleOptions = (option) => {
+    return (
+      <div className={classes.optionContainer}>
+        <Typography className={classes.optionTitle}>
+          {`${option.name} - ${option.role[0].name}`}
+        </Typography>
 
+        {option.class ? (
+          <>
+            <Typography className={classes.optionBody}>
+              {option.class}
+            </Typography>
+          </>
+        ) : (
+          ""
+        )}
+        <Typography className={classes.optionBody}>
+          {option.username}
+        </Typography>
+      </div>
+    );
+  };
   const handleChangeInput = (event) => {
     let name = event.target.name;
     if (name === "title") {
@@ -353,8 +349,26 @@ const CreateAnnouncement = (props) => {
   const handleDescription = (data) => {
     setDescription(data);
   };
+
   const handleCategoryChange = (event) => {
+    if (event.target.value === "payment") {
+      setOpenPayment(true);
+    } else {
+      setOpenPayment(false);
+      setPayment("");
+    }
     setCategory(event.target.value);
+  };
+
+  const handleChangePayment = (event) => {
+    setPayment(event.target.value);
+  };
+
+  const handleSearchChange = (event, value) => {
+    console.log(value);
+  };
+  const callSearchAPI = (event) => {
+    console.log(event.target.value);
   };
 
   const handleClassChipDelete = (data) => {
@@ -389,52 +403,51 @@ const CreateAnnouncement = (props) => {
   };
 
   const publishData = async (publisedDate, status, mediaURL) => {
-    try {
-      let classMapping = { class: [] };
-      for (var state in checkState) {
-        if (
-          state !== "All Parents" &&
-          state !== "All Teachers" &&
-          state !== "Select All"
-        )
-          if (checkState[state] === true) {
-            classMapping.class.push(parseInt(state.split(" ")[1]));
-          }
-      }
-      if (checkState["All Parents"] === true) {
-        classMapping["parents"] = true;
-      }
-      if (checkState["All Teachers"] === true) {
-        classMapping["teachers"] = true;
-      }
-
-      // console.log(classMapping, title, summary, eventDate, description);
-      console.log(mediaURL);
-      const response = await AnnouncementService.publishAnnouncement(
-        { id },
-        {
-          title,
-          summary,
-          status,
-          event_date: eventDate,
-          main_content: description,
-          published_date: publisedDate,
-          published_to: classMapping,
-          media_url: mediaURL,
-          category_id: parseInt(
-            Object.keys(props.categories).find(
-              (category_id) => props.categories[category_id] === category
-            )
-          ),
-        },
-        props.token
-      );
-      if (response.status === 200) {
-        history.replace("/news");
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    // try {
+    //   let classMapping = { class: [] };
+    //   for (var state in checkState) {
+    //     if (
+    //       state !== "All Parents" &&
+    //       state !== "All Teachers" &&
+    //       state !== "Select All"
+    //     )
+    //       if (checkState[state] === true) {
+    //         classMapping.class.push(parseInt(state.split(" ")[1]));
+    //       }
+    //   }
+    //   if (checkState["All Parents"] === true) {
+    //     classMapping["parents"] = true;
+    //   }
+    //   if (checkState["All Teachers"] === true) {
+    //     classMapping["teachers"] = true;
+    //   }
+    //   // console.log(classMapping, title, summary, eventDate, description);
+    //   console.log(mediaURL);
+    //   const response = await AnnouncementService.publishAnnouncement(
+    //     { id },
+    //     {
+    //       title,
+    //       summary,
+    //       status,
+    //       event_date: eventDate,
+    //       main_content: description,
+    //       published_date: publisedDate,
+    //       published_to: classMapping,
+    //       media_url: mediaURL,
+    //       category_id: parseInt(
+    //         Object.keys(props.categories).find(
+    //           (category_id) => props.categories[category_id] === category
+    //         )
+    //       ),
+    //     },
+    //     props.token
+    //   );
+    //   if (response.status === 200) {
+    //     history.replace("/news");
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    // }
   };
   const handlePublishLater = (laterEventDate) => {
     clearInterval(saveDataApi);
@@ -475,15 +488,15 @@ const CreateAnnouncement = (props) => {
                 alt="Back"
                 className={classes.backImg}
                 onClick={() => {
-                  saveDetails();
-                  history.push("/news");
+                  // saveDetails();
+                  history.push("/notifications");
                 }}
               />
               <Typography
                 variant="h5"
                 className={`${classes.themeColor} ${classes.titleText}`}
               >
-                Create Announcement
+                Create Notification
               </Typography>
             </div>
           </Box>
@@ -553,27 +566,47 @@ const CreateAnnouncement = (props) => {
               </Select>
             </FormControl>
           </Box>
+          {openPayment ? (
+            <Box className={classes.margin}>
+              <FormControl className={classes.fieldStyle}>
+                <TextField
+                  id="payment"
+                  name="payment"
+                  label="Amount"
+                  className={classes.inputBorder}
+                  value={payment}
+                  onChange={handleChangePayment}
+                  required={true}
+                  InputProps={{
+                    inputComponent: NumberFormatCustom,
+                  }}
+                />
+              </FormControl>
+            </Box>
+          ) : (
+            ""
+          )}
           <Box className={classes.margin}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container className={classes.fieldStyle}>
-                <Grid item xs={12}>
-                  <KeyboardDatePicker
-                    id="eventDate"
-                    label="Event Date"
-                    variant="dialog"
-                    minDate={new Date()}
-                    format="MM/dd/yyyy"
-                    value={eventDate}
-                    onChange={handleEventDate}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                    }}
-                    className={classes.datePicker}
+            <FormControl className={classes.fieldStyle}>
+              <Autocomplete
+                multiple
+                id="tags-standard"
+                options={searchData}
+                onChange={handleSearchChange}
+                onInputChange={callSearchAPI}
+                getOptionLabel={(option) => option.username}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Search users"
                   />
-                </Grid>
-              </Grid>
-            </MuiPickersUtilsProvider>
+                )}
+                renderOption={(option) => styleOptions(option)}
+              />
+            </FormControl>
           </Box>
+
           <Box className={`${classes.margin} ${classes.showInContainer}`}>
             <Box
               component="ul"
@@ -768,4 +801,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(CreateAnnouncement);
+export default connect(mapStateToProps)(CreateNotification);
