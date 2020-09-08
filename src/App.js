@@ -23,6 +23,9 @@ import Gallery from "./app/gallery/GalleryIndex";
 import ImageUpload from "./app/gallery/ImageUpload";
 import Profile from "./app/profile/Profile";
 
+// for attendance
+import Attendance from "./app/Attendance/Attendance";
+
 import "react-image-lightbox/style.css";
 import Faq from "./app/faq/FaqContainer";
 import FaqEditor from "./app/faq/teacher/FaqEditor";
@@ -57,7 +60,7 @@ function App(props) {
           <Route
             path="/attendance"
             exact
-            component={() => <Typography>Attendance Home</Typography>}
+            component={Attendance}
           />
           <Route
             path="/events"

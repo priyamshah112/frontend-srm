@@ -1,0 +1,39 @@
+
+.tableRowHeader .MuiTableCell-head {
+    padding: 5px !important;
+    line-height: 1rem !important;
+}
+ 
+.tableRowHeader p {
+    margin: 0px;
+}
+.tableRowHeader span {
+    color: #d1d1d6;
+}
+.tableBottom {
+    padding: 5px;
+    float: right; 
+    display: flex;
+    margin-bottom: 50px;
+}
+.stateRow {
+    display: flex;
+    padding-right: 30px;
+}
+.stateRow .MuiSvgIcon-root, .statusTable .MuiSvgIcon-root {
+    font-size: 10px;
+    align-self: center;
+    padding: 5px;
+}
+.presentStatus {
+    color: #79c62b;
+}
+.holidayStatus {
+    color: #003d8c;
+}
+.absentStatus {
+    color: #ff2623;
+}
+.emptyStatus {
+    color: #d1d1d6;
+}
