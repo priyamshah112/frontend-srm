@@ -97,7 +97,7 @@ const GalleryIndex = (props) => {
           props.token,
           currentPage
         );
-        console.log(response.data.data.data[0]);
+
         if (response.status === 200) {
           setTileData([...tileData, ...response.data.data.data]);
           if (

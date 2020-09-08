@@ -409,7 +409,7 @@ const CreateAnnouncement = (props) => {
       }
 
       // console.log(classMapping, title, summary, eventDate, description);
-      console.log(mediaURL);
+
       const response = await AnnouncementService.publishAnnouncement(
         { id },
         {
@@ -460,7 +460,7 @@ const CreateAnnouncement = (props) => {
     }
 
     const status = "published";
-    console.log(mediaURL);
+
     publishData(new Date().toISOString(), status, mediaURL);
   };
 
