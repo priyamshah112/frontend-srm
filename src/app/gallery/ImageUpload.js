@@ -8,6 +8,7 @@ import GalleryService from "./GalleryService";
 import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import imageCompression from "browser-image-compression";
 
 const useStyles = makeStyles((theme) => ({
   snackBar: {
@@ -41,9 +42,20 @@ const ImageUpload = (props) => {
 
   const handleUpload = async () => {
     setIsUploading(true);
+
+    const options = {
+      maxSizeMB: 0.5,
+      useWebWorker: true,
+    };
     for (var image in fileList) {
       try {
-        const imageString = await toBase64(fileList[image]);
+        console.log(fileList[image]);
+        const compressedImage = await imageCompression(
+          fileList[image],
+          options
+        );
+
+        const imageString = await toBase64(compressedImage);
 
         const response = await GalleryService.uploadImage(
           { img_name: imageString },

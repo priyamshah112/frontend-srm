@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 import ParentNotifications from "./parent/ParentNotifications";
 import TeacherNotifications from "./teacher/TeacherNotifications";
-import CreateNotification from "./teacher/CreateNotification";
 
 const useStyles = makeStyles((theme) => ({
   notificationRoot: {

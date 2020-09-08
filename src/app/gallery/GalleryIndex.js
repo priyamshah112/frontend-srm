@@ -207,34 +207,39 @@ const GalleryIndex = (props) => {
             <GridList
               cellHeight={200}
               spacing={2}
-              cols={3}
+              cols={2}
               className={classes.gridList}
             >
-              {tileData.map((tile, index) => (
-                <GridListTile key={tile.id} style={{ listStyleType: "none" }}>
-                  <img
-                    src={`${REACT_APP_BACKEND_IMAGE_URL}/${tile.img_path}/${tile.img_name}`}
-                    alt={tile.img_name}
-                    className={classes.image}
-                    cols={2}
-                    onClick={() => handleOpenLightbox(index)}
-                  />
-                  <GridListTileBar
-                    title={""}
-                    titlePosition="bottom"
-                    actionIcon={
-                      <IconButton
-                        className={classes.icon}
-                        onClick={() => handleDeleteImage(tile.id)}
-                      >
-                        <DeleteOutlineOutlinedIcon />
-                      </IconButton>
-                    }
-                    actionPosition="right"
-                    className={classes.titleBar}
-                  />
-                </GridListTile>
-              ))}
+              {tileData.map((tile, index) => {
+                return (
+                  <GridListTile
+                    key={tile.id}
+                    style={{ listStyleType: "none" }}
+                    cols={1}
+                  >
+                    <img
+                      src={`${REACT_APP_BACKEND_IMAGE_URL}/${tile.img_path}/${tile.img_name}`}
+                      alt={tile.img_name}
+                      className={classes.image}
+                      onClick={() => handleOpenLightbox(index)}
+                    />
+                    <GridListTileBar
+                      title={""}
+                      titlePosition="bottom"
+                      actionIcon={
+                        <IconButton
+                          className={classes.icon}
+                          onClick={() => handleDeleteImage(tile.id)}
+                        >
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
+                      }
+                      actionPosition="right"
+                      className={classes.titleBar}
+                    />
+                  </GridListTile>
+                );
+              })}
             </GridList>
           </InfiniteScroll>
           <br />

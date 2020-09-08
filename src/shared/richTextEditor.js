@@ -28,8 +28,9 @@ const RichTextEditor = (props) => {
             "insertdatetime media table paste code wordcount",
           ],
           forced_root_block_attrs: {
-            style: "font-family: Avenir; line-height: 8px;",
+            style: "font-family: Avenir; margin-top:10px;margin-bottom:10px;",
           },
+          font_formats: "Avenir=avenir,sans-serif;",
           menubar: false,
           images_upload_url: "postAcceptor.php",
           toolbar:
