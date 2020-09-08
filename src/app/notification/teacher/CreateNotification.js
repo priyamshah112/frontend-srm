@@ -178,6 +178,8 @@ const CreateNotification = (props) => {
     "All Parents": false,
     "Select All": false,
   });
+  const [openUserSearch, setOpenUserSearch] = useState(false);
+
   const [searchData, setSearchData] = useState([
     {
       username: "devanshslnk98@gmail.com",
@@ -196,6 +198,7 @@ const CreateNotification = (props) => {
       name: "Mihir Shah",
     },
   ]);
+  const loadingUsers = searchData.length !== 0;
 
   const categoryValues = [...Object.values(props.categories)];
 
@@ -592,6 +595,7 @@ const CreateNotification = (props) => {
                 multiple
                 id="tags-standard"
                 options={searchData}
+                loading={loadingUsers}
                 onChange={handleSearchChange}
                 onInputChange={callSearchAPI}
                 getOptionLabel={(option) => option.username}
