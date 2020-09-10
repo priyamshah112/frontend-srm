@@ -47,46 +47,19 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '10px',
   },
 }));
-const ParentPhone = (props) => {
+const ParentAddress = (props) => {
   const classes = useStyles();
   return (
     <>
       <div className={classes.profileContainer}>
-        <ProfileCard title='Phone'>
+        <ProfileCard title='Address'>
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
-                <Typography className={classes.labelText}>Primary -</Typography>
-              </div>
-              <div className={classes.contentDiv}>
-                <Typography
-                  className={`${classes.normalText} ${classes.margin5}`}
-                >
-                  +91 95847 93847
+                <Typography className={`${classes.normalText}`}>
+                  #18, 1st A Main, Samrat Layout, Arekere, Bengaluru - 560076
                 </Typography>
               </div>
-            </div>
-            <div className={`${classes.mainDiv} ${classes.mainMarginLeft}`}>
-              <div className={classes.contentDiv}>
-                <Typography className={classes.labelText}>
-                  Secondary -
-                </Typography>
-              </div>
-              <div className={classes.contentDiv}>
-                <Typography
-                  className={`${classes.normalText} ${classes.margin5}`}
-                >
-                  +91 95844 12346
-                </Typography>
-              </div>
-            </div>
-          </Grid>
-          <Grid container>
-            <div className={`${classes.mainDiv} ${classes.mainMarginTop}`}>
-              <Typography className={classes.labelText}>
-                NOTE - Only secondary numbers can be edited. Please click on
-                “Edit Button” for changing secondary numbers.
-              </Typography>
             </div>
           </Grid>
         </ProfileCard>
@@ -95,4 +68,4 @@ const ParentPhone = (props) => {
   );
 };
 
-export default ParentPhone;
+export default ParentAddress;

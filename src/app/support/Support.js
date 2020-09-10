@@ -1,7 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import ParentProfile from './parent/ParentProfile';
 import { connect } from 'react-redux';
+import AdminSupport from './admin/AdminSupport';
+import ParentSupport from './parent/ParentSupport';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -15,17 +16,21 @@ const useStyles = makeStyles((theme) => ({
       width: 0,
     },
   },
-  profileContainer: {
+  supportContainer: {
     width: '95%',
     margin: '0 auto',
   },
 }));
-const Profile = (props) => {
+const Support = (props) => {
   const classes = useStyles();
   const selectedRole = props.selectedRole;
   return (
     <div className={classes.container}>
-      {selectedRole === 'parent' ? <ParentProfile /> : ''}
+      {selectedRole === 'admin' || selectedRole === 'teacher' ? (
+        <AdminSupport />
+      ) : (
+        <ParentSupport />
+      )}
       <br />
       <br />
       <br />
@@ -40,4 +45,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Profile);
+export default connect(mapStateToProps)(Support);

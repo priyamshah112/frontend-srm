@@ -47,12 +47,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '10px',
   },
 }));
-const ParentPhone = (props) => {
+const ParentEmail = (props) => {
   const classes = useStyles();
   return (
     <>
       <div className={classes.profileContainer}>
-        <ProfileCard title='Phone'>
+        <ProfileCard title='Email'>
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
@@ -62,7 +62,7 @@ const ParentPhone = (props) => {
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  +91 95847 93847
+                  satmakur@gmail.com
                 </Typography>
               </div>
             </div>
@@ -76,7 +76,7 @@ const ParentPhone = (props) => {
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  +91 95844 12346
+                  satmakur@gmail.com
                 </Typography>
               </div>
             </div>
@@ -84,8 +84,8 @@ const ParentPhone = (props) => {
           <Grid container>
             <div className={`${classes.mainDiv} ${classes.mainMarginTop}`}>
               <Typography className={classes.labelText}>
-                NOTE - Only secondary numbers can be edited. Please click on
-                “Edit Button” for changing secondary numbers.
+                NOTE - Only secondary emails can be edited. Please click on
+                “Edit Button” for changing secondary emails.
               </Typography>
             </div>
           </Grid>
@@ -95,4 +95,4 @@ const ParentPhone = (props) => {
   );
 };
 
-export default ParentPhone;
+export default ParentEmail;

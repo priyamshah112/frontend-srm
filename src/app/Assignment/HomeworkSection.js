@@ -14,7 +14,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import HomeworkService from './HomeworkService';
-import AddIcon from '../../assets/images/Add.svg';
+import AddIcon from '../../assets/images/Filled Add.svg';
 import HomeworkCard from './teacher/HomeworkCard';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
       float: 'right',
       fontSize: '14px',
       padding: '5px',
+      fontWeight: 500,
     },
     '& img': {
       margin: '5px',

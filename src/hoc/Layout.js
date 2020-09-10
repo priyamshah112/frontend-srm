@@ -392,6 +392,12 @@ const Layout = (props) => {
       linkTo: '/faq',
       itemIndex: 12,
     },
+    {
+      name: 'Support',
+      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
+      linkTo: '/support',
+      itemIndex: 13,
+    },
   ];
 
   /*

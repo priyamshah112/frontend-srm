@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 import * as moment from 'moment';
 import { dateDiff } from '../../../shared/datediff';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '../../../assets/images/Edit Button.svg';
+import EditIcon from '../../../assets/images/Edit.svg';
 import {
   Box,
   CardHeader,
@@ -24,7 +24,7 @@ const useStyle = makeStyles((theme) => ({
     width: '100%',
     margin: 'auto',
     marginTop: '20px',
-    borderRadius: '10px',
+    borderRadius: 0,
     boxShadow: 'none',
   },
   reminder: {
@@ -106,6 +106,52 @@ const useStyle = makeStyles((theme) => ({
     marginLeft: 'auto',
     cursor: 'pointer',
   },
+  cardHeader: {
+    padding: '20px 20px 10px',
+  },
+  labelText: {
+    fontSize: '18px',
+    fontStyle: 'normal',
+    color: '#8E8E93',
+  },
+
+  editBtnDiv: {
+    marginLeft: 'auto',
+    transform: 'translateY(4px)',
+  },
+  editBtn: {
+    width: '19px',
+    height: '19px',
+    paddingLeft: '10px',
+    transform: 'translateY(4px)',
+    cursor: 'pointer',
+  },
+  normalText: {
+    fontSize: '14px',
+    fontStyle: 'normal',
+    color: `${theme.palette.common.blackRussian}`,
+    fontWeight: 500,
+    opacity: 1,
+  },
+  cardContent: {
+    padding: '20px 20px 12px !important',
+  },
+  highlightedText: {
+    fontWeight: 500,
+    fontSize: '18px',
+  },
+  textAlignRight: {
+    textAlign: 'right',
+  },
+  imgGrid: {
+    position: 'relative',
+  },
+  imgDiv: {
+    bottom: 0,
+    right: 0,
+    position: 'absolute',
+    margin: '16px 0',
+  },
 }));
 
 const HomeworkCard = (props) => {
@@ -116,7 +162,14 @@ const HomeworkCard = (props) => {
     published: '#7B72AF',
     active: 'green',
   };
-  const { id, status, title, main_content, submission_date } = props.homework;
+  const {
+    id,
+    status,
+    title,
+    main_content,
+    submission_date,
+    created_date,
+  } = props.homework;
 
   const handleEditHomework = () => {
     history.push(`/create-homework/${id}`);
@@ -148,6 +201,65 @@ const HomeworkCard = (props) => {
         className={classes.cardContainer}
       >
         <Card className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            {/* {props.children} */}
+            <Grid container>
+              <Grid item xs={8}>
+                <span>
+                  {title ? (
+                    <Typography className={classes.highlightedText}>
+                      {title}
+                    </Typography>
+                  ) : (
+                    <Typography className={classes.highlightedText}>
+                      N/A
+                    </Typography>
+                  )}
+                </span>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography
+                  className={`${classes.textAlignRight} ${classes.highlightedText}`}
+                >
+                  Created at: {moment(created_date).format('DD MMM YY')}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={8}></Grid>
+              <Grid item xs={4}>
+                <Typography
+                  className={`${classes.labelText} ${classes.textAlignRight}`}
+                >
+                  Status :{' '}
+                  <span style={{ textTransform: 'capitalize' }}>{status}</span>
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={11}>
+                <Typography className={classes.labelText}>
+                  {main_content ? (
+                    <div dangerouslySetInnerHTML={{ __html: main_content }} />
+                  ) : (
+                    <Typography style={{ margin: '16px 0' }}>N/A</Typography>
+                  )}
+                </Typography>
+              </Grid>
+              <Grid item xs={1} className={classes.imgGrid}>
+                <div className={`${classes.imgDiv} ${classes.textAlignRight}`}>
+                  <img
+                    src={EditIcon}
+                    className={classes.editBtn}
+                    onClick={handleEditHomework}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+
+        {/* <Card className={classes.card}>
           <CardHeader
             className={classes.NewsHeader}
             action={
@@ -209,6 +321,7 @@ const HomeworkCard = (props) => {
             </Grid>
           </CardActions>
         </Card>
+       */}
       </Grid>
     </>
   );

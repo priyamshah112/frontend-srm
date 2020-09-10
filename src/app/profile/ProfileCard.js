@@ -9,58 +9,85 @@ import {
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 
-import taskBookIcon from '../../assets/images/home/teacher/TaskBook.svg';
 import userIcon from '../../assets/images/profile/User.svg';
 import phoneIcon from '../../assets/images/profile/Phone number.svg';
 import emailIcon from '../../assets/images/profile/Email.svg';
 import locationIcon from '../../assets/images/profile/location.svg';
-import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
-import * as moment from 'moment';
-import { useHistory } from 'react-router-dom';
-import { closestIndexTo } from 'date-fns/fp';
-import editIcon from '../../assets/images/Edit Button.svg';
+import editIcon from '../../assets/images/Edit.svg';
 
 const useStyle = makeStyles((theme) => ({
+  profileDiv: {
+    marginTop: '32px',
+  },
   header: {
     display: 'flex',
   },
+  cardHeader: {
+    marginLeft: '4px',
+  },
   profileTitle: {
     display: 'inline',
-    marginLeft: '10px',
+    marginLeft: '5px',
     fontWeight: 600,
-    fontSize: '19px',
+    textTransform: 'uppercase',
   },
-  editBtn: {
+  editBtnDiv: {
     marginLeft: 'auto',
-    height: '22px',
+    marginRight: '10px',
     transform: 'translateY(2px)',
   },
+  editBtn: {
+    width: '19px',
+    height: '19px',
+    transform: 'translateY(2px)',
+    cursor: 'pointer',
+  },
   iconStyle: {
-    transform: 'translateY(3px)',
+    width: '19px',
+    height: '19px',
+    transform: 'translateY(4px)',
+  },
+  profile: {
+    marginTop: '12px',
+  },
+  card: {
+    boxShadow: 'none',
+    borderRadius: '10px',
+  },
+  cardContent: {
+    padding: '20px !important',
   },
 }));
 
 const ProfileCard = (props) => {
   const classes = useStyle();
+  const title = props.title;
+  const titleIcon = {
+    Phone: phoneIcon,
+    Email: emailIcon,
+    Address: locationIcon,
+    Children: userIcon,
+    'Associated Accounts': userIcon,
+  };
   return (
-    <>
+    <div className={classes.profileDiv}>
       <div className={classes.header}>
         <div className={classes.cardHeader}>
-          <img src={taskBookIcon} className={classes.iconStyle} />
-          <Typography className={classes.profileTitle}>
-            {props.title}
-          </Typography>
+          <img src={titleIcon[title]} className={classes.iconStyle} />
+          <Typography className={classes.profileTitle}>{title}</Typography>
         </div>
-        <div className={classes.editBtn}>
+        <div className={classes.editBtnDiv}>
           <img src={editIcon} className={classes.editBtn} />
         </div>
       </div>
-      <div className={classes.homeworks}>
-        <Card>
-          <CardContent>{props.children}</CardContent>
+      <div className={classes.profile}>
+        <Card className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            {props.children}
+          </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 };
 

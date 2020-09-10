@@ -39,6 +39,9 @@ const useStyle = makeStyles((theme) => ({
   formStyle: {
     margin: 'auto',
     width: '95%',
+
+    marginLeft: '20px',
+    marginRight: '20px',
     backgroundColor: 'white',
     justifyContent: 'center',
     textAlign: 'center',
@@ -46,7 +49,7 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: 'left',
-    paddingLeft: '10px',
+    transform: 'translate(0px, 7px)',
     cursor: 'pointer',
   },
   adornmentColor: {
@@ -60,8 +63,12 @@ const useStyle = makeStyles((theme) => ({
   errorColor: {
     color: 'red',
   },
+  titleText: {
+    textAlign: 'center',
+    margin: 'auto',
+  },
   fieldStyle: {
-    width: '90%',
+    width: '100%',
     margin: 'auto',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
@@ -132,6 +139,14 @@ const useStyle = makeStyles((theme) => ({
   publishBtns: {
     textAlign: 'right',
     justifyContent: 'right',
+  },
+
+  sideMargins: {
+    marginLeft: '20px',
+    marginRight: '20px',
+  },
+  sideMarginright: {
+    marginRight: '50px',
   },
   margin: {
     marginTop: '30px',
@@ -429,7 +444,7 @@ const CreateHomework = (props) => {
     <>
       <div>
         <form className={classes.formStyle} onSubmit={submitForm}>
-          <Box className={classes.margin} pt={2}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
             <div>
               <img
                 src={BackIcon}
@@ -456,7 +471,7 @@ const CreateHomework = (props) => {
           ) : (
             ''
           )}
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <FormControl className={classes.fieldStyle}>
               <TextField
                 id='title'
@@ -469,7 +484,7 @@ const CreateHomework = (props) => {
               />
             </FormControl>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
                 <Grid item xs={12}>
@@ -496,7 +511,7 @@ const CreateHomework = (props) => {
               </Grid>
             </MuiPickersUtilsProvider>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Box
               component='ul'
               className={`${classes.paperShowIn} ${classes.fieldStyle}`}
@@ -520,10 +535,10 @@ const CreateHomework = (props) => {
               })}
             </Box>
           </Box>
-          <Box>
+          <Box className={classes.sideMarginright}>
             <Paper
               component='ul'
-              className={`${classes.paper} ${classes.paperBoxShadow} ${classes.fieldStyle}`}
+              className={`${classes.paper} ${classes.paperBoxShadow} ${classes.fieldStyle} ${classes.sideMargins}`}
             >
               <FormControl>
                 <FormGroup row className={classes.contentCenter}>
@@ -559,9 +574,9 @@ const CreateHomework = (props) => {
               </FormControl>
             </Paper>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Grid className={classes.fieldStyle}>
-              <Typography variant='h6' className={classes.textAlignLeft}>
+              <Typography className={classes.textAlignLeft}>
                 Description
               </Typography>
               <RichTextEditor
@@ -571,7 +586,7 @@ const CreateHomework = (props) => {
               />
             </Grid>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Grid
               container
               className={classes.fieldStyle}
@@ -602,19 +617,8 @@ const CreateHomework = (props) => {
                 </Button>
               </Grid>
               <Grid item sm={6} xs={12} className={classes.textAlignLeft}>
-                <Button
-                  id='cancelBtn'
-                  variant='contained'
-                  onClick={() => {
-                    history.push('/assignment');
-                  }}
-                  className={`${
-                    classes.fieldStyle
-                  } ${'publishBtn'} ${'publishLaterBtn'}`}
-                  disableElevation
-                >
-                  Cancel
-                </Button>
+                <br />
+                <br />
               </Grid>
 
               <br />
