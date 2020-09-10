@@ -7,32 +7,22 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import Chip from "@material-ui/core/Chip";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import DateFnsUtils from "@date-io/date-fns";
 import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
-import BackIcon from "../../../assets/images/Back.svg";
-import RichTextEditor from "../../../shared/richTextEditor";
-import { set } from "date-fns";
+
 import LeaveService from "../LeaveService";
 const height = 85
 
@@ -171,44 +161,40 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 const StudentLeave = (props) => {
-  const classes = useStyle();
   const history = useHistory();
   const { id } = useParams();
+  const classes = useStyle();
 
-  const [scheduler, setScheduler] = useState(false);
   const [openPubLater, setOpenPubLater] = useState(false);
   const [eventDate, setEventDate,selectedDate] = useState(null);
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [description, setDescription] = useState("");
-  const [errMessage, setError] = useState("");
-  const [category, setCategory] = useState("");
+ 
   const status = "active";
   const [age, setAge] = React.useState('');
+  const [reason, HandleareaContent] = React.useState('');
+  const [teachevalue, Teacherdata] = React.useState('');
+  const [teacherval, Teacher] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('female');
+  const [allTeacher,setTeacher] = useState([]);
 
   useEffect(() => {
-    let isFormLoading = true;
-    // give first api call to create
-
-    // api call to save
-    
-    
+    let isLoading = true;
+    const fetchTeacher = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await LeaveService.fetchAllTeacher(token);
+        if (isLoading) {
+          setTeacher([...allTeacher, ...response.data.data]);
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+    };
+    fetchTeacher();
     return () => {
-      isFormLoading = false;
-      // clearInterval(saveDataApi);
+      isLoading = false;
     };
   }, []);
 
-  const handleChangeInput = (event) => {
-    let name = event.target.slot.value.name;
-    if (name === "title") {
-      setTitle(event.target.slot.value.value);
-    } else {
-      setSummary(event.target.value);
-    }
-  };
 
   const handleEventDate = (date) => {
     setEventDate(date);
@@ -218,82 +204,50 @@ const StudentLeave = (props) => {
     setEventDate(date);
   };
 
-
-  const handleDescription = (data) => {
-    setDescription(data);
-  };
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
-  };
-
-  const publishData = async (publisedDate, status='', data) => {
-    try {   
-
-      let data11 = {
-        "leavearr" : {
+  const publishData = async (publisedDate, status='', data,type,slot,content) => {
+    try {    
+      
+    const response = await LeaveService.postLeave(
+        { id },
+        {
+          "leavearr" : {
             "start_date": data.target.eventDate.value,
             "end_date": data.target.enddate.value,
-            "half_day": data.target.enddate.leave=='h_day'?true:false,
-            "full_day": data.target.enddate.leave=='f_day'?true:false,
-            "half_day_half": data.target.enddate.slot,
-            "sanctioner_id": 5,
-            "reason": data.target.enddate.content
+            "half_day": slot=='h_day'?true:false,
+            "full_day": slot=='f_day'?true:false,
+            "half_day_half": type,
+            "sanctioner_id": teachevalue,
+            "reason": content
             }
-        };
-        
-     
-      console.log(data11,'------------------------')
-      // const response = await LeaveService.postLeave(
-      //   { id },
-      //   {
-      //     "leavearr" : {
-      //         "start_date": data.target.eventDate.value,
-      //         "end_date": data.target.enddate.value,
-      //         "half_day": data.target.enddate.content=='h_day'?true:false,
-      //         "full_day": data.target.enddate.content=='f_day'?true:false,
-      //         "half_day_half": data.target.enddate.slot,
-      //         "sanctioner_id": 5,
-      //         "reason": data.target.enddate.content
-      //         }
-      //     },
-      //   props.token
-      // );
+          },
+        props.token
+      );
       
-      // if (response.status === 200) {
-      //   history.replace("/leave");
-      // }
+      if (response.status === 200) {
+        history.replace("/leave");
+      }
     } catch (e) {
       console.log(e);
     }
   };
   
-
-  const handleClosePubLater = () => {
-    setOpenPubLater(false);
-  };
 const submitForm = async (event) => {
-
-  console.log(event.target.slot.value,'=============')
-
-  publishData(new Date().toISOString(), status, event);
+  let type= event.target.type.value;
+  let slot= event.target.slot.value;
+  let content = event.target.content.value;
+  publishData(new Date().toISOString(), status, event,type,slot,content);
   event.preventDefault();
 }
 
 const handleChange = (event) => {
   setAge(event.target.value);
 };
-const handleChangeredio = (event) => {
-  setValue(event.target.value);
+// const HandleareaContent = (event) => {
+//   content(event.target.value);
+// };
+const handleChangeTeacher = (event) => {
+  Teacherdata(event.target.value);
 };
-
-const handleClose = () => {
-  setOpen(false);
-};
-
-const handleOpen = () => {
-  setOpen(true);
-};
- 
 
   return (
     <>
@@ -321,8 +275,6 @@ const handleOpen = () => {
               </Grid>
             </MuiPickersUtilsProvider>
           </Box>
-
-
           <Box className={classes.margin}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
@@ -344,7 +296,6 @@ const handleOpen = () => {
               </Grid>
             </MuiPickersUtilsProvider>
           </Box>
-
         </div>
 
           <Box className={classes.margin}>
@@ -361,25 +312,48 @@ const handleOpen = () => {
                 </FormControl>
 
               </Typography>
+              
               <FormControl className={classes.formControl}>
                   <Select
                     value={age}
                     onChange={handleChange}
                     displayEmpty
                     className={classes.select}
-                    inputProps={{ 'aria-label': 'Without label' }}
+                    input={<Input name="type" id="type" />}
                   >
                     <MenuItem value="" disabled>
                       Select Leave
                     </MenuItem>
-                    <MenuItem value='1stslot'>First Half</MenuItem>
-                    <MenuItem value='2ndtslot'>Second Half</MenuItem>
+                    <MenuItem value='0'>First Half</MenuItem>
+                    <MenuItem value='1'>Second Half</MenuItem>
                   </Select>
                   <FormHelperText>Select Leave</FormHelperText>
                 </FormControl>
+                <Box m={2} />
+                <FormControl className={classes.formControl}>
+                  <Select
+                    value={teacherval}
+                    onChange={handleChangeTeacher}
+                    displayEmpty
+                    className={classes.select}
+                    input={<Input name="teachers" id="teachers" />}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Teacher
+                    </MenuItem>
+                    {allTeacher.map((teacher) => (
+                      <MenuItem value={teacher.id}>{teacher.username}</MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>Select Teacher</FormHelperText>
+                </FormControl>
+             
+                
               </div>
+              
             </Grid>
           </Box>
+
           <Box className={classes.margin}>
             <Grid className={classes.fieldStyle}>
               <div className={classes.form_txtarea}>
@@ -389,12 +363,14 @@ const handleOpen = () => {
                   aria-label="maximum height"
                   placeholder="reason Here!!"
                   style={{ height }}
+                  onChange={HandleareaContent}
+                  name="content"
                 />
              </div>
             </Grid>
           </Box>
           <Box className={classes.margin}>
-            <Grid container  className={classes.fieldStyle}>
+            <Grid container className={classes.fieldStyle}>
             <Grid item xs={12}>
 
                 <Button

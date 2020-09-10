@@ -26,6 +26,7 @@ import 'react-image-lightbox/style.css';
 import Faq from './app/faq/FaqContainer';
 import FaqEditor from './app/faq/teacher/FaqEditor';
 import Leave from './app/leave/LeaveContainer';
+import LeaveCreateContainer from './app/leave/LeaveCreateContainer';
 
 
 function App(props) {
@@ -100,8 +101,8 @@ function App(props) {
             exact
             component={() => <Typography>Timetable Home</Typography>}
           />
-
-          <Route path='/leave'exact  component={Leave}/>
+          <Route path='/leave/'exact  component={Leave}/>
+          <Route path='/leave/create/'exact  component={LeaveCreateContainer}/>
           <Route path='/faq' exact component={Faq} />
           <Route path='/faq/create/' exact component={FaqEditor} />
           <Route path='/faq/edit/:id' exact component={FaqEditor} />

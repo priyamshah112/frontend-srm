@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 
 import TeacherLeave from './teacher/TeacherLeave';
-import StudentFLeave from './student/StudentHomeLeave';
+import StudentFLeave from './student/StudentLeave';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -16,10 +16,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FaqContainer = (props) => {
+const LeaveCreateContainer = (props) => {
   const classes = useStyles();
   const selectedRole = props.selectedRole;
-  
   return (
     <>
       <div className={classes.container}>
@@ -39,4 +38,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(FaqContainer);
+export default connect(mapStateToProps)(LeaveCreateContainer);
