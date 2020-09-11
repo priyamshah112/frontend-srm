@@ -18,6 +18,9 @@ import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import NativeSelect from '@material-ui/core/NativeSelect';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -158,6 +161,9 @@ const useStyle = makeStyles((theme) => ({
     borderBottom: '1px solid #7b72af',
     padding: '5px 0px',
   },
+  topdate:{
+    marginTop:'18px',
+  }
 }));
 
 const StudentLeave = (props) => {
@@ -166,15 +172,16 @@ const StudentLeave = (props) => {
   const classes = useStyle();
 
   const [openPubLater, setOpenPubLater] = useState(false);
-  const [eventDate, setEventDate,selectedDate] = useState(null);
+  const [eventDate, setEventDate] = useState(null);
+  const [evenTotDate, setEventToDate] = useState(null);
  
   const status = "active";
   const [age, setAge] = React.useState('');
   const [reason, HandleareaContent] = React.useState('');
   const [teachevalue, Teacherdata] = React.useState('');
   const [teacherval, Teacher] = React.useState('');
-  const [open, setOpen] = React.useState(false);
   const [allTeacher,setTeacher] = useState([]);
+  const [halfday, sethalfday] = React.useState(false);
 
   useEffect(() => {
     let isLoading = true;
@@ -200,11 +207,31 @@ const StudentLeave = (props) => {
     setEventDate(date);
   };
 
-  const handleDateChange = (date) => {
-    setEventDate(date);
+  const handleHalfDay = (event,value) => {
+    if(value=='h_day'){
+      sethalfday(true);
+    } else {
+      sethalfday(false);
+    }
+    
   };
 
-  const publishData = async (publisedDate, status='', data,type,slot,content) => {
+  const handleDateChange = (date) => {
+    if(eventDate  == null){
+      toast("Wow so easy !");
+      return false;
+    }
+    else if (date.getTime() <= eventDate.getTime()){
+      toast("Wow so easy !");
+      return false;
+    } else  {
+      setEventToDate(date);
+    }
+    
+    
+  };
+
+  const publishData = async (publisedDate, status='', data,type,slot,content,teachervalue) => {
     try {    
       
     const response = await LeaveService.postLeave(
@@ -215,8 +242,8 @@ const StudentLeave = (props) => {
             "end_date": data.target.enddate.value,
             "half_day": slot=='h_day'?true:false,
             "full_day": slot=='f_day'?true:false,
-            "half_day_half": type,
-            "sanctioner_id": teachevalue,
+            "half_day_half": slot=='f_day'?type:'',
+            "sanctioner_id": teachervalue,
             "reason": content
             }
           },
@@ -232,19 +259,25 @@ const StudentLeave = (props) => {
   };
   
 const submitForm = async (event) => {
-  let type= event.target.type.value;
+  
+  let type= '';
+  if(type){
+    type= event.target.type.value;
+  } else{
+    type= '0';
+  }
+  console.log(type,'==============')
   let slot= event.target.slot.value;
   let content = event.target.content.value;
-  publishData(new Date().toISOString(), status, event,type,slot,content);
+  let teachervalue = event.target.teachers.value;
+  publishData(new Date().toISOString(), status, event,type,slot,content,teachervalue);
   event.preventDefault();
 }
 
 const handleChange = (event) => {
   setAge(event.target.value);
 };
-// const HandleareaContent = (event) => {
-//   content(event.target.value);
-// };
+
 const handleChangeTeacher = (event) => {
   Teacherdata(event.target.value);
 };
@@ -252,12 +285,13 @@ const handleChangeTeacher = (event) => {
   return (
     <>
       <div>
+      <ToastContainer />
         <form className={classes.formStyle} onSubmit={submitForm}>
         <div>
-          <Box className={classes.margin}>
+          <Box className={classes.margin} >
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
-                <Grid item xs={12}>
+                <Grid item xs={12} className={classes.topdate} >
                   <KeyboardDatePicker
                     id="eventDate"
                     label="From Date"
@@ -266,6 +300,7 @@ const handleChangeTeacher = (event) => {
                     format="yyyy/MM/dd"
                     value={eventDate}
                     onChange={handleEventDate}
+                    disablePast="true"
                     KeyboardButtonProps={{
                       "aria-label": "change date",
                     }}
@@ -285,15 +320,18 @@ const handleChangeTeacher = (event) => {
                      format="yyyy/MM/dd"
                      id="enddate"
                      label="End Date"
-                     value={selectedDate}
+                     disablePast="true"
+                     value={evenTotDate}
                      onChange={handleDateChange}
                      KeyboardButtonProps = {{
                        'aria-label': 'change date',
                      }}
                      className={classes.datePicker}
                    />
+                   
                 </Grid>
               </Grid>
+              
             </MuiPickersUtilsProvider>
           </Box>
         </div>
@@ -304,59 +342,59 @@ const handleChangeTeacher = (event) => {
               <div className={classes.form_row}>
               <Typography variant="h5"className={`${classes.titleText}`}
               >
-                <FormControl component="fieldset">
-                  <RadioGroup row aria-label="position" name="slot" defaultValue="top">
-                    <FormControlLabel value="f_day" control={<Radio color="primary" />} label="Full day" />
-                    <FormControlLabel value="h_day" control={<Radio color="primary" />} label="Half Day" />
+                <FormControl component="fieldset" >
+                  <RadioGroup row aria-label="position" name="slot" defaultValue="top" >
+                    <FormControlLabel value="f_day" onClick={(e) => {   handleHalfDay(e,'f_day')}} control={<Radio color="primary" />} label="Full day" />
+                    <FormControlLabel value="h_day" onClick={(e) => {   handleHalfDay(e,'h_day')}}  control={<Radio color="primary" />} label="Half Day" />
                   </RadioGroup>
                 </FormControl>
 
               </Typography>
-              
-              <FormControl className={classes.formControl}>
-                  <Select
-                    value={age}
-                    onChange={handleChange}
-                    displayEmpty
-                    className={classes.select}
-                    input={<Input name="type" id="type" />}
-                  >
-                    <MenuItem value="" disabled>
-                      Select Leave
-                    </MenuItem>
-                    <MenuItem value='0'>First Half</MenuItem>
-                    <MenuItem value='1'>Second Half</MenuItem>
-                  </Select>
-                  <FormHelperText>Select Leave</FormHelperText>
-                </FormControl>
-                <Box m={2} />
+
+              {halfday == true &&
+              <Typography variant="h5"className={`${classes.titleText}`}
+              >
                 <FormControl className={classes.formControl}>
-                  <Select
-                    value={teacherval}
-                    onChange={handleChangeTeacher}
-                    displayEmpty
-                    className={classes.select}
-                    input={<Input name="teachers" id="teachers" />}
-                  >
-                    <MenuItem value="" disabled>
-                      Select Teacher
-                    </MenuItem>
-                    {allTeacher.map((teacher) => (
-                      <MenuItem value={teacher.id}>{teacher.username}</MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>Select Teacher</FormHelperText>
+                <NativeSelect
+                  defaultValue={0}
+                  inputProps={{
+                    name: 'type',
+                    id: 'type',
+                  }}
+                >
+                  <option value={0}>First Half</option>
+                  <option value={1}>Second Half</option>
+                </NativeSelect>
                 </FormControl>
-             
-                
-              </div>
+                </Typography>
+              }
+               
+               <Typography variant="h5"className={`${classes.titleText}`}
+              >
+            <FormControl className={classes.formControl}>
+                <NativeSelect
+                  inputProps={{
+                    name: 'teachers',
+                    id: 'teachers',
+                  }}
+                >
+                  {allTeacher.map((teacher) => (
+                    <option value={teacher.id}>{teacher.username}</option>
+                  ))}
+                </NativeSelect>
+          </FormControl>
+          </Typography>
+              </div>`
               
             </Grid>
           </Box>
+          
 
           <Box className={classes.margin}>
             <Grid className={classes.fieldStyle}>
               <div className={classes.form_txtarea}>
+              <Typography variant="h5"className={`${classes.titleText}`}
+              >
                 <TextareaAutosize
                   className={classes.textarea}
                   rowsMax={4}
@@ -366,6 +404,7 @@ const handleChangeTeacher = (event) => {
                   onChange={HandleareaContent}
                   name="content"
                 />
+                </Typography>
              </div>
             </Grid>
           </Box>
@@ -395,6 +434,9 @@ const handleChangeTeacher = (event) => {
                     classes.fieldStyle
                   } ${"publishBtn"} ${"publishLaterBtn"}`}
                   disableElevation
+                  onClick={(event) => {
+                    history.push('/leave');
+                  }}
                 >
                   CANCEL
                 </Button>

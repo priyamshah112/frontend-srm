@@ -22,6 +22,12 @@ import {
 import Container from '@material-ui/core/Container';
 import Moment from 'react-moment';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import CloseIcon from '@material-ui/icons/Close';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { red, green } from '@material-ui/core/colors';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import createTypography from '@material-ui/core/styles/createTypography';
+
 const useStyles = makeStyles((theme) => ({
   container: {
     width: '100%',
@@ -60,6 +66,10 @@ center:{
 uppertext:{
   marginBottom:'4px',
 },
+uppertext1:{
+  marginBottom:'4px',
+  color:'#d8d8da',
+},
 newclass:{
   paddingLeft:'10px',
   paddingRight:'10px'
@@ -89,6 +99,12 @@ createHeader:{
 createButtonIcon: {
   paddingRight: '5px',
 },
+createButtonIconCircle: {
+  backgroundColor: '#fff',
+  borderRadius: '50%',
+  display: 'inline-block',
+  border: '1px solid red',
+},
 createTitle:{
   display: 'flex',
   paddingTop: '4px',
@@ -100,6 +116,14 @@ align:{
 status:{
   display: 'inline-block',
   paddingTop: '8px',
+  paddingLeft:'3px',
+},
+Approved:{
+  color:'#40BD13',
+}
+,
+Rejected:{
+  color:'#D92424',
 }
 }));
 
@@ -165,6 +189,24 @@ const StudentHomeLeave = (props) => {
     history.replace("/leave/create");
     
   }
+
+  const CancelLeave =async (event) => {
+    try {    
+      
+      const response = await LeaveService.putLeave(
+        {
+          "leavecode":event,
+          "leavestatus":"CANCELLED"
+      },
+          props.token
+        );
+        if (response.status === 200) {
+          history.replace("/leave");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+  };
   return (
     <>
 
@@ -172,7 +214,10 @@ const StudentHomeLeave = (props) => {
         <Container>
         <div className={classes.root}>
         <Typography variant='h5' className={classes.status}>
-           <span className={classes.status}>Status</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18"><defs><style></style></defs><g transform="translate(-10.439 -7)"><path class="a" d="M21.153,7H11V25H25V10.517Zm.186,1.017,2.542,2.324-2.542,0ZM11.646,24.393V7.607h9.046v3.337l3.662.005V24.393Z" transform="translate(-0.561)"/><rect class="a" width="6" transform="translate(13.065 8.878)"/><rect class="a" width="9.197" height="1" transform="translate(13 11.84)"/><rect class="a" width="7" height="1" transform="translate(13.074 13.825)"/><rect class="a" width="9.197" transform="translate(13 16.806)"/><rect class="a" width="7" height="1" transform="translate(13.074 16.802)"/><rect class="a" width="9.197" height="1" transform="translate(13 19.779)"/><rect class="a" width="7" height="1" transform="translate(13.074 21.746)"/></g></svg>
+           <span className={classes.status}>
+             
+             Status</span>
          </Typography>  
     
    <Typography variant='h8' className={classes.createHeader}>
@@ -204,11 +249,12 @@ const StudentHomeLeave = (props) => {
           scrollableTarget='scrollable'
           scrollThreshold={0.5}
         >
+      <Typography variant='h8' >    
       {allLeaves.map((leaves) => (
         <Paper className={classes.paper}>
         <div className={classes.rowflex}>
         
-       
+        
         <Grid item xs={10} className={classes.align}>
             <div className={classes.uppertext}>
             <Moment format="DD">
@@ -221,14 +267,37 @@ const StudentHomeLeave = (props) => {
             </div>
       <div>Reason - {leaves.reason}</div>
         </Grid>
+      
         <Grid item xs={2}>
-            <div className={classes.uppertext}>{leaves.leave_status}</div>
+        
+        {leaves.leave_status == 'PENDING'?
+        <CloseIcon
+        color='action'
+        className={classes.createButtonIconCircle}
+        style={{ color: red[500] }}
+        onClick={(e) => {   CancelLeave(leaves.leave_code)}}
+        value={leaves.leave_code}
+      />
+        :''}
+        
+            
+            {leaves.leave_status == 'PENDING'?<div className={classes.uppertext1}>
+            Pending</div>:''}
+
+            {leaves.leave_status == 'CANCELLED'?<div className={classes.Rejected}>
+            Rejected</div>:''}
+
+            {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
+            Approved</div>:''}
+            
             
         </Grid>
         
       </div>
         </Paper>
+        
       ))}
+      </Typography>
       </InfiniteScroll>
       </Grid>
     </Grid>
