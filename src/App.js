@@ -29,6 +29,9 @@ import FaqEditor from './app/faq/teacher/FaqEditor';
 import Support from './app/support/Support';
 import CreateSupport from './app/support/CreateSupport';
 import SupportSection from './app/support/SupportSection';
+import Leave from './app/leave/LeaveContainer';
+import LeaveCreateContainer from './app/leave/LeaveCreateContainer';
+
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -102,11 +105,8 @@ function App(props) {
             exact
             component={() => <Typography>Timetable Home</Typography>}
           />
-          <Route
-            path='/leave'
-            exact
-            component={() => <Typography>Leave Home</Typography>}
-          />
+          <Route path='/leave/'exact  component={Leave}/>
+          <Route path='/leave/create/'exact  component={LeaveCreateContainer}/>
           <Route path='/faq' exact component={Faq} />
           <Route path='/faq/create/' exact component={FaqEditor} />
           <Route path='/faq/edit/:id' exact component={FaqEditor} />
