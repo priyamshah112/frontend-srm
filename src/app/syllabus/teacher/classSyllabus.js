@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const ClassSyllabus = (props) => {
     const [isLoading, setLoading] = useState(true)
     const [classID, setClass] = useState(2)
+    const [classList, setClasses] = useState(null)
     const [subjects, setSubjects] = useState(null)
     const token = localStorage.getItem("srmToken")
     const classes = useStyles();
@@ -44,12 +45,23 @@ const ClassSyllabus = (props) => {
 
     const fetchSubjects = async () => {
       const response = await SyllabusService.getSubjects(token);
-      //console.log(response)
       if (response.status === 200) {
         if(response.data.success && isLoading){
+          //console.log("fetchSubjects -> " + response.data)
           const data = response.data.data.data
           setSubjects(data)
           setLoading(false)
+        }
+      }
+    }
+
+    const fetchClasses = async () => {
+      const response = await SyllabusService.fetchClasses(token);
+      if (response.status === 200) {
+        //console.log("fetchClasses -> "+ response.data)
+        if(response.data.status == "success" && isLoading && classList == null){
+          //console.log(response.data.data)
+          setClasses(response.data.data)
         }
       }
     }
@@ -66,8 +78,11 @@ const ClassSyllabus = (props) => {
 
 
     useEffect(() => {
-      fetchSubjects()
-    }, [isLoading]);
+      if(classList == null){
+        fetchClasses()
+      }
+        fetchSubjects()
+    });
 
   return (
     <div className={classes.container}>
@@ -79,16 +94,11 @@ const ClassSyllabus = (props) => {
           value={classID}
           onChange={handleChange}
         >
-          <MenuItem value={1}>Class 1</MenuItem>
-          <MenuItem value={2}>Class 2</MenuItem>
-          <MenuItem value={3}>Class 3</MenuItem>
-          <MenuItem value={4}>Class 4</MenuItem>
-          <MenuItem value={5}>Class 5</MenuItem>
-          <MenuItem value={6}>Class 6</MenuItem>
-          <MenuItem value={7}>Class 7</MenuItem>
-          <MenuItem value={8}>Class 8</MenuItem>
-          <MenuItem value={9}>Class 9</MenuItem>
-          <MenuItem value={10}>Class 10</MenuItem>
+          {
+            classList != null? Object.keys(classList).map(function(key){
+              return <MenuItem value={classList[key].id}>{classList[key].class_name}</MenuItem>
+            }) : null
+          }
     </Select>    
     <br/>
     {isLoading? <div className={classes.loading}>

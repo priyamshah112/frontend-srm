@@ -27,7 +27,14 @@ class SyllabusService {
           },
         });
     }
-
+    fetchClasses(token) {
+      return axios.get(`${BACKEND_API_URL}/classes`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
   };
   
   export default new SyllabusService();
