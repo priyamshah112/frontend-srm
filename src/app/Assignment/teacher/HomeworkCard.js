@@ -226,8 +226,7 @@ const HomeworkCard = (props) => {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid item xs={8}></Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12}>
                 <Typography
                   className={`${classes.labelText} ${classes.textAlignRight}`}
                 >
@@ -247,13 +246,19 @@ const HomeworkCard = (props) => {
                 </Typography>
               </Grid>
               <Grid item xs={1} className={classes.imgGrid}>
-                <div className={`${classes.imgDiv} ${classes.textAlignRight}`}>
-                  <img
-                    src={EditIcon}
-                    className={classes.editBtn}
-                    onClick={handleEditHomework}
-                  />
-                </div>
+                {status !== 'published' ? (
+                  <div
+                    className={`${classes.imgDiv} ${classes.textAlignRight}`}
+                  >
+                    <img
+                      src={EditIcon}
+                      className={classes.editBtn}
+                      onClick={handleEditHomework}
+                    />
+                  </div>
+                ) : (
+                  ''
+                )}
               </Grid>
             </Grid>
           </CardContent>
