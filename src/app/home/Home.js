@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
 const Home = (props) => {
   const classes = useStyles();
   const selectedRole = props.selectedRole;
-  // console.log("Selected Role from Home", selectedRole);
 
   return (
     <div className={classes.homeRoot}>
