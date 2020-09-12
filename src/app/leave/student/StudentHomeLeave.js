@@ -123,7 +123,7 @@ Approved:{
 }
 ,
 Rejected:{
-  color:'#D92424',
+  color:'#3076A1',
 }
 }));
 
@@ -249,13 +249,14 @@ const StudentHomeLeave = (props) => {
           scrollableTarget='scrollable'
           scrollThreshold={0.5}
         >
-      <Typography variant='h8' >    
+      <Typography >    
       {allLeaves.map((leaves) => (
         <Paper className={classes.paper}>
         <div className={classes.rowflex}>
         
         
         <Grid item xs={10} className={classes.align}>
+        <Typography className={classes.leavereason}>
             <div className={classes.uppertext}>
             <Moment format="DD">
             {leaves.start_date}
@@ -265,7 +266,8 @@ const StudentHomeLeave = (props) => {
             {leaves.end_date}
             </Moment>
             </div>
-      <div>Reason - {leaves.reason}</div>
+        <div>Reason - {leaves.reason}</div>
+        </Typography>
         </Grid>
       
         <Grid item xs={2}>
@@ -285,7 +287,7 @@ const StudentHomeLeave = (props) => {
             Pending</div>:''}
 
             {leaves.leave_status == 'CANCELLED'?<div className={classes.Rejected}>
-            Rejected</div>:''}
+            Canceled</div>:''}
 
             {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
             Approved</div>:''}
