@@ -161,8 +161,23 @@ const useStyle = makeStyles((theme) => ({
     borderBottom: '1px solid #7b72af',
     padding: '5px 0px',
   },
+  selectadmin : {
+    marginLeft: '21px',
+    paddingTop: '3px',
+  },
+  selectadmin1 : {
+    marginLeft: '21px',
+    paddingTop: '3px',
+    width:'194px'
+  },
   topdate:{
     marginTop:'18px',
+  },
+  leavereason:{
+    fontSize: '15px',
+  },
+  slotd:{
+    width:'233px',
   }
 }));
 
@@ -204,7 +219,14 @@ const StudentLeave = (props) => {
 
 
   const handleEventDate = (date) => {
-    setEventDate(date);
+    if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()){
+      toast("Please  enter valid date");
+      setEventToDate(null);
+      setEventDate(date);
+      
+    } else  {
+      setEventDate(date);
+    }
   };
 
   const handleHalfDay = (event,value) => {
@@ -218,11 +240,11 @@ const StudentLeave = (props) => {
 
   const handleDateChange = (date) => {
     if(eventDate  == null){
-      toast("Wow so easy !");
+      toast("Please Select any Date");
       return false;
     }
     else if (date.getTime() <= eventDate.getTime()){
-      toast("Wow so easy !");
+      toast("Please enter valid date");
       return false;
     } else  {
       setEventToDate(date);
@@ -242,7 +264,7 @@ const StudentLeave = (props) => {
             "end_date": data.target.enddate.value,
             "half_day": slot=='h_day'?true:false,
             "full_day": slot=='f_day'?true:false,
-            "half_day_half": slot=='f_day'?type:'',
+            "half_day_half": type,
             "sanctioner_id": teachervalue,
             "reason": content
             }
@@ -260,14 +282,11 @@ const StudentLeave = (props) => {
   
 const submitForm = async (event) => {
   
-  let type= '';
-  if(type){
-    type= event.target.type.value;
-  } else{
-    type= '0';
-  }
-  console.log(type,'==============')
+  let type= '0';
   let slot= event.target.slot.value;
+  if(slot == 'h_day'){
+    type= event.target.type.value;
+  }
   let content = event.target.content.value;
   let teachervalue = event.target.teachers.value;
   publishData(new Date().toISOString(), status, event,type,slot,content,teachervalue);
@@ -285,13 +304,15 @@ const handleChangeTeacher = (event) => {
   return (
     <>
       <div>
-      <ToastContainer />
+      
         <form className={classes.formStyle} onSubmit={submitForm}>
         <div>
+        <ToastContainer />
           <Box className={classes.margin} >
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
                 <Grid item xs={12} className={classes.topdate} >
+                
                   <KeyboardDatePicker
                     id="eventDate"
                     label="From Date"
@@ -340,7 +361,7 @@ const handleChangeTeacher = (event) => {
             <Grid className={classes.fieldStyle}>
               
               <div className={classes.form_row}>
-              <Typography variant="h5"className={`${classes.titleText}`}
+              <Typography variant="h5" className={`${classes.slotd}`}
               >
                 <FormControl component="fieldset" >
                   <RadioGroup row aria-label="position" name="slot" defaultValue="top" >
@@ -352,9 +373,8 @@ const handleChangeTeacher = (event) => {
               </Typography>
 
               {halfday == true &&
-              <Typography variant="h5"className={`${classes.titleText}`}
+              <Typography variant="h5" className={`${classes.selectadmin}`}
               >
-                <FormControl className={classes.formControl}>
                 <NativeSelect
                   defaultValue={0}
                   inputProps={{
@@ -365,13 +385,11 @@ const handleChangeTeacher = (event) => {
                   <option value={0}>First Half</option>
                   <option value={1}>Second Half</option>
                 </NativeSelect>
-                </FormControl>
                 </Typography>
               }
                
-               <Typography variant="h5"className={`${classes.titleText}`}
-              >
-            <FormControl className={classes.formControl}>
+          <Typography className={`${classes.selectadmin}`}>
+           
                 <NativeSelect
                   inputProps={{
                     name: 'teachers',
@@ -382,9 +400,9 @@ const handleChangeTeacher = (event) => {
                     <option value={teacher.id}>{teacher.username}</option>
                   ))}
                 </NativeSelect>
-          </FormControl>
+          
           </Typography>
-              </div>`
+              </div>
               
             </Grid>
           </Box>
@@ -393,13 +411,13 @@ const handleChangeTeacher = (event) => {
           <Box className={classes.margin}>
             <Grid className={classes.fieldStyle}>
               <div className={classes.form_txtarea}>
-              <Typography variant="h5"className={`${classes.titleText}`}
+              <Typography className={`${classes.titleText}`}
               >
                 <TextareaAutosize
                   className={classes.textarea}
                   rowsMax={4}
                   aria-label="maximum height"
-                  placeholder="reason Here!!"
+                  placeholder="Reason*"
                   style={{ height }}
                   onChange={HandleareaContent}
                   name="content"
