@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import ParentSyllabus from './parent/ParentSyllabus';
+import ClassSyllabus from './teacher/classSyllabus';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -19,7 +20,7 @@ const Syllabus = (props) => {
     const selectedRole = props.selectedRole;
     return (
       <div className={classes.container}>
-        {selectedRole === 'parent' ?  <ParentSyllabus/> : 'teacher'}
+        {selectedRole === 'parent' ?  <ParentSyllabus/> : <ClassSyllabus/> }
         
       </div>
     );
