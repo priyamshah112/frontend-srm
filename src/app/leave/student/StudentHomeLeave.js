@@ -75,7 +75,9 @@ newclass:{
   paddingRight:'10px'
 },
 borderLeft:{
-  borderLeft:'2px solid #dedede'
+  borderLeft:'2px solid #dedede',
+  textAlign:'left',
+  paddingLeft:'10px'
 },
 create:{
   float: 'right',
@@ -92,12 +94,15 @@ loading: {
   justifyContent: 'center',
   margin: 'auto',
 },
+headerText:{marginTop:'10px'},
 createHeader:{
   display: 'flex',
   float: 'right',
+  transform:'translateY(12px)'
 },
 createButtonIcon: {
   paddingRight: '5px',
+  transform:'translateY(3px)'
 },
 createButtonIconCircle: {
   backgroundColor: '#fff',
@@ -108,6 +113,7 @@ createButtonIconCircle: {
 createTitle:{
   display: 'flex',
   paddingTop: '4px',
+  fontSize:'20px'
 },
 align:{
   textAlign :'justify',
@@ -116,10 +122,15 @@ align:{
 status:{
   display: 'inline-block',
   paddingTop: '8px',
-  paddingLeft:'3px',
+  paddingLeft:'5px',
+  fontSize:'20px'
 },
 Approved:{
   color:'#40BD13',
+}
+,
+Cancelled:{
+  color:'#3076A1',
 }
 ,
 Rejected:{
@@ -192,13 +203,13 @@ const StudentHomeLeave = (props) => {
 
   const CancelLeave =async (event) => {
     try {    
-      
+      const token = localStorage.getItem('srmToken');
       const response = await LeaveService.putLeave(
         {
           "leavecode":event,
           "leavestatus":"CANCELLED"
       },
-          props.token
+          token
         );
         if (response.status === 200) {
           history.replace("/leave");
@@ -213,14 +224,15 @@ const StudentHomeLeave = (props) => {
 <div className={classes.container} id='scrollable'>
         <Container>
         <div className={classes.root}>
+        <div className={classes.headerText}>
         <Typography variant='h5' className={classes.status}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18"><defs><style></style></defs><g transform="translate(-10.439 -7)"><path class="a" d="M21.153,7H11V25H25V10.517Zm.186,1.017,2.542,2.324-2.542,0ZM11.646,24.393V7.607h9.046v3.337l3.662.005V24.393Z" transform="translate(-0.561)"/><rect class="a" width="6" transform="translate(13.065 8.878)"/><rect class="a" width="9.197" height="1" transform="translate(13 11.84)"/><rect class="a" width="7" height="1" transform="translate(13.074 13.825)"/><rect class="a" width="9.197" transform="translate(13 16.806)"/><rect class="a" width="7" height="1" transform="translate(13.074 16.802)"/><rect class="a" width="9.197" height="1" transform="translate(13 19.779)"/><rect class="a" width="7" height="1" transform="translate(13.074 21.746)"/></g></svg>
+        <svg xmlns="http://www.w3.org/2000/svg"  width="14" height="18" viewBox="0 0 14 18"><defs><style></style></defs><g transform="translate(-10.439 -7)"><path class="a" d="M21.153,7H11V25H25V10.517Zm.186,1.017,2.542,2.324-2.542,0ZM11.646,24.393V7.607h9.046v3.337l3.662.005V24.393Z" transform="translate(-0.561)"/><rect class="a" width="6" transform="translate(13.065 8.878)"/><rect class="a" width="9.197" height="1" transform="translate(13 11.84)"/><rect class="a" width="7" height="1" transform="translate(13.074 13.825)"/><rect class="a" width="9.197" transform="translate(13 16.806)"/><rect class="a" width="7" height="1" transform="translate(13.074 16.802)"/><rect class="a" width="9.197" height="1" transform="translate(13 19.779)"/><rect class="a" width="7" height="1" transform="translate(13.074 21.746)"/></g></svg>
            <span className={classes.status}>
              
              Status</span>
          </Typography>  
     
-   <Typography variant='h8' className={classes.createHeader}>
+   <Typography variant='h5' className={classes.createHeader}>
             <AddCircleIcon
               color='primary'
               className={classes.createButtonIcon}
@@ -230,6 +242,7 @@ const StudentHomeLeave = (props) => {
             />
             <span className={classes.createTitle}>New</span>
     </Typography>
+        </div>
 
     <Grid container className={classes.newclass}>
       <Grid item xs={12}>
@@ -249,13 +262,14 @@ const StudentHomeLeave = (props) => {
           scrollableTarget='scrollable'
           scrollThreshold={0.5}
         >
-      <Typography variant='h8' >    
+      <Typography >    
       {allLeaves.map((leaves) => (
         <Paper className={classes.paper}>
         <div className={classes.rowflex}>
         
         
         <Grid item xs={10} className={classes.align}>
+        <Typography className={classes.leavereason}>
             <div className={classes.uppertext}>
             <Moment format="DD">
             {leaves.start_date}
@@ -265,7 +279,8 @@ const StudentHomeLeave = (props) => {
             {leaves.end_date}
             </Moment>
             </div>
-      <div>Reason - {leaves.reason}</div>
+        <div>Reason - {leaves.reason}</div>
+        </Typography>
         </Grid>
       
         <Grid item xs={2}>
@@ -284,8 +299,11 @@ const StudentHomeLeave = (props) => {
             {leaves.leave_status == 'PENDING'?<div className={classes.uppertext1}>
             Pending</div>:''}
 
-            {leaves.leave_status == 'CANCELLED'?<div className={classes.Rejected}>
+            {leaves.leave_status == 'REJECTED'?<div className={classes.Rejected}>
             Rejected</div>:''}
+
+            {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
+            Canceled</div>:''}
 
             {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
             Approved</div>:''}

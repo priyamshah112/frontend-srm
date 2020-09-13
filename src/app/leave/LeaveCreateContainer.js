@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core';
 
-import TeacherLeave from './teacher/TeacherLeave';
-import StudentFLeave from './student/StudentLeave';
+import TeacherLeave from './teacher/TeacherLeaveApply';
+import StudentFLeave from './student/StudentLeaveApply';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -22,11 +22,14 @@ const LeaveCreateContainer = (props) => {
   return (
     <>
       <div className={classes.container}>
-        {selectedRole === 'teacher' || selectedRole === 'admin' ? (
+      {selectedRole === 'teacher' || selectedRole === 'admin' ? (
           <TeacherLeave />
-        ) : (
+        ) : ''}
+
+        {selectedRole === 'student' ? (
           <StudentFLeave />
-        )}
+        ): ''}
+
       </div>
     </>
   );

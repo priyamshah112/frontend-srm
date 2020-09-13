@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core';
 
 import TeacherLeave from './teacher/TeacherLeave';
 import StudentFLeave from './student/StudentHomeLeave';
+import AdminLeave from './admin/AdminLeave';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,15 +20,24 @@ const useStyles = makeStyles((theme) => ({
 const FaqContainer = (props) => {
   const classes = useStyles();
   const selectedRole = props.selectedRole;
-  
   return (
     <>
       <div className={classes.container}>
-        {selectedRole === 'teacher' || selectedRole === 'admin' ? (
+
+      {selectedRole === 'admin' ? (
+          <AdminLeave />
+        ) : ''}
+        
+        {selectedRole === 'teacher' ? (
           <TeacherLeave />
-        ) : (
+        ) : ''}
+
+        {selectedRole === 'student' ? (
           <StudentFLeave />
-        )}
+        ): ''}
+
+       
+
       </div>
     </>
   );

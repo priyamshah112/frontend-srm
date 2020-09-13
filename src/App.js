@@ -22,6 +22,7 @@ import Announcements from './app/home/studentHome/Announcements';
 import Gallery from './app/gallery/GalleryIndex';
 import ImageUpload from './app/gallery/ImageUpload';
 import Profile from './app/profile/Profile';
+import Syllabus from './app/syllabus/Syllabus';
 
 import 'react-image-lightbox/style.css';
 import Faq from './app/faq/FaqContainer';
@@ -79,7 +80,7 @@ function App(props) {
           <Route
             path='/syllabus'
             exact
-            component={() => <Typography>Syllabus Home</Typography>}
+            component={Syllabus}
           />
           <Route
             path='/transport'

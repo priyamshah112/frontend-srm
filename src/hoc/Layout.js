@@ -567,7 +567,36 @@ const Layout = (props) => {
                     </ListItem>
                   );
                 }
-              } else if (
+              }
+              else if (item.name === 'Leave') {
+                if (
+                  props.selectedRole === 'teacher' ||
+                  props.selectedRole === 'admin' ||
+                  props.selectedRole === 'student'
+                ) {
+                  return (
+                    <ListItem
+                      button
+                      key={item.name}
+                      component={Link}
+                      to={item.linkTo}
+                      className={classes.listItem}
+                      onClick={() => handleChange(item.itemIndex)}
+                      selected={selectedItem === item.itemIndex}
+                      classes={{ selected: classes.listItemSelected }}
+                    >
+                      <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.name}
+                        className={classes.listItemText}
+                      />
+                    </ListItem>
+                  );
+                }
+              }
+              else if (
                 item.name !== 'News & Announcements' &&
                 item.name !== 'Events'
               ) {
@@ -592,6 +621,7 @@ const Layout = (props) => {
                   </ListItem>
                 );
               }
+               
             })}
           </List>
         </div>
