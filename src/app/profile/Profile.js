@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import ParentProfile from './parent/ParentProfile';
 import { connect } from 'react-redux';
+import StudentProfile from './student/StudentProfile';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -25,7 +26,13 @@ const Profile = (props) => {
   const selectedRole = props.selectedRole;
   return (
     <div className={classes.container}>
-      {selectedRole === 'parent' ? <ParentProfile /> : ''}
+      {selectedRole === 'parent' ? (
+        <ParentProfile />
+      ) : selectedRole === 'student' ? (
+        <StudentProfile />
+      ) : (
+        ''
+      )}
       <br />
       <br />
       <br />

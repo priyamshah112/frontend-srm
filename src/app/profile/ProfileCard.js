@@ -64,9 +64,11 @@ const ProfileCard = (props) => {
   const title = props.title;
   const titleIcon = {
     Phone: phoneIcon,
+    'Contact Details': phoneIcon,
     Email: emailIcon,
     Address: locationIcon,
     Children: userIcon,
+    Parents: userIcon,
     'Associated Accounts': userIcon,
   };
   return (

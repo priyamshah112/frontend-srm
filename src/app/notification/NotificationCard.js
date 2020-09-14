@@ -13,8 +13,10 @@ import {
   Grid,
   Button,
 } from "@material-ui/core";
+import { useTheme } from "@material-ui/styles";
+
 import ReadIcon from "../../assets/images/notifications/read.svg";
-import UnreadIcon from "../../assets/images/notifications/unread.svg";
+import UnReadIcon from "../../assets/images/notifications/unread.svg";
 import DoneIcon from "../../assets/images/notifications/Done.svg";
 import WarningIcon from "../../assets/images/notifications/Warning.svg";
 
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "20px",
   },
   cardHeader: {
-    padding: "20px 20px 0 20px",
+    padding: "15px 20px 0 20px",
   },
   iconButtonRoot: {
     padding: "8px",
@@ -41,12 +43,16 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "16px",
     fontStyle: "normal",
     fontWeight: 500,
+    cursor: "pointer",
+    "&:hover": {
+      textDecoration: "underline",
+    },
   },
   cardActions: {
     padding: "0 20px 20px 20px",
   },
   cardContent: {
-    padding: "10px 20px 20px 20px",
+    padding: "5px 20px 20px 20px",
     "&:last-child": {
       paddingBottom: "20px",
     },
@@ -93,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   contentStyle: {
-    color: "#8E8E93",
+    color: `${theme.palette.common.lightFont}`,
     fontSize: "14px",
     fontStyle: "normal",
   },
@@ -108,6 +114,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NotificationCard = (props) => {
   const classes = useStyles();
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -189,12 +196,19 @@ const NotificationCard = (props) => {
         }
         title={
           <>
-            <Typography className={classes.cardTitle}>
-              <span className={classes.titleIconSpan}>
-                <img src={WarningIcon} className={classes.titleIcon} />
-              </span>
-              What is Lorem Ipsum?
-            </Typography>
+            {props.notification.status === "read" ||
+            props.notification.status === "archived" ? (
+              <Typography
+                className={classes.cardTitle}
+                style={{ color: theme.palette.common.lightFont }}
+              >
+                {props.notification.data.title}
+              </Typography>
+            ) : (
+              <Typography className={classes.cardTitle}>
+                {props.notification.data.title}
+              </Typography>
+            )}
           </>
         }
       />
@@ -202,29 +216,34 @@ const NotificationCard = (props) => {
         <Grid container>
           <Grid item xs={11}>
             <Typography className={classes.contentStyle}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged.
+              {props.notification.data.summary}
             </Typography>
           </Grid>
           <Grid item xs={1} className={classes.readClass}>
-            <img src={ReadIcon} alt="Menu" />
+            {props.notification.status === "unread" ? (
+              <img src={UnReadIcon} alt="unread" />
+            ) : props.notification.status === "read" ? (
+              <img src={ReadIcon} alt="read" />
+            ) : (
+              ""
+            )}
           </Grid>
         </Grid>
       </CardContent>
-      <CardActions classes={{ root: classes.cardActions }}>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.payBtn}
-          disableElevation
-        >
-          Pay
-        </Button>
-      </CardActions>
+      {props.notification.type === "payment" ? (
+        <CardActions classes={{ root: classes.cardActions }}>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.payBtn}
+            disableElevation
+          >
+            Pay
+          </Button>
+        </CardActions>
+      ) : (
+        ""
+      )}
     </Card>
   );
 };

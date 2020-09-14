@@ -133,22 +133,21 @@ const Tasks = (props) => {
         </Typography>
       </div>
       <div className={classes.tasks}>
-        <Card className={classes.taskCard}>
-          {openEditor ? (
-            <TaskEditor
-              taskId={taskId}
-              content={content}
-              status={status}
-              closeEditor={closeEditor}
-              createNew={createNew}
-            />
-          ) : (
-            <TaskContent
-              handleEditTask={handleEditTask}
-              handleCreateNew={handleCreateNew}
-            />
-          )}
-        </Card>
+        {openEditor ? (
+          <TaskEditor
+            taskId={taskId}
+            content={content}
+            status={status}
+            closeEditor={closeEditor}
+            createNew={createNew}
+          />
+        ) : (
+          <TaskContent
+            handleEditTask={handleEditTask}
+            handleCreateNew={handleCreateNew}
+            openEditor={openEditor}
+          />
+        )}
       </div>
     </div>
   );

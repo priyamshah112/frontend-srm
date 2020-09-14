@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Logout = (props) => {
+const SupportApprove = (props) => {
   const classes = useStyles();
   const { open, handleClose } = props;
   const history = useHistory();
@@ -86,4 +86,4 @@ const Logout = (props) => {
   );
 };
 
-export default Logout;
+export default SupportApprove;

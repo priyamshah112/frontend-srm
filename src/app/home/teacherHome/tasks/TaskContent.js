@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Typography, Box, Grid } from '@material-ui/core';
+import { Typography, Box, Grid, Card } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -8,6 +8,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import RedFlagIcon from '../../../../assets/images/home/teacher/RedFlag.svg';
 import YellowFlagIcon from '../../../../assets/images/home/teacher/YellowFlag.svg';
 import GreenTickIcon from '../../../../assets/images/home/teacher/GreenTick.svg';
+
+import TaskEditor from './TaskEditor';
 
 import HomeSerivce from '../../HomeSerivce';
 
@@ -47,12 +49,21 @@ const useStyle = makeStyles((theme) => ({
   },
   taskCard: {
     borderRadius: '10px',
-    height: '100%',
+    height: '365px',
   },
   loading: {
     textAlign: 'center',
     justifyContent: 'center',
     margin: 'auto',
+  },
+
+  taskCard: {
+    borderRadius: '10px',
+    margin: '0 10px 0 10px',
+    height: '365px',
+    [theme.breakpoints.down('xs')]: {
+      margin: '10px 0 0 0',
+    },
   },
   clickCard: {
     cursor: 'pointer',
@@ -70,10 +81,17 @@ const useStyle = makeStyles((theme) => ({
   clickContent: {
     // paddingTop: '35%',
   },
+  cardTitle: {
+    fontWeight: 500,
+    fontSize: '20px',
+    marginTop: '10px',
+    textAlign: 'center',
+  },
   CardContent: {
-    padding: '0 0 0 10px !important',
-    margin: '10px 0 0 0',
-    height: '345px',
+    borderTop: '1px solid rgba(0,0,0,0.2)',
+    margin: '0 0 10px !important',
+    paddingTop: 0,
+    height: '280px',
     overflow: 'auto',
     '&::-webkit-scrollbar': {
       width: '0.4em',
@@ -241,90 +259,194 @@ const TaskContent = (props) => {
   return (
     <>
       {showNoContent ? (
-        <CardContent
-          className={classes.clickCard}
-          onClick={(event) => {
-            props.handleCreateNew();
-          }}
-        >
-          <Box className={classes.clickHere}>
-            <Typography
-              color='primary'
-              variant='h6'
-              className={classes.clickContent}
-            >
-              Create your first task by clicking here
-            </Typography>
-          </Box>
-        </CardContent>
-      ) : (
-        <CardContent className={classes.CardContent} id='scrollable'>
-          <InfiniteScroll
-            dataLength={tasks.length}
-            next={fetchMoreTasks}
-            hasMore={hasMore}
-            loader={
-              <>
-                <div className={classes.loading}>
-                  <CircularProgress />
-                </div>
-                <br />
-              </>
-            }
-            scrollableTarget='scrollable'
-            scrollThreshold={0.5}
+        <Card className={classes.taskCard}>
+          <CardContent
+            className={classes.clickCard}
+            onClick={(event) => {
+              props.handleCreateNew();
+            }}
           >
-            {isLoading === false
-              ? tasks.map((task) => {
-                  return (
-                    <Box key={task.id} className='taskContentDiv'>
-                      <Grid container>
-                        <Grid item xs={12} className={classes.taskContentStyle}>
-                          <div>
-                            <span>
-                              {setFlag(task.status, task.id, task.content)}
-                            </span>
-                          </div>
-                          <div className={classes.taskContDiv}>
-                            <Typography>
-                              <span
-                                className={classes.taskContent}
-                                onClick={(event) => {
-                                  props.handleEditTask(
-                                    task.id,
-                                    task.content,
-                                    task.status
-                                  );
-                                }}
-                                style={{
-                                  textDecoration: styleContent[task.status][0],
-                                  textDecorationColor: '#C0C0C3',
-                                  color: styleContent[task.status][1],
-                                }}
+            <Box className={classes.clickHere}>
+              <Typography
+                color='primary'
+                variant='h6'
+                className={classes.clickContent}
+              >
+                Create your first task by clicking here
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      ) : (
+        <Grid container>
+          <Grid item md={6}>
+            <Card className={classes.taskCard}>
+              <Typography className={classes.cardTitle}>
+                Pending Tasks
+              </Typography>
+              <CardContent className={classes.CardContent} id='scrollable'>
+                <InfiniteScroll
+                  dataLength={tasks.length}
+                  next={fetchMoreTasks}
+                  hasMore={hasMore}
+                  loader={
+                    <>
+                      <div className={classes.loading}>
+                        <CircularProgress />
+                      </div>
+                      <br />
+                    </>
+                  }
+                  scrollableTarget='scrollable'
+                  scrollThreshold={0.5}
+                >
+                  {isLoading === false
+                    ? tasks.map((task) => {
+                        return (
+                          <Box key={task.id} className='taskContentDiv'>
+                            <Grid container>
+                              <Grid
+                                item
+                                xs={12}
+                                className={classes.taskContentStyle}
                               >
-                                {task.content}
-                              </span>
-                            </Typography>
-                          </div>
+                                <div>
+                                  <span>
+                                    {setFlag(
+                                      task.status,
+                                      task.id,
+                                      task.content
+                                    )}
+                                  </span>
+                                </div>
+                                <div className={classes.taskContDiv}>
+                                  <Typography>
+                                    <span
+                                      className={classes.taskContent}
+                                      onClick={(event) => {
+                                        props.handleEditTask(
+                                          task.id,
+                                          task.content,
+                                          task.status
+                                        );
+                                      }}
+                                      style={{
+                                        textDecoration:
+                                          styleContent[task.status][0],
+                                        textDecorationColor: '#C0C0C3',
+                                        color: styleContent[task.status][1],
+                                      }}
+                                    >
+                                      {task.content}
+                                    </span>
+                                  </Typography>
+                                </div>
 
-                          {tasks.length === 0 && hasMore === false ? (
-                            <Typography variant='h6'>
-                              No task available
-                            </Typography>
-                          ) : (
-                            ''
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  );
-                })
-              : ''}
-          </InfiniteScroll>
+                                {tasks.length === 0 && hasMore === false ? (
+                                  <Typography variant='h6'>
+                                    No task available
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        );
+                      })
+                    : ''}
+                </InfiniteScroll>
 
-          <br />
-          <br />
-        </CardContent>
+                <br />
+                <br />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item md={6}>
+            <Card className={classes.taskCard}>
+              <Typography className={classes.cardTitle}>Done Tasks</Typography>
+              <CardContent
+                className={classes.CardContent}
+                id='secondScrollable'
+              >
+                <InfiniteScroll
+                  dataLength={tasks.length}
+                  next={fetchMoreTasks}
+                  hasMore={hasMore}
+                  loader={
+                    <>
+                      <div className={classes.loading}>
+                        <CircularProgress />
+                      </div>
+                      <br />
+                    </>
+                  }
+                  scrollableTarget='secondScrollable'
+                  scrollThreshold={0.5}
+                >
+                  {isLoading === false
+                    ? tasks.map((task) => {
+                        return (
+                          <Box key={task.id} className='taskContentDiv'>
+                            <Grid container>
+                              <Grid
+                                item
+                                xs={12}
+                                className={classes.taskContentStyle}
+                              >
+                                <div>
+                                  <span>
+                                    {setFlag(
+                                      task.status,
+                                      task.id,
+                                      task.content
+                                    )}
+                                  </span>
+                                </div>
+                                <div className={classes.taskContDiv}>
+                                  <Typography>
+                                    <span
+                                      className={classes.taskContent}
+                                      onClick={(event) => {
+                                        props.handleEditTask(
+                                          task.id,
+                                          task.content,
+                                          task.status
+                                        );
+                                      }}
+                                      style={{
+                                        textDecoration:
+                                          styleContent[task.status][0],
+                                        textDecorationColor: '#C0C0C3',
+                                        color: styleContent[task.status][1],
+                                      }}
+                                    >
+                                      {task.content}
+                                    </span>
+                                  </Typography>
+                                </div>
+
+                                {tasks.length === 0 && hasMore === false ? (
+                                  <Typography variant='h6'>
+                                    No task available
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        );
+                      })
+                    : ''}
+                </InfiniteScroll>
+
+                <br />
+                <br />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       )}
     </>
   );

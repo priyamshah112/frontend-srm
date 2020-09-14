@@ -20,8 +20,8 @@ class FaqService {
       },
     });
   }
-  fetchMoreLeave(token) {
-    return axios.get(`${BACKEND_API_URL}/leaves`, {
+  fetchMoreLeave(token,url) {
+    return axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -30,7 +30,6 @@ class FaqService {
   }
 
   fetchAllLeaves(token) {
-    console.log(token)
     return axios.get(`${BACKEND_API_URL}/leaves`, {
       headers: {
         'Content-Type': 'application/json',
@@ -41,6 +40,16 @@ class FaqService {
 
   fetchAllLeavesQueve(token) {
     return axios.get(`${BACKEND_API_URL}/leavesqueue`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  fetchMoreLeavesQueve(token,url) {
+    console.log(url);
+    return axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

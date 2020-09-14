@@ -175,12 +175,12 @@ createButtonIconCircleOk: {
   width : '16px',
   height:'16px',
   marginLeft: '5px',
-  transform:'translateY(10px)'
+  // transform:'translateY(10px)'
 },
 Approved:{
   color:'#40BD13',
-}
-,
+},
+actionBtns:{},
 Cancelled:{
   color:'#3076A1',
 }
@@ -225,8 +225,10 @@ const TeacherLeave = (props) => {
 
   const tabref = useRef(null);
   const [hasMore, setHasMore] = useState(true);
+  const [hasMore2, setHasMore2] = useState(true);
   const [allLeaves, setLeaves] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
+  const [nextUrl2 , setNextUrl2 ] = useState(null)
   const [currentPage, setCurrentPage] = useState(1);
   const [allLeavesStud, setLeavesStudent] = useState([]);
   const [showNoContentMsg, setNocontentmsg] =useState(false)
@@ -279,11 +281,11 @@ useEffect(() => {
           let next_page_url = response.data.data.next_page_url;
           let last_page_url = response.data.data.last_page_url;
           if (next_page_url === null) {
-            setHasMore(false);
+            setHasMore2(false);
           } else {
-            setNextUrl(next_page_url);
+            setNextUrl2(next_page_url);
             setCurrentPage(currentPage + 1);
-            setHasMore(true);
+            setHasMore2(true);
           }
         }
       } catch (error) {
@@ -296,6 +298,8 @@ useEffect(() => {
       isLoading = false;
     };
   }, []);
+
+
   const fetchLeaveStudent = async () => {
     try {
       const token = localStorage.getItem('srmToken');
@@ -312,21 +316,24 @@ useEffect(() => {
         let next_page_url = response.data.data.next_page_url;
         let last_page_url = response.data.data.last_page_url;
         if (next_page_url === null) {
-          setHasMore(false);
+          setHasMore2(false);
         } else {
-          setNextUrl(next_page_url);
+          setNextUrl2(next_page_url);
           setCurrentPage(currentPage + 1);
-          setHasMore(true);
+          setHasMore2(true);
         }
       }
     } catch (error) {
       console.log('Error: ', error);
     }
   };
+
    const fetchMoreLeave = async () => {
     try {
       const token = localStorage.getItem('srmToken');
+      // console.log("Next Url",nextUrl)
       const response = await LeaveService.fetchMoreLeave(token, nextUrl);
+      // console.log("Next Data",response.data)
       for(let row in response.data.data.data){
         let id = response.data.data.data[row].user_id;
         var useridres = await LeaveService.fetchAllUserdata(id,token);
@@ -341,6 +348,36 @@ useEffect(() => {
         setCurrentPage(currentPage + 1);
 
         setHasMore(true);
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  
+  const fetchMoreLeaveStudent = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // console.log("Next Url",nextUrl)
+      const response = await LeaveService.fetchMoreLeavesQueve(token, nextUrl2);
+      // console.log("Next Data",response.data)
+      for(let row in response.data.data.data){
+        let id = response.data.data.data[row].user_id;
+        var useridres = await LeaveService.fetchAllUserdata(id,token);
+        response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
+      }
+      setLeavesStudent([...allLeavesStud, ...response.data.data.data]);
+      if(response.data.data.data.length===0){
+        setNocontentmsg(true)
+      }
+      let next_page_url = response.data.data.next_page_url;
+      if (next_page_url === null) {
+        setHasMore2(false);
+      } else {
+        setNextUrl2(next_page_url);
+        setCurrentPage(currentPage + 1);
+
+        setHasMore2(true);
       }
     } catch (error) {
       console.log('Error: ', error);
@@ -399,8 +436,24 @@ useEffect(() => {
       }
   };
 
-
-  console.log("All leaves Student", allLeavesStud, showNoContentMsg)
+  const RejectLeave =async (event) => {
+    try {    
+      const token = localStorage.getItem('srmToken');
+      
+      const response = await LeaveService.putLeave(
+        {
+          "leavecode":event,
+          "leavestatus":"REJECTED"
+      },
+          token
+        );
+        if (response.status === 200) {
+          fetchLeaveStudent()
+        }
+      } catch (e) {
+        console.log(e);
+      }
+  };
 
   return (
     <div className={classes.container} ref={tabref} id='scrollable'>
@@ -525,6 +578,7 @@ useEffect(() => {
       ))}
       </Typography>
       </InfiniteScroll>
+      <br/> <br/> <br/><br/> 
       </Grid>
     </Grid>
   </div>
@@ -547,8 +601,8 @@ useEffect(() => {
       <Grid item xs={12}>
       <InfiniteScroll
           dataLength={allLeaves.length}
-          next={fetchMoreLeave}
-          hasMore={hasMore}
+          next={fetchMoreLeaveStudent}
+          hasMore={hasMore2}
           loader={
             <>
               <br />
@@ -600,10 +654,10 @@ useEffect(() => {
         {leaves.leave_status == 'PENDING'?
         <CloseIcon
               color='action'
-              className={classes.createButtonIconCircle}
+              className={`${classes.createButtonIconCircle} ${classes.actionBtns}`}
               
               style={{ color: red[500] }}
-               onClick={(e) => {   CancelLeave(leaves.leave_code)}}
+               onClick={(e) => {   RejectLeave(leaves.leave_code)}}
               value={leaves.leave_code}
             />
 
@@ -614,7 +668,7 @@ useEffect(() => {
       
             <CheckIcon
               color='action'
-              className={classes.createButtonIconCircleOk}
+              className={`${classes.createButtonIconCircleOk} ${classes.actionBtns}`}
               onClick={(e) => {   ApprovedLeave(leaves.leave_code)}}
               value={leaves.leave_code}
               style={{ color: green[500] }}
@@ -626,8 +680,11 @@ useEffect(() => {
         {leaves.leave_status == 'PENDING'?<div className={classes.uppertext1}>
         Pending</div>:''}
 
-        {leaves.leave_status == 'CANCELLED'?<div className={classes.Rejected}>
-        Rejected</div>:''}
+        {leaves.leave_status == 'REJECTED'?<div className={classes.Rejected}>
+            Rejected</div>:''}
+
+        {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
+        Canceled</div>:''}
 
         {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
         Approved</div>:''}    
@@ -638,6 +695,7 @@ useEffect(() => {
         </Paper>
       ))}
       </InfiniteScroll>
+      <br/> <br/> <br/><br/> 
       </Grid>
     </Grid>
   </div>

@@ -364,8 +364,8 @@ const handleChangeTeacher = (event) => {
               >
                 <FormControl component="fieldset" >
                   <RadioGroup row aria-label="position" name="slot" defaultValue="top" >
-                    <FormControlLabel value="f_day" onClick={(e) => {   handleHalfDay(e,'f_day')}} control={<Radio color="primary" />} label="Full day" />
-                    <FormControlLabel value="h_day" onClick={(e) => {   handleHalfDay(e,'h_day')}}  control={<Radio color="primary" />} label="Half Day" />
+                    <FormControlLabel value="f_day" onClick={(e) => {   handleHalfDay(e,'f_day')}} control={<Radio color="primary" />} label="Full day" checked={!halfday}/>
+                    <FormControlLabel value="h_day" onClick={(e) => {   handleHalfDay(e,'h_day')}}  control={<Radio color="primary" />} label="Half Day" checked={halfday}/>
                   </RadioGroup>
                 </FormControl>
 

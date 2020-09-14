@@ -33,6 +33,7 @@ import BackIcon from "../../../assets/images/Back.svg";
 import RichTextEditor from "../../../shared/richTextEditor";
 import PublishLater from "../../newsAnnouncement/teacher/PublishLater";
 import NumberFormatCustom from "../../../shared/NumberFormatCustom";
+import NotificationService from "../NotificationService";
 const useStyle = makeStyles((theme) => ({
   formStyle: {
     margin: "auto",
@@ -162,9 +163,8 @@ const CreateNotification = (props) => {
   const history = useHistory();
   const { id } = useParams();
 
-  const [scheduler, setScheduler] = useState(false);
   const [openPubLater, setOpenPubLater] = useState(false);
-  const [eventDate, setEventDate] = useState(null);
+
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [description, setDescription] = useState("");
@@ -172,127 +172,156 @@ const CreateNotification = (props) => {
   const [category, setCategory] = useState("");
   const [payment, setPayment] = useState("");
   const [openPayment, setOpenPayment] = useState(false);
-  const [checkState, setCheckState] = useState({
-    ...props.classState,
-    "All Teachers": false,
-    "All Parents": false,
-    "Select All": false,
-  });
+  const [classState, setClassState] = useState([]);
   const [openUserSearch, setOpenUserSearch] = useState(false);
-
-  const [searchData, setSearchData] = useState([
-    {
-      username: "devanshslnk98@gmail.com",
-      role: [{ name: "parent" }],
-      name: "Devansh Solanki",
-    },
-    {
-      username: "devanshStudent",
-      role: [{ name: "student" }],
-      name: "Devansh Student",
-      class: "Class 1",
-    },
-    {
-      username: "mihirshah@gmail.com",
-      role: [{ name: "parent" }, { name: "teacher" }],
-      name: "Mihir Shah",
-    },
-  ]);
-  const loadingUsers = searchData.length !== 0;
-
+  const [userList, setUserList] = useState([]);
+  const [searchData, setSearchData] = useState([]);
+  const loadingUsers = openUserSearch && searchData.length === 0;
+  const classStateNames = [
+    "All Teacher",
+    "All Parents",
+    "Select All",
+    ...Object.keys(props.classState),
+  ];
   const categoryValues = [...Object.values(props.categories)];
 
-  const checkStateLength = [
-    ...Array(Object.keys(props.classState).length).keys(),
-  ];
-
-  const [chipData, setChipData] = useState([]);
-  const selectAllObj = {
-    "Class 1": true,
-    "Class 2": true,
-    "Class 3": true,
-    "Class 4": true,
-    "Class 5": true,
-    "Class 6": true,
-    "Class 7": true,
-    "Class 8": true,
-    "Class 9": true,
-    "Class 10": true,
-    "All Teachers": true,
-    "All Parents": true,
-    "Select All": true,
-  };
-
-  const disSelectAllObj = {
-    "Class 1": false,
-    "Class 2": false,
-    "Class 3": false,
-    "Class 4": false,
-    "Class 5": false,
-    "Class 6": false,
-    "Class 7": false,
-    "Class 8": false,
-    "Class 9": false,
-    "Class 10": false,
-    "All Teachers": false,
-    "All Parents": false,
-    "Select All": false,
-  };
   let saveDataApi;
   useEffect(() => {
-    console.log("loaded");
-    //  Add fetchDraft when api is ready
+    let isFormLoading = true;
+    // give first api call to create
+
+    // api call to save
+    const fetchDraft = async () => {
+      try {
+        const response = await NotificationService.fetchDraftNotification(
+          id,
+          props.token
+        );
+        console.log(response.data.data.notification_lists);
+        if (response.status === 200) {
+          if (isFormLoading) {
+            let tempClassCheckState = {};
+            if (response.data.data.notification_lists.class_mapping) {
+              if (response.data.data.notification_lists.class_mapping.parents) {
+                setClassState(["All Parents", ...classState]);
+              }
+              if (
+                response.data.data.notification_lists.class_mapping.teachers
+              ) {
+                setClassState(["All Teachers", ...classState]);
+              }
+              if (response.data.data.notification_lists.class_mapping.class) {
+                response.data.data.notification_lists.class_mapping.class.forEach(
+                  (classId) => {
+                    setClassState((classState) => [
+                      ...classState,
+                      `Class ${classId}`,
+                    ]);
+                  }
+                );
+              }
+            }
+            setUserList([...response.data.data.users_list]);
+
+            setDescription(
+              response.data.data.notification_lists.data.main_content
+                ? response.data.data.notification_lists.data.main_content
+                : ""
+            );
+            setTitle(
+              response.data.data.notification_lists.data.title
+                ? response.data.data.notification_lists.data.title
+                : ""
+            );
+            setSummary(
+              response.data.data.notification_lists.data.summary
+                ? response.data.data.notification_lists.data.summary
+                : ""
+            );
+
+            setCategory(
+              response.data.data.notification_lists.type
+                ? response.data.data.notification_lists.type
+                : ""
+            );
+          }
+          setSearchData([...response.data.data.users_list]);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchDraft();
+    return () => {
+      isFormLoading = false;
+      // clearInterval(saveDataApi);
+    };
   }, []);
   const saveDetails = async () => {
-    // try {
-    //   let classMapping = { class: [] };
-    //   for (var state in checkState) {
-    //     if (
-    //       state !== "All Parents" &&
-    //       state !== "All Teachers" &&
-    //       state !== "Select All"
-    //     )
-    //       if (checkState[state] === true) {
-    //         classMapping.class.push(parseInt(state.split(" ")[1]));
-    //       }
-    //   }
-    //   if (checkState["All Parents"] === true) {
-    //     classMapping["parents"] = true;
-    //   }
-    //   if (checkState["All Teachers"] === true) {
-    //     classMapping["teachers"] = true;
-    //   }
-    //   const response = await AnnouncementService.saveAnnouncement(
-    //     { id },
-    //     {
-    //       title,
-    //       summary,
-    //       event_date: eventDate,
-    //       main_content: description,
-    //       published_to: classMapping,
-    //       category_id: parseInt(
-    //         Object.keys(props.categories).find(
-    //           (category_id) => props.categories[category_id] === category
-    //         )
-    //       ),
-    //     },
-    //     props.token
-    //   );
-    //   if (response.status === 200) {
-    //     console.log(response);
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      let classMapping = { class: [] };
+
+      let isSelectAll = classState.find(
+        (classname) => classname === "Select All"
+      );
+      if (isSelectAll) {
+        classMapping["teachers"] = true;
+        classMapping["paresnts"] = true;
+        classMapping.class = [...Object.values(props.classState)];
+      } else {
+        classState.forEach((classnames) => {
+          if (classnames === "All Parents") {
+            classMapping["parents"] = true;
+          } else if (classnames === "All Teachers") {
+            classMapping["teachers"] = true;
+          } else {
+            classMapping.class.push(props.classState[classnames]);
+          }
+        });
+      }
+
+      if (userList.length !== 0) {
+        classMapping.individual_users = [];
+        userList.forEach((user) => {
+          classMapping.individual_users.push(user.id);
+        });
+      }
+      let payload = {
+        type: category,
+        data: {
+          title,
+          summary,
+          main_content: description,
+        },
+        published_to: classMapping,
+      };
+      if (category === "payment") {
+        payload = {
+          ...payload,
+          data: { title, summary, main_content: description, payment },
+        };
+      }
+
+      const response = await NotificationService.saveNotification(
+        id,
+        payload,
+        props.token
+      );
+      if (response.status === 200) {
+        console.log(response);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   useEffect(() => {
-    // call save data api when it is ready
-    // saveDataApi = setInterval(() => {
-    //   // console.log(1);
-    //   saveDetails();
-    // }, 10000);
-    // return () => clearInterval(saveDataApi);
-  }, [title, eventDate, description, summary, checkState, category]);
+    saveDataApi = setInterval(() => {
+      // console.log(1);
+      saveDetails();
+    }, 10000);
+    return () => clearInterval(saveDataApi);
+  }, [title, description, summary, classState, category, userList, payment]);
+
   const styleOptions = (option) => {
     return (
       <div className={classes.optionContainer}>
@@ -324,29 +353,8 @@ const CreateNotification = (props) => {
     }
   };
 
-  const handleEventDate = (date) => {
-    setEventDate(date);
-  };
-
-  const handleCheckbox = (event) => {
-    let name = event.target.name;
-    if (name === "Select All") {
-      if (event.target.checked) {
-        setCheckState(selectAllObj);
-        setChipData(Object.keys(checkState));
-      } else {
-        setCheckState(disSelectAllObj);
-        setChipData([]);
-      }
-    } else {
-      setCheckState({ ...checkState, [name]: event.target.checked });
-
-      if (event.target.checked) {
-        setChipData([...chipData, name]);
-      } else {
-        setChipData(chipData.filter((e) => e !== name));
-      }
-    }
+  const handleSelectClass = (event) => {
+    setClassState(event.target.value);
   };
 
   const handleDescription = (data) => {
@@ -369,15 +377,21 @@ const CreateNotification = (props) => {
 
   const handleSearchChange = (event, value) => {
     console.log(value);
-  };
-  const callSearchAPI = (event) => {
-    console.log(event.target.value);
+    setUserList(value);
   };
 
-  const handleClassChipDelete = (data) => {
-    const newChipData = chipData.filter((chip) => chip !== data);
-    setChipData([...newChipData]);
-    setCheckState({ ...checkState, [data]: false });
+  const callSearchAPI = async (event) => {
+    if (event.target.value && event.target.value.length % 3 === 0) {
+      try {
+        const response = await NotificationService.searchUser(
+          event.target.value,
+          props.token
+        );
+        setSearchData([...response.data.data.data]);
+      } catch (e) {
+        console.log(e);
+      }
+    }
   };
 
   // const handlePublish = (event) => {
@@ -394,7 +408,7 @@ const CreateNotification = (props) => {
   // };
 
   const handleOpenPubLater = (event) => {
-    if (chipData.length === 0 || title === "" || summary === "") {
+    if (classState.length === 0 || title === "" || summary === "") {
       setError("Fill All Data !");
     } else {
       setOpenPubLater(true);
@@ -405,79 +419,81 @@ const CreateNotification = (props) => {
     setOpenPubLater(false);
   };
 
-  const publishData = async (publisedDate, status, mediaURL) => {
-    // try {
-    //   let classMapping = { class: [] };
-    //   for (var state in checkState) {
-    //     if (
-    //       state !== "All Parents" &&
-    //       state !== "All Teachers" &&
-    //       state !== "Select All"
-    //     )
-    //       if (checkState[state] === true) {
-    //         classMapping.class.push(parseInt(state.split(" ")[1]));
-    //       }
-    //   }
-    //   if (checkState["All Parents"] === true) {
-    //     classMapping["parents"] = true;
-    //   }
-    //   if (checkState["All Teachers"] === true) {
-    //     classMapping["teachers"] = true;
-    //   }
-    //   // console.log(classMapping, title, summary, eventDate, description);
-    //   console.log(mediaURL);
-    //   const response = await AnnouncementService.publishAnnouncement(
-    //     { id },
-    //     {
-    //       title,
-    //       summary,
-    //       status,
-    //       event_date: eventDate,
-    //       main_content: description,
-    //       published_date: publisedDate,
-    //       published_to: classMapping,
-    //       media_url: mediaURL,
-    //       category_id: parseInt(
-    //         Object.keys(props.categories).find(
-    //           (category_id) => props.categories[category_id] === category
-    //         )
-    //       ),
-    //     },
-    //     props.token
-    //   );
-    //   if (response.status === 200) {
-    //     history.replace("/news");
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
+  const publishData = async (publisedDate, status) => {
+    try {
+      console.log(publisedDate);
+      let classMapping = { class: [] };
+
+      let isSelectAll = classState.find(
+        (classname) => classname === "Select All"
+      );
+      if (isSelectAll) {
+        classMapping["teachers"] = true;
+        classMapping["paresnts"] = true;
+        classMapping.class = [...Object.values(props.classState)];
+      } else {
+        classState.forEach((classnames) => {
+          if (classnames === "All Parents") {
+            classMapping["parents"] = true;
+          } else if (classnames === "All Teachers") {
+            classMapping["teachers"] = true;
+          } else {
+            classMapping.class.push(props.classState[classnames]);
+          }
+        });
+      }
+
+      if (userList.length !== 0) {
+        classMapping.individual_users = [];
+        userList.forEach((user) => {
+          classMapping.individual_users.push(user.id);
+        });
+      }
+      let payload = {
+        type: category,
+        data: {
+          title,
+          summary,
+          main_content: description,
+        },
+        notify_status: status,
+        published_date: publisedDate,
+
+        published_to: classMapping,
+      };
+      if (category === "payment") {
+        payload = {
+          ...payload,
+          data: { title, summary, main_content: description, payment },
+        };
+      }
+
+      const response = await NotificationService.saveNotification(
+        id,
+        payload,
+        props.token
+      );
+      if (response.status === 200) {
+        console.log(response);
+        history.replace("/notifications");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   const handlePublishLater = (laterEventDate) => {
     clearInterval(saveDataApi);
-    let mediaUrlContainer = document.createElement("div");
-    mediaUrlContainer.innerHTML = description;
-    let mediaURL = null;
-    if (mediaUrlContainer.getElementsByTagName("img").length > 0) {
-      mediaURL = mediaUrlContainer.getElementsByTagName("img")[0].src;
-    }
 
     const status = "active";
 
-    publishData(laterEventDate.toISOString(), status, mediaURL);
+    publishData(laterEventDate.toISOString(), status);
   };
   const submitForm = async (event) => {
     event.preventDefault();
     clearInterval(saveDataApi);
-    let mediaUrlContainer = document.createElement("div");
-    mediaUrlContainer.innerHTML = description;
-    let mediaURL = null;
-    if (mediaUrlContainer.getElementsByTagName("img").length > 0) {
-      mediaURL = mediaUrlContainer.getElementsByTagName("img")[0].src;
-    }
 
     const status = "published";
-    console.log(mediaURL);
-    publishData(new Date().toISOString(), status, mediaURL);
+    publishData(new Date().toISOString(), status);
   };
 
   return (
@@ -491,7 +507,7 @@ const CreateNotification = (props) => {
                 alt="Back"
                 className={classes.backImg}
                 onClick={() => {
-                  // saveDetails();
+                  saveDetails();
                   history.push("/notifications");
                 }}
               />
@@ -560,6 +576,17 @@ const CreateNotification = (props) => {
                     </div>
                   );
                 }}
+                MenuProps={{
+                  anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center",
+                  },
+                  transformOrigin: {
+                    vertical: "top",
+                    horizontal: "center",
+                  },
+                  getContentAnchorEl: null,
+                }}
               >
                 {categoryValues.map((category) => (
                   <MenuItem key={category} value={category}>
@@ -593,9 +620,17 @@ const CreateNotification = (props) => {
             <FormControl className={classes.fieldStyle}>
               <Autocomplete
                 multiple
+                open={openUserSearch}
+                onOpen={() => {
+                  setOpenUserSearch(true);
+                }}
+                onClose={() => {
+                  setOpenUserSearch(false);
+                }}
+                value={userList}
                 id="tags-standard"
                 options={searchData}
-                loading={loadingUsers}
+                // loading={loadingUsers}
                 onChange={handleSearchChange}
                 onInputChange={callSearchAPI}
                 getOptionLabel={(option) => option.username}
@@ -606,96 +641,61 @@ const CreateNotification = (props) => {
                     label="Search users"
                   />
                 )}
-                renderOption={(option) => styleOptions(option)}
+                // renderOption={(option) => styleOptions(option)}
+                renderGroup={(option) => option.username}
               />
             </FormControl>
           </Box>
 
-          <Box className={`${classes.margin} ${classes.showInContainer}`}>
-            <Box
-              component="ul"
-              className={`${classes.paperShowIn} ${classes.fieldStyle}`}
-            >
-              <Typography className={classes.adornmentColor}>
-                Show in:
-              </Typography>
-              {chipData.map((data, index) => {
-                return (
-                  <li key={index}>
-                    <Chip
-                      label={data}
-                      className={classes.chip}
-                      onDelete={() => handleClassChipDelete(data)}
-                    />
-                  </li>
-                );
-              })}
-            </Box>
+          <Box className={classes.margin}>
+            <FormControl className={classes.fieldStyle}>
+              <InputLabel>Select classes</InputLabel>
+              <Select
+                labelId="demo-mutiple-chip-label"
+                id="demo-mutiple-chip"
+                value={classState}
+                multiple
+                onChange={handleSelectClass}
+                input={<Input id="select-multiple-chip" />}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: "300px",
+                    },
+                  },
+                  anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center",
+                  },
+                  transformOrigin: {
+                    vertical: "top",
+                    horizontal: "center",
+                  },
+                  getContentAnchorEl: null,
+                }}
+                renderValue={(selected) => {
+                  return (
+                    <div className={classes.chips}>
+                      {selected.map((value) => (
+                        <Chip
+                          key={value}
+                          label={value}
+                          className={classes.chip}
+                        />
+                      ))}
+                    </div>
+                  );
+                }}
+              >
+                {classStateNames.map((classname) => (
+                  <MenuItem key={classname} value={classname}>
+                    {classname}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
-          <Box>
-            <Paper
-              component="ul"
-              className={`${classes.paper}  ${classes.fieldStyle}`}
-            >
-              <FormControl>
-                <FormGroup row>
-                  {checkStateLength.map((value, index) => {
-                    return (
-                      <FormControlLabel
-                        key={value}
-                        style={{ paddingLeft: "10px" }}
-                        control={
-                          <Checkbox
-                            checked={checkState[`Class ${value + 1}`]}
-                            onChange={handleCheckbox}
-                            name={`Class ${value + 1}`}
-                            color="primary"
-                          />
-                        }
-                        label={`Class ${value + 1}`}
-                      />
-                    );
-                  })}
-                  <FormControlLabel
-                    style={{ paddingLeft: "10px" }}
-                    control={
-                      <Checkbox
-                        checked={checkState["All Teachers"]}
-                        onChange={handleCheckbox}
-                        name="All Teachers"
-                        color="primary"
-                      />
-                    }
-                    label="All Teachers"
-                  />
-                  <FormControlLabel
-                    style={{ paddingLeft: "10px" }}
-                    control={
-                      <Checkbox
-                        checked={checkState["All Parents"]}
-                        onChange={handleCheckbox}
-                        name="All Parents"
-                        color="primary"
-                      />
-                    }
-                    label="All Parents"
-                  />
-                  <FormControlLabel
-                    style={{ paddingLeft: "10px" }}
-                    control={
-                      <Checkbox
-                        checked={checkState["Select All"]}
-                        onChange={handleCheckbox}
-                        name="Select All"
-                        color="primary"
-                      />
-                    }
-                    label="Select All"
-                  />
-                </FormGroup>
-              </FormControl>
-            </Paper>
-          </Box>
+
           <Box className={classes.margin}>
             <Grid className={classes.fieldStyle}>
               <Typography className={classes.textAlignLeft}>

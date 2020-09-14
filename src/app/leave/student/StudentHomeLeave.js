@@ -94,7 +94,10 @@ loading: {
   justifyContent: 'center',
   margin: 'auto',
 },
-headerText:{marginTop:'10px'},
+headerText:{marginTop:'10px',
+marginLeft:'10px',
+marginRight:'10px',
+},
 createHeader:{
   display: 'flex',
   float: 'right',
@@ -317,6 +320,7 @@ const StudentHomeLeave = (props) => {
       ))}
       </Typography>
       </InfiniteScroll>
+      <br/><br/><br/><br/>
       </Grid>
     </Grid>
   </div>

@@ -1,49 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Redirect, Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Redirect, Link, useHistory } from "react-router-dom";
 
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { makeStyles, useTheme } from '@material-ui/styles';
-import Typography from '@material-ui/core/Typography';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Avatar from '@material-ui/core/Avatar';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Hidden from '@material-ui/core/Hidden';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import ChevronRightSharpIcon from '@material-ui/icons/ChevronRightSharp';
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import { makeStyles, useTheme } from "@material-ui/styles";
+import Typography from "@material-ui/core/Typography";
+import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
+import IconButton from "@material-ui/core/IconButton";
+import Badge from "@material-ui/core/Badge";
+import Avatar from "@material-ui/core/Avatar";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import CloseIcon from "@material-ui/icons/Close";
+import Button from "@material-ui/core/Button";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Hidden from "@material-ui/core/Hidden";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import ChevronRightSharpIcon from "@material-ui/icons/ChevronRightSharp";
+import Slide from "@material-ui/core/Slide";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
-import HomeIcon from '../assets/images/navigation/DesktopHome.svg';
-import NotificationIcon from '../assets/images/navigation/DesktopNotification.svg';
-import AssignmentIcon from '../assets/images/navigation/DesktopAssignment.svg';
-import EventsIcon from '../assets/images/navigation/DesktopEvents.svg';
-import NewsIcon from '../assets/images/navigation/DesktopNews.svg';
-import CurriculumIcon from '../assets/images/navigation/DesktopCurriculum.svg';
-import GalleryIcon from '../assets/images/navigation/DesktopGallery.svg';
-import TransportIcon from '../assets/images/navigation/DesktopTransport.svg';
-import PaymentIcon from '../assets/images/navigation/DesktopPayment.svg';
-import SyllabusIcon from '../assets/images/navigation/DesktopSyllabus.svg';
-import TimetableIcon from '../assets/images/navigation/DesktopTimetable.svg';
+import { onMessageListener } from "../firebaseInit";
 
-import DesktopAttendanceIcon from '../assets/images/navigation/DesktopAttendance.svg';
-import HamburgerIcon from '../assets/images/navigation/Hamburger.svg';
-import DesktopMessageIcon from '../assets/images/navigation/DesktopMessage.svg';
+import HomeIcon from "../assets/images/navigation/DesktopHome.svg";
+import NotificationIcon from "../assets/images/navigation/DesktopNotification.svg";
+import AssignmentIcon from "../assets/images/navigation/DesktopAssignment.svg";
+import EventsIcon from "../assets/images/navigation/DesktopEvents.svg";
+import NewsIcon from "../assets/images/navigation/DesktopNews.svg";
+import CurriculumIcon from "../assets/images/navigation/DesktopCurriculum.svg";
+import GalleryIcon from "../assets/images/navigation/DesktopGallery.svg";
+import TransportIcon from "../assets/images/navigation/DesktopTransport.svg";
+import PaymentIcon from "../assets/images/navigation/DesktopPayment.svg";
+import SyllabusIcon from "../assets/images/navigation/DesktopSyllabus.svg";
+import TimetableIcon from "../assets/images/navigation/DesktopTimetable.svg";
 
-import Logout from '../app/auth/Logout';
-import RoleSelection from '../app/auth/RoleSelection';
-import * as actions from '../app/auth/store/actions';
-import ChatIndex from '../app/chat/ChatIndex';
+import DesktopAttendanceIcon from "../assets/images/navigation/DesktopAttendance.svg";
+import HamburgerIcon from "../assets/images/navigation/Hamburger.svg";
+import DesktopMessageIcon from "../assets/images/navigation/DesktopMessage.svg";
+
+import Logout from "../app/auth/Logout";
+import RoleSelection from "../app/auth/RoleSelection";
+import * as actions from "../app/auth/store/actions";
+import ChatIndex from "../app/chat/ChatIndex";
 
 // default was 360
 const drawerWidth = 340;
@@ -62,6 +68,10 @@ function ElevationScroll(props) {
   });
 }
 
+function snackTransision(props) {
+  return <Slide {...props} direction="left" />;
+}
+
 const useStyles = makeStyles((theme) => ({
   toolbarMargin: {
     ...theme.mixins.toolbar,
@@ -73,192 +83,202 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1.5,
   },
   title: {
-    display: 'block',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
+    display: "block",
+    [theme.breakpoints.up("sm")]: {
+      display: "block",
     },
     fontWeight: 900,
-    fontStyle: 'normal',
-    fontSize: '1.125rem',
+    fontStyle: "normal",
+    fontSize: "1.125rem",
   },
   sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'inline-flex',
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "inline-flex",
     },
   },
   sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
+    display: "flex",
+    [theme.breakpoints.up("md")]: {
+      display: "none",
     },
   },
   sectionItems: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   marginLeft20: {
-    marginLeft: '20px',
+    marginLeft: "20px",
   },
   marginLeft5: {
-    marginLeft: '5px',
+    marginLeft: "5px",
   },
   menuContainer: {
     backgroundColor: theme.palette.common.white,
-    color: 'white',
-    minWidth: '243px',
-    '&.MuiPaper-rounded': {
-      borderRadius: '0px 4px 0px 2px',
-      boxShadow: '0px 6px 6px #00000029',
+    color: "white",
+    minWidth: "243px",
+    "&.MuiPaper-rounded": {
+      borderRadius: "0px 4px 0px 2px",
+      boxShadow: "0px 6px 6px #00000029",
     },
-    [theme.breakpoints.down('md')]: {
-      minWidth: '150px',
+    [theme.breakpoints.down("md")]: {
+      minWidth: "150px",
     },
-    [theme.breakpoints.down('sm')]: {
-      minWidth: '150px',
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "150px",
     },
   },
   menuItem: {
     backgroundColor: theme.palette.common.white,
     color: theme.palette.common.blackRussian,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: theme.palette.common.quartz,
     },
-    margin: '5px',
-    borderRadius: '6px',
-    fontSize: '0.875rem',
+    margin: "5px",
+    borderRadius: "6px",
+    fontSize: "0.875rem",
     fontWeight: 300,
   },
   profileName: {
     fontWeight: 500,
-    fontSize: '0.625rem',
+    fontSize: "0.625rem",
     color: theme.palette.common.white,
   },
   profileButton: {
-    textTransform: 'none',
+    textTransform: "none",
   },
   drawer: {
     width: drawerWidth,
 
     flexShrink: 0,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 280,
       flexShrink: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
       flexShrink: 0,
     },
   },
   drawerPaper: {
     width: drawerWidth,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 280,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
   drawerContainer: {
-    overflow: 'auto',
+    overflow: "auto",
   },
   drawerRight: {
     width: drawerRightWidth,
     flexShrink: 0,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 0,
       flexShrink: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
   drawerRightPaper: {
     width: drawerRightWidth,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
   drawerRightContainer: {
-    overflow: 'auto',
+    overflow: "auto",
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
   },
   listItemText: {
     fontWeight: 500,
-    fontSize: '1.125rem',
+    fontSize: "1.125rem",
     color: theme.palette.common.blackRussian,
-    [theme.breakpoints.down('md')]: {
-      fontSize: '1.00rem',
+    [theme.breakpoints.down("md")]: {
+      fontSize: "1.00rem",
     },
   },
   mainContainer: {
-    height: '100%',
+    height: "100%",
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px - ${drawerWidth}px )`,
     padding: 0,
-    position: 'fixed',
-    [theme.breakpoints.down('md')]: {
+    position: "fixed",
+    [theme.breakpoints.down("md")]: {
       marginLeft: 280,
       width: `calc(100% - ${280}px - ${280}px )`,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
-      width: '100%',
+      width: "100%",
     },
     backgroundColor: theme.palette.common.whiteSmoke,
   },
   menuButton: {
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
+    [theme.breakpoints.up("md")]: {
+      display: "none",
     },
   },
   listContainer: {
-    marginLeft: '13px',
-    marginRight: '12px',
-    marginTop: '20px',
+    marginLeft: "13px",
+    marginRight: "12px",
+    marginTop: "20px",
   },
   listItem: {
     backgroundColor: theme.palette.common.white,
     color: theme.palette.common.blackRussian,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: theme.palette.common.quartz,
     },
-    borderRadius: '6px',
-    fontSize: '0.875rem',
+    borderRadius: "6px",
+    fontSize: "0.875rem",
     fontWeight: 300,
   },
   listItemIcon: {
-    '&.MuiListItemIcon-root': {
-      minWidth: '45px',
+    "&.MuiListItemIcon-root": {
+      minWidth: "45px",
     },
   },
   avatar: {
-    width: '40px',
-    height: '40px',
+    width: "40px",
+    height: "40px",
   },
   mobileToolbar: {
     backgroundColor: theme.palette.common.deluge,
     ...theme.mixins.toolbar,
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    '& div': {
-      margin: '5px',
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    "& div": {
+      margin: "5px",
     },
   },
   menu: {
     zIndex: theme.zIndex.modal + 1,
   },
   listItemSelected: {
-    '&.Mui-selected': {
+    "&.Mui-selected": {
       backgroundColor: theme.palette.common.quartz,
     },
+  },
+  snackbar: {
+    "& .MuiSnackbarContent-root": {
+      backgroundColor: "#fff",
+      color: `${theme.palette.common.blackRussian}`,
+      borderRadius: "9px",
+    },
+  },
+  snackBarDescription: {
+    color: `${theme.palette.common.lightFont}`,
   },
 }));
 
@@ -270,11 +290,30 @@ const Layout = (props) => {
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = useState(0);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarTitle, setSnackbarTitle] = useState("");
+  const [snackbarDescription, setSnackbarDescription] = useState("");
 
-  const matchesSm = useMediaQuery(theme.breakpoints.down('sm'));
+  const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const isMenuOpen = Boolean(anchorEl);
 
+  onMessageListener()
+    .then((payload) => {
+      console.log(payload);
+      setSnackbarTitle(payload.notification.title);
+      setSnackbarDescription(payload.notification.body);
+      setSnackbarOpen(true);
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") return;
+
+    setSnackbarOpen(false);
+  };
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -284,8 +323,8 @@ const Layout = (props) => {
   };
 
   const handleProfile = (event) => {
-    localStorage.setItem('srmCurrentRoute', '/profile');
-    history.push('/profile');
+    localStorage.setItem("srmCurrentRoute", "/profile");
+    history.push("/profile");
   };
 
   const handleOpenLogoutDialog = () => {
@@ -312,84 +351,84 @@ const Layout = (props) => {
 
   const listItems = [
     {
-      name: 'Home',
-      icon: <img src={HomeIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/home',
+      name: "Home",
+      icon: <img src={HomeIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/home",
       itemIndex: 0,
     },
     {
-      name: 'Notifications',
-      icon: <img src={NotificationIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/notifications',
+      name: "Notifications",
+      icon: <img src={NotificationIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/notifications",
       itemIndex: 1,
     },
     {
-      name: 'Assignment',
-      icon: <img src={AssignmentIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/assignment',
+      name: "Assignment",
+      icon: <img src={AssignmentIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/assignment",
       itemIndex: 2,
     },
     {
-      name: 'Attendance',
+      name: "Attendance",
       icon: (
-        <img src={DesktopAttendanceIcon} alt='Menu' width='24' height='24' />
+        <img src={DesktopAttendanceIcon} alt="Menu" width="24" height="24" />
       ),
-      linkTo: '/attendance',
+      linkTo: "/attendance",
       itemIndex: 3,
     },
 
     {
-      name: 'Events & Announcements',
-      icon: <img src={NewsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/news',
+      name: "Events & Announcements",
+      icon: <img src={NewsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/news",
       itemIndex: 4,
     },
     {
-      name: 'Syllabus',
-      icon: <img src={SyllabusIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/syllabus',
+      name: "Syllabus",
+      icon: <img src={SyllabusIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/syllabus",
       itemIndex: 5,
     },
     {
-      name: 'Transport',
-      icon: <img src={TransportIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/transport',
+      name: "Transport",
+      icon: <img src={TransportIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/transport",
       itemIndex: 6,
     },
     {
-      name: 'Gallery',
-      icon: <img src={GalleryIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/gallery',
+      name: "Gallery",
+      icon: <img src={GalleryIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/gallery",
       itemIndex: 7,
     },
     {
-      name: 'Curriculum',
-      icon: <img src={CurriculumIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/curriculum',
+      name: "Curriculum",
+      icon: <img src={CurriculumIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/curriculum",
       itemIndex: 8,
     },
     {
-      name: 'Payments',
-      icon: <img src={PaymentIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/payments',
+      name: "Payments",
+      icon: <img src={PaymentIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/payments",
       itemIndex: 9,
     },
     {
-      name: 'Timetable',
-      icon: <img src={TimetableIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/timetable',
+      name: "Timetable",
+      icon: <img src={TimetableIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/timetable",
       itemIndex: 10,
     },
     {
-      name: 'Leave',
-      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/leave',
+      name: "Leave",
+      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/leave",
       itemIndex: 11,
     },
     {
-      name: 'FAQ',
-      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/faq',
+      name: "FAQ",
+      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/faq",
       itemIndex: 12,
     },
     {
@@ -410,9 +449,9 @@ const Layout = (props) => {
           if (selectedItem !== route.itemIndex) {
             // console.log("use effect", selectedItem, route.itemIndex);
             setSelectedItem(route.itemIndex);
-            localStorage.setItem('srmCurrentRoute', route.linkTo);
+            localStorage.setItem("srmCurrentRoute", route.linkTo);
           } else if (selectedItem === 0 && route.itemIndex === 0) {
-            localStorage.setItem('srmCurrentRoute', route.linkTo);
+            localStorage.setItem("srmCurrentRoute", route.linkTo);
           }
           break;
         default:
@@ -422,7 +461,7 @@ const Layout = (props) => {
   }, [selectedItem, listItems]);
 
   useEffect(() => {
-    if (window.location.pathname.includes('/gallery/')) {
+    if (window.location.pathname.includes("/gallery/")) {
       if (selectedItem !== 7) {
         setSelectedItem(7);
       }
@@ -433,9 +472,9 @@ const Layout = (props) => {
     <Menu
       classes={{ paper: classes.menuContainer }}
       anchorEl={anchorEl}
-      id='desktopMenu'
+      id="desktopMenu"
       keepMounted
-      anchorReference='anchorPosition'
+      anchorReference="anchorPosition"
       anchorPosition={{ top: 65, left: 2000 }}
       open={isMenuOpen}
       onClose={handleMenuClose}
@@ -468,15 +507,15 @@ const Layout = (props) => {
     <Menu
       classes={{ paper: classes.menuContainer }}
       anchorEl={anchorEl}
-      id='mobileMenu'
+      id="mobileMenu"
       keepMounted
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
+        vertical: "top",
+        horizontal: "left",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
+        vertical: "top",
+        horizontal: "left",
       }}
       //PopoverClasses={{ root: classes.menu }}
       open={isMenuOpen}
@@ -511,26 +550,26 @@ const Layout = (props) => {
     <>
       <Toolbar disableGutters>
         <div className={classes.mobileToolbar}>
-          <div style={{ width: '10px' }}></div>
+          <div style={{ width: "10px" }}></div>
           <div>
-            <Avatar src='/broken-image.jpg' className={classes.avatar} />
+            <Avatar src="/broken-image.jpg" className={classes.avatar} />
           </div>
           <div>
             <Typography noWrap className={classes.profileName}>
               Hi {props.userInfo.username}
             </Typography>
           </div>
-          <div style={{ width: '20px' }}></div>
+          <div style={{ width: "20px" }}></div>
           <div>
             <Button
-              size='small'
+              size="small"
               onClick={handleProfileMenuOpen}
               disableRipple
               className={classes.profileButton}
             >
               <ChevronRightSharpIcon
-                style={{ color: 'white' }}
-                fontSize='small'
+                style={{ color: "white" }}
+                fontSize="small"
               />
             </Button>
           </div>
@@ -541,10 +580,10 @@ const Layout = (props) => {
         <div>
           <List className={classes.listContainer}>
             {listItems.map((item, index) => {
-              if (item.name === 'Events & Announcements') {
+              if (item.name === "Events & Announcements") {
                 if (
-                  props.selectedRole === 'teacher' ||
-                  props.selectedRole === 'admin'
+                  props.selectedRole === "teacher" ||
+                  props.selectedRole === "admin"
                 ) {
                   return (
                     <ListItem
@@ -640,42 +679,42 @@ const Layout = (props) => {
 
   return (
     <>
-      {!props.isAuthenticated ? <Redirect to='/login' /> : ''}
+      {!props.isAuthenticated ? <Redirect to="/login" /> : ""}
       <ElevationScroll>
         <div className={classes.grow}>
-          <AppBar position='fixed' className={classes.appBar}>
+          <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>
               <IconButton
-                color='inherit'
-                aria-label='open drawer'
-                edge='start'
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
                 onClick={handleDrawerToggle}
                 className={classes.menuButton}
               >
                 <img
                   src={HamburgerIcon}
-                  alt='Menu'
-                  style={{ color: 'white' }}
+                  alt="Menu"
+                  style={{ color: "white" }}
                 />
               </IconButton>
-              <Hidden smDown implementation='css'>
+              <Hidden smDown implementation="css">
                 <Typography>LOGO</Typography>
               </Hidden>
 
               <div className={classes.grow} />
-              <Typography className={classes.title} variant='h6' noWrap>
-                {matchesSm ? 'PSBB' : 'PSBB Learning Leadership Academy'}
+              <Typography className={classes.title} variant="h6" noWrap>
+                {matchesSm ? "PSBB" : "PSBB Learning Leadership Academy"}
               </Typography>
               <div className={classes.grow2} />
               <div className={classes.sectionDesktop}>
                 <IconButton
-                  aria-label='show 2 new notifications'
-                  color='inherit'
+                  aria-label="show 2 new notifications"
+                  color="inherit"
                 >
-                  <Badge badgeContent={2} color='secondary'>
+                  <Badge badgeContent={2} color="secondary">
                     <NotificationsNoneIcon
                       onClick={(event) => {
-                        history.push('/notifications');
+                        history.push("/notifications");
                       }}
                     />
                   </Badge>
@@ -687,7 +726,7 @@ const Layout = (props) => {
                     src={
                       props.userInfo.thumbnail
                         ? props.userInfo.thumbnail
-                        : '/broken-image.jpg'
+                        : "/broken-image.jpg"
                     }
                     className={classes.avatar}
                   />
@@ -696,7 +735,7 @@ const Layout = (props) => {
                   className={`${classes.sectionItems} ${classes.marginLeft5}`}
                 >
                   <Button
-                    size='small'
+                    size="small"
                     onClick={handleProfileMenuOpen}
                     disableRipple
                     className={classes.profileButton}
@@ -705,27 +744,27 @@ const Layout = (props) => {
                       Hi {props.userInfo.username}
                     </Typography>
                     <ExpandMoreIcon
-                      style={{ color: 'white' }}
-                      fontSize='small'
+                      style={{ color: "white" }}
+                      fontSize="small"
                     />
                   </Button>
                 </div>
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
-                  aria-label='show 2 new notifications'
-                  color='inherit'
+                  aria-label="show 2 new notifications"
+                  color="inherit"
                 >
-                  <Badge badgeContent={2} color='secondary'>
+                  <Badge badgeContent={2} color="secondary">
                     <NotificationsNoneIcon
                       onClick={(event) => {
-                        history.push('/notifications');
+                        history.push("/notifications");
                       }}
                     />
                   </Badge>
                 </IconButton>
-                <IconButton color='inherit'>
-                  <img src={DesktopMessageIcon} alt='Menu' />
+                <IconButton color="inherit">
+                  <img src={DesktopMessageIcon} alt="Menu" />
                 </IconButton>
               </div>
             </Toolbar>
@@ -736,9 +775,9 @@ const Layout = (props) => {
       <div className={classes.toolbarMargin}></div>
 
       <nav className={classes.drawer}>
-        <Hidden smUp implementation='css'>
+        <Hidden smUp implementation="css">
           <Drawer
-            variant='temporary'
+            variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
             classes={{
@@ -751,12 +790,12 @@ const Layout = (props) => {
             {drawer}
           </Drawer>
         </Hidden>
-        <Hidden smDown implementation='css'>
+        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerPaper,
             }}
-            variant='permanent'
+            variant="permanent"
             open
             PaperProps={{ elevation: 3 }}
           >
@@ -766,14 +805,14 @@ const Layout = (props) => {
       </nav>
 
       <nav className={classes.drawerRight}>
-        <Hidden smDown implementation='css'>
+        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerRightPaper,
             }}
-            variant='permanent'
+            variant="permanent"
             open
-            anchor='right'
+            anchor="right"
             PaperProps={{ elevation: 3 }}
           >
             {rightDrawer}
@@ -781,11 +820,42 @@ const Layout = (props) => {
         </Hidden>
       </nav>
       <main className={classes.mainContainer}>{props.children}</main>
-
+      {snackbarOpen ? (
+        <Snackbar
+          open={snackbarOpen}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          message={
+            <>
+              <Typography>{snackbarTitle}</Typography>
+              <Typography className={classes.snackBarDescription}>
+                {snackbarDescription}
+              </Typography>
+            </>
+          }
+          // autoHideDuration={5000}
+          onClose={handleCloseSnack}
+          className={classes.snackbar}
+          TransitionComponent={snackTransision}
+          action={
+            <React.Fragment>
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleCloseSnack}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </React.Fragment>
+          }
+        />
+      ) : (
+        ""
+      )}
       {openLogoutDialog ? (
         <Logout open={openLogoutDialog} handleClose={handleCloseLogoutDialog} />
       ) : (
-        ''
+        ""
       )}
 
       {props.changeRole ? (
@@ -798,6 +868,7 @@ const Layout = (props) => {
 const mapStateToProps = (state) => {
   return {
     userInfo: state.auth.userInfo,
+    token: state.auth.token,
     isAuthenticated: state.auth.token !== null,
     selectedRole: state.auth.selectedRole,
     changeRole: state.auth.changeRole,

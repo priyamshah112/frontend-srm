@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { DropzoneArea } from "material-ui-dropzone";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import GalleryService from "./GalleryService";
-import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import imageCompression from "browser-image-compression";
@@ -17,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: "400px",
     },
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: `#fff`,
+  },
   previewChip: {
     minWidth: 160,
     maxWidth: 210,
@@ -26,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const ImageUpload = (props) => {
   const classes = useStyles();
   const history = useHistory();
+
   const [fileList, setFileList] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -123,7 +129,9 @@ const ImageUpload = (props) => {
             Cancel
           </Button>
         </div>
-        <BackdropLoader open={isUploading} />
+        <Backdrop open={isUploading} className={classes.backdrop}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
       <Snackbar
         open={openSnackbar}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Typography, Button, Grid, TextField } from '@material-ui/core';
+import { Typography, Button, Grid, TextField, Card } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -15,6 +15,11 @@ const useStyle = makeStyles((theme) => ({
   CardContent: {
     padding: '10px 0 0 0 !important',
     margin: '0',
+    height: '100%',
+  },
+
+  taskCard: {
+    borderRadius: '10px',
     height: '100%',
   },
   menuBar: {
@@ -127,64 +132,67 @@ const Tasks = (props) => {
 
   return (
     <>
-      <CardContent className={classes.CardContent}>
-        <Grid className={classes.menuBar}>
-          <Grid item xs={4} className={classes.menuItems}>
-            {createNew ? (
+      <Card className={classes.taskCard}>
+        <CardContent className={classes.CardContent}>
+          <Grid className={classes.menuBar}>
+            <Grid item xs={4} className={classes.menuItems}>
+              {createNew ? (
+                <Button
+                  variant='contained'
+                  onClick={closeEditor}
+                  color='secondary'
+                  disableElevation
+                  className={classes.menuBtn}
+                >
+                  Discard
+                </Button>
+              ) : (
+                <Button
+                  variant='contained'
+                  onClick={handleDeleteTask}
+                  color='secondary'
+                  disableElevation
+                  className={classes.menuBtn}
+                >
+                  Delete
+                </Button>
+              )}
+            </Grid>
+            <Grid item xs={4} className={classes.menuItems}>
+              <Typography className={classes.title}>Task Editor</Typography>
+            </Grid>
+            <Grid item xs={4} className={classes.menuItems}>
               <Button
                 variant='contained'
-                onClick={closeEditor}
-                color='secondary'
+                color='primary'
+                onClick={handleSave}
                 disableElevation
                 className={classes.menuBtn}
               >
-                Discard
+                Save
               </Button>
-            ) : (
-              <Button
-                variant='contained'
-                onClick={handleDeleteTask}
-                color='secondary'
-                disableElevation
-                className={classes.menuBtn}
-              >
-                Delete
-              </Button>
-            )}
+            </Grid>
           </Grid>
-          <Grid item xs={4} className={classes.menuItems}>
-            <Typography className={classes.title}>Task Editor</Typography>
+          <hr />
+          <Grid container className={classes.textAreaGrid}>
+            <TextField
+              id='outlined-multiline-static'
+              label={multilineLabel}
+              className={classes.textArea}
+              multiline
+              rows={13}
+              value={taskContent}
+              onPaste={handlePaste}
+              onChange={handleChangeTask}
+              variant='outlined'
+            />
           </Grid>
-          <Grid item xs={4} className={classes.menuItems}>
-            <Button
-              variant='contained'
-              color='primary'
-              onClick={handleSave}
-              disableElevation
-              className={classes.menuBtn}
-            >
-              Save
-            </Button>
-          </Grid>
-        </Grid>
-        <hr />
-        <Grid container className={classes.textAreaGrid}>
-          <TextField
-            id='outlined-multiline-static'
-            label={multilineLabel}
-            className={classes.textArea}
-            multiline
-            rows={13}
-            value={taskContent}
-            onPaste={handlePaste}
-            onChange={handleChangeTask}
-            variant='outlined'
-          />
-        </Grid>
-        <div className={classes.footer}>
-          <Typography>Character: {taskContent.length}/300</Typography>
-        </div>
-      </CardContent>
+          <div className={classes.footer}>
+            <Typography>Character: {taskContent.length}/300</Typography>
+          </div>
+        </CardContent>
+      </Card>
+
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

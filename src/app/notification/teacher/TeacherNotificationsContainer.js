@@ -12,8 +12,10 @@ import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 
 import AddIcon from "../../../assets/images/Add.svg";
+
 import NotificationCard from "../NotificationCard";
 import TeacherNotificationCard from "./TeacherNotificationCard";
+import NotificationService from "../NotificationService";
 
 const useStyles = makeStyles((theme) => ({
   datePicker: {
@@ -87,17 +89,76 @@ const TeacherNotificationsContainer = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const selectedRole = props.selectedRole;
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("All");
 
-  const fetchAnnouncementOnScroll = async () => {
-    console.log("Fetch More");
+  useEffect(() => {
+    let isNotificationLoading = true;
+    const fetchNotification = async () => {
+      try {
+        const response = await NotificationService.fetchNotification(
+          props.token,
+          props.created_by,
+          props.selectedRole,
+          currentPage
+        );
+        if (response.status === 200) {
+          if (isNotificationLoading) {
+            if (
+              response.data.data.last_page === response.data.data.current_page
+            ) {
+              setHasMore(false);
+              setNotifications([...response.data.data.data]);
+            } else {
+              setCurrentPage(currentPage + 1);
+              setNotifications([...response.data.data.data]);
+            }
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchNotification();
+    return () => {
+      isNotificationLoading = false;
+    };
+  }, []);
+
+  const fetchNotificationOnScroll = async () => {
+    try {
+      const response = await NotificationService.fetchNotification(
+        props.token,
+        props.created_by,
+        props.selectedRole,
+        currentPage
+      );
+      if (response.status === 200) {
+        if (response.data.data.last_page === response.data.data.current_page) {
+          setHasMore(false);
+          setNotifications([...notifications, ...response.data.data.data]);
+        } else {
+          setCurrentPage(currentPage + 1);
+          setNotifications([...notifications, ...response.data.data.data]);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   const handleCreateAnnouncement = async () => {
-    history.push("/create-notification/64");
-    console.log("Create Announcement");
+    try {
+      const response = await NotificationService.createNotification(
+        props.token
+      );
+      if (response.status === 200) {
+        history.push(`/create-notification/${response.data.data.id}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
@@ -105,9 +166,16 @@ const TeacherNotificationsContainer = (props) => {
   let content;
 
   if (props.created_by) {
-    content = <TeacherNotificationCard />;
+    content = notifications.map((notification) => (
+      <TeacherNotificationCard
+        key={notification.id}
+        notification={notification}
+      />
+    ));
   } else {
-    content = <NotificationCard />;
+    content = notifications.map((notification) => (
+      <NotificationCard key={notification.id} notification={notification} />
+    ));
   }
 
   return (
@@ -149,7 +217,7 @@ const TeacherNotificationsContainer = (props) => {
       <Box className={classes.cardBoxPadding}>
         <InfiniteScroll
           dataLength={notifications.length}
-          next={fetchAnnouncementOnScroll}
+          next={fetchNotificationOnScroll}
           hasMore={hasMore}
           loader={
             <>
@@ -172,6 +240,7 @@ const TeacherNotificationsContainer = (props) => {
 const mapStateToProps = (state) => {
   return {
     selectedRole: state.auth.selectedRole,
+    token: state.auth.token,
   };
 };
 

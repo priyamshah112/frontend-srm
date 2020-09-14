@@ -111,9 +111,9 @@ const TeacherNotifications = (props) => {
       );
       let initialClassState = {};
       classesResponse.data.data.forEach((className) => {
-        initialClassState[className.class_name] = false;
+        initialClassState[className.class_name] = className.id;
       });
-      console.log(initialClassState);
+
       // const categoryResponse = await AnnouncementService.fetchCategories(
       //   props.token
       // );
@@ -137,7 +137,6 @@ const TeacherNotifications = (props) => {
 
   useEffect(() => {
     if (classState !== null && category !== null) {
-      console.log(category, classState);
       setIsClassLoading(false);
     }
   }, [classState, category]);
@@ -172,11 +171,14 @@ const TeacherNotifications = (props) => {
             </Tabs>
           </AppBar>
           <TabPanel value={value} index={0}>
-            <TeacherNotificationsContainer created_by={false} />
+            <TeacherNotificationsContainer key={0} created_by={false} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TeacherNotificationsContainer created_by={true} />
+            <TeacherNotificationsContainer key={1} created_by={true} />
           </TabPanel>
+          <br />
+          <br />
+          <br />
         </>
       ) : location.pathname === `/create-notification/${id}` &&
         isClassLoading === false ? (

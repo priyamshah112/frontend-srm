@@ -121,6 +121,8 @@ create:{
   paddingTop: '8px'
 },
 root: {
+  height:'100%',
+  overflow: 'auto',
   '& > span': {
     margin: theme.spacing(2),
   },
@@ -231,12 +233,13 @@ useEffect(() => {
           setLeaves(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
           let last_page_url = response.data.data.last_page_url;
+          
           if (next_page_url === null) {
             setHasMore(false);
           } else {
             setNextUrl(next_page_url);
             setCurrentPage(currentPage + 1);
-            setHasMore(true);
+          
           }
         }
       } catch (error) {
@@ -250,22 +253,25 @@ useEffect(() => {
   }, []);
    const fetchMoreLeave = async () => {
     try {
+      // console.log(nextUrl)
       const token = localStorage.getItem('srmToken');
-      const response = await LeaveService.fetchAllLeavesQueve(token, nextUrl);
+      const response = await LeaveService.fetchMoreLeavesQueve(token, nextUrl);
+      
       for(let row in response.data.data.data){
         let id = response.data.data.data[row].user_id;
         var useridres = await LeaveService.fetchAllUserdata(id,token);
         response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
       }
       setLeaves([...allLeaves, ...response.data.data.data]);
+      // console.log(response.data.data.next_page_url);
       let next_page_url = response.data.data.next_page_url;
+      // console.log(next_page_url);
       if (next_page_url === null) {
         setHasMore(false);
       } else {
+        // console.log("here")
         setNextUrl(next_page_url);
         setCurrentPage(currentPage + 1);
-
-        setHasMore(true);
       }
     } catch (error) {
       console.log('Error: ', error);
@@ -324,15 +330,15 @@ useEffect(() => {
 
 
   return (
-    <div className={classes.container} ref={tabref} id='scrollable'>
-     <div className={classes.container} id='scrollable'>
+    <div className={classes.container} ref={tabref} >
+     <div className={classes.container} >
 
         
-        <div className={classes.root}>
+        <div className={classes.root} id='scrollable'>
 
 
-        <Grid container className={classes.newclass}>
-        <Grid item xs={12}>
+        {/* <Grid container className={classes.newclass}>
+        <Grid item xs={12}> */}
         <InfiniteScroll
           dataLength={allLeaves.length}
           next={fetchMoreLeave}
@@ -347,7 +353,7 @@ useEffect(() => {
             </>
           }
           scrollableTarget='scrollable'
-          scrollThreshold={0.5}
+          scrollThreshold={0.2}
         >
         {allLeaves.map((leaves) => (
         <Paper className={classes.paper}>
@@ -356,7 +362,7 @@ useEffect(() => {
         <div className={classes.rowflex}>
             <Grid item xs={2}>
               {/* <img className={classes.img} src="child.png"></img> */}
-              <svg class="MuiSvgIcon-root MuiAvatar-fallback" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+              <svg className="MuiSvgIcon-root MuiAvatar-fallback" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
 
             </Grid>
             <Grid item xs={6}>
@@ -424,8 +430,9 @@ useEffect(() => {
         </Paper>
         ))}
         </InfiniteScroll>
-        </Grid>
-        </Grid>
+        <br/><br/><br/><br/>
+        {/* </Grid>
+        </Grid> */}
         </div>
         
         </div>  

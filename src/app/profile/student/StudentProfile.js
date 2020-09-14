@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import ParentPhone from './ParentPhone';
-import ParentEmail from './ParentEmail';
-import ParentAddress from './ParentAddress';
-import ParentChildren from './ParentChildren';
-import ParentAssociated from './ParentAssociated';
+import StudentPhone from './StudentPhone';
+import StudentAddress from './StudentAddress';
+import StudentParents from './StudentParents';
+
 import { Typography, Button, Snackbar } from '@material-ui/core';
 import editButtonIcon from '../../../assets/images/Edit Button.svg';
 import MuiAlert from '@material-ui/lab/Alert';
 import profileImage from './cr7.jpg';
 import ChangePassword from '../ChangePassword';
+import { connect } from 'react-redux';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
@@ -49,13 +49,14 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: 'solid',
   },
 }));
-const ParentProfile = (props) => {
+const StudentProfile = (props) => {
   const classes = useStyles();
   const [openChangePass, setOpenChanegPass] = useState(false);
-
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [snackbarmsg, setSnackbarmsg] = useState('');
   const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+
+  const userInfo = props.userInfo;
 
   const handleSnackbar = (success, message, error) => {
     setSuccessSnackbarOpen(success);
@@ -74,6 +75,8 @@ const ParentProfile = (props) => {
     setSuccessSnackbarOpen(false);
     setErrorSnackbarOpen(false);
   };
+
+  console.log('user info:', userInfo);
 
   return (
     <>
@@ -98,11 +101,9 @@ const ParentProfile = (props) => {
             Pratyusha Atmakur
           </Typography>
         </div>
-        <ParentPhone />
-        <ParentEmail />
-        <ParentAddress />
-        <ParentChildren />
-        <ParentAssociated />
+        <StudentPhone />
+        <StudentAddress />
+        <StudentParents />
         <div className={classes.changePwdDiv}>
           <Button
             variant='outlined'
@@ -151,4 +152,10 @@ const ParentProfile = (props) => {
   );
 };
 
-export default ParentProfile;
+const mapStateToProps = (state) => {
+  return {
+    userInfo: state.auth.userInfo,
+  };
+};
+
+export default connect(mapStateToProps)(StudentProfile);

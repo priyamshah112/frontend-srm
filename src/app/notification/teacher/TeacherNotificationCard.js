@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
@@ -6,6 +7,7 @@ import CardActions from "@material-ui/core/CardActions";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import * as moment from "moment";
 import {
   IconButton,
   Typography,
@@ -24,8 +26,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "10px",
     marginTop: "10px",
   },
+
   cardHeader: {
-    padding: "20px 20px 0 20px",
+    padding: "15px 20px 0 20px",
   },
   iconButtonRoot: {
     padding: "8px",
@@ -35,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   editIconSpan: {
     paddingLeft: "10px",
+    cursor: "pointer",
   },
   titleIcon: {
     transform: "translateY(3px)",
@@ -43,6 +47,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "16px",
     fontStyle: "normal",
     fontWeight: 500,
+    cursor: "pointer",
+    "&:hover": {
+      textDecoration: "underline",
+    },
   },
   cardActions: {
     padding: "0 20px 20px 20px",
@@ -95,9 +103,18 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   contentStyle: {
-    color: "#8E8E93",
+    color: `${theme.palette.common.lightFont}`,
     fontSize: "14px",
     fontStyle: "normal",
+  },
+  dateStyle: {
+    paddingTop: "5px",
+  },
+  contentStatus: {
+    color: `${theme.palette.common.lightFont}`,
+    fontSize: "14px",
+    fontStyle: "normal",
+    marginRight: "",
   },
   readClass: {
     textAlign: "right",
@@ -110,6 +127,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TeacherNotificationCard = (props) => {
   const classes = useStyles();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -119,47 +137,62 @@ const TeacherNotificationCard = (props) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleEdit = () => {
+    history.push(`/create-notification/${props.notification.id}`);
+  };
   return (
     <Card className={classes.card}>
       <CardHeader
         className={classes.cardHeader}
         action={
           <>
-            <Typography className={classes.contentStyle}>
-              10 Jun, 02.05PM
-              <span
-                className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
-              >
-                <img src={EditIcon} className={classes.titleIcon} />
-              </span>
+            <Typography
+              className={`${classes.contentStyle} ${classes.dateStyle}`}
+            >
+              {moment(props.notification.created_at).format("DD MMM, hh.mma")}
+              {props.notification.notify_status !== "published" ? (
+                <span
+                  className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
+                >
+                  <img
+                    src={EditIcon}
+                    className={`${classes.titleIcon}`}
+                    onClick={handleEdit}
+                  />
+                </span>
+              ) : (
+                ""
+              )}
             </Typography>
           </>
         }
         title={
           <>
             <Typography className={classes.cardTitle}>
-              <span className={classes.titleIconSpan}>
-                <img src={WarningIcon} className={classes.titleIcon} />
-              </span>
-              What is Lorem Ipsum?
+              {props.notification.data
+                ? props.notification.data.title
+                  ? props.notification.data.title
+                  : "N/A"
+                : "N/A"}
             </Typography>
           </>
         }
       />
       <CardContent classes={{ root: classes.cardContent }}>
         <Grid container>
-          <Grid item xs={11}>
+          <Grid item xs={10}>
             <Typography className={classes.contentStyle}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged.
+              {props.notification.data
+                ? props.notification.data.summary
+                  ? props.notification.data.summary
+                  : "N/A"
+                : "N/A"}
             </Typography>
           </Grid>
-          <Grid item xs={1} className={classes.readClass}>
-            <Typography className={classes.contentStyle}>Draft</Typography>
+          <Grid item xs={2} className={classes.readClass}>
+            <Typography className={classes.contentStyle}>
+              {`${props.notification.notify_status}`.toUpperCase()}
+            </Typography>
           </Grid>
         </Grid>
       </CardContent>

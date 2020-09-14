@@ -16,6 +16,8 @@ import Lightbox from "react-image-lightbox";
 import Grid from "@material-ui/core/Grid";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 import GalleryService from "./GalleryService";
 
 const REACT_APP_BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
@@ -84,6 +86,9 @@ const tileImageList = [
 const GalleryIndex = (props) => {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
+  const matches = useMediaQuery("(max-width:400px)");
+
   const [openLightbox, setOpenLightBox] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -91,6 +96,7 @@ const GalleryIndex = (props) => {
   const [tileData, setTileData] = useState([]);
 
   useEffect(() => {
+    let changeImages = true;
     const fetchImages = async () => {
       try {
         const response = await GalleryService.fetchImages(
@@ -98,7 +104,7 @@ const GalleryIndex = (props) => {
           currentPage
         );
 
-        if (response.status === 200) {
+        if (response.status === 200 && changeImages) {
           setTileData([...tileData, ...response.data.data.data]);
           if (
             response.data.data.current_page !== response.data.data.last_page
@@ -113,6 +119,10 @@ const GalleryIndex = (props) => {
       }
     };
     fetchImages();
+
+    return () => {
+      changeImages = false;
+    };
   }, []);
   const handleFileUpload = () => {
     history.push("/gallery/upload");
@@ -207,7 +217,7 @@ const GalleryIndex = (props) => {
             <GridList
               cellHeight={200}
               spacing={2}
-              cols={2}
+              cols={matches ? 2 : 3}
               className={classes.gridList}
             >
               {tileData.map((tile, index) => {
