@@ -19,6 +19,15 @@ class SyllabusService {
         });
     }
 
+    getSyllabusByClass(token, classID) {
+      return axios.get(`${BACKEND_API_URL}/syllabus?class_id=` + classID, {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+
     getSubjects(token){
       return axios.get(`${BACKEND_API_URL}/subjects`, {
           headers: {
@@ -31,6 +40,22 @@ class SyllabusService {
       return axios.get(`${BACKEND_API_URL}/classes`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+    updateChapter(token, subject_id, payload) {
+      return axios.put(`${BACKEND_API_URL}/syllabus/${subject_id}`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+    saveChapter(token, payload) {
+      return axios.post(`${BACKEND_API_URL}/syllabus`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });

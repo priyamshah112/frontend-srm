@@ -18,8 +18,10 @@ const useStyles = makeStyles((theme) => ({
 const Syllabus = (props) => {
     const classes = useStyles();
     const selectedRole = props.selectedRole;
+
     return (
       <div className={classes.container}>
+        
         {selectedRole === 'parent' ?  <ParentSyllabus/> : <ClassSyllabus/> }
         
       </div>

@@ -23,6 +23,7 @@ import Gallery from './app/gallery/GalleryIndex';
 import ImageUpload from './app/gallery/ImageUpload';
 import Profile from './app/profile/Profile';
 import Syllabus from './app/syllabus/Syllabus';
+import EditChapter from './app/syllabus/teacher/editChapter';
 
 import 'react-image-lightbox/style.css';
 import Faq from './app/faq/FaqContainer';
@@ -70,6 +71,16 @@ function App(props) {
             path='/syllabus'
             exact
             component={Syllabus}
+          />
+          <Route
+            path='/syllabus/edit/:id'
+            exact
+            component={EditChapter}
+          />
+          <Route
+            path='/syllabus/add/:id/class/:classid'
+            exact
+            component={EditChapter}
           />
           <Route
             path='/transport'
