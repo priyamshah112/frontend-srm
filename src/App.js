@@ -27,7 +27,6 @@ import {
   onMessageListener,
   tokenRefresh,
 } from "./firebaseInit";
-
 import "react-image-lightbox/style.css";
 import Faq from "./app/faq/FaqContainer";
 import FaqEditor from "./app/faq/teacher/FaqEditor";
@@ -38,6 +37,7 @@ import Leave from './app/leave/LeaveContainer';
 import LeaveCreateContainer from './app/leave/LeaveCreateContainer';
 import Attendance from "./app/Attendance/Attendance";
 import Syllabus from './app/syllabus/Syllabus';
+import EditChapter from './app/syllabus/teacher/editChapter';
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -95,6 +95,16 @@ function App(props) {
             path="/syllabus"
             exact
             component={Syllabus}
+          />
+          <Route
+            path='/syllabus/edit/:id'
+            exact
+            component={EditChapter}
+          />
+          <Route
+            path='/syllabus/add/:id/class/:classid'
+            exact
+            component={EditChapter}
           />
           <Route
             path="/transport"
