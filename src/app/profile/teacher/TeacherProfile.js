@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import StudentPhone from './StudentPhone';
-import StudentAddress from './StudentAddress';
-import StudentParents from './StudentParents';
-
 import {
   Typography,
   Button,
   Snackbar,
-  IconButton,
   Input,
+  IconButton,
 } from '@material-ui/core';
 import editButtonIcon from '../../../assets/images/Edit Button.svg';
 import MuiAlert from '@material-ui/lab/Alert';
 import profileImage from './cr7.jpg';
 import ChangePassword from '../ChangePassword';
-import { connect } from 'react-redux';
 import ProfileService from '../ProfileService';
+import { connect } from 'react-redux';
+import TeacherPhone from './TeacherPhone';
+import TeacherEmail from './TeacherEmail';
+import TeacherAddress from './TeacherAddress';
 import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader';
-import { PhotoCamera } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 
 function Alert(props) {
@@ -37,8 +35,11 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
     border: '1px solid',
   },
+  input: {
+    display: 'none',
+  },
   editProfile: {
-    transform: 'translate(35px,75px)',
+    transform: 'translate(40px,85px)',
     cursor: 'pointer',
   },
   profileName: {
@@ -51,9 +52,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '40px',
     margin: 'auto',
   },
-  input: {
-    display: 'none',
-  },
   changePwd: {
     width: '100%',
     height: '50px',
@@ -62,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: 'solid',
   },
 }));
-const StudentProfile = (props) => {
+const ParentProfile = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [openChangePass, setOpenChanegPass] = useState(false);
@@ -72,24 +70,29 @@ const StudentProfile = (props) => {
   const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const [userPic, setUserPic] = useState(null);
-  const [phone, setPhone] = useState([]);
-  const [email, setEmail] = useState([]);
-  const [address, setAddress] = useState(null);
-  const [parentsData, setParentsData] = useState([]);
-  const [parentId, setParentId] = useState([]);
+  const [primaryPhone, setPrimaryPhone] = useState('');
+  const [secondaryPhone, setSecondaryPhone] = useState('');
+  const [secondaryPhoneId, setSecondaryPhoneId] = useState();
+
+  const [primaryEmail, setPrimaryEmail] = useState('');
+  const [secondaryEmail, setSecondaryEmail] = useState('');
+  const [secondaryEmailId, setSecondaryEmailId] = useState();
   const [newUserPic, setNewUserPic] = useState('');
+
+  const [addressId, setAddressId] = useState();
+
+  const [address, setAddress] = useState([]);
 
   const userInfo = props.userInfo;
 
   useEffect(() => {
-    let isLoading = true;
-
+    let loading = true;
     const getUser = async () => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await ProfileService.fetchuser(token, userInfo['id']);
         if (response.status === 200) {
-          if (isLoading) {
+          if (loading) {
             setUserData(response.data.data);
             setUserPic(response.data.data.user_details['thumbnail']);
           }
@@ -98,72 +101,57 @@ const StudentProfile = (props) => {
         console.log(error);
       }
     };
-
     const getPhones = async () => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await ProfileService.fetchPhones(token);
         if (response.status === 200) {
-          if (isLoading) {
-            setPhone(response.data.data.data);
+          if (loading) {
+            setPrimaryPhone(response.data.data[0]['phone_number']);
+            setSecondaryPhone(response.data.data[1]['phone_number']);
+            setSecondaryPhoneId(response.data.data[1]['id']);
           }
-        } else {
-          console.log('Error');
         }
       } catch (error) {
         console.log(error);
       }
     };
-
+    const getEmails = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await ProfileService.fetchEmails(token);
+        if (response.status === 200) {
+          if (loading) {
+            setPrimaryEmail(response.data.data[0]['email']);
+            setSecondaryEmail(response.data.data[1]['email']);
+            setSecondaryEmailId(response.data.data[1]['id']);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
     const getAddress = async () => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await ProfileService.fetchAddress(token);
-        console.log('response', response.data.data[0]['address_line1']);
         if (response.status === 200) {
-          if (isLoading) {
+          if (loading) {
             setAddress(response.data.data[0]);
-            // console.log('Address', response.data.data[0]);
+            setAddressId(response.data.data[0]['id']);
           }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const getParents = async () => {
-      try {
-        const token = localStorage.getItem('srmToken');
-        const response = await ProfileService.fetchParents(
-          token,
-          userInfo['username']
-        );
-        if (response.status === 200) {
-          if (isLoading) {
-            let temp = [];
-            let tempId = [];
-            response.data.data.map((parents) => {
-              temp.push(parents);
-              tempId.push(parents.parents_data['id']);
-            });
-            setParentsData(temp);
-            setParentId(tempId);
-          }
-        } else {
-          console.log('Error');
         }
       } catch (error) {
         console.log(error);
       }
       setOpenLoader(false);
     };
-
     getUser();
     getPhones();
-    getParents();
+    getEmails();
     getAddress();
     return () => {
-      isLoading = false;
+      loading = false;
     };
   }, []);
 
@@ -221,11 +209,6 @@ const StudentProfile = (props) => {
     setErrorSnackbarOpen(false);
   };
 
-  const submitForm = (event) => {
-    event.preventDefault();
-    console.log(newUserPic, 'new user pic');
-  };
-
   return (
     <>
       <div>
@@ -260,11 +243,6 @@ const StudentProfile = (props) => {
                 <img src={editButtonIcon} alt='Edit Profile Pic' />
               </IconButton>
             </label>
-            {/* <img
-              src={editButtonIcon}
-              alt='Edit Profile Pic'
-              className={classes.editProfile}
-            /> */}
           </div>
           <Typography className={classes.profileName}>
             {userData
@@ -272,9 +250,17 @@ const StudentProfile = (props) => {
               : ''}
           </Typography>
         </div>
-        <StudentPhone gender={userInfo['gender']} />
-        <StudentAddress address={address} />
-        <StudentParents parentsData={parentsData} />
+        <TeacherPhone
+          primary={primaryPhone}
+          secondary={secondaryPhone}
+          secondaryPhoneId={secondaryPhoneId}
+        />
+        <TeacherEmail
+          primary={primaryEmail}
+          secondary={secondaryEmail}
+          secondaryEmailId={secondaryEmailId}
+        />
+        <TeacherAddress address={address} addressId={addressId} />
         <div className={classes.changePwdDiv}>
           <Button
             variant='outlined'
@@ -330,4 +316,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(StudentProfile);
+export default connect(mapStateToProps)(ParentProfile);

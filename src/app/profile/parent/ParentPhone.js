@@ -49,10 +49,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ParentPhone = (props) => {
   const classes = useStyles();
+  const primary = props.primary;
+  const secondary = props.secondary;
+  const secondaryPhoneId = props.secondaryPhoneId;
+
   return (
     <>
       <div className={classes.profileContainer}>
-        <ProfileCard title='Phone'>
+        <ProfileCard title='Phone' editableId={secondaryPhoneId}>
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
@@ -62,7 +66,7 @@ const ParentPhone = (props) => {
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  +91 95847 93847
+                  {primary ? primary : 'N/A'}
                 </Typography>
               </div>
             </div>
@@ -76,7 +80,7 @@ const ParentPhone = (props) => {
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  +91 95844 12346
+                  {secondary ? secondary : 'N/A'}
                 </Typography>
               </div>
             </div>

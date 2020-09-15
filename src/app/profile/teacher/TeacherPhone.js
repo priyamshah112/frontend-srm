@@ -1,11 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import StudentProfileCard from '../StudentProfileCard';
+import ProfileCard from '../ProfileCard';
 import { Typography } from '@material-ui/core';
-import userIcon from '../../../assets/images/profile/User.svg';
-import phoneIcon from '../../../assets/images/profile/Phone number.svg';
-import emailIcon from '../../../assets/images/profile/Email.svg';
 
 const useStyles = makeStyles((theme) => ({
   profileContainer: {
@@ -46,60 +43,60 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 0,
     },
   },
-  detailsSpan: {
-    paddingLeft: '30px',
-  },
-  detailsStyle: {
-    paddingLeft: '10px',
-  },
-  iconStyle: {
-    height: '14px',
-  },
   mainMarginTop: {
     marginTop: '10px',
   },
 }));
-const StudentPhone = (props) => {
+const TeacherPhone = (props) => {
   const classes = useStyles();
+  const primary = props.primary;
+  const secondary = props.secondary;
+  const secondaryPhoneId = props.secondaryPhoneId;
+
   return (
     <>
       <div className={classes.profileContainer}>
-        <StudentProfileCard title='Contact Details'>
+        <ProfileCard title='Phone' editableId={secondaryPhoneId}>
           <Grid container>
             <div className={classes.mainDiv}>
+              <div className={classes.contentDiv}>
+                <Typography className={classes.labelText}>Primary -</Typography>
+              </div>
               <div className={classes.contentDiv}>
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  Samarth Atmakur
+                  {primary ? primary : 'N/A'}
+                </Typography>
+              </div>
+            </div>
+            <div className={`${classes.mainDiv} ${classes.mainMarginLeft}`}>
+              <div className={classes.contentDiv}>
+                <Typography className={classes.labelText}>
+                  Secondary -
+                </Typography>
+              </div>
+              <div className={classes.contentDiv}>
+                <Typography
+                  className={`${classes.normalText} ${classes.margin5}`}
+                >
+                  {secondary ? secondary : 'N/A'}
                 </Typography>
               </div>
             </div>
           </Grid>
           <Grid container>
-            <div className={classes.mainDiv}>
-              <div className={classes.contentDiv}>
-                <Typography className={` ${classes.margin5}`}>
-                  <span>
-                    <img src={userIcon} />
-                    <span className={classes.detailsStyle}>Male</span>
-                  </span>
-                  <span className={classes.detailsSpan}>
-                    <img src={phoneIcon} className={classes.iconStyle} />
-                    <span className={classes.detailsStyle}>Male</span>
-                  </span>
-                  <span className={classes.detailsSpan}>
-                    <img src={emailIcon} />
-                    <span className={classes.detailsStyle}>Male</span>
-                  </span>
-                </Typography>
-              </div>
+            <div className={`${classes.mainDiv} ${classes.mainMarginTop}`}>
+              <Typography className={classes.labelText}>
+                NOTE - Only secondary numbers can be edited. Please click on
+                “Edit Button” for changing secondary numbers.
+              </Typography>
             </div>
           </Grid>
-        </StudentProfileCard>
+        </ProfileCard>
       </div>
     </>
   );
 };
 
-export default StudentPhone;
+export default TeacherPhone;

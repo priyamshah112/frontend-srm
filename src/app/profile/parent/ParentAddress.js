@@ -49,15 +49,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ParentAddress = (props) => {
   const classes = useStyles();
+  // console.log(props.address, props.addressId);
+  const address = props.address;
   return (
     <>
       <div className={classes.profileContainer}>
-        <ProfileCard title='Address'>
+        <ProfileCard title='Address' editableId={props.addressId}>
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
                 <Typography className={`${classes.normalText}`}>
-                  #18, 1st A Main, Samrat Layout, Arekere, Bengaluru - 560076
+                  {address.address_line1 ? `${address.address_line1},` : ''}{' '}
+                  {address.address_line2 ? `${address.address_line2},` : ''}{' '}
+                  {address.address_line3 ? `${address.address_line3},` : ''}{' '}
+                  {address.city_id}, {address.state_id}, {address.country_id} -{' '}
+                  {address.pincode}
                 </Typography>
               </div>
             </div>

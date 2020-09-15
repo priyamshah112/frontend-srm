@@ -49,10 +49,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ParentEmail = (props) => {
   const classes = useStyles();
+
+  const primary = props.primary;
+  const secondary = props.secondary;
+  const secondaryEmailId = props.secondaryEmailId;
   return (
     <>
       <div className={classes.profileContainer}>
-        <ProfileCard title='Email'>
+        <ProfileCard title='Email' editableId={secondaryEmailId}>
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
@@ -62,7 +66,7 @@ const ParentEmail = (props) => {
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  satmakur@gmail.com
+                  {primary ? primary : 'N/A'}
                 </Typography>
               </div>
             </div>
@@ -76,7 +80,7 @@ const ParentEmail = (props) => {
                 <Typography
                   className={`${classes.normalText} ${classes.margin5}`}
                 >
-                  satmakur@gmail.com
+                  {secondary ? secondary : 'N/A'}
                 </Typography>
               </div>
             </div>

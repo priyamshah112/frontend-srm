@@ -9,6 +9,17 @@ const useStyles = makeStyles((theme) => ({
     width: '95%',
     margin: '0 auto',
   },
+
+  profile: {
+    textAlign: 'right',
+  },
+  profilePictureDiv: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginLeft: 'auto',
+    border: '1px solid',
+  },
   mainDiv: {
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
@@ -52,8 +63,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '10px',
   },
   TopContent: {
-    borderBottom: '1px solid #D1D1D6',
-    paddingBottom: '20px',
+    // borderBottom: '1px solid #D1D1D6',
+    // paddingBottom: '20px',
+  },
+  capitalize: {
+    textTransform: 'capitalize',
   },
   BottomContent: {
     paddingTop: '20px',
@@ -61,64 +75,55 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ParentChildren = (props) => {
   const classes = useStyles();
+  const students = props.students;
   return (
     <>
       <div className={classes.profileContainer}>
         <ProfileCard title='Children'>
-          <div className={classes.TopContent}>
-            <Grid container>
-              <div className={classes.mainDiv}>
-                <div className={classes.contentDiv}>
-                  <Typography className={`${classes.normalText}`}>
-                    Samarth Atmakur -
-                  </Typography>
-                </div>
-                <div className={classes.contentDiv}>
-                  <Typography
-                    className={`${classes.lightText} ${classes.margin5}`}
-                  >
-                    Class IV
-                  </Typography>
-                </div>
+          {students.map((student, index) => {
+            return (
+              <div className={classes.TopContent} key={index}>
+                <Grid container>
+                  <Grid item xs={8}>
+                    <Grid container>
+                      <div className={classes.mainDiv}>
+                        <div className={classes.contentDiv}>
+                          <Typography className={`${classes.normalText}`}>
+                            {student.firstname} {student.lastname}
+                          </Typography>
+                        </div>
+                      </div>
+                    </Grid>
+                    <Grid container>
+                      <div className={classes.mainDiv}>
+                        <div className={classes.contentDiv}>
+                          <Typography className={`${classes.lightText}`}>
+                            {/* Male | 10yrs | DOB: 05/05/2010 */}
+                            <span className={classes.capitalize}>
+                              {student.gender}
+                            </span>
+                          </Typography>
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <div className={classes.profile}>
+                      <div
+                        className={classes.profilePictureDiv}
+                        style={{
+                          backgroundImage: `url(${student['thumbnail']})`,
+                          'background-repeat': 'no-repeat',
+                          'background-size': 'cover',
+                          'background-position': 'center',
+                        }}
+                      ></div>
+                    </div>
+                  </Grid>
+                </Grid>
               </div>
-            </Grid>
-            <Grid container>
-              <div className={classes.mainDiv}>
-                <div className={classes.contentDiv}>
-                  <Typography className={`${classes.lightText}`}>
-                    Male | 10yrs | DOB: 05/05/2010
-                  </Typography>
-                </div>
-              </div>
-            </Grid>
-          </div>
-          <div className={classes.BottomContent}>
-            <Grid container>
-              <div className={classes.mainDiv}>
-                <div className={classes.contentDiv}>
-                  <Typography className={`${classes.normalText}`}>
-                    Samarth Atmakur -
-                  </Typography>
-                </div>
-                <div className={classes.contentDiv}>
-                  <Typography
-                    className={`${classes.lightText} ${classes.margin5}`}
-                  >
-                    Class IV
-                  </Typography>
-                </div>
-              </div>
-            </Grid>
-            <Grid container>
-              <div className={classes.mainDiv}>
-                <div className={classes.contentDiv}>
-                  <Typography className={`${classes.lightText}`}>
-                    Male | 10yrs | DOB: 05/05/2010
-                  </Typography>
-                </div>
-              </div>
-            </Grid>
-          </div>
+            );
+          })}
         </ProfileCard>
       </div>
     </>

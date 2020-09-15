@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import ParentProfile from './parent/ParentProfile';
 import { connect } from 'react-redux';
 import StudentProfile from './student/StudentProfile';
+import TeacherProfile from './teacher/TeacherProfile';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,6 +31,8 @@ const Profile = (props) => {
         <ParentProfile />
       ) : selectedRole === 'student' ? (
         <StudentProfile />
+      ) : selectedRole === 'teacher' ? (
+        <TeacherProfile />
       ) : (
         ''
       )}

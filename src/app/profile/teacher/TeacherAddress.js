@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import StudentProfileCard from '../StudentProfileCard';
+import ProfileCard from '../ProfileCard';
 import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,14 +47,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '10px',
   },
 }));
-const StudentAddress = (props) => {
+const TeacherAddress = (props) => {
   const classes = useStyles();
   // console.log(props.address, props.addressId);
   const address = props.address;
   return (
     <>
       <div className={classes.profileContainer}>
-        <StudentProfileCard title='Address'>
+        <ProfileCard title='Address' editableId={props.addressId}>
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
@@ -72,10 +72,10 @@ const StudentAddress = (props) => {
               </div>
             </div>
           </Grid>
-        </StudentProfileCard>
+        </ProfileCard>
       </div>
     </>
   );
 };
 
-export default StudentAddress;
+export default TeacherAddress;

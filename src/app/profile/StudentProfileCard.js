@@ -62,7 +62,7 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const ProfileCard = (props) => {
+const StudentProfileCard = (props) => {
   const classes = useStyle();
   const [changePhoneOpen, setChangephoneopen] = useState(false);
   const [changeEmailOpen, setChangeEmailOpen] = useState(false);
@@ -115,19 +115,6 @@ const ProfileCard = (props) => {
             <img src={titleIcon[title]} className={classes.iconStyle} />
             <Typography className={classes.profileTitle}>{title}</Typography>
           </div>
-          {title === 'Children' ||
-          title === 'Parents' ||
-          title === 'Associated Accounts' ? (
-            ''
-          ) : (
-            <div className={classes.editBtnDiv}>
-              <img
-                src={editIcon}
-                className={classes.editBtn}
-                onClick={handleEdit}
-              />
-            </div>
-          )}
         </div>
         <div className={classes.profile}>
           <Card className={classes.card}>
@@ -168,4 +155,4 @@ const ProfileCard = (props) => {
   );
 };
 
-export default ProfileCard;
+export default StudentProfileCard;

@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
     boxShadow:'none',
-    marginTop:'10px',
+    margin:'15px',
     padding:'10px',
   },
   left: {
@@ -175,6 +175,10 @@ Approved:{
 ,
 Rejected:{
   color:'#D92424',
+}
+,
+Cancelled:{
+  color:'#3076A1',
 }
 ,
 leavereason:{
@@ -420,6 +424,9 @@ useEffect(() => {
 
         {leaves.leave_status == 'REJECTED'?<div className={classes.Rejected}>
         Rejected</div>:''}
+
+        {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
+            Canceled</div>:''}
 
         {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
         Approved</div>:''}    
