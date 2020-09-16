@@ -40,6 +40,8 @@ const ParentSyllabus = (props) => {
     };
 
     const fetchClassSyllabus = async (subject_id, class_id) => {
+      console.log(class_id);
+      console.log(subject_id);
         const response = await SyllabusService.getSyllabusByParams(token,class_id,subject_id);
         console.log(response);
         if (response.status === 200) {
@@ -128,7 +130,7 @@ const ParentSyllabus = (props) => {
           id="demo-simple-select"
           value={subject}
           onChange={handleChange}
-          style={marginRight:20}
+          style={{marginRight:20}}
         >
           {subjects != null
             ? Object.keys(subjects).map(function (key, index) {
