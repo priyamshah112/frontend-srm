@@ -11,7 +11,7 @@ class SyllabusService {
           });
     }
     getSyllabusByParams(token,classID,subjectID){
-      return axios.get(`${BACKEND_API_URL}/syllabus?class_id=`+classID+`&subject_id=`+subjectID, {
+      return axios.get(`${BACKEND_API_URL}/syllabus?class_id=` + classID + `&subject_id=` + subjectID, {
           headers: {
             "accept": "application/json",
             Authorization: `Bearer ${token}`,

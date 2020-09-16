@@ -26,9 +26,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ParentSyllabus = (props) => {
-    const [syllabus, setSyllabus] = useState(0);
+    const [syllabus, setSyllabus] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    const [subject, setSubject] = useState(3);
+    const [subject, setSubject] = useState(1); //Choose Subject ID
+    const [subjects, setSubjects] = useState(1); //subjects ARRAY
+    const [classList, setClasses] = useState(null);
+    const [classID, setClass] = useState(1);
     const token = localStorage.getItem("srmToken")
 
     const handleChange = (event) => {
@@ -36,21 +39,59 @@ const ParentSyllabus = (props) => {
         setLoading(true)
     };
 
-    const fetchSyllabus = async (subject_id) => {
-        console.log(subject_id)
-        const response = await SyllabusService.getSyllabus(token,subject_id);
+    const fetchClassSyllabus = async (subject_id, class_id) => {
+      console.log(class_id);
+      console.log(subject_id);
+        const response = await SyllabusService.getSyllabusByParams(token,class_id,subject_id);
         console.log(response);
         if (response.status === 200) {
           if(response.data.success && isLoading){
-            //console.log("Subject ID - "+response.data.data.subject_id)
-            setSyllabus(response.data.data)
+            console.log("Subject ID - "+response.data.data)
+            if(response.data.data.length == 0){
+              setSyllabus(null)
+            }else{
+              setSyllabus(response.data.data)
+            }
             setLoading(false)
            }
     }
     }
+    const fetchClasses = async () => {
+      const response = await SyllabusService.fetchClasses(token);
+      if (response.status === 200) {
+        console.log("fetchClasses -> "+ response.data)
+  
+        if (response.data.status == "success") {
+          console.log(response.data.data)
+          setClasses(response.data.data);
+        }
+      }
+    };
+
+    const fetchSubjects = async () => {
+      const response = await SyllabusService.getSubjects(token);
+      if (response.status === 200) {
+        if (response.data.success && isLoading) {
+          console.log(response.data.data.data);
+          const data = response.data.data.data;
+  
+          setSubjects(data);
+        }
+      }
+    };
+
+    const handleClassChange = (event) => {
+      setClass(event.target.value);
+      setLoading(true);
+      fetchClassSyllabus(subject,event.target.value);
+    };
     useEffect(() => {
-        fetchSyllabus(subject)
-    }, [isLoading]);
+        if (classList == null) {
+          fetchClasses();
+          fetchSubjects();
+        }
+      fetchClassSyllabus(subject,classID)
+    }, [classList]);
 
     const classes = useStyles();
     const table = isLoading == false ? <TableContainer component={Paper}>
@@ -62,7 +103,7 @@ const ParentSyllabus = (props) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {syllabus.chapters.map((chapter,index) => (
+        {syllabus != null ? syllabus.chapters.map((chapter,index) => (
           <TableRow key={index}>
             <TableCell component="th" align="center" scope="row" width="15%">
             <Typography variant="subtitle1"><b>{index}</b></Typography>
@@ -76,7 +117,7 @@ const ParentSyllabus = (props) => {
             </Typography>
             </TableCell>
           </TableRow>
-        ))}
+        )) : null}
       </TableBody>
     </Table>
   </TableContainer> : null
@@ -89,9 +130,33 @@ const ParentSyllabus = (props) => {
           id="demo-simple-select"
           value={subject}
           onChange={handleChange}
+          style={{marginRight:20}}
         >
-          <MenuItem value={3}>English</MenuItem>
-          <MenuItem value={5}>Mathematics</MenuItem>
+          {subjects != null
+            ? Object.keys(subjects).map(function (key, index) {
+                return (
+                  <MenuItem key={index} value={subjects[key].id}>
+                    {subjects[key].name}
+                  </MenuItem>
+                );
+              })
+            : null}
+    </Select>   
+    <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={classID}
+          onChange={handleClassChange}
+        >
+          {classList != null
+            ? Object.keys(classList).map(function (key, index) {
+                return (
+                  <MenuItem key={index} value={classList[key].id}>
+                    {classList[key].class_name}
+                  </MenuItem>
+                );
+              })
+            : null}
     </Select>    
     <br/><br/>
     {table}
