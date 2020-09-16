@@ -143,6 +143,9 @@ const useStyle = makeStyles((theme) => ({
     width: '100%',
     height: '100px',
     borderRadius: '5px',
+    fontFamily: 'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontWeight: '400',
+    lineHeight: '1.5',
   },form_row: {
     display: 'flex',
     textAlign: 'center',
@@ -396,7 +399,7 @@ const handleChangeTeacher = (event) => {
                   }}
                 >
                   {allTeacher.map((teacher) => (
-                    <option value={teacher.user_id}>{teacher.username}</option>
+                    <option value={teacher.user_id}>{teacher.firstname}&nbsp;{teacher.lastname}</option>
                   ))}
                 </NativeSelect>
           

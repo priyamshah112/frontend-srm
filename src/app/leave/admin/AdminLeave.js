@@ -98,8 +98,11 @@ rowflex: {
   flexWrap: 'wrap',
 },
 img:{
-  margin:' 0px 14px 0px 4px',
-  borderRadius: '100%',
+  width: '50px',
+  height: '50px',
+  borderRadius: '50%',
+  marginLeft: 'auto',
+  border: '1px solid',
 },
 center:{
   paddingLeft:'12px',
@@ -184,6 +187,10 @@ Cancelled:{
 leavereason:{
   fontSize: '15px',
 }
+,
+name:{
+  transform:'translateY(17px)',
+}
 }));
 
 function TabPanel(props) {
@@ -229,11 +236,11 @@ useEffect(() => {
         const token = localStorage.getItem('srmToken');
         const response = await LeaveService.fetchAllLeavesQueve(token);
         if (isLoading) {
-          for(let row in response.data.data.data){
-            let id = response.data.data.data[row].user_id;
-            var useridres = await LeaveService.fetchAllUserdata(id,token);
-            response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
-          }
+          // for(let row in response.data.data.data){
+          //   let id = response.data.data.data[row].user_id;
+          //   var useridres = await LeaveService.fetchAllUserdata(id,token);
+          //   response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
+          // }
           setLeaves(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
           let last_page_url = response.data.data.last_page_url;
@@ -261,11 +268,11 @@ useEffect(() => {
       const token = localStorage.getItem('srmToken');
       const response = await LeaveService.fetchMoreLeavesQueve(token, nextUrl);
       
-      for(let row in response.data.data.data){
-        let id = response.data.data.data[row].user_id;
-        var useridres = await LeaveService.fetchAllUserdata(id,token);
-        response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
-      }
+      // for(let row in response.data.data.data){
+      //   let id = response.data.data.data[row].user_id;
+      //   var useridres = await LeaveService.fetchAllUserdata(id,token);
+      //   response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
+      // }
       setLeaves([...allLeaves, ...response.data.data.data]);
       // console.log(response.data.data.next_page_url);
       let next_page_url = response.data.data.next_page_url;
@@ -365,12 +372,12 @@ useEffect(() => {
         <Grid item xs={5} >
         <div className={classes.rowflex}>
             <Grid item xs={2}>
-              {/* <img className={classes.img} src="child.png"></img> */}
-              <svg className="MuiSvgIcon-root MuiAvatar-fallback" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+              <img className={classes.img} src={leaves.users.thumbnail}></img>
+              {/* <svg className="MuiSvgIcon-root MuiAvatar-fallback" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg> */}
 
             </Grid>
             <Grid item xs={6}>
-              <div>{leaves.username}</div>
+              <div className={classes.name}>{leaves.users.firstname}&nbsp;{leaves.users.lastname}  </div>
               {/* <div>Class - 4A</div> */}
             </Grid>
         </div>

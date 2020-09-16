@@ -39,7 +39,7 @@ const ParentSyllabus = (props) => {
     const fetchSyllabus = async (subject_id) => {
         console.log(subject_id)
         const response = await SyllabusService.getSyllabus(token,subject_id);
-        //console.log(response);
+        console.log(response);
         if (response.status === 200) {
           if(response.data.success && isLoading){
             //console.log("Subject ID - "+response.data.data.subject_id)

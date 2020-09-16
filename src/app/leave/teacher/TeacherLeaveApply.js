@@ -143,7 +143,12 @@ const useStyle = makeStyles((theme) => ({
     width: '100%',
     height: '100px',
     borderRadius: '5px',
-  },form_row: {
+    fontFamily: 'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontWeight: '400',
+    lineHeight: '1.5',
+  }
+  ,
+  form_row: {
     display: 'flex',
     textAlign: 'center',
     marginTop: '20px',
@@ -213,7 +218,7 @@ const TeacherLeaveApply = (props) => {
   const handleEventDate = (date) => {
 
      if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()){
-      toast("Wow so easy !");
+      // toast("Wow so easy !");
       setEventToDate(null);
       setEventDate(date);
       
@@ -225,11 +230,11 @@ const TeacherLeaveApply = (props) => {
   
   const handleDateChange = (date) => {
     if(eventDate  == null){
-      toast("Wow so easy !");
+      // toast("Wow so easy !");
       return false;
     }
     else if (date.getTime() <= eventDate.getTime()){
-      toast("Wow so easy !");
+      // toast("Wow so easy !");
       return false;
     } else  {
       setEventToDate(date);
@@ -391,7 +396,7 @@ const handleChangeTeacher = (event) => {
                   }}
                 >
                   {allAdmin.map((admin) => (
-                    <option value={admin.user_id}>{admin.username}</option>
+                    <option value={admin.user_id}>{admin.firstname}&nbsp;{admin.lastname}</option>
                   ))}
                 </NativeSelect>
           </FormControl>
@@ -411,7 +416,7 @@ const handleChangeTeacher = (event) => {
                   className={classes.textarea}
                   rowsMax={4}
                   aria-label="maximum height"
-                  placeholder=" Reason*"
+                  placeholder="Reason*"
                   style={{ height }}
                   onChange={HandleareaContent}
                   name="content"
