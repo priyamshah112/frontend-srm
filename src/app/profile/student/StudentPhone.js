@@ -14,12 +14,15 @@ const useStyles = makeStyles((theme) => ({
   },
   mainDiv: {
     display: 'flex',
+    width: '100%',
     [theme.breakpoints.down('xs')]: {
       display: 'block',
       width: '100%',
     },
   },
   contentDiv: {
+    width: '100%',
+
     [theme.breakpoints.down('xs')]: {
       display: 'inline-block',
     },

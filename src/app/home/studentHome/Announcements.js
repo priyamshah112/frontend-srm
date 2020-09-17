@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/styles";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Typography } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Box from "@material-ui/core/Box";
 import * as moment from "moment";
 import AnnouncementCard from "./AnnouncementCard";
 import HomeService from "../HomeSerivce";
@@ -15,6 +16,12 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     paddingTop: "8px",
     fontSize: "20px",
+  },
+  cardBoxPadding: {
+    padding: "0px 24px 24px 24px",
+    [theme.breakpoints.down("sm")]: {
+      padding: "16px",
+    },
   },
 }));
 

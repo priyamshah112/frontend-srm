@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
 const FaqContainer = (props) => {
   const classes = useStyles();
   const selectedRole = props.selectedRole;
-  console.log(selectedRole);
   return (
     <>
       <div className={classes.container}>

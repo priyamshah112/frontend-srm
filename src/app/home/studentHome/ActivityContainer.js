@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import Grid from '@material-ui/core/Grid';
-import Announcements from './Announcements';
-import Homeworks from './homeWork/Homeworks';
+import React, { useState, useRef } from "react";
+import { makeStyles } from "@material-ui/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Box from "@material-ui/core/Box";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import Grid from "@material-ui/core/Grid";
+import Announcements from "./Announcements";
+import Homeworks from "./homeWork/Homeworks";
 
 function ElevationScroll(props) {
   const { children } = props;
@@ -24,43 +24,43 @@ function ElevationScroll(props) {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: '100%',
+    width: "100%",
     backgroundColor: theme.palette.mainBackground,
-    height: '100%',
-    marign: '0',
-    padding: '0',
-    overflow: 'auto',
+    height: "100%",
+    marign: "0",
+    padding: "0",
+    overflow: "auto",
     // display: "flex",
     // flexDirection: "column",
 
-    '&::-webkit-scrollbar': {
+    "&::-webkit-scrollbar": {
       width: 0,
     },
   },
   tabBar: {
     backgroundColor: theme.palette.mainBackground,
     color: theme.palette.common.deluge,
-    boxShadow: 'none',
+    boxShadow: "none",
     // '& .Mui-selected': {
     //   borderBottomWidth: '3px',
     // },
   },
 
   eventsTab: {
-    padding: '6px 0px',
-    borderBottom: '1px solid #aeaeb2',
+    padding: "6px 0px",
+    borderBottom: "1px solid #aeaeb2",
 
-    '& .MuiTab-wrapper': {
-      height: '30px',
+    "& .MuiTab-wrapper": {
+      height: "30px",
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '11px',
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "11px",
     },
   },
 
   borderRight: {
-    '& .MuiTab-wrapper': {
-      borderRight: '1px solid  #aeaeb2',
+    "& .MuiTab-wrapper": {
+      borderRight: "1px solid  #aeaeb2",
     },
   },
 }));
@@ -70,13 +70,13 @@ function TabPanel(props) {
 
   return (
     <div
-      role='tabpanel'
+      role="tabpanel"
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && <Box p={4}>{children}</Box>}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -84,7 +84,7 @@ function TabPanel(props) {
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
+    "aria-controls": `full-width-tabpanel-${index}`,
   };
 }
 
@@ -103,28 +103,28 @@ const ActivityContainer = (props) => {
   };
 
   const handleScroll = () => {
-    console.log('scrolled');
+    console.log("scrolled");
   };
 
   return (
-    <div className={classes.container} ref={tabref} id='scrollable'>
-      <AppBar position='sticky' className={classes.tabBar}>
+    <div className={classes.container} ref={tabref} id="scrollable">
+      <AppBar position="sticky" className={classes.tabBar}>
         <Tabs
           centered
           value={value}
           onChange={handleChange}
-          indicatorColor='primary'
-          textColor='primary'
-          variant='fullWidth'
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
           className={classes.tabs}
         >
           <Tab
-            label='Events/Announcements'
+            label="Events/Announcements"
             {...a11yProps(0)}
             className={`${classes.eventsTab} ${classes.borderRight}`}
           />
           <Tab
-            label='Homework'
+            label="Homework"
             {...a11yProps(1)}
             className={classes.eventsTab}
           />

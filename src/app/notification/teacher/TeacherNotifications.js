@@ -114,19 +114,15 @@ const TeacherNotifications = (props) => {
         initialClassState[className.class_name] = className.id;
       });
 
-      // const categoryResponse = await AnnouncementService.fetchCategories(
-      //   props.token
-      // );
-      // let categoryList = {};
-      // categoryResponse.data.data.forEach((categoryData) => {
-      //   categoryList[categoryData.id] = categoryData.category_name;
-      // });
-      let categoryList = {
-        1: "payment",
-        2: "homework",
-        3: "news",
-        4: "emergency",
-      };
+      const categoryResponse = await AnnouncementService.fetchCategories(
+        props.token,
+        "notifications"
+      );
+      let categoryList = {};
+      categoryResponse.data.data.forEach((categoryData) => {
+        categoryList[categoryData.id] = categoryData.category_name;
+      });
+      console.log(categoryList);
       setcategory({ ...categoryList });
       setClassState({ ...initialClassState });
     };

@@ -45,7 +45,9 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: "left",
-    paddingLeft: "10px",
+    marginLeft: "26px",
+    transform: "translateY(7px)",
+
     cursor: "pointer",
   },
   adornmentColor: {

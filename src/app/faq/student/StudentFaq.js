@@ -63,7 +63,6 @@ const StudentFaq = (props) => {
           setFaq(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
           let last_page_url = response.data.data.last_page_url;
-          console.log(response);
           if (next_page_url === null) {
             setHasMore(false);
           } else {

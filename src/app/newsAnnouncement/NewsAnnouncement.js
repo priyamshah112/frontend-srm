@@ -115,8 +115,10 @@ const NewsAnnouncement = (props) => {
       });
 
       const categoryResponse = await AnnouncementService.fetchCategories(
-        props.token
+        props.token,
+        "news"
       );
+
       let categoryList = {};
       categoryResponse.data.data.forEach((categoryData) => {
         categoryList[categoryData.id] = categoryData.category_name;

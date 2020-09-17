@@ -24,7 +24,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
+  DatePicker,
 } from "@material-ui/pickers";
+import EventIcon from "@material-ui/icons/Event";
+import { IconButton } from "@material-ui/core";
 
 import BackIcon from "../../../assets/images/Back.svg";
 import RichTextEditor from "../../../shared/richTextEditor";
@@ -43,7 +46,7 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: "left",
-    marginLeft: "20px",
+    marginLeft: "26px",
     transform: "translateY(7px)",
     cursor: "pointer",
   },
@@ -506,6 +509,7 @@ const CreateAnnouncement = (props) => {
                 labelId="demo-mutiple-chip-label"
                 id="demo-mutiple-chip"
                 value={category}
+                required
                 onChange={handleCategoryChange}
                 input={<Input id="select-multiple-chip" />}
                 MenuProps={{
@@ -591,7 +595,7 @@ const CreateAnnouncement = (props) => {
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
                 <Grid item xs={12}>
-                  <KeyboardDatePicker
+                  <DatePicker
                     id="eventDate"
                     label="Event Date"
                     variant="dialog"
@@ -599,8 +603,14 @@ const CreateAnnouncement = (props) => {
                     format="MM/dd/yyyy"
                     value={eventDate}
                     onChange={handleEventDate}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton>
+                            <EventIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
                     }}
                     className={classes.datePicker}
                   />

@@ -62,8 +62,11 @@ class AnnouncementService {
       },
     });
   }
-  fetchCategories(token) {
+  fetchCategories(token, type) {
     return axios.get(`${BACKEND_API_URL}/category`, {
+      params: {
+        type: type,
+      },
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

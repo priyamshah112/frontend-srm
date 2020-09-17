@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IconButton, makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -83,7 +83,9 @@ const FaqCard = (props) => {
         <CardHeader title={question} />
       )}
       <CardContent className={classes.cardContentStyle}>
-        <div dangerouslySetInnerHTML={{ __html: answer }} />
+        <Typography>
+          <div dangerouslySetInnerHTML={{ __html: answer }} />
+        </Typography>
       </CardContent>
     </Card>
   );

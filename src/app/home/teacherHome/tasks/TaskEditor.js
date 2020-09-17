@@ -138,9 +138,9 @@ const Tasks = (props) => {
             <Grid item xs={4} className={classes.menuItems}>
               {createNew ? (
                 <Button
-                  variant='contained'
+                  variant='outlined'
                   onClick={closeEditor}
-                  color='secondary'
+                  color='primary'
                   disableElevation
                   className={classes.menuBtn}
                 >
