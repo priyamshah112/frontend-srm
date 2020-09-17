@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core';
 import editButtonIcon from '../../../assets/images/Edit Button.svg';
 import MuiAlert from '@material-ui/lab/Alert';
-import profileImage from './cr7.jpg';
 import ChangePassword from '../ChangePassword';
 import ProfileService from '../ProfileService';
 import { connect } from 'react-redux';
@@ -41,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid',
   },
   editProfile: {
-    transform: 'translate(40px,85px)',
+    transform: 'translate(35px,75px)',
     cursor: 'pointer',
   },
   profileName: {
@@ -82,10 +81,14 @@ const ParentProfile = (props) => {
   const [studentsData, setStudentsData] = useState([]);
   const [addressId, setAddressId] = useState();
   const [newUserPic, setNewUserPic] = useState('');
+  const [username, setUsername] = useState('');
+  const [associatedAccounts, setAssociatedAccounts] = useState([]);
+  const [showNoAdd, setShowNoAdd] = useState(false);
 
-  const [address, setAddress] = useState([]);
+  const [address, setAddress] = useState();
 
   const userInfo = props.userInfo;
+  const currentUserId = userInfo['id'];
 
   useEffect(() => {
     let loading = true;
@@ -139,9 +142,12 @@ const ParentProfile = (props) => {
         const response = await ProfileService.fetchAddress(token);
         if (response.status === 200) {
           if (loading) {
-            setAddress(response.data.data[0]);
-            setAddressId(response.data.data[0]['id']);
-            // console.log('Address', response.data.data[0]);
+            if (response.data.data.length === 0) {
+              setShowNoAdd(true);
+            } else {
+              setAddress(response.data.data[0]);
+              setAddressId(response.data.data[0]['id']);
+            }
           }
         }
       } catch (error) {
@@ -155,11 +161,10 @@ const ParentProfile = (props) => {
         const response = await ProfileService.fetchStudents(token);
         if (response.status === 200) {
           if (loading) {
-            // console.log(response.data.data);
-            // console.log('Address', response.data.data[0]);
             let temp = [];
             response.data.data.map((students) => {
               temp.push(students.students_data);
+              setUsername(students.students_data.username);
             });
             setStudentsData(temp);
           }
@@ -178,6 +183,37 @@ const ParentProfile = (props) => {
       loading = false;
     };
   }, []);
+
+  useEffect(() => {
+    let isLoading = true;
+    const getAssociated = async () => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await ProfileService.fetchParents(token, username);
+        if (response.status === 200) {
+          if (isLoading) {
+            let temp = [];
+            response.data.data.map((parents) => {
+              if (currentUserId !== parents.parents_data.id) {
+                temp.push(parents);
+              }
+            });
+            setAssociatedAccounts(temp);
+          }
+        } else {
+          console.log('Error');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (username !== '') {
+      getAssociated();
+    }
+    return () => {
+      isLoading = false;
+    };
+  }, [username]);
 
   const updateProfilePic = async () => {
     const toBase64 = (file) =>
@@ -284,13 +320,21 @@ const ParentProfile = (props) => {
           secondary={secondaryEmail}
           secondaryEmailId={secondaryEmailId}
         />
-        <ParentAddress address={address} addressId={addressId} />
+        <ParentAddress
+          address={address}
+          addressId={addressId}
+          showNoAdd={showNoAdd}
+        />
         {studentsData.length === 0 ? (
           ''
         ) : (
           <ParentChildren students={studentsData} />
         )}
-        {/* <ParentAssociated /> */}
+        {associatedAccounts.length === 0 ? (
+          ''
+        ) : (
+          <ParentAssociated associatedAccounts={associatedAccounts} />
+        )}
         <div className={classes.changePwdDiv}>
           <Button
             variant='outlined'

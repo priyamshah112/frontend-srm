@@ -197,6 +197,14 @@ leavereason:{
 }
 ,
 name:{
+  transform:'translateY(10px)',
+  textAlign:'left',
+  paddingLeft:'15px',
+  fontFamily:'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+  fontWeight:'400'
+}
+,
+name1:{
   transform:'translateY(17px)',
   textAlign:'left',
   paddingLeft:'15px',
@@ -289,6 +297,7 @@ useEffect(() => {
           if(response.data.data.data.length===0){
             setNocontentmsg(true)
           }
+
           let next_page_url = response.data.data.next_page_url;
           let last_page_url = response.data.data.last_page_url;
           if (next_page_url === null) {
@@ -639,7 +648,9 @@ useEffect(() => {
             </Grid>
             <Grid item xs={6}>
             <div className={classes.name}>{leaves.users.firstname}&nbsp;{leaves.users.lastname}  </div>
-            {/* <div>Class - 4A</div> */}
+            <div className={classes.name1}>{
+                  `${leaves.user_classes.classes_data}` === 'null' ? (<div></div>) : (<div>{leaves.user_classes.classes_data.class_name}</div>)
+            }</div>
             </Grid>
         </div>
         </Grid>

@@ -13,13 +13,13 @@ import {
 } from '@material-ui/core';
 import editButtonIcon from '../../../assets/images/Edit Button.svg';
 import MuiAlert from '@material-ui/lab/Alert';
-import profileImage from './cr7.jpg';
 import ChangePassword from '../ChangePassword';
 import { connect } from 'react-redux';
 import ProfileService from '../ProfileService';
 import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader';
 import { PhotoCamera } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
+import ParentAssociated from '../parent/ParentAssociated';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
@@ -78,6 +78,8 @@ const StudentProfile = (props) => {
   const [parentsData, setParentsData] = useState([]);
   const [parentId, setParentId] = useState([]);
   const [newUserPic, setNewUserPic] = useState('');
+  const [parentsPhones, setParentsPhones] = useState([]);
+  const [parentsEmails, setParentsEmails] = useState([]);
 
   const userInfo = props.userInfo;
 
@@ -93,22 +95,6 @@ const StudentProfile = (props) => {
             setUserData(response.data.data);
             setUserPic(response.data.data.user_details['thumbnail']);
           }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const getPhones = async () => {
-      try {
-        const token = localStorage.getItem('srmToken');
-        const response = await ProfileService.fetchPhones(token);
-        if (response.status === 200) {
-          if (isLoading) {
-            setPhone(response.data.data.data);
-          }
-        } else {
-          console.log('Error');
         }
       } catch (error) {
         console.log(error);
@@ -159,13 +145,58 @@ const StudentProfile = (props) => {
     };
 
     getUser();
-    getPhones();
     getParents();
     getAddress();
     return () => {
       isLoading = false;
     };
   }, []);
+
+  useEffect(() => {
+    const getUserPhones = async (id) => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await ProfileService.fetchUserPhones(token, id);
+        if (response.status === 200) {
+          let temp = phone;
+          response.data.data.map((parent_data) => {
+            temp.push(parent_data);
+          });
+          setPhone([temp]);
+        } else {
+          console.log('Error');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      // console.log('Id', id);
+    };
+    const getUserEmails = async (id) => {
+      try {
+        const token = localStorage.getItem('srmToken');
+        const response = await ProfileService.fetchUserEmails(token, id);
+        if (response.status === 200) {
+          let temp = email;
+          response.data.data.map((parent_data) => {
+            temp.push(parent_data);
+          });
+          setEmail([temp]);
+        } else {
+          console.log('Error');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      // console.log('Id', id);
+    };
+
+    if (parentId.length !== 0) {
+      parentId.map((id) => {
+        getUserPhones(id);
+        getUserEmails(id);
+      });
+    }
+  }, [parentId]);
 
   const updateProfilePic = async () => {
     const toBase64 = (file) =>
@@ -226,6 +257,9 @@ const StudentProfile = (props) => {
     console.log(newUserPic, 'new user pic');
   };
 
+  console.log('Phone', phone);
+  console.log('Email', email);
+
   return (
     <>
       <div>
@@ -272,8 +306,12 @@ const StudentProfile = (props) => {
               : ''}
           </Typography>
         </div>
-        <StudentPhone gender={userInfo['gender']} />
-        <StudentAddress address={address} />
+        <StudentPhone
+          gender={userInfo['gender']}
+          userPhones={phone}
+          userEmails={email}
+        />
+        {address ? <StudentAddress address={address} /> : ''}
         <StudentParents parentsData={parentsData} />
         <div className={classes.changePwdDiv}>
           <Button

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 import SyllabusService from "../SyllabusService";
@@ -30,40 +31,43 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ClassSyllabus = (props) => {
+  const location = useLocation();
+  const classes = useStyles();
   const [isLoading, setLoading] = useState(true);
-  const [classID, setClass] = useState(2);
+  const [classID, setClass] = useState(
+    new URLSearchParams(location.search).get("cid") || 1
+  );
   const [classList, setClasses] = useState(null);
   const [subjects, setSubjects] = useState(null);
   const [syllabusDetails, setSyllabusDetails] = useState(null);
   const token = localStorage.getItem("srmToken");
 
-  const classes = useStyles();
-
-  const fetchClassSyllabus = async (id) => {
+  const fetchClassSyllabus = async (id, isMounted) => {
     try {
       if (subjects) {
-        const response = await SyllabusService.getSyllabusByClass(
-          token,
-          id
-        );
+        const response = await SyllabusService.getSyllabusByClass(token, id);
 
         if (response.status === 200) {
           let tempSyllabusDetails = [];
-          Object.keys(subjects).forEach((key) => {
+          subjects.forEach((subject) => {
             let subjectDetails = {};
-            subjectDetails[key] = response.data.data.map((chapterDetails) => {
-              if (chapterDetails.subject_id == key) {
-                return {
-                  chapter: chapterDetails.chapters.chapter,
-                  term: chapterDetails.chapters.term,
-                  editId: chapterDetails.id,
-                  mainContent: chapterDetails.main_content
-                };
+
+            subjectDetails[subject.id] = response.data.data.map(
+              (chapterDetails) => {
+                if (chapterDetails.subject_id == subject.id) {
+                  return {
+                    chapter: chapterDetails.chapters.chapter,
+                    term: chapterDetails.chapters.term,
+                    editId: chapterDetails.id,
+                    mainContent: chapterDetails.main_content,
+                  };
+                }
               }
-            });
-            subjectDetails[key] = subjectDetails[key].filter(
+            );
+            subjectDetails[subject.id] = subjectDetails[subject.id].filter(
               (value) => value !== undefined
             );
+            subjectDetails.subjectName = subject.name;
             tempSyllabusDetails.push(subjectDetails);
           });
 
@@ -78,32 +82,31 @@ const ClassSyllabus = (props) => {
   };
 
   const handleChange = (event) => {
+    console.log("changed");
     setClass(event.target.value);
     setLoading(true);
     fetchClassSyllabus(event.target.value);
   };
 
-  const fetchSubjects = async () => {
+  const fetchSubjects = async (isMounted) => {
     const response = await SyllabusService.getSubjects(token);
     if (response.status === 200) {
       if (response.data.success && isLoading) {
-        console.log("fetchSubjects -> " + response.data);
         const data = response.data.data.data;
 
         setSubjects(data);
       }
     }
   };
-  useEffect(() => {
-    fetchClassSyllabus(classID);
-  }, [subjects]);
-  const fetchClasses = async () => {
+
+  const fetchClasses = async (isMounted) => {
     const response = await SyllabusService.fetchClasses(token);
     if (response.status === 200) {
       //console.log("fetchClasses -> "+ response.data)
 
       if (response.data.status == "success" && isLoading && classList == null) {
         //console.log(response.data.data)
+
         setClasses(response.data.data);
       }
     }
@@ -112,15 +115,15 @@ const ClassSyllabus = (props) => {
   const table =
     isLoading == false && syllabusDetails !== null
       ? syllabusDetails.map(function (subject, index) {
-        //console.log(subjects[Object.keys(subject)[0]])
           return (
-            <div key={index}>
+            <div key={`${classID}${index}`}>
               <div style={{ background: "#fff" }}>
                 <SubjectSyllabus
                   class_id={classID}
+                  key={`${classID}${index}`}
                   subjectDetails={Object.values(subject)[0]}
-                  subjectName={subjects[Object.keys(subject)[0]].name}
-                  subjectID={subjects[Object.keys(subject)[0]].id}
+                  subjectName={subject.subjectName}
+                  subjectID={Object.keys(subject)[0]}
                 />
               </div>
               <br />
@@ -131,21 +134,35 @@ const ClassSyllabus = (props) => {
       : null;
 
   useEffect(() => {
-    if (classList == null) {
-      fetchClasses();
-    }
-    fetchSubjects();
-  }, []);
+    let isMounted = true;
 
+    if (classList == null) {
+      fetchClasses(isMounted);
+    }
+    fetchSubjects(isMounted);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchClassSyllabus(classID, isMounted);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [subjects]);
   return (
     <div className={classes.container}>
       <div style={{ margin: 20 }}>
-        <InputLabel id="demo-simple-select-label">Class</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={classID}
           onChange={handleChange}
+          style={{ width: "50%" }}
         >
           {classList != null
             ? Object.keys(classList).map(function (key, index) {

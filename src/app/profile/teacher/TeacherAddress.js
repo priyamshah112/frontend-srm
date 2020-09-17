@@ -51,6 +51,7 @@ const TeacherAddress = (props) => {
   const classes = useStyles();
   // console.log(props.address, props.addressId);
   const address = props.address;
+  const showNoAdd = props.showNoAdd;
   return (
     <>
       <div className={classes.profileContainer}>
@@ -63,8 +64,15 @@ const TeacherAddress = (props) => {
                     {address.address_line1 ? `${address.address_line1},` : ''}{' '}
                     {address.address_line2 ? `${address.address_line2},` : ''}{' '}
                     {address.address_line3 ? `${address.address_line3},` : ''}{' '}
-                    {address.city_id}, {address.state_id}, {address.country_id}{' '}
-                    - {address.pincode}
+                    {address.city_id} {address.state_id} {address.country_id}{' '}
+                    {address.pincode}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {showNoAdd ? (
+                  <Typography className={`${classes.normalText}`}>
+                    Address update is waiting for approval
                   </Typography>
                 ) : (
                   ''

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
@@ -14,6 +16,9 @@ import {
   Button,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
+
+import * as actions from "./store/action";
+import NotificationService from "./NotificationService";
 
 import ReadIcon from "../../assets/images/notifications/read.svg";
 import UnReadIcon from "../../assets/images/notifications/unread.svg";
@@ -115,14 +120,56 @@ const useStyles = makeStyles((theme) => ({
 const NotificationCard = (props) => {
   const classes = useStyles();
   const theme = useTheme();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [status, setStatus] = useState(props.notification.status);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = async (event) => {
+    const updatedStatus = event.currentTarget.getAttribute("value");
     setAnchorEl(null);
+
+    try {
+      const token = localStorage.getItem("srmToken");
+      const response = await NotificationService.updateStatus(
+        props.notification.notify_status_id,
+        updatedStatus,
+        token
+      );
+      if (response.status === 200) {
+        if (updatedStatus === "read") {
+          props.subNotificationCount();
+          setStatus("read");
+        } else if (updatedStatus === "unread") {
+          props.addNotificationCount();
+          setStatus("unread");
+        } else {
+          props.subNotificationCount();
+          props.handleRemoveNotifcation(props.notification.id);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const hanldeDetails = async () => {
+    try {
+      if (props.notification.status === "unread") {
+        const token = localStorage.getItem("srmToken");
+        const response = await NotificationService.updateStatus(
+          props.notification.notify_status_id,
+          "read",
+          token
+        );
+      }
+      history.push(`/notifications/${props.notification.id}`);
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <Card className={classes.card}>
@@ -145,6 +192,7 @@ const NotificationCard = (props) => {
               classes={{ paper: classes.menuContainer, list: classes.menuList }}
               elevation={0}
               // getContentAnchorEl={null} uncomment this to remove warning
+
               keepMounted
               anchorOrigin={{
                 vertical: "top",
@@ -162,6 +210,7 @@ const NotificationCard = (props) => {
                 classes={{ root: classes.menuItemRoot }}
                 disableGutters
                 className={`${classes.menuItem} ${classes.menuTopItemMargin} `}
+                value={"archive"}
               >
                 <div className={classes.borderBottomDiv}>Archive</div>
               </MenuItem>
@@ -170,6 +219,7 @@ const NotificationCard = (props) => {
                 disableGutters
                 classes={{ root: classes.menuItemRoot }}
                 className={classes.menuItem}
+                value={"delete"}
               >
                 <div className={classes.borderBottomDiv}>Delete</div>
               </MenuItem>
@@ -178,6 +228,7 @@ const NotificationCard = (props) => {
                 disableGutters
                 classes={{ root: classes.menuItemRoot }}
                 className={classes.menuItem}
+                value={"read"}
               >
                 <div className={classes.borderBottomDiv}>Mark As Read</div>
               </MenuItem>
@@ -186,6 +237,7 @@ const NotificationCard = (props) => {
                 disableGutters
                 classes={{ root: classes.menuItemRoot }}
                 className={classes.menuItem}
+                value={"unread"}
               >
                 <div className={classes.borderBottomLastDiv}>
                   Mark As Unread
@@ -196,16 +248,16 @@ const NotificationCard = (props) => {
         }
         title={
           <>
-            {props.notification.status === "read" ||
-            props.notification.status === "archived" ? (
+            {status === "read" || status === "archived" ? (
               <Typography
                 className={classes.cardTitle}
                 style={{ color: theme.palette.common.lightFont }}
+                onClick={hanldeDetails}
               >
                 {props.notification.data.title}
               </Typography>
             ) : (
-              <Typography className={classes.cardTitle}>
+              <Typography className={classes.cardTitle} onClick={hanldeDetails}>
                 {props.notification.data.title}
               </Typography>
             )}
@@ -220,9 +272,9 @@ const NotificationCard = (props) => {
             </Typography>
           </Grid>
           <Grid item xs={1} className={classes.readClass}>
-            {props.notification.status === "unread" ? (
+            {status === "unread" ? (
               <img src={UnReadIcon} alt="unread" />
-            ) : props.notification.status === "read" ? (
+            ) : status === "read" ? (
               <img src={ReadIcon} alt="read" />
             ) : (
               ""
@@ -230,7 +282,8 @@ const NotificationCard = (props) => {
           </Grid>
         </Grid>
       </CardContent>
-      {props.notification.type === "payment" ? (
+      {props.notification.type === "payment" &&
+      props.selectedRole === "parent" ? (
         <CardActions classes={{ root: classes.cardActions }}>
           <Button
             variant="contained"
@@ -247,5 +300,18 @@ const NotificationCard = (props) => {
     </Card>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    selectedRole: state.auth.selectedRole,
+    token: state.auth.token,
+    notificationCount: state.notification.notificationCount,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addNotificationCount: () => dispatch(actions.addNotificationCount()),
+    subNotificationCount: () => dispatch(actions.subNotificationCount()),
+  };
+};
 
-export default NotificationCard;
+export default connect(mapStateToProps, mapDispatchToProps)(NotificationCard);

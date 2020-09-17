@@ -9,6 +9,16 @@ const useStyles = makeStyles((theme) => ({
     width: '95%',
     margin: '0 auto',
   },
+  profile: {
+    textAlign: 'right',
+  },
+  profilePictureDiv: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginLeft: 'auto',
+    border: '1px solid',
+  },
   mainDiv: {
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
@@ -34,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
     opacity: 1,
   },
+  capitalize: {
+    textTransform: 'capitalize',
+  },
   lightText: {
     color: `${theme.palette.common.srmBastille}`,
     fontSize: '14px',
@@ -54,30 +67,55 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ParentAssociated = (props) => {
   const classes = useStyles();
+  const associatedAccounts = props.associatedAccounts;
   return (
     <>
       <div className={classes.profileContainer}>
         <ProfileCard title='Associated Accounts'>
-          <div className={classes.TopContent}>
-            <Grid container>
-              <div className={classes.mainDiv}>
-                <div className={classes.contentDiv}>
-                  <Typography className={`${classes.normalText}`}>
-                    Suresh Atmakur
-                  </Typography>
-                </div>
+          {associatedAccounts.map((accounts, index) => {
+            return (
+              <div className={classes.TopContent} key={index}>
+                <Grid container>
+                  <Grid item xs={8}>
+                    <Grid container>
+                      <div className={classes.mainDiv}>
+                        <div className={classes.contentDiv}>
+                          <Typography className={`${classes.normalText}`}>
+                            {accounts.parents_data.firstname}{' '}
+                            {accounts.parents_data.lastname}
+                          </Typography>
+                        </div>
+                      </div>
+                    </Grid>
+                    <Grid container>
+                      <div className={classes.mainDiv}>
+                        <div className={classes.contentDiv}>
+                          <Typography className={`${classes.lightText}`}>
+                            <span className={classes.capitalize}>
+                              {accounts.relation_type}
+                            </span>
+                          </Typography>
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <div className={classes.profile}>
+                      <div
+                        className={classes.profilePictureDiv}
+                        style={{
+                          backgroundImage: `url(${accounts.parents_data['thumbnail']})`,
+                          'background-repeat': 'no-repeat',
+                          'background-size': 'cover',
+                          'background-position': 'center',
+                        }}
+                      ></div>
+                    </div>
+                  </Grid>
+                </Grid>
               </div>
-            </Grid>
-            <Grid container>
-              <div className={classes.mainDiv}>
-                <div className={classes.contentDiv}>
-                  <Typography className={`${classes.lightText}`}>
-                    Father
-                  </Typography>
-                </div>
-              </div>
-            </Grid>
-          </div>
+            );
+          })}
         </ProfileCard>
       </div>
     </>

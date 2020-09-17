@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
   sectionContainer: {
     height: "100%",
     width: "100%",
+    overflow: "auto",
   },
 
   header: {
@@ -92,6 +93,7 @@ const ParentNotification = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("All");
+  let content;
 
   useEffect(() => {
     let isNotificationLoading = true;
@@ -183,10 +185,19 @@ const ParentNotification = (props) => {
       }
     }
   };
-  let content;
+
+  const handleRemoveNotifcation = (id) => {
+    setNotifications([
+      ...notifications.filter((notification) => notification.id !== id),
+    ]);
+  };
 
   content = notifications.map((notification) => (
-    <NotificationCard key={notification.id} notification={notification} />
+    <NotificationCard
+      key={notification.id}
+      notification={notification}
+      handleRemoveNotifcation={handleRemoveNotifcation}
+    />
   ));
 
   return (
@@ -201,7 +212,7 @@ const ParentNotification = (props) => {
             className={classes.selectFiler}
           >
             <MenuItem value={"All"}>All</MenuItem>
-            <MenuItem value={"Archived"}>Archived</MenuItem>
+            <MenuItem value={"Archive"}>Archived</MenuItem>
             <MenuItem value={"Read"}>Read</MenuItem>
             <MenuItem value={"Unread"}>Unread</MenuItem>
           </Select>
@@ -226,10 +237,10 @@ const ParentNotification = (props) => {
         >
           {content}
         </InfiniteScroll>
-        <br />
-        <br />
-        <br />
       </Box>
+      <br />
+      <br />
+      <br />
     </div>
   );
 };

@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import StudentProfileCard from '../StudentProfileCard';
 import { Typography } from '@material-ui/core';
-import profileImage from './cr7.jpg';
 
 const useStyles = makeStyles((theme) => ({
   profileContainer: {

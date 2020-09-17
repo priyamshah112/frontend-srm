@@ -30,15 +30,15 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   select: {
-    width: "45%",
+    width: "50%",
   },
 }));
 
-const ParentSyllabus = (props) => {
+const StudentSyllabus = (props) => {
   const [syllabus, setSyllabus] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [subject, setSubject] = useState(1); //Choose Subject ID
-  const [subjects, setSubjects] = useState(1); //subjects ARRAY
+  const [subjects, setSubjects] = useState(null); //subjects ARRAY
   const [classList, setClasses] = useState(null);
   const [classID, setClass] = useState(1);
   const token = localStorage.getItem("srmToken");
@@ -48,10 +48,10 @@ const ParentSyllabus = (props) => {
     setLoading(true);
   };
 
-  const fetchClassSyllabus = async (subject_id, class_id) => {
-    const response = await SyllabusService.getSyllabusByParams(
+  const fetchClassSyllabus = async (subject_id) => {
+    const response = await SyllabusService.getSyllabusBySubject(
       token,
-      class_id,
+
       subject_id
     );
     if (response.status === 200) {
@@ -60,15 +60,8 @@ const ParentSyllabus = (props) => {
       } else {
         setSyllabus(response.data.data);
       }
+
       setLoading(false);
-    }
-  };
-  const fetchClasses = async () => {
-    const response = await SyllabusService.fetchClasses(token);
-    if (response.status === 200) {
-      if (response.data.status == "success") {
-        setClasses(response.data.data);
-      }
     }
   };
 
@@ -83,27 +76,11 @@ const ParentSyllabus = (props) => {
     }
   };
 
-  const handleClassChange = (event) => {
-    setClass(event.target.value);
-    setLoading(true);
-    fetchClassSyllabus(subject, event.target.value);
-  };
   useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      if (classList == null) {
-        fetchClasses();
-        fetchSubjects();
-      }
-      fetchClassSyllabus(subject, classID);
-    }
-    return () => {
-      isMounted = false;
-      console.log(isMounted);
-    };
-  }, [classList]);
+    fetchClassSyllabus(subject);
+  }, [subjects, subject]);
   useEffect(() => {
-    console.log("loaded");
+    fetchSubjects();
   }, []);
 
   const classes = useStyles();
@@ -176,7 +153,7 @@ const ParentSyllabus = (props) => {
           className={classes.select}
           style={{ marginRight: "10%" }}
         >
-          {subjects != null
+          {subjects !== null
             ? Object.keys(subjects).map(function (key, index) {
                 return (
                   <MenuItem key={index} value={subjects[key].id}>
@@ -187,23 +164,6 @@ const ParentSyllabus = (props) => {
             : null}
         </Select>
 
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={classID}
-          onChange={handleClassChange}
-          className={classes.select}
-        >
-          {classList != null
-            ? Object.keys(classList).map(function (key, index) {
-                return (
-                  <MenuItem key={index} value={classList[key].id}>
-                    {classList[key].class_name}
-                  </MenuItem>
-                );
-              })
-            : null}
-        </Select>
         <br />
         <br />
 
@@ -218,4 +178,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(ParentSyllabus);
+export default connect(mapStateToProps)(StudentSyllabus);

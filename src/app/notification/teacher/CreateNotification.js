@@ -197,10 +197,11 @@ const CreateNotification = (props) => {
           id,
           props.token
         );
-        console.log(response.data.data.notification_lists);
+
         if (response.status === 200) {
           if (isFormLoading) {
             let tempClassCheckState = {};
+            console.log(response);
             if (response.data.data.notification_lists.class_mapping) {
               if (response.data.data.notification_lists.class_mapping.parents) {
                 setClassState(["All Parents", ...classState]);
@@ -279,11 +280,10 @@ const CreateNotification = (props) => {
           }
         });
       }
-
       if (userList.length !== 0) {
         classMapping.individual_users = [];
         userList.forEach((user) => {
-          classMapping.individual_users.push(user.id);
+          classMapping.individual_users.push(user.id || user.user_id);
         });
       }
       let payload = {
@@ -301,7 +301,6 @@ const CreateNotification = (props) => {
           data: { title, summary, main_content: description, payment },
         };
       }
-
       const response = await NotificationService.saveNotification(
         id,
         payload,
@@ -323,26 +322,34 @@ const CreateNotification = (props) => {
   }, [title, description, summary, classState, category, userList, payment]);
 
   const styleOptions = (option) => {
-    return (
-      <div className={classes.optionContainer}>
-        <Typography className={classes.optionTitle}>
-          {`${option.name} - ${option.role[0].name}`}
-        </Typography>
+    if (option.roles.length !== 0) {
+      return (
+        <div className={classes.optionContainer}>
+          <Typography className={classes.optionTitle}>
+            {`${option.firstname} ${option.lastname} - ${option.roles[0].name}`}
+          </Typography>
 
-        {option.class ? (
-          <>
-            <Typography className={classes.optionBody}>
-              {option.class}
-            </Typography>
-          </>
-        ) : (
-          ""
-        )}
-        <Typography className={classes.optionBody}>
-          {option.username}
-        </Typography>
-      </div>
-    );
+          {option.user_classes ? (
+            option.classes_data ? (
+              <>
+                <Typography className={classes.optionBody}>
+                  {option.user_classes.classes_data.class_name}
+                </Typography>
+              </>
+            ) : (
+              ""
+            )
+          ) : (
+            ""
+          )}
+          <Typography className={classes.optionBody}>
+            {option.username}
+          </Typography>
+        </div>
+      );
+    } else {
+      return option.username;
+    }
   };
   const handleChangeInput = (event) => {
     let name = event.target.name;
@@ -376,7 +383,6 @@ const CreateNotification = (props) => {
   };
 
   const handleSearchChange = (event, value) => {
-    console.log(value);
     setUserList(value);
   };
 
@@ -387,7 +393,7 @@ const CreateNotification = (props) => {
           event.target.value,
           props.token
         );
-        setSearchData([...response.data.data.data]);
+        setSearchData([...searchData, ...response.data.data]);
       } catch (e) {
         console.log(e);
       }
@@ -421,7 +427,6 @@ const CreateNotification = (props) => {
 
   const publishData = async (publisedDate, status) => {
     try {
-      console.log(publisedDate);
       let classMapping = { class: [] };
 
       let isSelectAll = classState.find(
@@ -630,7 +635,7 @@ const CreateNotification = (props) => {
                 value={userList}
                 id="tags-standard"
                 options={searchData}
-                // loading={loadingUsers}
+                loading={loadingUsers}
                 onChange={handleSearchChange}
                 onInputChange={callSearchAPI}
                 getOptionLabel={(option) => option.username}
@@ -641,8 +646,8 @@ const CreateNotification = (props) => {
                     label="Search users"
                   />
                 )}
-                // renderOption={(option) => styleOptions(option)}
-                renderGroup={(option) => option.username}
+                renderOption={(option) => styleOptions(option)}
+                // renderGroup={(option) => option.username}
               />
             </FormControl>
           </Box>

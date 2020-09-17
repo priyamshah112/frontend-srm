@@ -37,6 +37,14 @@ class NotificationService {
       },
     });
   }
+  fetchNotificationDetails(id, token) {
+    return axios.get(`${BACKEND_API_URL}/notifications/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
   fetchDraftNotification(id, token) {
     return axios.get(`${BACKEND_API_URL}/notifications/${id}`, {
       headers: {
@@ -44,6 +52,31 @@ class NotificationService {
         Authorization: `Bearer ${token}`,
       },
     });
+  }
+
+  fetchNotificationCount(token, selectedRole) {
+    return axios.get(`${BACKEND_API_URL}/getNotificationCount`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        current_role: selectedRole,
+      },
+    });
+  }
+  updateStatus(id, status, token) {
+    console.log(id, status);
+    return axios.put(
+      `${BACKEND_API_URL}/notificationStatusUsers/${id}`,
+      { status: status },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   }
 
   searchUser(userString, token) {

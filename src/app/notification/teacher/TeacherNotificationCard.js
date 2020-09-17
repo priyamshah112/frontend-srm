@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   cardHeader: {
-    padding: "15px 20px 0 20px",
+    padding: "15px 15px 0 15px",
   },
   iconButtonRoot: {
     padding: "8px",
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 20px 20px 20px",
   },
   cardContent: {
-    padding: "10px 20px 20px 20px",
+    padding: "10px 15px 20px 15px",
     "&:last-child": {
       paddingBottom: "20px",
     },

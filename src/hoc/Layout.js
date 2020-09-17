@@ -432,9 +432,9 @@ const Layout = (props) => {
       itemIndex: 12,
     },
     {
-      name: 'Support',
-      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/support',
+      name: "Support",
+      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/support",
       itemIndex: 13,
     },
   ];
@@ -676,7 +676,6 @@ const Layout = (props) => {
       </div>
     </>
   );
-
   return (
     <>
       {!props.isAuthenticated ? <Redirect to="/login" /> : ""}
@@ -711,7 +710,10 @@ const Layout = (props) => {
                   aria-label="show 2 new notifications"
                   color="inherit"
                 >
-                  <Badge badgeContent={2} color="secondary">
+                  <Badge
+                    badgeContent={props.notificationCount}
+                    color="secondary"
+                  >
                     <NotificationsNoneIcon
                       onClick={(event) => {
                         history.push("/notifications");
@@ -755,7 +757,10 @@ const Layout = (props) => {
                   aria-label="show 2 new notifications"
                   color="inherit"
                 >
-                  <Badge badgeContent={2} color="secondary">
+                  <Badge
+                    badgeContent={props.notificationCount}
+                    color="secondary"
+                  >
                     <NotificationsNoneIcon
                       onClick={(event) => {
                         history.push("/notifications");
@@ -872,6 +877,7 @@ const mapStateToProps = (state) => {
     isAuthenticated: state.auth.token !== null,
     selectedRole: state.auth.selectedRole,
     changeRole: state.auth.changeRole,
+    notificationCount: state.notification.notificationCount,
   };
 };
 

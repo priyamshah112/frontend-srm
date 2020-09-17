@@ -51,6 +51,8 @@ const ParentAddress = (props) => {
   const classes = useStyles();
   // console.log(props.address, props.addressId);
   const address = props.address;
+  const showNoAdd = props.showNoAdd;
+
   return (
     <>
       <div className={classes.profileContainer}>
@@ -58,13 +60,24 @@ const ParentAddress = (props) => {
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
-                <Typography className={`${classes.normalText}`}>
-                  {address.address_line1 ? `${address.address_line1},` : ''}{' '}
-                  {address.address_line2 ? `${address.address_line2},` : ''}{' '}
-                  {address.address_line3 ? `${address.address_line3},` : ''}{' '}
-                  {address.city_id}, {address.state_id}, {address.country_id} -{' '}
-                  {address.pincode}
-                </Typography>
+                {address ? (
+                  <Typography className={`${classes.normalText}`}>
+                    {address.address_line1 ? `${address.address_line1},` : ''}{' '}
+                    {address.address_line2 ? `${address.address_line2},` : ''}{' '}
+                    {address.address_line3 ? `${address.address_line3},` : ''}{' '}
+                    {address.city_id} {address.state_id} {address.country_id}{' '}
+                    {address.pincode}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {showNoAdd ? (
+                  <Typography className={`${classes.normalText}`}>
+                    Address update is waiting for approval
+                  </Typography>
+                ) : (
+                  ''
+                )}
               </div>
             </div>
           </Grid>

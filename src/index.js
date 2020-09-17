@@ -12,8 +12,10 @@ import { createBrowserHistory } from "history";
 
 import App from "./App";
 import authReducer from "./app/auth/store/reducer";
+import notificationReducer from "./app/notification/store/reducers";
 import { watchAuth } from "./app/auth/store/sagas";
-
+import { watchNotification } from "./app/notification/store/saga";
+import { rootSaga } from "./rootSaga";
 const composeEnhancers =
   (process.env.NODE_ENV === "development"
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -24,6 +26,7 @@ export const history = createBrowserHistory();
 /* Combining reducers*/
 const rootReducer = combineReducers({
   auth: authReducer,
+  notification: notificationReducer,
   router: connectRouter(history),
 });
 
@@ -35,8 +38,8 @@ const store = createStore(
   composeEnhancers(applyMiddleware(routerMiddleware(history), sagaMiddleware))
 );
 
-sagaMiddleware.run(watchAuth);
-
+sagaMiddleware.run(rootSaga);
+// sagaMiddleware.run(watchNotification);
 const app = (
   <Provider store={store}>
     <ConnectedRouter history={history}>

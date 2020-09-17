@@ -8,6 +8,7 @@ import {
 } from "redux-saga/effects";
 import { push } from "connected-react-router";
 import * as actions from "./actions";
+import { startNotificationCount } from "../../notification/store/action";
 import * as actionTypes from "./actionTypes";
 import AuthService from "../AuthService";
 import * as moment from "moment";
@@ -68,7 +69,7 @@ export function* authUserSaga(action) {
 
       //Initiate the Expiry Time of token
       yield put(actions.checkAuthTimeout(response.data.expires_at, true));
-
+      yield put(startNotificationCount());
       yield put(push("/home"));
     } else {
       //Initiate AUTH_FAIL action for Invalid credentials
@@ -108,6 +109,8 @@ export function* authCheckStateSaga(action) {
           selectedRole: selectedRole,
         })
       );
+
+      yield put(startNotificationCount());
       const currentPath = yield localStorage.getItem("srmCurrentRoute");
       if (currentPath == null) {
         yield put(push("/home"));

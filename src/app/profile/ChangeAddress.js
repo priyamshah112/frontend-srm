@@ -82,6 +82,9 @@ const useStyle = makeStyles((theme) => ({
       paddingLeft: '10px',
     },
   },
+  MuiSelect: {
+    textAlign: 'left',
+  },
   margin: {
     marginTop: '10px',
     '@media (max-width:400px)': {
@@ -128,6 +131,7 @@ const ChangeAddress = (props) => {
         if (response.status === 200) {
           if (loading) {
             setCountryData(response.data.data);
+            setSelectedCountry('101');
           }
         }
       } catch (error) {
@@ -214,6 +218,7 @@ const ChangeAddress = (props) => {
       state_id: parseInt(selectedState),
       city_id: parseInt(selectedCity),
       pincode: pinCode,
+      reason: reason,
     };
     console.log('Submitted', addressObj);
     updateAddressFunction(addressObj);
@@ -334,13 +339,14 @@ const ChangeAddress = (props) => {
             </Box>
 
             <Box className={classes.margin}>
-              <FormControl className={classes.fieldStyle}>
+              <FormControl className={classes.fieldStyle} disabled>
                 <InputLabel id='countryIP'>Country</InputLabel>
                 <Select
                   labelId='countryIP'
                   id='countryIP'
                   value={selectedCountry}
                   onChange={handleCountry}
+                  classes={{ select: classes.MuiSelect }}
                 >
                   {countryData.map((country) => {
                     return (
@@ -361,6 +367,7 @@ const ChangeAddress = (props) => {
                   id='StateIp'
                   value={selectedState}
                   onChange={handleState}
+                  classes={{ select: classes.MuiSelect }}
                 >
                   {stateData.map((state) => {
                     return (
@@ -381,6 +388,7 @@ const ChangeAddress = (props) => {
                   id='CityIp'
                   value={selectedCity}
                   onChange={handleCity}
+                  classes={{ select: classes.MuiSelect }}
                 >
                   {cityData.map((city) => {
                     return (
@@ -409,7 +417,7 @@ const ChangeAddress = (props) => {
             <Box className={classes.margin}>
               <FormControl className={classes.fieldStyle}>
                 <Input
-                  id='reasson'
+                  id='reason'
                   name='reasson'
                   className={classes.inputBorder}
                   type='text'

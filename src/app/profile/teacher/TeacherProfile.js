@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import editButtonIcon from '../../../assets/images/Edit Button.svg';
 import MuiAlert from '@material-ui/lab/Alert';
-import profileImage from './cr7.jpg';
 import ChangePassword from '../ChangePassword';
 import ProfileService from '../ProfileService';
 import { connect } from 'react-redux';
@@ -39,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
   editProfile: {
-    transform: 'translate(40px,85px)',
+    transform: 'translate(35px,75px)',
     cursor: 'pointer',
   },
   profileName: {
@@ -78,6 +77,7 @@ const ParentProfile = (props) => {
   const [secondaryEmail, setSecondaryEmail] = useState('');
   const [secondaryEmailId, setSecondaryEmailId] = useState();
   const [newUserPic, setNewUserPic] = useState('');
+  const [showNoAdd, setShowNoAdd] = useState(false);
 
   const [addressId, setAddressId] = useState();
 
@@ -137,8 +137,12 @@ const ParentProfile = (props) => {
         const response = await ProfileService.fetchAddress(token);
         if (response.status === 200) {
           if (loading) {
-            setAddress(response.data.data[0]);
-            setAddressId(response.data.data[0]['id']);
+            if (response.data.data.length === 0) {
+              setShowNoAdd(true);
+            } else {
+              setAddress(response.data.data[0]);
+              setAddressId(response.data.data[0]['id']);
+            }
           }
         }
       } catch (error) {
@@ -260,7 +264,11 @@ const ParentProfile = (props) => {
           secondary={secondaryEmail}
           secondaryEmailId={secondaryEmailId}
         />
-        <TeacherAddress address={address} addressId={addressId} />
+        <TeacherAddress
+          address={address}
+          addressId={addressId}
+          showNoAdd={showNoAdd}
+        />
         <div className={classes.changePwdDiv}>
           <Button
             variant='outlined'

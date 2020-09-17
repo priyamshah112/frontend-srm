@@ -22,6 +22,7 @@ import Announcements from "./app/home/studentHome/Announcements";
 import Gallery from "./app/gallery/GalleryIndex";
 import ImageUpload from "./app/gallery/ImageUpload";
 import Profile from "./app/profile/Profile";
+import Details from "./app/notification/Details";
 import {
   requestFirebaseNotificationPermission,
   onMessageListener,
@@ -33,11 +34,11 @@ import FaqEditor from "./app/faq/teacher/FaqEditor";
 import Support from "./app/support/Support";
 import CreateSupport from "./app/support/CreateSupport";
 import SupportSection from "./app/support/SupportSection";
-import Leave from './app/leave/LeaveContainer';
-import LeaveCreateContainer from './app/leave/LeaveCreateContainer';
+import Leave from "./app/leave/LeaveContainer";
+import LeaveCreateContainer from "./app/leave/LeaveCreateContainer";
 import Attendance from "./app/Attendance/Attendance";
-import Syllabus from './app/syllabus/Syllabus';
-import EditChapter from './app/syllabus/teacher/editChapter';
+import Syllabus from "./app/syllabus/Syllabus";
+import EditChapter from "./app/syllabus/teacher/editChapter";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -66,6 +67,7 @@ function App(props) {
             exact
             component={Notification}
           />
+          <Route path="/notifications/:id" exact component={Details} />
           <Route path="/news/:id" exact component={NewsDetails} />
           <Route
             path="/announcement"
@@ -75,11 +77,7 @@ function App(props) {
           <Route path="/assignment" exact component={Assignment} />
           <Route path="/create-homework/:id" exact component={Assignment} />
 
-          <Route
-            path="/attendance"
-            exact
-            component={Attendance}
-          />
+          <Route path="/attendance" exact component={Attendance} />
           <Route
             path="/events"
             exact
@@ -91,18 +89,10 @@ function App(props) {
             exact
             component={NewsAnnouncement}
           />
+          <Route path="/syllabus" exact component={Syllabus} />
+          <Route path="/syllabus/:id/edit/:eid" exact component={EditChapter} />
           <Route
-            path="/syllabus"
-            exact
-            component={Syllabus}
-          />
-          <Route
-            path='/syllabus/edit/:id'
-            exact
-            component={EditChapter}
-          />
-          <Route
-            path='/syllabus/add/:id/class/:classid'
+            path="/syllabus/add/:id/class/:classid"
             exact
             component={EditChapter}
           />
@@ -130,15 +120,15 @@ function App(props) {
             exact
             component={() => <Typography>Timetable Home</Typography>}
           />
-          <Route path='/leave/'exact  component={Leave}/>
-          <Route path='/leave/create/'exact  component={LeaveCreateContainer}/>
-          <Route path='/faq' exact component={Faq} />
-          <Route path='/faq/create/' exact component={FaqEditor} />
-          <Route path='/faq/edit/:id' exact component={FaqEditor} />
-          <Route path='/profile' exact component={Profile} />
-          <Route path='/support' exact component={Support} />
-          <Route path='/create-support/:id' exact component={CreateSupport} />
-          <Route path='/support/:id' exact component={SupportSection} />
+          <Route path="/leave/" exact component={Leave} />
+          <Route path="/leave/create/" exact component={LeaveCreateContainer} />
+          <Route path="/faq" exact component={Faq} />
+          <Route path="/faq/create/" exact component={FaqEditor} />
+          <Route path="/faq/edit/:id" exact component={FaqEditor} />
+          <Route path="/profile" exact component={Profile} />
+          <Route path="/support" exact component={Support} />
+          <Route path="/create-support/:id" exact component={CreateSupport} />
+          <Route path="/support/:id" exact component={SupportSection} />
         </Switch>
       </Layout>
     </>

@@ -61,6 +61,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 const StudentPhone = (props) => {
   const classes = useStyles();
+  const gender = props.gender;
+  const userPhones = props.userPhones[0];
+  const userEmails = props.userEmails[0];
+  console.log('UserPhones from phone', userPhones);
+  console.log('UserEmails from phone', userEmails);
+
   return (
     <>
       <div className={classes.profileContainer}>
@@ -68,10 +74,11 @@ const StudentPhone = (props) => {
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
-                <Typography
-                  className={`${classes.normalText} ${classes.margin5}`}
-                >
-                  Samarth Atmakur
+                <Typography className={` ${classes.margin5}`}>
+                  <span>
+                    <img src={userIcon} />
+                    <span className={classes.detailsStyle}>{gender}</span>
+                  </span>
                 </Typography>
               </div>
             </div>
@@ -79,20 +86,48 @@ const StudentPhone = (props) => {
           <Grid container>
             <div className={classes.mainDiv}>
               <div className={classes.contentDiv}>
-                <Typography className={` ${classes.margin5}`}>
-                  <span>
-                    <img src={userIcon} />
-                    <span className={classes.detailsStyle}>Male</span>
-                  </span>
-                  <span className={classes.detailsSpan}>
-                    <img src={phoneIcon} className={classes.iconStyle} />
-                    <span className={classes.detailsStyle}>Male</span>
-                  </span>
-                  <span className={classes.detailsSpan}>
-                    <img src={emailIcon} />
-                    <span className={classes.detailsStyle}>Male</span>
-                  </span>
-                </Typography>
+                <Grid container>
+                  {userPhones
+                    ? userPhones.map((phone) => {
+                        return (
+                          <Grid sm={6} xs={6}>
+                            <Typography className={` ${classes.margin5}`}>
+                              <span>
+                                <img
+                                  src={phoneIcon}
+                                  className={classes.iconStyle}
+                                />
+                                <span className={classes.detailsStyle}>
+                                  {phone['phone_number']}
+                                </span>
+                              </span>
+                            </Typography>
+                          </Grid>
+                        );
+                      })
+                    : ''}
+                </Grid>
+                <Grid container>
+                  {userEmails
+                    ? userEmails.map((email) => {
+                        return (
+                          <Grid sm={6} xs={6}>
+                            <Typography className={` ${classes.margin5}`}>
+                              <span>
+                                <img
+                                  src={emailIcon}
+                                  className={classes.iconStyle}
+                                />
+                                <span className={classes.detailsStyle}>
+                                  {email['email']}
+                                </span>
+                              </span>
+                            </Typography>
+                          </Grid>
+                        );
+                      })
+                    : ''}
+                </Grid>
               </div>
             </div>
           </Grid>

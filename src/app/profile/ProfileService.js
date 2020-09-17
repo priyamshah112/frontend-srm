@@ -30,6 +30,18 @@ class ProfileService {
     });
   }
 
+  fetchUserPhones(token, id) {
+    return axios.get(`${BACKEND_API_URL}/userPhones`, {
+      params: {
+        user_id: id,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
   updatePhone(token, id, payload) {
     return axios.put(`${BACKEND_API_URL}/userPhones/${id}`, payload, {
       headers: {
@@ -50,6 +62,18 @@ class ProfileService {
 
   fetchEmails(token) {
     return axios.get(`${BACKEND_API_URL}/userEmails`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  fetchUserEmails(token, id) {
+    return axios.get(`${BACKEND_API_URL}/userEmails`, {
+      params: {
+        user_id: id,
+      },
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -123,7 +147,6 @@ class ProfileService {
   }
 
   fetchParents(token, payloadUsername) {
-    console.log(payloadUsername);
     return axios.post(
       `${BACKEND_API_URL}/get-parents`,
       {
