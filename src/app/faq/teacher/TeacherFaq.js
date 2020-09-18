@@ -27,9 +27,12 @@ const useStyles = makeStyles((theme) => ({
   },
   createHeader: {
     marginTop: '20px',
+    textAlign: 'right',
+    fontWeight: 500,
   },
   createTitle: {
-    fontSize: '20px',
+    fontSize: '16px',
+    padding: '0 10px 0 5px',
   },
   loading: {
     textAlign: 'center',
@@ -38,12 +41,12 @@ const useStyles = makeStyles((theme) => ({
   },
   createButtonIcon: {
     // margin: 'auto',
-    padding: '0 0 0 10px',
+    height: '20px',
     transform: 'translateY(5px)',
     cursor: 'pointer',
   },
   cardGridStyle: {
-    marginTop: '20px',
+    marginTop: '10px',
   },
 }));
 
@@ -129,8 +132,7 @@ const TeacherFaq = (props) => {
     <>
       <div className={classes.container} id='scrollable'>
         <Container>
-          <Typography variant='h6' className={classes.createHeader}>
-            <span className={classes.createTitle}>Create FAQ</span>
+          <Typography className={classes.createHeader} color='primary'>
             <AddCircleIcon
               color='primary'
               className={classes.createButtonIcon}
@@ -138,6 +140,14 @@ const TeacherFaq = (props) => {
                 history.push('/faq/create');
               }}
             />
+            <span
+              className={classes.createTitle}
+              onClick={(event) => {
+                history.push('/faq/create');
+              }}
+            >
+              New
+            </span>
           </Typography>
           <InfiniteScroll
             dataLength={allFaqs.length}

@@ -45,7 +45,7 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: "left",
-    marginLeft: "26px",
+
     transform: "translateY(7px)",
 
     cursor: "pointer",
@@ -507,7 +507,7 @@ const CreateNotification = (props) => {
     <>
       <div>
         <form className={classes.formStyle} onSubmit={submitForm}>
-          <Box className={classes.margin} pt={2}>
+          <Box className={`${classes.margin} ${classes.fieldStyle}`} pt={2}>
             <div>
               <img
                 src={BackIcon}

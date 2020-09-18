@@ -108,8 +108,7 @@ const useStyle = makeStyles((theme) => ({
     },
   },
   editBtn: {
-    marginLeft: "auto",
-    cursor: "pointer",
+    paddingLeft: "16px",
   },
 }));
 
@@ -318,7 +317,7 @@ const Details = (props) => {
                 </Grid>
               </CardContent>
               {selectedRole === "teacher" && details.status !== "published" ? (
-                <CardActions>
+                <CardActions className={classes.editBtn}>
                   <Button
                     color="primary"
                     variant="contained"

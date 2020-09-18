@@ -13,13 +13,21 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
+let messaging;
+if (firebase.messaging.isSupported()) {
+  messaging = firebase.messaging();
+} else {
+  messaging = null;
+}
 
 export const requestFirebaseNotificationPermission = () =>
   new Promise((resolve, reject) => {
-    messaging
-      .requestPermission()
-      .then(() => messaging.getToken())
+    Notification.requestPermission()
+      .then((permission) => {
+        if (permission === "granted" && messaging) {
+          return messaging.getToken();
+        }
+      })
       .then((firebaseToken) => {
         resolve(firebaseToken);
       })
@@ -27,20 +35,7 @@ export const requestFirebaseNotificationPermission = () =>
         reject(err);
       });
   });
-export const tokenRefresh = () =>
-  new Promise((resolve, reject) => {
-    messaging.onTokenRefresh(() => {
-      messaging
-        .getToken()
-        .then((refreshedToken) => {
-          console.log("token refreshes");
-          resolve(refreshedToken);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  });
+
 export const onMessageListener = () =>
   new Promise((resolve) => {
     messaging.onMessage((payload) => {

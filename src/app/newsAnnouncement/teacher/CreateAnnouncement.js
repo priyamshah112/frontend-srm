@@ -37,16 +37,21 @@ import { set } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
-    margin: "auto",
-    width: "95%",
-    backgroundColor: "white",
-    justifyContent: "center",
-    textAlign: "center",
-    borderRadius: "5px",
+    margin: 'auto',
+    width: '95%',
+    marginLeft: '20px',
+    marginRight: '20px',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    textAlign: 'center',
+    borderRadius: '5px',
+  },
+  sideMargins: {
+    marginLeft: '20px',
+    marginRight: '20px',
   },
   backImg: {
     float: "left",
-    marginLeft: "26px",
     transform: "translateY(7px)",
     cursor: "pointer",
   },
@@ -446,7 +451,7 @@ const CreateAnnouncement = (props) => {
     <>
       <div>
         <form className={classes.formStyle} onSubmit={submitForm}>
-          <Box className={classes.margin} pt={4}>
+          <Box className={`${classes.margin} ${classes.fieldStyle}`} pt={4}>
             <div>
               <img
                 src={BackIcon}

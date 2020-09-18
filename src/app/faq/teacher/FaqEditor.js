@@ -14,6 +14,7 @@ import {
   InputAdornment,
   Grid,
   CardHeader,
+  TextField,
 } from '@material-ui/core';
 
 import RichTextEditor from '../../../shared/richTextEditor';
@@ -49,6 +50,9 @@ const useStyles = makeStyles((theme) => ({
   inputMargin: {
     marginTop: '20px',
   },
+  textAlignLeft: {
+    color: 'rgba(0, 0, 0, 0.54)',
+  },
   adornmentColor: {
     color: `${theme.palette.common.adornment}`,
   },
@@ -60,6 +64,9 @@ const useStyles = makeStyles((theme) => ({
   },
   alignRight: {
     textAlign: 'right',
+  },
+  Cardtitle: {
+    textAlign: 'center',
   },
 }));
 
@@ -156,30 +163,24 @@ const FaqEditor = (props) => {
     <div className={classes.container}>
       <Container>
         <Card variant='outlined' className={classes.editorCard}>
-          <CardHeader title='FAQ Editor' />
+          <CardHeader title='Create FAQ' className={classes.Cardtitle} />
           <CardContent>
             <div className={classes.inputMargin}>
               <FormControl className={classes.fieldStyle}>
-                <Input
+                <TextField
                   id='question'
                   name='question'
+                  label='Question'
                   value={question}
                   onChange={(event) => {
                     setQuestion(event.target.value);
                   }}
                   required={true}
-                  startAdornment={
-                    <InputAdornment position='start'>
-                      <Typography className={classes.adornmentColor}>
-                        Question
-                      </Typography>
-                    </InputAdornment>
-                  }
                 />
               </FormControl>
             </div>
             <div className={classes.inputMargin}>
-              <Typography variant='h6'>Answer</Typography>
+              <Typography className={classes.textAlignLeft}>Answer</Typography>
               <RichTextEditor
                 handleDescription={handleDescription}
                 value={answer}
@@ -191,11 +192,11 @@ const FaqEditor = (props) => {
             <Grid container direction='row'>
               <Grid item xs={6} className={classes.alignLeft}>
                 <Button
-                  color='secondary'
-                  variant='contained'
+                  color='primary'
+                  variant='outlined'
                   disableElevation={true}
                   onClick={(event) => {
-                    history.push('/faq');
+                    history.replace('/faq');
                   }}
                 >
                   Cancel
