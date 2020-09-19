@@ -22,6 +22,7 @@ import Announcements from "./app/home/studentHome/Announcements";
 import Gallery from "./app/gallery/GalleryIndex";
 import ImageUpload from "./app/gallery/ImageUpload";
 import Profile from "./app/profile/Profile";
+import Timetable from "./app/Timetable/Timetable";
 import {
   requestFirebaseNotificationPermission,
   onMessageListener,
@@ -125,11 +126,10 @@ function App(props) {
             exact
             component={() => <Typography>Payments Home</Typography>}
           />
-          <Route
-            path="/timetable"
-            exact
-            component={() => <Typography>Timetable Home</Typography>}
-          />
+          <Route path="/timetable" exact component={Timetable} />
+          <Route path="/create-timetable/:id" exact component={Timetable} />
+          
+
           <Route path='/leave/'exact  component={Leave}/>
           <Route path='/leave/create/'exact  component={LeaveCreateContainer}/>
           <Route path='/faq' exact component={Faq} />
