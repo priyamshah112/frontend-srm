@@ -116,6 +116,14 @@ class ProfileService {
       },
     });
   }
+  postAddress(token, payload) {
+    return axios.post(`${BACKEND_API_URL}/userAddresses`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 
   fetchCountries(token) {
     return axios.get(`${BACKEND_API_URL}/countries`, {

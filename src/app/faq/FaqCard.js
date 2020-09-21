@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@material-ui/icons/DeleteOutline';
 
 import FaqService from './FaqService';
 import { useHistory } from 'react-router-dom';
@@ -111,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'right',
   },
   deleteIcon: {
-    transform: 'translateY(-5px)',
+    transform: 'translateY(-3px)',
   },
   editBtn: {
     marginLeft: 'auto',
@@ -191,101 +191,101 @@ const FaqCard = (props) => {
   };
 
   return (
-    // <>
-    //   <Grid
-    //     container
-    //     direction='row'
-    //     justify='center'
-    //     alignContent='center'
-    //     className={classes.cardContainer}
-    //   >
-    //     <Card className={classes.card}>
-    //       <CardContent className={classes.cardContent}>
-    //         <Grid container>
-    //           <Grid item xs={12}>
-    //             <span>
-    //               {question ? (
-    //                 <Typography className={classes.highlightedText}>
-    //                   {question}
-    //                 </Typography>
-    //               ) : (
-    //                 <Typography className={classes.highlightedText}>
-    //                   N/A
-    //                 </Typography>
-    //               )}
-    //             </span>
-    //           </Grid>
-    //         </Grid>
-    //         <Grid container>
-    //           <Grid item xs={10}>
-    //             <Typography className={classes.labelText}>
-    //               {answer ? (
-    //                 <div dangerouslySetInnerHTML={{ __html: answer }} />
-    //               ) : (
-    //                 <Typography style={{ margin: '16px 0' }}>N/A</Typography>
-    //               )}
-    //             </Typography>
-    //           </Grid>
-    //           <Grid item xs={2} className={classes.imgGrid}>
-    //             {showActions ? (
-    //               <div
-    //                 className={`${classes.imgDiv} ${classes.textAlignRight}`}
-    //               >
-    //                 <img
-    //                   src={EditIcon}
-    //                   className={classes.editBtn}
-    //                   onClick={(event) => {
-    //                     history.push(`/faq/edit/${id}`);
-    //                   }}
-    //                 />
-    //                 <IconButton
-    //                   aria-label='settings'
-    //                   onClick={handleDeleteFaq}
-    //                   className={classes.deleteIcon}
-    //                 >
-    //                   <DeleteIcon color='secondary' />
-    //                 </IconButton>
-    //               </div>
-    //             ) : (
-    //               ''
-    //             )}
-    //           </Grid>
-    //         </Grid>
-    //       </CardContent>
-    //     </Card>
-    //   </Grid>
-    // </>
+    <>
+      <Grid
+        container
+        direction='row'
+        justify='center'
+        alignContent='center'
+        className={classes.cardContainer}
+      >
+        <Card className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            <Grid container>
+              <Grid item xs={12}>
+                <span>
+                  {question ? (
+                    <Typography className={classes.highlightedText}>
+                      {question}
+                    </Typography>
+                  ) : (
+                    <Typography className={classes.highlightedText}>
+                      N/A
+                    </Typography>
+                  )}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={10}>
+                <Typography className={classes.labelText}>
+                  {answer ? (
+                    <div dangerouslySetInnerHTML={{ __html: answer }} />
+                  ) : (
+                    <Typography style={{ margin: '16px 0' }}>N/A</Typography>
+                  )}
+                </Typography>
+              </Grid>
+              <Grid item xs={2} className={classes.imgGrid}>
+                {showActions ? (
+                  <div
+                    className={`${classes.imgDiv} ${classes.textAlignRight}`}
+                  >
+                    <img
+                      src={EditIcon}
+                      className={classes.editBtn}
+                      onClick={(event) => {
+                        history.push(`/faq/edit/${id}`);
+                      }}
+                    />
+                    <IconButton
+                      aria-label='settings'
+                      onClick={handleDeleteFaq}
+                      className={classes.deleteIcon}
+                    >
+                      <DeleteIcon color='primary' />
+                    </IconButton>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+    </>
 
-    <Card className={classes.faqCard}>
-      {showActions ? (
-        <CardHeader
-          className={classes.faqHeader}
-          action={
-            <>
-              <IconButton
-                aria-label='settings'
-                onClick={(event) => {
-                  history.push(`/faq/edit/${id}`);
-                }}
-              >
-                <CreateTwoToneIcon color='primary' />
-              </IconButton>
-              <IconButton aria-label='settings' onClick={handleDeleteFaq}>
-                <DeleteIcon color='secondary' />
-              </IconButton>
-            </>
-          }
-          title={question}
-        />
-      ) : (
-        <CardHeader title={question} />
-      )}
-      <CardContent className={classes.cardContentStyle}>
-        <Typography>
-          <div dangerouslySetInnerHTML={{ __html: answer }} />
-        </Typography>
-      </CardContent>
-    </Card>
+    // <Card className={classes.faqCard}>
+    //   {showActions ? (
+    //     <CardHeader
+    //       className={classes.faqHeader}
+    //       action={
+    //         <>
+    //           <IconButton
+    //             aria-label='settings'
+    //             onClick={(event) => {
+    //               history.push(`/faq/edit/${id}`);
+    //             }}
+    //           >
+    //             <CreateTwoToneIcon color='primary' />
+    //           </IconButton>
+    //           <IconButton aria-label='settings' onClick={handleDeleteFaq}>
+    //             <DeleteIcon color='secondary' />
+    //           </IconButton>
+    //         </>
+    //       }
+    //       title={question}
+    //     />
+    //   ) : (
+    //     <CardHeader title={question} />
+    //   )}
+    //   <CardContent className={classes.cardContentStyle}>
+    //     <Typography>
+    //       <div dangerouslySetInnerHTML={{ __html: answer }} />
+    //     </Typography>
+    //   </CardContent>
+    // </Card>
   );
 };
 

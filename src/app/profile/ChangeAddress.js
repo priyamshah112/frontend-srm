@@ -24,6 +24,7 @@ import phoneIcon from '../../assets/images/profile/location.svg';
 import ProfileService from './ProfileService';
 import { useHistory } from 'react-router-dom';
 import { parse } from 'date-fns';
+import { connect } from 'react-redux';
 
 const useStyle = makeStyles((theme) => ({
   dialogPaper: {
@@ -114,13 +115,14 @@ const ChangeAddress = (props) => {
   const [countryData, setCountryData] = useState([]);
   const [stateData, setStateData] = useState([]);
   const [cityData, setCityData] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('101');
   const [selectedState, setSelectedState] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [errMessage, setError] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [disable, setDisable] = useState(true);
   const addressId = props.editableId;
+  const UserId = props.userInfo['id'];
 
   useEffect(() => {
     let loading = true;
@@ -136,7 +138,7 @@ const ChangeAddress = (props) => {
         }
       } catch (error) {
         console.log(error);
-        setError('User not found');
+        setError('Error in fetching Countries');
         handleLoading(false);
       }
     }
@@ -158,7 +160,7 @@ const ChangeAddress = (props) => {
         }
       } catch (error) {
         console.log(error);
-        setError('User not found');
+        setError('Error in fetching sates');
         handleLoading(false);
       }
     }
@@ -179,7 +181,7 @@ const ChangeAddress = (props) => {
         }
       } catch (error) {
         console.log(error);
-        setError('User not found');
+        setError('Error in fetching cities');
         handleLoading(false);
       }
     }
@@ -188,40 +190,56 @@ const ChangeAddress = (props) => {
     }
   }, [selectedState]);
 
-  async function updateAddressFunction(addressObj) {
+  async function updateAddressFunction() {
     try {
+      const formData = new FormData();
+
+      // Update the formData object
+      formData.append('user_id', UserId);
+      formData.append('address_line1', add1);
+      formData.append('address_line2', add2);
+      formData.append('address_line3', add3);
+      formData.append('landmark', landmark);
+      formData.append('is_primary', 'false');
+      formData.append('country_id', parseInt(selectedCountry));
+      formData.append('state_id', parseInt(selectedState));
+      formData.append('city_id', parseInt(selectedCity));
+      formData.append('pincode', pinCode);
+      formData.append('reason', reason);
+      formData.append('upload_document', document);
       const token = localStorage.getItem('srmToken');
-      const response = await ProfileService.updateAddress(
-        token,
-        addressId,
-        addressObj
-      );
+      const response = await ProfileService.postAddress(token, formData);
       if (response.status === 200) {
-        console.log(response);
+        console.log(response, 'response from address');
         history.push('/profile');
       }
     } catch (error) {
       console.log(error);
+      if (error.response.status === 413) {
+        setError('File too Large');
+      }
       setError('Failed to Update');
     }
   }
 
   const submitForm = (event) => {
     event.preventDefault();
-    console.log('Document', document);
-    let addressObj = {
-      address_line1: add1,
-      address_line2: add2,
-      address_line3: add3,
-      landmark: landmark,
-      country_id: parseInt(selectedCountry),
-      state_id: parseInt(selectedState),
-      city_id: parseInt(selectedCity),
-      pincode: pinCode,
-      reason: reason,
-    };
-    console.log('Submitted', addressObj);
-    updateAddressFunction(addressObj);
+    if (
+      add1 === '' ||
+      add2 === '' ||
+      selectedState === '' ||
+      selectedCity === '' ||
+      pinCode === '' ||
+      reason === '' ||
+      document === '' ||
+      document === null ||
+      !document
+    ) {
+      setError('Fill mandatory data');
+    } else {
+      console.log('Submitted');
+      updateAddressFunction();
+    }
   };
 
   const handleLoading = (load) => {
@@ -418,7 +436,7 @@ const ChangeAddress = (props) => {
               <FormControl className={classes.fieldStyle}>
                 <Input
                   id='reason'
-                  name='reasson'
+                  name='reason'
                   className={classes.inputBorder}
                   type='text'
                   onChange={handleForm}
@@ -476,4 +494,10 @@ const ChangeAddress = (props) => {
   return <>{render}</>;
 };
 
-export default ChangeAddress;
+const mapStateToProps = (state) => {
+  return {
+    userInfo: state.auth.userInfo,
+  };
+};
+
+export default connect(mapStateToProps)(ChangeAddress);

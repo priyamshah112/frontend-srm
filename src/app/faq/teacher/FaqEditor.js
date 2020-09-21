@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import BackIcon from '../../../assets/images/Back.svg';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -15,6 +16,7 @@ import {
   Grid,
   CardHeader,
   TextField,
+  Box,
 } from '@material-ui/core';
 
 import RichTextEditor from '../../../shared/richTextEditor';
@@ -34,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
   editorCard: {
     marginTop: '20px',
   },
+  cardContentRoot:{
+    padding:'20px'
+  },
   fieldStyle: {
     width: '100%',
     margin: 'auto',
@@ -47,11 +52,31 @@ const useStyles = makeStyles((theme) => ({
       transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
+
+  backImg: {
+    float: 'left',
+    transform: 'translate(0px, 7px)',
+    cursor: 'pointer',
+  },
+  themeColor: {
+    color: `${theme.palette.common.deluge}`,
+    padding: 0,
+    margin: 0,
+  },
+  titleText: {
+    textAlign: 'center',
+    margin: 'auto',
+  },
   inputMargin: {
     marginTop: '20px',
   },
   textAlignLeft: {
     color: 'rgba(0, 0, 0, 0.54)',
+  },
+
+  sideMargins: {
+    marginLeft: '20px',
+    marginRight: '20px',
   },
   adornmentColor: {
     color: `${theme.palette.common.adornment}`,
@@ -163,8 +188,25 @@ const FaqEditor = (props) => {
     <div className={classes.container}>
       <Container>
         <Card variant='outlined' className={classes.editorCard}>
-          <CardHeader title='Create FAQ' className={classes.Cardtitle} />
-          <CardContent>
+          <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
+            <div>
+              <img
+                src={BackIcon}
+                alt='Back'
+                className={classes.backImg}
+                onClick={(event) => {
+                  history.replace('/faq');
+                }}
+              />
+              <Typography
+                variant='h5'
+                className={`${classes.themeColor} ${classes.titleText}`}
+              >
+                Create FAQ
+              </Typography>
+            </div>
+          </Box>
+          <CardContent classes={{root:classes.cardContentRoot}}>
             <div className={classes.inputMargin}>
               <FormControl className={classes.fieldStyle}>
                 <TextField
