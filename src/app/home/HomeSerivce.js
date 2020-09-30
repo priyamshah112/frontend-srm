@@ -4,7 +4,6 @@ const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class HomeService {
   fetchAnnouncements(param, token) {
-    // console.log(token);
 
     return axios.get(`${BACKEND_API_URL}/news`, {
       headers: {

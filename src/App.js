@@ -39,6 +39,8 @@ import LeaveCreateContainer from "./app/leave/LeaveCreateContainer";
 import Attendance from "./app/Attendance/Attendance";
 import Syllabus from "./app/syllabus/Syllabus";
 import EditChapter from "./app/syllabus/teacher/editChapter";
+import { Chat } from 'react-chat-popup';
+import ChatFullScreen from "./app/chatUsers/ChatFullScreen";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -129,6 +131,7 @@ function App(props) {
           <Route path="/support" exact component={Support} />
           <Route path="/create-support/:id" exact component={CreateSupport} />
           <Route path="/support/:id" exact component={SupportSection} />
+          <Route path="/chat" exact component={ChatFullScreen} />
         </Switch>
       </Layout>
     </>
@@ -143,6 +146,7 @@ function App(props) {
         <Route path="/otp" exact component={Otp} />
         <Route path="/changepwdotp" component={ChangePwdUser} />
         <Route path="/roleselection" component={RoleSelection} />
+
 
         <Route component={protectedRoutes} />
       </Switch>
