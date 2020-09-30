@@ -47,6 +47,7 @@ class HomeService {
       },
       params: {
         current_role: selectedRole,
+        created_by: 'true',
       },
     });
     // return true;
@@ -104,6 +105,17 @@ class HomeService {
 
   getTask(token) {
     return axios.get(`${BACKEND_API_URL}/task`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  getDoneTask(token) {
+    return axios.get(`${BACKEND_API_URL}/task`, {
+      params: {
+        status: 'done',
+      },
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

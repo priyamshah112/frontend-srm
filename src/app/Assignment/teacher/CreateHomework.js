@@ -29,6 +29,7 @@ import {
 import EventIcon from '@material-ui/icons/Event';
 import BackIcon from '../../../assets/images/Back.svg';
 import RichTextEditor from '../../../shared/richTextEditor';
+import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader';
 import PublishLater from './PublishLater';
 import HomeworkService from '../HomeworkService';
 import { set } from 'date-fns';
@@ -40,8 +41,9 @@ const useStyle = makeStyles((theme) => ({
     margin: 'auto',
     width: '95%',
 
-    marginLeft: '20px',
-    marginRight: '20px',
+    // marginLeft: '20px',
+    // marginRight: '20px',
+
     backgroundColor: 'white',
     justifyContent: 'center',
     textAlign: 'center',
@@ -185,6 +187,8 @@ const CreateHomework = (props) => {
   const [errMessage, setError] = useState('');
   const [category, setCategory] = useState('');
   const [submissionDate, setSubmissionDate] = useState(null);
+  const [classState, setClassState] = useState([]);
+
   const [checkState, setCheckState] = useState({
     ...props.classState,
     'Select All': false,
@@ -192,6 +196,7 @@ const CreateHomework = (props) => {
   const checkStateLength = [
     ...Array(Object.keys(props.classState).length).keys(),
   ];
+  const classStateNames = ['Select All', ...Object.keys(props.classState)];
 
   const [chipData, setChipData] = useState([]);
   const selectAllObj = {
@@ -234,7 +239,6 @@ const CreateHomework = (props) => {
           props.token
         );
         if (response.status === 200) {
-          console.log('Response', response);
           if (isFormLoading) {
             let tempClassCheckState = {};
             if (response.data.data.class_mapping) {
@@ -274,16 +278,26 @@ const CreateHomework = (props) => {
       // clearInterval(saveDataApi);
     };
   }, []);
+  const handleSelectClass = (event) => {
+    setClassState(event.target.value);
+  };
+
+  const hanldeDeleteClass = (value) => {
+    setClassState(classState.filter((classname) => classname !== value));
+  };
 
   const saveDetails = async (isBack) => {
     try {
       let classMapping = { class: [] };
-      for (var state in checkState) {
-        if (state !== 'Select All')
-          if (checkState[state] === true) {
-            // console.log('here', state);
-            classMapping.class.push(parseInt(state.split(' ')[1]));
-          }
+      let isSelectAll = classState.find(
+        (classname) => classname === 'Select All'
+      );
+      if (isSelectAll) {
+        classMapping.class = [...Object.values(props.classState)];
+      } else {
+        classState.forEach((classnames) => {
+          classMapping.class.push(props.classState[classnames]);
+        });
       }
       const response = await HomeworkService.saveHomework(
         { id },
@@ -297,7 +311,6 @@ const CreateHomework = (props) => {
       );
 
       if (response.status === 200) {
-        console.log(response);
         console.log('Saved');
       }
     } catch (e) {
@@ -355,7 +368,7 @@ const CreateHomework = (props) => {
   };
   const handleOpenPubLater = (event) => {
     if (moment(submissionDate).isAfter(new Date())) {
-      if (chipData.length === 0 || title === '' || submissionDate === null) {
+      if (title === '' || submissionDate === null) {
         setError('Fill All Data !');
       } else {
         setOpenPubLater(true);
@@ -372,14 +385,18 @@ const CreateHomework = (props) => {
   const publishData = async (publisedDate, status) => {
     try {
       let classMapping = { class: [] };
-      for (var state in checkState) {
-        if (state !== 'Select All')
-          if (checkState[state] === true) {
-            classMapping.class.push(parseInt(state.split(' ')[1]));
-          }
+      let isSelectAll = classState.find(
+        (classname) => classname === 'Select All'
+      );
+      if (isSelectAll) {
+        classMapping.class = [...Object.values(props.classState)];
+      } else {
+        classState.forEach((classnames) => {
+          classMapping.class.push(props.classState[classnames]);
+        });
       }
-      // console.log(classMapping, title, summary, eventDate, description);
 
+      // console.log(classMapping, title, summary, eventDate, description);
       const response = await HomeworkService.publishHomework(
         { id },
         {
@@ -392,7 +409,6 @@ const CreateHomework = (props) => {
         },
         props.token
       );
-      // console.log(response);
       if (response.status === 200) {
         history.replace('/assignment');
         // console.log(response);
@@ -429,7 +445,7 @@ const CreateHomework = (props) => {
   const submitForm = async (event) => {
     event.preventDefault();
     if (moment(submissionDate).isAfter(new Date())) {
-      if (chipData.length === 0 || title === '' || submissionDate === null) {
+      if (title === '' || submissionDate === null) {
         setError('Fill All Data !');
       } else {
         clearInterval(saveDataApi);
@@ -511,7 +527,7 @@ const CreateHomework = (props) => {
               </Grid>
             </MuiPickersUtilsProvider>
           </Box>
-          <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          {/* <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Box
               component='ul'
               className={`${classes.paperShowIn} ${classes.fieldStyle}`}
@@ -573,6 +589,59 @@ const CreateHomework = (props) => {
                 </FormGroup>
               </FormControl>
             </Paper>
+          </Box> */}
+
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
+            <FormControl className={classes.fieldStyle}>
+              <InputLabel>Select classes</InputLabel>
+              <Select
+                labelId='demo-mutiple-chip-label'
+                id='demo-mutiple-chip'
+                value={classState}
+                multiple
+                onChange={handleSelectClass}
+                input={<Input id='select-multiple-chip' />}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: '300px',
+                    },
+                  },
+                  anchorOrigin: {
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  },
+                  transformOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                  },
+                  getContentAnchorEl: null,
+                }}
+                renderValue={(selected) => {
+                  return (
+                    <div className={classes.chips}>
+                      {selected.map((value) => (
+                        <Chip
+                          onDelete={() => hanldeDeleteClass(value)}
+                          onMouseDown={(event) => {
+                            event.stopPropagation();
+                          }}
+                          key={value}
+                          label={value}
+                          className={classes.chip}
+                        />
+                      ))}
+                    </div>
+                  );
+                }}
+              >
+                {classStateNames.map((classname) => (
+                  <MenuItem key={classname} value={classname}>
+                    {classname}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
           <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Grid className={classes.fieldStyle}>
@@ -640,6 +709,7 @@ const CreateHomework = (props) => {
       ) : (
         ''
       )}
+      <BackdropLoader open={props.openLoader} />
     </>
   );
 };

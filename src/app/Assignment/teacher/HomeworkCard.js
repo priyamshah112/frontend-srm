@@ -137,7 +137,7 @@ const useStyle = makeStyles((theme) => ({
     padding: '20px 20px 12px !important',
   },
   highlightedText: {
-    fontWeight: 500,
+    // fontFamily:theme.typography.fon,
     fontSize: '18px',
   },
   textAlignRight: {
@@ -172,6 +172,7 @@ const HomeworkCard = (props) => {
   } = props.homework;
 
   const handleEditHomework = () => {
+    props.handleChangeLoader();
     history.push(`/create-homework/${id}`);
   };
 
@@ -207,11 +208,17 @@ const HomeworkCard = (props) => {
               <Grid item xs={8}>
                 <span>
                   {title ? (
-                    <Typography className={classes.highlightedText}>
+                    <Typography
+                      variant='body1'
+                      className={classes.highlightedText}
+                    >
                       {title}
                     </Typography>
                   ) : (
-                    <Typography className={classes.highlightedText}>
+                    <Typography
+                      variant='body1'
+                      className={classes.highlightedText}
+                    >
                       N/A
                     </Typography>
                   )}
@@ -220,6 +227,7 @@ const HomeworkCard = (props) => {
               <Grid item xs={4}>
                 <Typography
                   className={`${classes.textAlignRight} ${classes.highlightedText}`}
+                  variant='body2'
                 >
                   Created at: {moment(created_date).format('DD MMM YY')}
                 </Typography>
@@ -229,6 +237,7 @@ const HomeworkCard = (props) => {
               <Grid item xs={12}>
                 <Typography
                   className={`${classes.labelText} ${classes.textAlignRight}`}
+                  variant='body2'
                 >
                   Status :{' '}
                   <span style={{ textTransform: 'capitalize' }}>{status}</span>
@@ -237,11 +246,13 @@ const HomeworkCard = (props) => {
             </Grid>
             <Grid container>
               <Grid item xs={11}>
-                <Typography className={classes.labelText}>
+                <Typography className={classes.labelText} variant='body2'>
                   {main_content ? (
                     <div dangerouslySetInnerHTML={{ __html: main_content }} />
                   ) : (
-                    <Typography style={{ margin: '16px 0' }}>N/A</Typography>
+                    <Typography style={{ margin: '16px 0' }} variant='body2'>
+                      N/A
+                    </Typography>
                   )}
                 </Typography>
               </Grid>

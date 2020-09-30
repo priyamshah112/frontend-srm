@@ -163,6 +163,17 @@ const ClassSyllabus = (props) => {
           value={classID}
           onChange={handleChange}
           style={{ width: "50%" }}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "center",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "center",
+            },
+            getContentAnchorEl: null,
+          }}
         >
           {classList != null
             ? Object.keys(classList).map(function (key, index) {

@@ -49,13 +49,14 @@ const Homework = (props) => {
   const { id } = useParams();
   const [classState, setClassState] = useState(null);
   const [isClassLoading, setIsClassLoading] = useState(true);
+  const [openLoader, setOpenLoader] = useState(false);
   const selectedRole = props.selectedRole;
   useEffect(() => {
     const fetchClasses = async () => {
       const classesResponse = await HomeworkService.fetchClasses(props.token);
       let initialClassState = {};
       classesResponse.data.data.forEach((className) => {
-        initialClassState[className.class_name] = false;
+        initialClassState[className.class_name] = className.id;
       });
 
       setClassState({ ...initialClassState });
@@ -69,7 +70,10 @@ const Homework = (props) => {
       setIsClassLoading(false);
     }
   }, [classState]);
-  // console.log(isClassLoading);
+
+  const handleChangeLoader = () => {
+    setOpenLoader(true);
+  };
   return (
     <div className={classes.container} id='scrollable'>
       {location.pathname === '/assignment' ? (
@@ -83,12 +87,14 @@ const Homework = (props) => {
             <br />
           </div>
         ) : (
-          <HomeworkSection />
+          <>
+            <HomeworkSection handleChangeLoader={handleChangeLoader} />
+          </>
         )
       ) : location.pathname === `/create-homework/${id}` &&
         isClassLoading === false ? (
         <Box p={3}>
-          <CreateHomework classState={classState} />
+          <CreateHomework classState={classState} openLoader={openLoader} />
           <br />
           <br />
           <br />

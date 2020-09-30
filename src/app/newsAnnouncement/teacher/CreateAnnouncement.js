@@ -37,18 +37,16 @@ import { set } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
-    margin: 'auto',
-    width: '95%',
-    marginLeft: '20px',
-    marginRight: '20px',
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    textAlign: 'center',
-    borderRadius: '5px',
+    margin: "auto",
+    width: "95%",
+    backgroundColor: "white",
+    justifyContent: "center",
+    textAlign: "center",
+    borderRadius: "5px",
   },
   sideMargins: {
-    marginLeft: '20px',
-    marginRight: '20px',
+    marginLeft: "20px",
+    marginRight: "20px",
   },
   backImg: {
     float: "left",
@@ -68,7 +66,7 @@ const useStyle = makeStyles((theme) => ({
     color: "red",
   },
   fieldStyle: {
-    width: "90%",
+    width: "100%",
     margin: "auto",
     "& .MuiInput-underline:before": {
       borderBottom: "2px solid #eaeaea",
@@ -80,6 +78,11 @@ const useStyle = makeStyles((theme) => ({
       transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
     },
   },
+  sideMargins: {
+    marginLeft: "20px",
+    marginRight: "20px",
+  },
+
   inputBorder: {
     height: "50px",
   },
@@ -175,7 +178,7 @@ const CreateAnnouncement = (props) => {
   const [chipData, setChipData] = useState([]);
 
   const classStateNames = [
-    "All Teacher",
+    "All Teachers",
     "All Parents",
     "Select All",
     ...Object.keys(props.classState),
@@ -197,21 +200,20 @@ const CreateAnnouncement = (props) => {
         );
         if (response.status === 200) {
           if (isFormLoading) {
-            let tempClassCheckState = {};
+            let tempClassCheckState = [];
             if (response.data.data.class_mapping) {
               if (response.data.data.class_mapping.parents) {
-                setClassState(["All Parents", ...classState]);
+                console.log("parents");
+                tempClassCheckState.push("All Parents");
               }
               if (response.data.data.class_mapping.teachers) {
-                setClassState(["All Teachers", ...classState]);
+                tempClassCheckState.push("All Teachers");
               }
               response.data.data.class_mapping.class.forEach((classId) => {
-                setClassState((classState) => [
-                  ...classState,
-                  `Class ${classId}`,
-                ]);
+                tempClassCheckState.push(`Class ${classId}`);
               });
             }
+            setClassState([...tempClassCheckState]);
             setDescription(
               response.data.data.main_content
                 ? response.data.data.main_content
@@ -251,6 +253,7 @@ const CreateAnnouncement = (props) => {
         classMapping["paresnts"] = true;
         classMapping.class = [...Object.values(props.classState)];
       } else {
+        console.log(classState);
         classState.forEach((classnames) => {
           if (classnames === "All Parents") {
             classMapping["parents"] = true;
@@ -308,6 +311,9 @@ const CreateAnnouncement = (props) => {
   };
   const handleSelectClass = (event) => {
     setClassState(event.target.value);
+  };
+  const hanldeDeleteClass = (value) => {
+    setClassState(classState.filter((classname) => classname !== value));
   };
 
   // const handleCheckbox = (event) => {
@@ -449,241 +455,244 @@ const CreateAnnouncement = (props) => {
 
   return (
     <>
-      <div>
-        <form className={classes.formStyle} onSubmit={submitForm}>
-          <Box className={`${classes.margin} ${classes.fieldStyle}`} pt={4}>
+      <form className={classes.formStyle} onSubmit={submitForm}>
+        <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
+          <div>
+            <img
+              src={BackIcon}
+              alt="Back"
+              className={classes.backImg}
+              onClick={() => {
+                saveDetails();
+                history.push("/news");
+              }}
+            />
+            <Typography
+              variant="h5"
+              className={`${classes.themeColor} ${classes.titleText}`}
+            >
+              Create Announcement
+            </Typography>
+          </div>
+        </Box>
+        {errMessage ? (
+          <Box className={classes.margin} pt={2}>
             <div>
-              <img
-                src={BackIcon}
-                alt="Back"
-                className={classes.backImg}
-                onClick={() => {
-                  saveDetails();
-                  history.push("/news");
-                }}
-              />
-              <Typography
-                variant="h5"
-                className={`${classes.themeColor} ${classes.titleText}`}
-              >
-                Create Announcement
+              <Typography className={`${classes.errorColor}`}>
+                {errMessage}
               </Typography>
             </div>
           </Box>
-          {errMessage ? (
-            <Box className={classes.margin} pt={2}>
-              <div>
-                <Typography className={`${classes.errorColor}`}>
-                  {errMessage}
-                </Typography>
-              </div>
-            </Box>
-          ) : (
-            ""
-          )}
-          <Box className={classes.margin}>
-            <FormControl className={classes.fieldStyle}>
-              <TextField
-                label="Title"
-                id="title"
-                name="title"
-                className={classes.inputBorder}
-                value={title}
-                onChange={handleChangeInput}
-                required={true}
-              />
-            </FormControl>
-          </Box>
-          <Box className={classes.margin}>
-            <FormControl className={classes.fieldStyle}>
-              <TextField
-                id="summary"
-                name="summary"
-                label="Summary"
-                className={classes.inputBorder}
-                value={summary}
-                onChange={handleChangeInput}
-                required={true}
-              />
-            </FormControl>
-          </Box>
-          <Box className={classes.margin}>
-            <FormControl className={classes.fieldStyle}>
-              <InputLabel>Categories</InputLabel>
-              <Select
-                labelId="demo-mutiple-chip-label"
-                id="demo-mutiple-chip"
-                value={category}
-                required
-                onChange={handleCategoryChange}
-                input={<Input id="select-multiple-chip" />}
-                MenuProps={{
-                  anchorOrigin: {
-                    vertical: "bottom",
-                    horizontal: "center",
+        ) : (
+          ""
+        )}
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <FormControl className={classes.fieldStyle}>
+            <TextField
+              label="Title"
+              id="title"
+              name="title"
+              className={classes.inputBorder}
+              value={title}
+              onChange={handleChangeInput}
+              required={true}
+            />
+          </FormControl>
+        </Box>
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <FormControl className={classes.fieldStyle}>
+            <TextField
+              id="summary"
+              name="summary"
+              label="Summary"
+              className={classes.inputBorder}
+              value={summary}
+              onChange={handleChangeInput}
+              required={true}
+            />
+          </FormControl>
+        </Box>
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <FormControl className={classes.fieldStyle}>
+            <InputLabel>Categories</InputLabel>
+            <Select
+              labelId="demo-mutiple-chip-label"
+              id="demo-mutiple-chip"
+              value={category}
+              required
+              onChange={handleCategoryChange}
+              input={<Input id="select-multiple-chip" />}
+              MenuProps={{
+                anchorOrigin: {
+                  vertical: "bottom",
+                  horizontal: "center",
+                },
+                transformOrigin: {
+                  vertical: "top",
+                  horizontal: "center",
+                },
+                getContentAnchorEl: null,
+              }}
+              renderValue={(selected) => {
+                return (
+                  <div className={classes.chips}>
+                    <Chip
+                      key={selected}
+                      label={selected}
+                      className={classes.chip}
+                    />
+                  </div>
+                );
+              }}
+            >
+              {categoryValues.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <FormControl className={classes.fieldStyle}>
+            <InputLabel>Select classes</InputLabel>
+            <Select
+              labelId="demo-mutiple-chip-label"
+              id="demo-mutiple-chip"
+              value={classState}
+              multiple
+              onChange={handleSelectClass}
+              input={<Input id="select-multiple-chip" />}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: "300px",
                   },
-                  transformOrigin: {
-                    vertical: "top",
-                    horizontal: "center",
-                  },
-                  getContentAnchorEl: null,
-                }}
-                renderValue={(selected) => {
-                  return (
-                    <div className={classes.chips}>
+                },
+                anchorOrigin: {
+                  vertical: "bottom",
+                  horizontal: "center",
+                },
+                transformOrigin: {
+                  vertical: "top",
+                  horizontal: "center",
+                },
+                getContentAnchorEl: null,
+              }}
+              renderValue={(selected) => {
+                return (
+                  <div className={classes.chips}>
+                    {selected.map((value) => (
                       <Chip
-                        key={selected}
-                        label={selected}
+                        onDelete={() => hanldeDeleteClass(value)}
+                        onMouseDown={(event) => {
+                          event.stopPropagation();
+                        }}
+                        key={value}
+                        label={value}
                         className={classes.chip}
                       />
-                    </div>
-                  );
-                }}
-              >
-                {categoryValues.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {category}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box className={classes.margin}>
-            <FormControl className={classes.fieldStyle}>
-              <InputLabel>Select classes</InputLabel>
-              <Select
-                labelId="demo-mutiple-chip-label"
-                id="demo-mutiple-chip"
-                value={classState}
-                multiple
-                onChange={handleSelectClass}
-                input={<Input id="select-multiple-chip" />}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: "300px",
-                    },
-                  },
-                  anchorOrigin: {
-                    vertical: "bottom",
-                    horizontal: "center",
-                  },
-                  transformOrigin: {
-                    vertical: "top",
-                    horizontal: "center",
-                  },
-                  getContentAnchorEl: null,
-                }}
-                renderValue={(selected) => {
-                  return (
-                    <div className={classes.chips}>
-                      {selected.map((value) => (
-                        <Chip
-                          key={value}
-                          label={value}
-                          className={classes.chip}
-                        />
-                      ))}
-                    </div>
-                  );
-                }}
-              >
-                {classStateNames.map((classname) => (
-                  <MenuItem key={classname} value={classname}>
-                    {classname}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box className={classes.margin}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container className={classes.fieldStyle}>
-                <Grid item xs={12}>
-                  <DatePicker
-                    id="eventDate"
-                    label="Event Date"
-                    variant="dialog"
-                    minDate={new Date()}
-                    format="MM/dd/yyyy"
-                    value={eventDate}
-                    onChange={handleEventDate}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton>
-                            <EventIcon />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                    className={classes.datePicker}
-                  />
-                </Grid>
-              </Grid>
-            </MuiPickersUtilsProvider>
-          </Box>
-          <Box className={classes.margin}>
-            <Grid className={classes.fieldStyle}>
-              <Typography className={classes.textAlignLeft}>
-                Description
-              </Typography>
-              <RichTextEditor
-                handleDescription={handleDescription}
-                value={description}
-                token={props.token}
-              />
-            </Grid>
-          </Box>
-          <Box className={classes.margin}>
-            <Grid
-              container
-              className={classes.fieldStyle}
-              direction="row-reverse"
+                    ))}
+                  </div>
+                );
+              }}
             >
-              <Grid item sm={8} xs={12} className={classes.publishBtns}>
-                <Button
-                  id="publishLaterBtn"
-                  variant="contained"
-                  onClick={handleOpenPubLater}
-                  className={`${
-                    classes.fieldStyle
-                  } ${"publishBtn"} ${"publishLaterBtn"}`}
-                  disableElevation
-                >
-                  Publish Later
-                </Button>
-                <Button
-                  id="publishBtn"
-                  variant="contained"
-                  className={`${classes.fieldStyle} ${"publishBtn"}`}
-                  color="primary"
-                  // onClick={handlePublish}
-                  type="submit"
-                  disableElevation
-                >
-                  Publish Now
-                </Button>
-              </Grid>
-              <Grid item sm={4} xs={12} className={classes.textAlignLeft}>
-                <Button
-                  id="cancelBtn"
-                  variant="contained"
-                  onClick={() => {
-                    history.push("/news");
+              {classStateNames.map((classname) => (
+                <MenuItem key={classname} value={classname}>
+                  {classname}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container className={classes.fieldStyle}>
+              <Grid item xs={12}>
+                <DatePicker
+                  id="eventDate"
+                  label="Event Date"
+                  variant="dialog"
+                  minDate={new Date()}
+                  format="MM/dd/yyyy"
+                  value={eventDate}
+                  onChange={handleEventDate}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton>
+                          <EventIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
-                  className={`${
-                    classes.fieldStyle
-                  } ${"publishBtn"} ${"publishLaterBtn"}`}
-                  disableElevation
-                >
-                  Cancel
-                </Button>
+                  className={classes.datePicker}
+                />
               </Grid>
-              <br />
-              <br />
-              <br />
-              {/* <Grid item sm={6} xs={12} className={classes.publishBtns}>
+            </Grid>
+          </MuiPickersUtilsProvider>
+        </Box>
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <Grid className={classes.fieldStyle}>
+            <Typography className={classes.textAlignLeft}>
+              Description
+            </Typography>
+            <RichTextEditor
+              handleDescription={handleDescription}
+              value={description}
+              token={props.token}
+            />
+          </Grid>
+        </Box>
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <Grid
+            container
+            className={classes.fieldStyle}
+            direction="row-reverse"
+          >
+            <Grid item sm={8} xs={12} className={classes.publishBtns}>
+              <Button
+                id="publishLaterBtn"
+                variant="contained"
+                onClick={handleOpenPubLater}
+                className={`${
+                  classes.fieldStyle
+                } ${"publishBtn"} ${"publishLaterBtn"}`}
+                disableElevation
+              >
+                Publish Later
+              </Button>
+              <Button
+                id="publishBtn"
+                variant="contained"
+                className={`${classes.fieldStyle} ${"publishBtn"}`}
+                color="primary"
+                // onClick={handlePublish}
+                type="submit"
+                disableElevation
+              >
+                Publish Now
+              </Button>
+            </Grid>
+            <Grid item sm={4} xs={12} className={classes.textAlignLeft}>
+              <Button
+                id="cancelBtn"
+                variant="contained"
+                onClick={() => {
+                  history.push("/news");
+                }}
+                className={`${
+                  classes.fieldStyle
+                } ${"publishBtn"} ${"publishLaterBtn"}`}
+                disableElevation
+              >
+                Cancel
+              </Button>
+            </Grid>
+            <br />
+            <br />
+            <br />
+            {/* <Grid item sm={6} xs={12} className={classes.publishBtns}>
                 <Button
                   id='publishLaterBtn'
                   variant='contained'
@@ -707,10 +716,10 @@ const CreateAnnouncement = (props) => {
                   Publish Now
                 </Button>
               </Grid> */}
-            </Grid>
-          </Box>
-        </form>
-      </div>
+          </Grid>
+        </Box>
+      </form>
+
       <br />
       <br />
       {openPubLater ? (

@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
   labelText: {
     fontSize: '18px',
     fontStyle: 'normal',
-    color: '#8E8E93',
+    color: `${theme.palette.common.lightFont}`,
   },
 
   editBtnDiv: {
@@ -205,11 +205,17 @@ const FaqCard = (props) => {
               <Grid item xs={12}>
                 <span>
                   {question ? (
-                    <Typography className={classes.highlightedText}>
+                    <Typography
+                      className={classes.highlightedText}
+                      variant='body1'
+                    >
                       {question}
                     </Typography>
                   ) : (
-                    <Typography className={classes.highlightedText}>
+                    <Typography
+                      className={classes.highlightedText}
+                      variant='body1'
+                    >
                       N/A
                     </Typography>
                   )}
@@ -218,11 +224,13 @@ const FaqCard = (props) => {
             </Grid>
             <Grid container>
               <Grid item xs={10}>
-                <Typography className={classes.labelText}>
+                <Typography className={classes.labelText} variant='body2'>
                   {answer ? (
                     <div dangerouslySetInnerHTML={{ __html: answer }} />
                   ) : (
-                    <Typography style={{ margin: '16px 0' }}>N/A</Typography>
+                    <Typography style={{ margin: '16px 0' }} variant='body2'>
+                      N/A
+                    </Typography>
                   )}
                 </Typography>
               </Grid>

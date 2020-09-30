@@ -161,7 +161,13 @@ const HomeworkSection = (props) => {
   };
 
   let content = homeworks.map((homework, index) => {
-    return <HomeworkCard key={homework.id} homework={homework} />;
+    return (
+      <HomeworkCard
+        key={homework.id}
+        homework={homework}
+        handleChangeLoader={props.handleChangeLoader}
+      />
+    );
   });
 
   return (
