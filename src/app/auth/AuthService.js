@@ -4,6 +4,7 @@ const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class AuthService {
   login(credentials) {
+    console.log(`${BACKEND_API_URL}/login`)
     return axios.post(`${BACKEND_API_URL}/login`, credentials);
   }
   sendOtp(username) {

@@ -50,6 +50,7 @@ import Logout from '../app/auth/Logout';
 import RoleSelection from '../app/auth/RoleSelection';
 import * as actions from '../app/auth/store/actions';
 import ChatIndex from '../app/chat/ChatIndex';
+import ChatPopup from '../app/chatUsers/ChatPopup';
 
 // default was 360
 const drawerWidth = 340;
@@ -184,6 +185,15 @@ const useStyles = makeStyles((theme) => ({
       width: 280,
     },
   },
+  chat: {
+    width: 500,
+    [theme.breakpoints.down('sm')]: {
+      width: 0,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 280,
+    },
+  },
   drawerRightPaper: {
     width: drawerRightWidth,
     [theme.breakpoints.down('sm')]: {
@@ -193,6 +203,7 @@ const useStyles = makeStyles((theme) => ({
       width: 280,
     },
   },
+  
   drawerRightContainer: {
     overflow: 'auto',
   },
@@ -671,11 +682,13 @@ const Layout = (props) => {
       <div className={classes.drawerContainer}>
         <ChatIndex />
       </div>
+      
     </>
   );
   return (
     <>
       {!props.isAuthenticated ? <Redirect to='/login' /> : ''}
+      
       <ElevationScroll>
         <div className={classes.grow}>
           <AppBar position='fixed' className={classes.appBar}>
@@ -773,6 +786,7 @@ const Layout = (props) => {
           </AppBar>
           {matchesSm ? renderMobileMenu : renderMenu}
         </div>
+        
       </ElevationScroll>
       <div className={classes.toolbarMargin}></div>
 
@@ -818,10 +832,12 @@ const Layout = (props) => {
             PaperProps={{ elevation: 3 }}
           >
             {rightDrawer}
+            
           </Drawer>
         </Hidden>
       </nav>
       <main className={classes.mainContainer}>{props.children}</main>
+      <ChatPopup />
       {snackbarOpen ? (
         <Snackbar
           open={snackbarOpen}
@@ -859,10 +875,11 @@ const Layout = (props) => {
       ) : (
         ''
       )}
-
+      
       {props.changeRole ? (
         <RoleSelection open={true} handleClose={handleCloseLogoutDialog} />
       ) : null}
+      
     </>
   );
 };

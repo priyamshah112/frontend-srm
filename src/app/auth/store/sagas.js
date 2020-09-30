@@ -34,7 +34,7 @@ export function* authUserSaga(action) {
     username: action.userName,
     password: action.password,
   };
-
+  console.log(authData)
   try {
     let response = "";
     if (USE_API === "Y") {
