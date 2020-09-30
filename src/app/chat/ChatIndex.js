@@ -44,8 +44,8 @@ const ChatIndex = (props) => {
           </div>
         </div>
         <div className={classes.conversationContainer}>
-          {/* <Chat /> */}
           <Typography>Chat Messages</Typography>
+          <Chat />
         </div>
       </div>
     </>
