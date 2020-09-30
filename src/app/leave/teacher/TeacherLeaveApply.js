@@ -23,10 +23,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import {
   MuiPickersUtilsProvider,
-  KeyboardDatePicker,
+  DatePicker,
 } from '@material-ui/pickers';
-
+import EventIcon from '@material-ui/icons/Event';
 import LeaveService from '../LeaveService';
+import { IconButton, InputAdornment, InputLabel } from '@material-ui/core';
 const height = 85;
 
 const useStyle = makeStyles((theme) => ({
@@ -147,6 +148,7 @@ const useStyle = makeStyles((theme) => ({
       'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
     lineHeight: '1.5',
+    outline: 'none'
   },
   form_row: {
     display: 'flex',
@@ -177,6 +179,13 @@ const useStyle = makeStyles((theme) => ({
   leavereason: {
     fontSize: '15px',
   },
+  tchClassRoot:{
+    marginLeft:"27px",
+    transform:'translateY(-13px)'
+  },
+  tchSelect:{
+    width:'150px'
+  },
 }));
 
 const TeacherLeaveApply = (props) => {
@@ -195,6 +204,7 @@ const TeacherLeaveApply = (props) => {
   const [teacherval, Teacher] = React.useState('');
   const [allAdmin, setAdmin] = useState([]);
   const [halfday, sethalfday] = React.useState(false);
+  const [teachersValue, setTeachersValue] = useState('')
 
   useEffect(() => {
     let isLoading = true;
@@ -252,7 +262,7 @@ const TeacherLeaveApply = (props) => {
     type,
     slot,
     content,
-    teachervalue
+    teachersValue
   ) => {
     try {
       const response = await LeaveService.postLeave(
@@ -264,7 +274,7 @@ const TeacherLeaveApply = (props) => {
             half_day: slot == 'h_day' ? true : false,
             full_day: slot == 'f_day' ? true : false,
             half_day_half: type,
-            sanctioner_id: teachervalue,
+            sanctioner_id: teachersValue,
             reason: content,
           },
         },
@@ -279,6 +289,10 @@ const TeacherLeaveApply = (props) => {
     }
   };
 
+  const handleTeachersValue = (event) =>{
+    setTeachersValue(event.target.value)
+  }
+
   const submitForm = async (event) => {
     let type = '0';
     let slot = event.target.slot.value;
@@ -286,7 +300,7 @@ const TeacherLeaveApply = (props) => {
       type = event.target.type.value;
     }
     let content = event.target.content.value;
-    let teachervalue = event.target.teachers.value;
+    // let teachervalue = event.target.teachers.value;
     publishData(
       new Date().toISOString(),
       status,
@@ -294,7 +308,7 @@ const TeacherLeaveApply = (props) => {
       type,
       slot,
       content,
-      teachervalue
+      teachersValue
     );
     event.preventDefault();
   };
@@ -317,7 +331,7 @@ const TeacherLeaveApply = (props) => {
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container className={classes.fieldStyle}>
                   <Grid item xs={12} className={classes.topdate}>
-                    <KeyboardDatePicker
+                    <DatePicker
                       id='eventDate'
                       label='From Date'
                       variant='dialog'
@@ -329,6 +343,15 @@ const TeacherLeaveApply = (props) => {
                       KeyboardButtonProps={{
                         'aria-label': 'change date',
                       }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton>
+                              <EventIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                       className={classes.datePicker}
                     />
                   </Grid>
@@ -339,7 +362,7 @@ const TeacherLeaveApply = (props) => {
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container className={classes.fieldStyle}>
                   <Grid item xs={12}>
-                    <KeyboardDatePicker
+                    <DatePicker
                       minDate={new Date()}
                       variant='dialog'
                       format='yyyy/MM/dd'
@@ -350,6 +373,15 @@ const TeacherLeaveApply = (props) => {
                       onChange={handleDateChange}
                       KeyboardButtonProps={{
                         'aria-label': 'change date',
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton>
+                              <EventIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
                       }}
                       className={classes.datePicker}
                     />
@@ -395,36 +427,42 @@ const TeacherLeaveApply = (props) => {
                 {halfday == true && (
                   <Typography variant='h5' className={`${classes.selectadmin}`}>
                     <FormControl className={classes.formControl}>
-                      <NativeSelect
+                      <Select
                         defaultValue={0}
                         inputProps={{
                           name: 'type',
                           id: 'type',
                         }}
                       >
-                        <option value={0}>First Half</option>
-                        <option value={1}>Second Half</option>
-                      </NativeSelect>
+                        <MenuItem  value={0}>First Half</MenuItem>
+                        <MenuItem  value={1}>Second Half</MenuItem>
+                      </Select>
                     </FormControl>
                   </Typography>
                 )}
 
-                <Typography variant='h5' className={`${classes.selectadmin}`}>
-                  <FormControl className={`${classes.titleText}`}>
-                    <NativeSelect
-                      inputProps={{
-                        name: 'teachers',
-                        id: 'teachers',
-                      }}
-                    >
+              <FormControl classes={{root: classes.tchClassRoot}}>
+                <InputLabel id="demo-simple-select-label">Admin's Name</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={teachersValue}
+                  className={classes.tchSelect}
+                  onChange={handleTeachersValue}
+                  // inputProps={{
+                  //   name: 'teachers',
+                  //   id: 'teachers',
+                  // }}
+
+                >
                       {allAdmin.map((admin) => (
-                        <option value={admin.user_id}>
+                        <MenuItem  value={admin.user_id}>
                           {admin.firstname}&nbsp;{admin.lastname}
-                        </option>
+                        </MenuItem >
                       ))}
-                    </NativeSelect>
-                  </FormControl>
-                </Typography>
+                </Select>
+              </FormControl>
+
               </div>
             </Grid>
           </Box>

@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     overflow: 'auto',
   },
+  padding: {
+   padding:'15px'
+  },
   editorCard: {
     marginTop: '20px',
   },
@@ -186,7 +189,7 @@ const FaqEditor = (props) => {
 
   return (
     <div className={classes.container}>
-      <Container>
+      <Container classes={{root:classes.padding}}>
         <Card variant='outlined' className={classes.editorCard}>
           <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
             <div>
@@ -233,7 +236,7 @@ const FaqEditor = (props) => {
           <CardActions className={classes.cardAction}>
             <Grid container direction='row'>
               <Grid item xs={6} className={classes.alignLeft}>
-                <Button
+                {/* <Button
                   color='primary'
                   variant='outlined'
                   disableElevation={true}
@@ -242,7 +245,7 @@ const FaqEditor = (props) => {
                   }}
                 >
                   Cancel
-                </Button>
+                </Button> */}
               </Grid>
               <Grid item xs={6} className={classes.alignRight}>
                 <Button

@@ -12,6 +12,7 @@ import { startNotificationCount } from "../../notification/store/action";
 import * as actionTypes from "./actionTypes";
 import AuthService from "../AuthService";
 import * as moment from "moment";
+import axiosService from "../../redux/api/axios-service";
 const USE_API = process.env.REACT_APP_USE_API;
 
 export function* watchAuth() {
@@ -52,7 +53,7 @@ export function* authUserSaga(action) {
         "srmSelectedRole",
         JSON.stringify(response.data.user.roles[0].name)
       );
-
+      axiosService.setAuthorizationToken(response.data.access_token);
       //Initiate AUTH_SUCCCESS action
       yield put(
         actions.authSuccess({
@@ -87,6 +88,7 @@ export function* authUserSaga(action) {
 /*If token already exists, use the token. If the user token expired, logout. */
 export function* authCheckStateSaga(action) {
   const token = yield localStorage.getItem("srmToken");
+  axiosService.setAuthorizationToken(token);
   if (!token) {
     yield put(actions.logout(action.isAuthenticated));
   } else {

@@ -127,7 +127,8 @@ function App(props) {
           <Route path="/faq/edit/:id" exact component={FaqEditor} />
           <Route path="/profile" exact component={Profile} />
           <Route path="/support" exact component={Support} />
-          <Route path="/create-support/:id" exact component={CreateSupport} />
+          <Route path="/support/create" exact component={CreateSupport} />
+          <Route path="/support/create/:id" exact component={CreateSupport} />
           <Route path="/support/:id" exact component={SupportSection} />
         </Switch>
       </Layout>

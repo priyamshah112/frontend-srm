@@ -675,7 +675,7 @@ const CreateAnnouncement = (props) => {
               </Button>
             </Grid>
             <Grid item sm={4} xs={12} className={classes.textAlignLeft}>
-              <Button
+              {/* <Button
                 id="cancelBtn"
                 variant="contained"
                 onClick={() => {
@@ -687,7 +687,7 @@ const CreateAnnouncement = (props) => {
                 disableElevation
               >
                 Cancel
-              </Button>
+              </Button> */}
             </Grid>
             <br />
             <br />

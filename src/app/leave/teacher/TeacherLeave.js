@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     '& > span': {
-      margin: theme.spacing(2),
+      margin: '15px',
     },
   },
   loading: {
@@ -141,6 +141,7 @@ const useStyles = makeStyles((theme) => ({
   },
   createButtonIcon: {
     paddingRight: '5px',
+    cursor: 'pointer'
   },
   statusIcon: {
     transform: 'translateY(2px)',
@@ -149,10 +150,11 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     color: `${theme.palette.common.deluge}`,
     transform: 'translateY(2px)',
+    cursor: 'pointer'
   },
   align: {
     textAlign: 'justify',
-    paddingLeft: '8px',
+    
   },
   status: {
     display: 'inline-block',
@@ -160,12 +162,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '20px',
   },
   createButtonIconCircle: {
+    cursor:'pointer',
     backgroundColor: '#fff',
     borderRadius: '50%',
     display: 'inline-block',
     border: '1px solid red',
-    width: '16px',
-    height: '16px',
+    width: '18px',
+    height: '18px',
+    marginRight: '60px',
+
   },
   createButtonIconCircleOk: {
     backgroundColor: '#fff',
@@ -206,6 +211,14 @@ const useStyles = makeStyles((theme) => ({
       'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
   },
+  stat: {
+    textAlign: 'right',
+    transform: 'translateY(10px)'
+  },
+  stat1: {
+    textAlign: 'right',
+    transform: 'translateY(-25px)'
+  }
 }));
 
 function TabPanel(props) {
@@ -609,7 +622,7 @@ const TeacherLeave = (props) => {
                               </Typography>
                             </Grid>
 
-                            <Grid item xs={2}>
+                            <Grid item xs={2} className={classes.stat}>
                               <Typography
                                 variant='h5'
                                 className={classes.leavereason}
@@ -618,7 +631,7 @@ const TeacherLeave = (props) => {
                                   <CloseIcon
                                     color='action'
                                     className={classes.createButtonIconCircle}
-                                    style={{ color: red[500] }}
+                                    style={{ color: red[500], cursor: 'pointer' }}
                                     onClick={(e) => {
                                       CancelLeave(leaves.leave_code);
                                     }}
@@ -629,7 +642,7 @@ const TeacherLeave = (props) => {
                                 )}
 
                                 {leaves.leave_status == 'PENDING' ? (
-                                  <div className={classes.uppertext1}>
+                                  <div className={classes.stat1}>
                                     Pending
                                   </div>
                                 ) : (

@@ -13,6 +13,8 @@ import {
   KeyboardDateTimePicker,
   DateTimePicker,
 } from '@material-ui/pickers';
+import { IconButton, InputAdornment } from "@material-ui/core";
+import EventIcon from '@material-ui/icons/Event';
 
 const useStyles = makeStyles((theme) => ({
   dateTimeContainer: {
@@ -68,7 +70,8 @@ const PublishLater = (props) => {
           <div className={classes.dateTimeContainer}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container justify='space-around'>
-                <KeyboardDateTimePicker
+                <DateTimePicker
+                  variant="dialog"
                   value={selectedDate}
                   onChange={(dateTime) => {
                     setSelectedDateChange(dateTime);
@@ -77,7 +80,16 @@ const PublishLater = (props) => {
                   minDate={new Date()}
                   maxDate={submissionDate}
                   format='yyyy/MM/dd hh:mm a'
-                />
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton>
+                          <EventIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+              />
               </Grid>
             </MuiPickersUtilsProvider>
           </div>

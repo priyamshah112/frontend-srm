@@ -189,14 +189,17 @@ const CreateHomework = (props) => {
   const [submissionDate, setSubmissionDate] = useState(null);
   const [classState, setClassState] = useState([]);
 
-  const [checkState, setCheckState] = useState({
-    ...props.classState,
-    'Select All': false,
-  });
+  const classStateNames = [
+    "All Teachers",
+    "All Parents",
+    "Select All",
+    ...Object.keys(props.classState),
+  ];
+
   const checkStateLength = [
     ...Array(Object.keys(props.classState).length).keys(),
   ];
-  const classStateNames = ['Select All', ...Object.keys(props.classState)];
+  // const classStateNames = ['Select All', ...Object.keys(props.classState)];
 
   const [chipData, setChipData] = useState([]);
   const selectAllObj = {
@@ -240,15 +243,20 @@ const CreateHomework = (props) => {
         );
         if (response.status === 200) {
           if (isFormLoading) {
-            let tempClassCheckState = {};
+            let tempClassCheckState = [];
             if (response.data.data.class_mapping) {
+              if (response.data.data.class_mapping.parents) {
+                console.log("parents");
+                tempClassCheckState.push("All Parents");
+              }
+              if (response.data.data.class_mapping.teachers) {
+                tempClassCheckState.push("All Teachers");
+              }
               response.data.data.class_mapping.class.forEach((classId) => {
-                tempClassCheckState[`Class ${classId}`] = true;
-
-                setChipData((chipData) => [...chipData, `Class ${classId}`]);
+                tempClassCheckState.push(`Class ${classId}`);
               });
             }
-            setCheckState({ ...checkState, ...tempClassCheckState });
+            setClassState([...tempClassCheckState]);
             setDescription(
               response.data.data.main_content
                 ? response.data.data.main_content
@@ -278,13 +286,13 @@ const CreateHomework = (props) => {
       // clearInterval(saveDataApi);
     };
   }, []);
-  const handleSelectClass = (event) => {
-    setClassState(event.target.value);
-  };
+  // const handleSelectClass = (event) => {
+  //   setClassState(event.target.value);
+  // };
 
-  const hanldeDeleteClass = (value) => {
-    setClassState(classState.filter((classname) => classname !== value));
-  };
+  // const hanldeDeleteClass = (value) => {
+  //   setClassState(classState.filter((classname) => classname !== value));
+  // };
 
   const saveDetails = async (isBack) => {
     try {
@@ -327,7 +335,7 @@ const CreateHomework = (props) => {
       saveDetails(false);
     }, 10000);
     return () => clearInterval(saveDataApi);
-  }, [title, description, submissionDate, checkState]);
+  }, [title, description, submissionDate, classState]);
 
   const handleChangeInput = (event) => {
     let name = event.target.name;
@@ -342,25 +350,33 @@ const CreateHomework = (props) => {
     setEventDate(date);
   };
 
-  const handleCheckbox = (event) => {
-    let name = event.target.name;
-    if (name === 'Select All') {
-      if (event.target.checked) {
-        setCheckState(selectAllObj);
-        setChipData(Object.keys(checkState));
-      } else {
-        setCheckState(disSelectAllObj);
-        setChipData([]);
-      }
-    } else {
-      setCheckState({ ...checkState, [name]: event.target.checked });
+  // const handleCheckbox = (event) => {
+  //   let name = event.target.name;
+  //   if (name === 'Select All') {
+  //     if (event.target.checked) {
+  //       setCheckState(selectAllObj);
+  //       setChipData(Object.keys(checkState));
+  //     } else {
+  //       setCheckState(disSelectAllObj);
+  //       setChipData([]);
+  //     }
+  //   } else {
+  //     setCheckState({ ...checkState, [name]: event.target.checked });
 
-      if (event.target.checked) {
-        setChipData([...chipData, name]);
-      } else {
-        setChipData(chipData.filter((e) => e !== name));
-      }
-    }
+  //     if (event.target.checked) {
+  //       setChipData([...chipData, name]);
+  //     } else {
+  //       setChipData(chipData.filter((e) => e !== name));
+  //     }
+  //   }
+  // };
+
+  const handleSelectClass = (event) => {
+    setClassState(event.target.value);
+  };
+
+  const hanldeDeleteClass = (value) => {
+    setClassState(classState.filter((classname) => classname !== value));
   };
 
   const handleDescription = (data) => {
@@ -436,11 +452,11 @@ const CreateHomework = (props) => {
     publishData(laterEventDate.toISOString(), status);
   };
 
-  const handleClassChipDelete = (data) => {
-    const newChipData = chipData.filter((chip) => chip !== data);
-    setChipData([...newChipData]);
-    setCheckState({ ...checkState, [data]: false });
-  };
+  // const handleClassChipDelete = (data) => {
+  //   const newChipData = chipData.filter((chip) => chip !== data);
+  //   setChipData([...newChipData]);
+  //   setCheckState({ ...checkState, [data]: false });
+  // };
 
   const submitForm = async (event) => {
     event.preventDefault();

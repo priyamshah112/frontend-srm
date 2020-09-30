@@ -58,9 +58,14 @@ const useStyle = makeStyles((theme) => ({
   },
   descriptionContent: {
     width: '100%',
+    marginTop: '6px',
     margin: 'auto',
   },
-
+  descriptionContent1: {
+    width: '100%',
+    marginTop: '16px',
+    margin: 'auto',
+  },
   NewsHeader: {
     [theme.breakpoints.down('sm')]: {
       padding: '8px 16px 8px 16px !important',
@@ -316,7 +321,7 @@ const Details = (props) => {
                       dangerouslySetInnerHTML={{ __html: details.main_content }}
                     />
                   ) : (
-                    <Typography className={classes.title} variant='body2'>
+                    <Typography className={`${classes.title} ${classes.descriptionContent1}`} variant='body2'>
                       {'No description provided'}
                     </Typography>
                   )}

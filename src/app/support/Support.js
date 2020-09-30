@@ -26,11 +26,7 @@ const Support = (props) => {
   const selectedRole = props.selectedRole;
   return (
     <div className={classes.container}>
-      {selectedRole === 'admin' || selectedRole === 'teacher' ? (
-        <AdminSupport />
-      ) : (
-        <ParentSupport />
-      )}
+      <ParentSupport />
       <br />
       <br />
       <br />
