@@ -1,111 +1,118 @@
-import React, { useState, useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import { makeStyles } from "@material-ui/styles";
-import Typography from "@material-ui/core/Typography";
-import { useHistory } from "react-router-dom";
-import * as moment from "moment";
-import { dateDiff } from "../../../shared/datediff";
-import EditIcon from "../../../assets/images/Edit Button.svg";
-import { Box, CardHeader, CardMedia, CardActions } from "@material-ui/core";
+import React, { useState, useEffect } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import { makeStyles } from '@material-ui/styles';
+import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
+import * as moment from 'moment';
+import { dateDiff } from '../../../shared/datediff';
+
+import EditIcon from '../../../assets/images/Edit.svg';
+import { Box, CardHeader, CardMedia, CardActions } from '@material-ui/core';
 // import testImg from "../../assets/images/home/testImg.png";
 
 const useStyle = makeStyles((theme) => ({
   card: {
-    width: "100%",
-    margin: "auto",
-    marginTop: "20px",
-    borderRadius: "10px",
-    boxShadow: "none",
+    width: '100%',
+    margin: 'auto',
+    marginTop: '20px',
+    borderRadius: '10px',
+    boxShadow: 'none',
   },
   reminder: {
-    width: "100%",
-    textAlign: "right",
-    cursor: "pointer",
+    width: '100%',
+    textAlign: 'right',
+    cursor: 'pointer',
   },
   NewsHeader: {
-    padding: "8px 16px 8px 16px !important",
-    "& span": {
-      cursor: "pointer",
-      "&:hover": {
-        textDecoration: "underline",
+    padding: '8px 16px 8px 16px !important',
+    '& span': {
+      cursor: 'pointer',
+      '&:hover': {
+        textDecoration: 'underline',
       },
     },
-    [theme.breakpoints.down("sm")]: {
-      padding: "8px 16px 8px 16px !important",
-      "& span": {
-        fontSize: "16px",
+    [theme.breakpoints.down('sm')]: {
+      padding: '8px 16px 8px 16px !important',
+      '& span': {
+        fontSize: '16px',
       },
     },
   },
   cardContent: {
-    padding: "0px 16px 0px 16px",
+    padding: '0px 16px 0px 16px',
   },
   contentMargin: {
-    marginTop: "16px",
+    marginTop: '16px',
   },
   announcementText: {
-    fontStyle: "normal",
-    fontSize: "14px",
+    fontStyle: 'normal',
+    fontSize: '14px',
   },
   announcementImg: {
-    justifyContent: "center",
-    textAlign: "center",
-    "& img": {
-      maxWidth: "100%",
+    justifyContent: 'center',
+    textAlign: 'center',
+    '& img': {
+      maxWidth: '100%',
       border: `1px solid ${theme.palette.common.deluge}`,
-      borderRadius: "4px",
+      borderRadius: '4px',
     },
   },
   statusText: {
-    fontStyle: "normal",
-    textTransform: "uppercase",
-    paddingTop: "10px",
-    [theme.breakpoints.down("xs")]: {
-      fontSize: "13px",
+    fontStyle: 'normal',
+    color: `${theme.palette.common.lightFont}`,
+    textTransform: 'uppercase',
+    paddingTop: '10px',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '13px',
     },
   },
   cardActionStyle: {
-    padding: "8px 16px 8px 16px",
-    color: "#6C757D",
+    padding: '8px 16px 8px 16px',
+    color: `${theme.palette.common.lightFont}`,
   },
   contentCenter: {
-    textAlign: "right",
-    height: "50%",
+    textAlign: 'right',
+    height: '50%',
 
-    "& img": {
-      marginTop: "25px",
-      width: "25px",
-      cursor: "pointer",
+    '& img': {
+      marginTop: '25px',
+      width: '25px',
+      cursor: 'pointer',
 
-      [theme.breakpoints.down("xs")]: {
-        marginTop: "10px",
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
       },
     },
-    [theme.breakpoints.down("xs")]: {
-      textAlign: "right",
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'right',
     },
   },
   createdDate: {
-    padding: "5px 0 5px 0",
+    padding: '5px 0 5px 0',
   },
   editBtnGrid: {
-    textAlign: "right",
+    textAlign: 'right',
   },
   editBtn: {
-    marginLeft: "auto",
-    cursor: "pointer",
+    marginLeft: 'auto',
+    paddingRight: '5px',
+    paddingTop: '5px',
+    cursor: 'pointer',
+  },
+  cardTitle: {
+    fontSize: '18px',
   },
   announcementImg: {
-    justifyContent: "center",
-    textAlign: "center",
-    paddingBottom: "10px",
-    margin: "0",
-    "& img": {
-      maxWidth: "100%",
+    justifyContent: 'center',
+    textAlign: 'center',
+    paddingBottom: '10px',
+    margin: '0',
+    '& img': {
+      maxWidth: '100%',
       border: `1px solid ${theme.palette.common.deluge}`,
-      borderRadius: "4px",
+      borderRadius: '4px',
     },
   },
 }));
@@ -114,9 +121,9 @@ const NewsCard = (props) => {
   const classes = useStyle();
   const history = useHistory();
   const statusColors = {
-    draft: "red",
-    published: "#7B72AF",
-    active: "green",
+    draft: 'red',
+    published: '#7B72AF',
+    active: 'green',
   };
   const {
     id,
@@ -134,9 +141,9 @@ const NewsCard = (props) => {
     <>
       <Grid
         container
-        direction="row"
-        justify="center"
-        alignContent="center"
+        direction='row'
+        justify='center'
+        alignContent='center'
         className={classes.cardContainer}
       >
         <Card className={classes.card}>
@@ -145,16 +152,11 @@ const NewsCard = (props) => {
             action={
               <>
                 {props.createdBy ? (
-                  <Typography
-                    style={{
-                      color: statusColors[status],
-                    }}
-                    className={classes.statusText}
-                  >
+                  <Typography className={classes.statusText} variant='body2'>
                     {status}
                   </Typography>
                 ) : (
-                  ""
+                  ''
                 )}
               </>
             }
@@ -165,9 +167,13 @@ const NewsCard = (props) => {
                 }}
               >
                 {title ? (
-                  <Typography variant="h6">{title}</Typography>
+                  <Typography variant='body1' className={classes.cardTitle}>
+                    {title}
+                  </Typography>
                 ) : (
-                  <Typography variant="h6">N/A</Typography>
+                  <Typography variant='body1' className={classes.cardTitle}>
+                    N/A
+                  </Typography>
                 )}
               </span>
             }
@@ -179,16 +185,16 @@ const NewsCard = (props) => {
             {media_url && (
               <Grid
                 container
-                direction="row"
+                direction='row'
                 className={`${classes.announcementImg} ${classes.contentMargin}`}
               >
-                <img src={media_url} alt="Announcement"></img>
+                <img src={media_url} alt='Announcement'></img>
               </Grid>
             )}
             {summary ? (
-              <Typography>{summary}</Typography>
+              <Typography variant='body2'>{summary}</Typography>
             ) : (
-              <Typography>N/A</Typography>
+              <Typography variant='body2'>N/A</Typography>
             )}
           </CardContent>
           <CardActions className={classes.cardActionStyle}>
@@ -196,20 +202,21 @@ const NewsCard = (props) => {
               <Grid item xs={9}>
                 <Typography
                   className={classes.createdDate}
+                  variant='body2'
                 >{`Created at: ${moment(created_at).format(
-                  "DD MMM YYYY"
+                  'DD MMM YYYY'
                 )}`}</Typography>
               </Grid>
               <Grid item xs={3} className={classes.editBtnGrid}>
                 <Box className={classes.editBtn}>
-                  {status !== "published" ? (
+                  {status !== 'published' ? (
                     <img
                       src={EditIcon}
-                      alt="Edit Icon"
+                      alt='Edit Icon'
                       onClick={handleEditAnnouncement}
                     />
                   ) : (
-                    ""
+                    ''
                   )}
                 </Box>
               </Grid>

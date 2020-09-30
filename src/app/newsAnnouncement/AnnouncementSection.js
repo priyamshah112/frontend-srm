@@ -14,7 +14,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import AnnouncementService from "./AnnouncementService";
-import AddIcon from "../../assets/images/Add.svg";
+
+import AddIcon from "../../assets/images/Filled Add.svg";
 import AnnouncementCard from "../home/studentHome/AnnouncementCard";
 import NewsCard from "./teacher/NewsCard";
 
@@ -83,7 +84,7 @@ const AnnouncementSection = (props) => {
       try {
         const token = localStorage.getItem("srmToken");
         const selectedRole = props.selectedRole;
-        
+
         const createdBy = props.createdBy;
         let params = {};
         if (createdBy) {

@@ -60,7 +60,6 @@ const useStyle = makeStyles((theme) => ({
     height: '100px',
     overflow: 'none',
     width: '95%',
-    margin: 'auto',
     boxShadow: 'none',
     // overflow: 'none',
     overflowY: 'auto',
@@ -122,6 +121,7 @@ const Homework = (props) => {
   const [showNoContent, setShowNoContent] = useState(false);
 
   const cardColors = ['#F7DDCC', '#F8E7C1', '#D4DbD8'];
+  const cardMargins = ['0 auto 0 0','0 auto','0 0 0 auto']
 
   useEffect(() => {
     let isHomeworkLoading = true;
@@ -208,7 +208,7 @@ const Homework = (props) => {
                 >
                   <Card
                     className={`${classes.homeworkCard} ${index}`}
-                    style={{ backgroundColor: cardColors[index] }}
+                    style={{ backgroundColor: cardColors[index], margin:cardMargins[index] }}
                     onClick={(event) => {
                       history.push('/assignment');
                     }}

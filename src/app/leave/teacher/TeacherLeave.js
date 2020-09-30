@@ -7,17 +7,15 @@ import Box from '@material-ui/core/Box';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Grid from '@material-ui/core/Grid';
 import Moment from 'react-moment';
-import LeaveService from "../LeaveService";
+import LeaveService from '../LeaveService';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useHistory, useParams } from "react-router-dom";
-import {
-  CircularProgress,
-} from '@material-ui/core';
+import { useHistory, useParams } from 'react-router-dom';
+import { CircularProgress } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import Typography from "@material-ui/core/Typography";
+import Typography from '@material-ui/core/Typography';
 import { red, green } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -91,133 +89,129 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    boxShadow:'none',
-    marginTop:'10px',
-    padding:'10px',
+    boxShadow: 'none',
+    marginTop: '10px',
+    padding: '10px',
   },
   left: {
     paddingRight: '12px',
     borderRight: '1px solid #cacacc',
-},
-rowflex: {
-  display: 'flex',
-  flexWrap: 'wrap',
-},
-img:{
-  width: '50px',
-  height: '50px',
-  borderRadius: '50%',
-  marginLeft: 'auto',
-  border: '1px solid',
-},
-center:{
-  paddingLeft:'12px',
-},
-uppertext:{
-  marginBottom:'4px',
-},
-newclass:{
-  
-},
-borderLeft:{
-  borderLeft:'2px solid #dedede',
-  textAlign:'left',
-  paddingLeft:'10px'
-},
-create:{
-  float: 'right',
-  paddingRight: '21px',
-  paddingTop: '8px'
-},
-root: {
-  '& > span': {
-    margin: theme.spacing(2),
   },
-},
-loading: {
-  textAlign: 'center',
-  justifyContent: 'center',
-  margin: 'auto',
-},
-createHeader:{
-  display: 'flex',
-  float: 'right',
-},
-createButtonIcon: {
-  paddingRight: '5px',
-},
-statusIcon:{
-  transform:'translateY(2px)'
-},
-createTitle:{
-  display: 'flex',
-  transform:'translateY(-3px)'
-},
-align:{
-  textAlign :'justify',
-  paddingLeft :'8px'
-},
-status:{
-  display: 'inline-block',
-  marginLeft :'5px',
-  fontSize:'20px'
-},
-createButtonIconCircle: {
-  backgroundColor: '#fff',
-  borderRadius: '50%',
-  display: 'inline-block',
-  border: '1px solid red',
-  width : '16px',
-  height:'16px'
-},
-createButtonIconCircleOk: {
-  backgroundColor: '#fff',
-  borderRadius: '50%',
-  display: 'inline-block',
-  border: '1px solid green',
-  width : '16px',
-  height:'16px',
-  marginLeft: '5px',
-  // transform:'translateY(10px)'
-},
-Approved:{
-  color:'#40BD13',
-},
-actionBtns:{},
-Cancelled:{
-  color:'#3076A1',
-}
-,
-Rejected:{
-  color:'#D92424',
-}
-,
-leavereason:{
-  fontSize: '15px',
-}
-,
-name:{
-  transform:'translateY(10px)',
-  textAlign:'left',
-  paddingLeft:'15px',
-  fontFamily:'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
-  fontWeight:'400'
-}
-,
-name1:{
-  transform:'translateY(17px)',
-  textAlign:'left',
-  paddingLeft:'15px',
-  fontFamily:'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
-  fontWeight:'400'
-}
+  rowflex: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  img: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginLeft: 'auto',
+    border: '1px solid',
+  },
+  center: {
+    paddingLeft: '12px',
+  },
+  uppertext: {
+    marginBottom: '4px',
+  },
+  newclass: {},
+  borderLeft: {
+    borderLeft: '2px solid #dedede',
+    textAlign: 'left',
+    paddingLeft: '10px',
+  },
+  create: {
+    float: 'right',
+    paddingRight: '21px',
+    paddingTop: '8px',
+  },
+  root: {
+    '& > span': {
+      margin: theme.spacing(2),
+    },
+  },
+  loading: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    margin: 'auto',
+  },
+  createHeader: {
+    display: 'flex',
+    float: 'right',
+  },
+  createButtonIcon: {
+    paddingRight: '5px',
+  },
+  statusIcon: {
+    transform: 'translateY(2px)',
+  },
+  createTitle: {
+    display: 'flex',
+    color: `${theme.palette.common.deluge}`,
+    transform: 'translateY(2px)',
+  },
+  align: {
+    textAlign: 'justify',
+    paddingLeft: '8px',
+  },
+  status: {
+    display: 'inline-block',
+    marginLeft: '5px',
+    fontSize: '20px',
+  },
+  createButtonIconCircle: {
+    backgroundColor: '#fff',
+    borderRadius: '50%',
+    display: 'inline-block',
+    border: '1px solid red',
+    width: '16px',
+    height: '16px',
+  },
+  createButtonIconCircleOk: {
+    backgroundColor: '#fff',
+    borderRadius: '50%',
+    display: 'inline-block',
+    border: '1px solid green',
+    width: '16px',
+    height: '16px',
+    marginLeft: '5px',
+    // transform:'translateY(10px)'
+  },
+  Approved: {
+    color: '#40BD13',
+  },
+  actionBtns: {},
+  Cancelled: {
+    color: '#3076A1',
+  },
+  Rejected: {
+    color: '#D92424',
+  },
+  leavereason: {
+    fontSize: '15px',
+  },
+  name: {
+    transform: 'translateY(10px)',
+    textAlign: 'left',
+    paddingLeft: '15px',
+    fontFamily:
+      'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontWeight: '400',
+  },
+  name1: {
+    transform: 'translateY(17px)',
+    textAlign: 'left',
+    paddingLeft: '15px',
+    fontFamily:
+      'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontWeight: '400',
+  },
 }));
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-  
-  
- const userInfo = JSON.parse(localStorage.getItem("srmUserInfo"));
+
+  const userInfo = JSON.parse(localStorage.getItem('srmUserInfo'));
   return (
     <div
       role='tabpanel'
@@ -247,13 +241,13 @@ const TeacherLeave = (props) => {
   const [hasMore2, setHasMore2] = useState(true);
   const [allLeaves, setLeaves] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
-  const [nextUrl2 , setNextUrl2 ] = useState(null)
+  const [nextUrl2, setNextUrl2] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [allLeavesStud, setLeavesStudent] = useState([]);
-  const [showNoContentMsg, setNocontentmsg] =useState(false)
+  const [showNoContentMsg, setNocontentmsg] = useState(false);
   const history = useHistory();
   const { id } = useParams();
-useEffect(() => {
+  useEffect(() => {
     let isLoading = true;
     const fetchLeave = async () => {
       try {
@@ -265,7 +259,7 @@ useEffect(() => {
           //   let id = response.data.data.data[row].user_id;
           //   var useridres = await LeaveService.fetchAllUserdata(id,token);
           //   response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
-            
+
           // }
 
           setLeaves(response.data.data.data);
@@ -294,8 +288,8 @@ useEffect(() => {
           //   response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
           // }
           setLeavesStudent(response.data.data.data);
-          if(response.data.data.data.length===0){
-            setNocontentmsg(true)
+          if (response.data.data.data.length === 0) {
+            setNocontentmsg(true);
           }
 
           let next_page_url = response.data.data.next_page_url;
@@ -319,19 +313,18 @@ useEffect(() => {
     };
   }, []);
 
-
   const fetchLeaveStudent = async () => {
     try {
       const token = localStorage.getItem('srmToken');
       const response = await LeaveService.fetchAllLeavesQueve(token);
-        for(let row in response.data.data.data){
-          // let id = response.data.data.data[row].user_id;
-          // var useridres = await LeaveService.fetchAllUserdata(id,token);
-          // response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
-        
+      for (let row in response.data.data.data) {
+        // let id = response.data.data.data[row].user_id;
+        // var useridres = await LeaveService.fetchAllUserdata(id,token);
+        // response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
+
         setLeavesStudent(response.data.data.data);
-        if(response.data.data.data.length===0){
-          setNocontentmsg(true)
+        if (response.data.data.data.length === 0) {
+          setNocontentmsg(true);
         }
         let next_page_url = response.data.data.next_page_url;
         let last_page_url = response.data.data.last_page_url;
@@ -348,7 +341,7 @@ useEffect(() => {
     }
   };
 
-   const fetchMoreLeave = async () => {
+  const fetchMoreLeave = async () => {
     try {
       const token = localStorage.getItem('srmToken');
       // console.log("Next Url",nextUrl)
@@ -374,7 +367,6 @@ useEffect(() => {
     }
   };
 
-  
   const fetchMoreLeaveStudent = async () => {
     try {
       const token = localStorage.getItem('srmToken');
@@ -387,8 +379,8 @@ useEffect(() => {
       //   response.data.data.data[row]['username'] = useridres.data.data.user_details.username ;
       // }
       setLeavesStudent([...allLeavesStud, ...response.data.data.data]);
-      if(response.data.data.data.length===0){
-        setNocontentmsg(true)
+      if (response.data.data.data.length === 0) {
+        setNocontentmsg(true);
       }
       let next_page_url = response.data.data.next_page_url;
       if (next_page_url === null) {
@@ -404,7 +396,7 @@ useEffect(() => {
     }
   };
 
-  const userInfo = JSON.parse(localStorage.getItem("srmUserInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('srmUserInfo'));
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -418,61 +410,61 @@ useEffect(() => {
     console.log('scrolled');
   };
 
-  const CancelLeave =async (event) => {
-    try {    
+  const CancelLeave = async (event) => {
+    try {
       const token = localStorage.getItem('srmToken');
-      
+
       const response = await LeaveService.putLeave(
         {
-          "leavecode":event,
-          "leavestatus":"CANCELLED"
-      },
-          token
-        );
-        if (response.status === 200) {
-          history.replace("/leave");
-        }
-      } catch (e) {
-        console.log(e);
+          leavecode: event,
+          leavestatus: 'CANCELLED',
+        },
+        token
+      );
+      if (response.status === 200) {
+        history.replace('/leave');
       }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const ApprovedLeave =async (event) => {
-    try {    
+  const ApprovedLeave = async (event) => {
+    try {
       const token = localStorage.getItem('srmToken');
-      
+
       const response = await LeaveService.putLeave(
         {
-          "leavecode":event,
-          "leavestatus":"APPROVED"
-      },
-          token
-        );
-        if (response.status === 200) {
-          fetchLeaveStudent()
-        }
-      } catch (e) {
-        console.log(e);
+          leavecode: event,
+          leavestatus: 'APPROVED',
+        },
+        token
+      );
+      if (response.status === 200) {
+        fetchLeaveStudent();
       }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const RejectLeave =async (event) => {
-    try {    
+  const RejectLeave = async (event) => {
+    try {
       const token = localStorage.getItem('srmToken');
-      
+
       const response = await LeaveService.putLeave(
         {
-          "leavecode":event,
-          "leavestatus":"REJECTED"
-      },
-          token
-        );
-        if (response.status === 200) {
-          fetchLeaveStudent()
-        }
-      } catch (e) {
-        console.log(e);
+          leavecode: event,
+          leavestatus: 'REJECTED',
+        },
+        token
+      );
+      if (response.status === 200) {
+        fetchLeaveStudent();
       }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -501,227 +493,330 @@ useEffect(() => {
       </AppBar>
       <TabPanel value={value} index={0}>
         <>
-    <div className={classes.container} id='scrollable'>
-       
-        <div className={classes.root}>
-       <div className={classes.headerText}>
-         
-        <Typography variant='h5' className={classes.status}>
-        <svg xmlns="http://www.w3.org/2000/svg" className={classes.statusIcon} width="14" height="18" viewBox="0 0 14 18"><defs><style></style></defs><g transform="translate(-10.439 -7)"><path class="a" d="M21.153,7H11V25H25V10.517Zm.186,1.017,2.542,2.324-2.542,0ZM11.646,24.393V7.607h9.046v3.337l3.662.005V24.393Z" transform="translate(-0.561)"/><rect class="a" width="6" transform="translate(13.065 8.878)"/><rect class="a" width="9.197" height="1" transform="translate(13 11.84)"/><rect class="a" width="7" height="1" transform="translate(13.074 13.825)"/><rect class="a" width="9.197" transform="translate(13 16.806)"/><rect class="a" width="7" height="1" transform="translate(13.074 16.802)"/><rect class="a" width="9.197" height="1" transform="translate(13 19.779)"/><rect class="a" width="7" height="1" transform="translate(13.074 21.746)"/></g></svg>
-           <span className={classes.status}>
-             
-             Status</span>
-         </Typography>  
-   <Typography variant='h6' className={classes.createHeader}>
-            <AddCircleIcon
-              color='primary'
-              className={classes.createButtonIcon}
-              onClick={(event) => {
-                history.push('/leave/create');
-              }}
-            />
-            <span className={classes.createTitle}>New</span>
-    </Typography>
-       </div>
-
-    <Grid container className={classes.newclass}>
-      <Grid item xs={12}>
-      <InfiniteScroll
-          dataLength={allLeaves.length}
-          next={fetchMoreLeave}
-          hasMore={hasMore}
-          loader={
-            <>
-              <br />
-              <div className={classes.loading}>
-                <CircularProgress />
+          <div className={classes.container} id='scrollable'>
+            <div className={classes.root}>
+              <div className={classes.headerText}>
+                <Typography variant='h5' className={classes.status}>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className={classes.statusIcon}
+                    width='14'
+                    height='18'
+                    viewBox='0 0 14 18'
+                  >
+                    <defs>
+                      <style></style>
+                    </defs>
+                    <g transform='translate(-10.439 -7)'>
+                      <path
+                        class='a'
+                        d='M21.153,7H11V25H25V10.517Zm.186,1.017,2.542,2.324-2.542,0ZM11.646,24.393V7.607h9.046v3.337l3.662.005V24.393Z'
+                        transform='translate(-0.561)'
+                      />
+                      <rect
+                        class='a'
+                        width='6'
+                        transform='translate(13.065 8.878)'
+                      />
+                      <rect
+                        class='a'
+                        width='9.197'
+                        height='1'
+                        transform='translate(13 11.84)'
+                      />
+                      <rect
+                        class='a'
+                        width='7'
+                        height='1'
+                        transform='translate(13.074 13.825)'
+                      />
+                      <rect
+                        class='a'
+                        width='9.197'
+                        transform='translate(13 16.806)'
+                      />
+                      <rect
+                        class='a'
+                        width='7'
+                        height='1'
+                        transform='translate(13.074 16.802)'
+                      />
+                      <rect
+                        class='a'
+                        width='9.197'
+                        height='1'
+                        transform='translate(13 19.779)'
+                      />
+                      <rect
+                        class='a'
+                        width='7'
+                        height='1'
+                        transform='translate(13.074 21.746)'
+                      />
+                    </g>
+                  </svg>
+                  <span className={classes.status}>Status</span>
+                </Typography>
+                <Typography variant='body2' className={classes.createHeader}>
+                  <AddCircleIcon
+                    color='primary'
+                    className={classes.createButtonIcon}
+                    onClick={(event) => {
+                      history.push('/leave/create');
+                    }}
+                  />
+                  <span className={classes.createTitle}>New</span>
+                </Typography>
               </div>
-              <br />
-            </>
-          }
-          scrollableTarget='scrollable'
-          scrollThreshold={0.5}
-        >
-      <Typography variant='h8' >    
-      {allLeaves.map((leaves) => (
-        <Paper className={classes.paper}>
-        <div className={classes.rowflex}>
-        
-        
-        <Grid item xs={10} className={classes.align}>
-        <Typography variant='h5' className={classes.leavereason}>
-            <div className={classes.uppertext}>
-            <Moment format="DD">
-            {leaves.start_date}
-            </Moment>
-            - 
-            <Moment format="D MMM YYYY">
-            {leaves.end_date}
-            </Moment>
+
+              <Grid container className={classes.newclass}>
+                <Grid item xs={12}>
+                  <InfiniteScroll
+                    dataLength={allLeaves.length}
+                    next={fetchMoreLeave}
+                    hasMore={hasMore}
+                    loader={
+                      <>
+                        <br />
+                        <div className={classes.loading}>
+                          <CircularProgress />
+                        </div>
+                        <br />
+                      </>
+                    }
+                    scrollableTarget='scrollable'
+                    scrollThreshold={0.5}
+                  >
+                    <Typography variant='h8'>
+                      {allLeaves.map((leaves) => (
+                        <Paper className={classes.paper}>
+                          <div className={classes.rowflex}>
+                            <Grid item xs={10} className={classes.align}>
+                              <Typography
+                                variant='h5'
+                                className={classes.leavereason}
+                              >
+                                <div className={classes.uppertext}>
+                                  <Moment format='DD'>
+                                    {leaves.start_date}
+                                  </Moment>
+                                  -
+                                  <Moment format='D MMM YYYY'>
+                                    {leaves.end_date}
+                                  </Moment>
+                                </div>
+                                <div>Reason - {leaves.reason}</div>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                              <Typography
+                                variant='h5'
+                                className={classes.leavereason}
+                              >
+                                {leaves.leave_status == 'PENDING' ? (
+                                  <CloseIcon
+                                    color='action'
+                                    className={classes.createButtonIconCircle}
+                                    style={{ color: red[500] }}
+                                    onClick={(e) => {
+                                      CancelLeave(leaves.leave_code);
+                                    }}
+                                    value={leaves.leave_code}
+                                  />
+                                ) : (
+                                  ''
+                                )}
+
+                                {leaves.leave_status == 'PENDING' ? (
+                                  <div className={classes.uppertext1}>
+                                    Pending
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+
+                                {leaves.leave_status == 'REJECTED' ? (
+                                  <div className={classes.Rejected}>
+                                    Rejected
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+
+                                {leaves.leave_status == 'CANCELLED' ? (
+                                  <div className={classes.Cancelled}>
+                                    Canceled
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+
+                                {leaves.leave_status == 'APPROVED' ? (
+                                  <div className={classes.Approved}>
+                                    Approved
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+                              </Typography>
+                            </Grid>
+                          </div>
+                        </Paper>
+                      ))}
+                    </Typography>
+                  </InfiniteScroll>
+                  <br /> <br /> <br />
+                  <br />
+                </Grid>
+              </Grid>
             </div>
-      <div>Reason - {leaves.reason}</div>
-      </Typography>
-        </Grid>
-      
-        <Grid item xs={2}>
-        <Typography variant='h5' className={classes.leavereason}>
-        
-        {leaves.leave_status == 'PENDING'?
-        <CloseIcon
-        color='action'
-        className={classes.createButtonIconCircle}
-        style={{ color: red[500] }}
-        onClick={(e) => {   CancelLeave(leaves.leave_code)}}
-        value={leaves.leave_code}
-      />
-        :''}
-        
-            
-            {leaves.leave_status == 'PENDING'?<div className={classes.uppertext1}>
-            Pending</div>:''}
-
-            {leaves.leave_status == 'REJECTED'?<div className={classes.Rejected}>
-            Rejected</div>:''}
-
-            {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
-            Canceled</div>:''}
-
-            {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
-            Approved</div>:''}
-            
-        </Typography>    
-        </Grid>
-        
-      </div>
-        </Paper>
-        
-      ))}
-      </Typography>
-      </InfiniteScroll>
-      <br/> <br/> <br/><br/> 
-      </Grid>
-    </Grid>
-  </div>
-         
- </div>    
-
-
-       
-    </>
+          </div>
+        </>
       </TabPanel>
 
       <TabPanel value={value} index={1} className={classes.newclass}>
         <div className={classes.container} id='scrollable'>
+          <div className={classes.root}>
+            <Grid container className={classes.newclass}>
+              <Grid item xs={12}>
+                <InfiniteScroll
+                  dataLength={allLeaves.length}
+                  next={fetchMoreLeaveStudent}
+                  hasMore={hasMore2}
+                  loader={
+                    <>
+                      <br />
+                      {showNoContentMsg ? (
+                        'No data available'
+                      ) : (
+                        <div className={classes.loading}>
+                          <CircularProgress />
+                        </div>
+                      )}
 
-        
-        <div className={classes.root}>
-    
-    
-    <Grid container className={classes.newclass}>
-      <Grid item xs={12}>
-      <InfiniteScroll
-          dataLength={allLeaves.length}
-          next={fetchMoreLeaveStudent}
-          hasMore={hasMore2}
-          loader={
-            <>
-              <br />
-      {showNoContentMsg ? 'No data available' : (
-              <div className={classes.loading}>
-                <CircularProgress />
-              </div>)}
+                      <br />
+                    </>
+                  }
+                  scrollableTarget='scrollable'
+                  scrollThreshold={0.5}
+                >
+                  {allLeavesStud.map((leaves) => (
+                    <Paper className={classes.paper}>
+                      <div className={classes.rowflex}>
+                        <Grid item xs={5}>
+                          <div className={classes.rowflex}>
+                            <Grid item xs={2}>
+                              <img
+                                className={classes.img}
+                                src={leaves.users.thumbnail}
+                              ></img>
+                              {/* <svg className="MuiSvgIcon-root MuiAvatar-fallback" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg> */}
+                            </Grid>
+                            <Grid item xs={6}>
+                              <div className={classes.name}>
+                                {leaves.users.firstname}&nbsp;
+                                {leaves.users.lastname}{' '}
+                              </div>
+                              <div className={classes.name1}>
+                                {`${leaves.user_classes.classes_data}` ===
+                                'null' ? (
+                                  <div></div>
+                                ) : (
+                                  <div>
+                                    {
+                                      leaves.user_classes.classes_data
+                                        .class_name
+                                    }
+                                  </div>
+                                )}
+                              </div>
+                            </Grid>
+                          </div>
+                        </Grid>
 
-              <br />
-            </>
-          }
-          scrollableTarget='scrollable'
-          scrollThreshold={0.5}
-        >
-      {allLeavesStud.map((leaves) => (
-        <Paper className={classes.paper}>
-        <div className={classes.rowflex}>
-        <Grid item xs={5} >
-        <div className={classes.rowflex}>
-            <Grid item xs={2}>
-            <img className={classes.img} src={leaves.users.thumbnail}></img>
-              {/* <svg className="MuiSvgIcon-root MuiAvatar-fallback" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg> */}
+                        <Grid item xs={5} className={classes.borderLeft}>
+                          <Typography
+                            variant='h5'
+                            className={classes.leavereason}
+                          >
+                            <div className={classes.uppertext}>
+                              <Moment format='DD'>{leaves.start_date}</Moment>-
+                              <Moment format='D MMM YYYY'>
+                                {leaves.end_date}
+                              </Moment>
+                            </div>
+                            <div>Reason - {leaves.reason}</div>
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={2}>
+                          <Typography
+                            variant='h5'
+                            className={classes.leavereason}
+                          >
+                            {leaves.leave_status == 'PENDING' ? (
+                              <CloseIcon
+                                color='action'
+                                className={`${classes.createButtonIconCircle} ${classes.actionBtns}`}
+                                style={{ color: red[500] }}
+                                onClick={(e) => {
+                                  RejectLeave(leaves.leave_code);
+                                }}
+                                value={leaves.leave_code}
+                              />
+                            ) : (
+                              ''
+                            )}
+
+                            {leaves.leave_status == 'PENDING' ? (
+                              <CheckIcon
+                                color='action'
+                                className={`${classes.createButtonIconCircleOk} ${classes.actionBtns}`}
+                                onClick={(e) => {
+                                  ApprovedLeave(leaves.leave_code);
+                                }}
+                                value={leaves.leave_code}
+                                style={{ color: green[500] }}
+                              />
+                            ) : (
+                              ''
+                            )}
+
+                            {leaves.leave_status == 'PENDING' ? (
+                              <div className={classes.uppertext1}>Pending</div>
+                            ) : (
+                              ''
+                            )}
+
+                            {leaves.leave_status == 'REJECTED' ? (
+                              <div className={classes.Rejected}>Rejected</div>
+                            ) : (
+                              ''
+                            )}
+
+                            {leaves.leave_status == 'CANCELLED' ? (
+                              <div className={classes.Cancelled}>Canceled</div>
+                            ) : (
+                              ''
+                            )}
+
+                            {leaves.leave_status == 'APPROVED' ? (
+                              <div className={classes.Approved}>Approved</div>
+                            ) : (
+                              ''
+                            )}
+                          </Typography>
+                        </Grid>
+                      </div>
+                    </Paper>
+                  ))}
+                </InfiniteScroll>
+                <br /> <br /> <br />
+                <br />
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-            <div className={classes.name}>{leaves.users.firstname}&nbsp;{leaves.users.lastname}  </div>
-            <div className={classes.name1}>{
-                  `${leaves.user_classes.classes_data}` === 'null' ? (<div></div>) : (<div>{leaves.user_classes.classes_data.class_name}</div>)
-            }</div>
-            </Grid>
+          </div>
         </div>
-        </Grid>
-       
-        <Grid item xs={5} className={classes.borderLeft}>
-        <Typography variant='h5' className={classes.leavereason}>
-            <div className={classes.uppertext}>
-            <Moment format="DD">
-            {leaves.start_date}
-            </Moment>
-            - 
-            <Moment format="D MMM YYYY">
-            {leaves.end_date}
-            </Moment>
-            </div>
-      <div>Reason - {leaves.reason}</div>
-      </Typography>
-        </Grid>
-        <Grid item xs={2}>
-        <Typography variant='h5' className={classes.leavereason}>
-
-        {leaves.leave_status == 'PENDING'?
-        <CloseIcon
-              color='action'
-              className={`${classes.createButtonIconCircle} ${classes.actionBtns}`}
-              
-              style={{ color: red[500] }}
-               onClick={(e) => {   RejectLeave(leaves.leave_code)}}
-              value={leaves.leave_code}
-            />
-
-        :''}
-
-
-        {leaves.leave_status == 'PENDING'?
-      
-            <CheckIcon
-              color='action'
-              className={`${classes.createButtonIconCircleOk} ${classes.actionBtns}`}
-              onClick={(e) => {   ApprovedLeave(leaves.leave_code)}}
-              value={leaves.leave_code}
-              style={{ color: green[500] }}
-            />
-
-        :''}
-        
-            
-        {leaves.leave_status == 'PENDING'?<div className={classes.uppertext1}>
-        Pending</div>:''}
-
-        {leaves.leave_status == 'REJECTED'?<div className={classes.Rejected}>
-            Rejected</div>:''}
-
-        {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
-        Canceled</div>:''}
-
-        {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
-        Approved</div>:''}    
-        </Typography>
-        </Grid>
-        
-      </div>
-        </Paper>
-      ))}
-      </InfiniteScroll>
-      <br/> <br/> <br/><br/> 
-      </Grid>
-    </Grid>
-  </div>
-         
- </div>  
       </TabPanel>
     </div>
   );
