@@ -49,7 +49,7 @@ const useStyle = makeStyles((theme) => ({
     color: `${theme.palette.common.blackRussian}`,
     fontWeight: 500,
     opacity: 1,
-    width: '95%',
+    width: "95%",
     cursor: "pointer",
   },
   cardContent: {
@@ -57,6 +57,7 @@ const useStyle = makeStyles((theme) => ({
   },
   textAlignRight: {
     textAlign: "right",
+    width: "70px"
   },
 }));
 
@@ -78,14 +79,16 @@ const SupportCard = (props) => {
       <CardHeader
         action={
           <>
-            {item.status === 'draft' ? <Typography className={classes.labelText}>
+            <Typography className={classes.labelText}>
               {moment(item.updated_at).format("DD MMM, HH:mm A")}
-              <img
-                src={editIcon}
-                className={classes.editBtn}
-                onClick={handleEdit}
-              />
-            </Typography> : null}
+              {item.status === "draft" ? (
+                <img
+                  src={editIcon}
+                  className={classes.editBtn}
+                  onClick={handleEdit}
+                />
+              ) : null}
+            </Typography>
           </>
         }
         title={
@@ -95,7 +98,6 @@ const SupportCard = (props) => {
             </Typography>
           </>
         }
-        
         className={classes.cardHeader}
       />
       <CardContent className={classes.cardContent}>

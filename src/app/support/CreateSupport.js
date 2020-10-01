@@ -45,7 +45,7 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: "left",
-    paddingLeft: "10px",
+    paddingLeft: "45px",
     cursor: "pointer",
   },
   adornmentColor: {
@@ -180,9 +180,19 @@ const CreateSupport = (props) => {
     setSubject(value);
   };
 
-  const handleDescription = (data) => {
-    setDescription(data);
+  const handleDescription = (id) => {
+    setDescription(id);
   };
+
+  const handleChangeCategory = (id) => {
+    setCategory(id);
+  };
+
+  useEffect(() => {
+    if (!ticketId && category) {
+      saveDetails();
+    }
+  }, [category]);
 
   const isValid = () => {
     if (!subject.trim()) {
@@ -207,14 +217,14 @@ const CreateSupport = (props) => {
     return () => clearInterval(saveDataApi);
   }, [subject, description, category]);
 
-  const saveDetails = (status="draft", loading = false) => {
+  const saveDetails = (status, loading = false) => {
     const data = {
       subject: subject.trim(),
       category_id: category,
       description: description.trim(),
     };
 
-    if(!category) return;
+    if (!category && props.postLoading) return;
 
     if (status) {
       data.status = status;
@@ -233,7 +243,7 @@ const CreateSupport = (props) => {
         data,
         (d) => onSuccess(d, loading),
         (err) => onFail(err, loading),
-        loading
+        true
       );
     }
   };
@@ -326,7 +336,10 @@ const CreateSupport = (props) => {
           <Box className={classes.margin}>
             <FormControl className={classes.fieldStyle}>
               <InputLabel>Categories</InputLabel>
-              <SelectCategory value={category} onChange={setCategory} />
+              <SelectCategory
+                value={category}
+                onChange={handleChangeCategory}
+              />
             </FormControl>
             {props.categoryLoading && (
               <CircularProgress color="primary" size={30} />

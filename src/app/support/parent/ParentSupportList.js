@@ -6,7 +6,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import SupportCard from "../SupportCard";
 import { getSupports } from "../../redux/actions/support.action";
 import { Typography } from "@material-ui/core";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#0000FF",
     fontFamily: "Avenir-Book",
     padding: "0 5px",
-    cursor: 'pointer',
+    cursor: "pointer",
   },
 }));
 
@@ -40,15 +40,15 @@ const ParentSupportList = (props) => {
     listInfo = {},
     paginationLoading,
     refetch,
+    role,
   } = props;
   const { current_page, last_page } = listInfo;
 
   const classes = useStyles();
   const history = useHistory();
   const handleCreateNew = (event) => {
-    history.push('/support/create');
+    history.push("/support/create");
   };
-
 
   useEffect(() => {
     getData(null, true);
@@ -60,8 +60,12 @@ const ParentSupportList = (props) => {
     }
   }, [refetch]);
 
-  const getData = (data, showLoading) => {
-    props.getSupports(data, showLoading);
+  const getData = (data = {}, showLoading) => {
+    const params = { ...data };
+    if (role === "teacher") {
+      params.created_by = true;
+    }
+    props.getSupports(params, showLoading);
   };
 
   const onEndReached = () => {
@@ -74,8 +78,11 @@ const ParentSupportList = (props) => {
   const emptyList = () => (
     <Typography className={classes.emptyList}>
       You do not have any tickets to view.{" "}
-  <span onClick={handleCreateNew} className={classes.clickHere}> {" "} Click here </span>  {" "}to raise a new
-      ticket
+      <span onClick={handleCreateNew} className={classes.clickHere}>
+        {" "}
+        Click here{" "}
+      </span>{" "}
+      to raise a new ticket
     </Typography>
   );
 
@@ -116,7 +123,7 @@ const ParentSupportList = (props) => {
   );
 };
 
-const mapStateToProps = ({ Supports }) => {
+const mapStateToProps = ({ Supports, auth }) => {
   const {
     supports = [],
     supportsListInfo = {},
@@ -124,12 +131,14 @@ const mapStateToProps = ({ Supports }) => {
     supportPaginationLoading,
     refetchSupports,
   } = Supports;
+  const { selectedRole } = auth;
   return {
     data: supports,
     listInfo: supportsListInfo,
     loading: supportLoading,
     paginationLoading: supportPaginationLoading,
     refetch: refetchSupports,
+    role: selectedRole,
   };
 };
 
