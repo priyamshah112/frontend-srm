@@ -34,4 +34,9 @@ export default {
     SUCCESS: "supports.post_comment:success",
     FAIL: "supports.post_comment:fail",
   },
+  GET_SUPPORT_HISTORY: {
+    START: "supports.get_support_history:start",
+    SUCCESS: "supports.get_support_history:success",
+    FAIL: "supports.get_support_history:fail",
+  },
 };

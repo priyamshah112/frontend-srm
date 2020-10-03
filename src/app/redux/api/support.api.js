@@ -3,6 +3,7 @@ import {
   categoryEndpoint,
   supportsEndpoint,
   supportCommentEndpoint,
+  supportsHistoryEndpoint,
 } from "./endpoint-constants";
 
 export const getSupportsApi = (params) =>
@@ -23,3 +24,6 @@ export const updateSupportApi = (data, id) =>
 
 export const postCommentApi = (data) =>
   apiService.post(`${supportCommentEndpoint}`, data);
+
+export const getSupportsHistoryApi = (params) =>
+  apiService.get(`${supportsHistoryEndpoint}`, { params });

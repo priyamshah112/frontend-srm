@@ -156,7 +156,7 @@ const SupportSection = (props) => {
               />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <SupportHistory data={supportData.history_lists || []} />
+              <SupportHistory id={supportData.id} data={supportData.history_lists || []} />
             </TabPanel>
           </div>
         )}

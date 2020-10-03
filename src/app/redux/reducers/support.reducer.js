@@ -14,6 +14,7 @@ const initialState = {
   singleCategoryLoading: false,
   updateSupportLoading: false,
   postCommentLoading: false,
+  supportHistoryLoading: false,
 };
 
 const SupportReducer = (state = initialState, action) => {
@@ -134,6 +135,22 @@ const SupportReducer = (state = initialState, action) => {
       return {
         ...state,
         postCommentLoading: false,
+      };
+
+    case supportActionTypes.GET_SUPPORT_HISTORY.START:
+      return {
+        ...state,
+        supportHistoryLoading: true,
+      };
+    case supportActionTypes.GET_SUPPORT_HISTORY.SUCCESS:
+      return {
+        ...state,
+        supportHistoryLoading: false,
+      };
+    case supportActionTypes.GET_SUPPORT_HISTORY.FAIL:
+      return {
+        ...state,
+        supportHistoryLoading: false,
       };
     default:
       return state;

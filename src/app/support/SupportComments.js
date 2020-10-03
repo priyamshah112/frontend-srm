@@ -120,6 +120,8 @@ const SupportComments = (props) => {
 
   const disabled = !comment.trim() || props.loading;
 
+  const commentData = [...data].reverse();
+
   return (
     <>
       <Card className={classes.card}>
@@ -128,7 +130,7 @@ const SupportComments = (props) => {
             This ticket has no comments yet.
           </Typography>
         )}
-        {data.map((item, index) => {
+        {commentData.map((item, index) => {
           const { user_data = {} } = item;
           return (
             <>

@@ -54,10 +54,11 @@ const useStyle = makeStyles((theme) => ({
   },
   cardContent: {
     padding: "0 20px 20px !important",
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   textAlignRight: {
     textAlign: "right",
-    width: "70px"
   },
 }));
 
@@ -101,19 +102,17 @@ const SupportCard = (props) => {
         className={classes.cardHeader}
       />
       <CardContent className={classes.cardContent}>
-        <Grid container>
-          <Grid item xs={11}>
-            <Typography className={classes.labelText}>
-              Subject - {item.subject}
-            </Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <Typography
-              className={`${classes.labelText} ${classes.textAlignRight}`}
-            >
-              {ticketStatus[item.status]}
-            </Typography>
-          </Grid>
+        <Grid item xs={9}>
+          <Typography className={classes.labelText}>
+            Subject - {item.subject}
+          </Typography>
+        </Grid>
+        <Grid item xs={3}>
+          <Typography
+            className={`${classes.labelText} ${classes.textAlignRight}`}
+          >
+            {ticketStatus[item.status]}
+          </Typography>
         </Grid>
       </CardContent>
     </Card>

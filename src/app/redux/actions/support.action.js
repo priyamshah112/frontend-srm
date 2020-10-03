@@ -70,3 +70,13 @@ export const postComment = (data, onSuccess, onFail) => {
     promise: () => supportApi.postCommentApi(data),
   };
 };
+
+export const getSupportsHistory = (data, onSuccess, onFail) => {
+  return {
+    type: commonActions.COMMON_API_CALL,
+    subtypes: supportActionTypes.GET_SUPPORT_HISTORY,
+    onSuccessCallback: onSuccess,
+    onFailCallback: onFail,
+    promise: () => supportApi.getSupportsHistoryApi(data),
+  };
+};
