@@ -6,7 +6,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import Badge from "@material-ui/core/Badge";
-import { Typography } from "@material-ui/core";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -45,17 +44,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 300,
     marginBottom: "12px",
   },
-  roleDetails: {
-    position: 'absolute',
-    right: 15,
-    top: 30,
-  },
-  date:{
-    color: theme.palette.grey[400],
-    fontSize: 14,
-    marginBottom: 3,
-    fontWeight: 200
-  }
 }));
 
 const list = [
@@ -63,25 +51,19 @@ const list = [
     name: 'Akshay Srinivas',
     avatar: "/static/images/avatar/1.jpg",
     message: "Are you attending class today?",
-    status: 'Online',
-    date: '08 June',
-    role: 'Faculty'
+    status: 'Online'
   },
   {
     name: 'Isha Roy',
     avatar: "/static/images/avatar/2.jpg",
     message: "Need project details. Share with me?",
-    status: '',
-    date: '07 June',
-    role: 'Student'
+    status: ''
   },
   {
     name: 'Cindy Baker',
     avatar: "/static/images/avatar/3.jpg",
     message: "Are you attending class today?",
-    status: '',
-    date: '07 June',
-    role: 'Student'
+    status: ''
   }
 ]
 
@@ -102,7 +84,7 @@ export default function Chat({ filter }) {
       setFilteredChats([...chat])
     }
   }, [filter])
-
+  
   return (
     <List className={classes.root}>
       {filteredChat.map(chat=>{
@@ -121,19 +103,9 @@ export default function Chat({ filter }) {
               </StyledBadge>
             </ListItemAvatar>
             <ListItemText
-              style={{ width: '60%' }}
-              secondaryTypographyProps={{ style: { width: '60%'} }}
               primary={chat.name}
               secondary={chat.message}
             />
-            <div className={classes.roleDetails}>
-              <Typography className={classes.date}>
-                {chat.date}
-              </Typography>
-              <Typography className={classes.date}>
-                {chat.role}
-              </Typography>
-            </div>
           </ListItem>
         )
       })}
