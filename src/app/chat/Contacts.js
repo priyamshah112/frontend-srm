@@ -67,7 +67,7 @@ const list = [
   }
 ]
 
-export default function Chat({ filter }) {
+export default function Contacts({ filter }) {
   const classes = useStyles();
   const [Chats, setChats] = useState(list)
   const [filteredChat, setFilteredChats] = useState(list)
@@ -86,30 +86,35 @@ export default function Chat({ filter }) {
   }, [filter])
   
   return (
-    <List className={classes.root}>
-      {filteredChat.map(chat=>{
-        return (
-          <ListItem alignItems="flex-start" className={classes.listItem}>
-            <ListItemAvatar>
-              <StyledBadge
-                overlap="circle"
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                variant={chat.status=="Online"?"dot": ''}
-              >
-                <Avatar alt={chat.name} src={chat.avatar} />
-              </StyledBadge>
-            </ListItemAvatar>
-            <ListItemText
-              primary={chat.name}
-              secondary={chat.message}
-            />
-          </ListItem>
-        )
-      })}
-    </List>
+    <>
+      <List className={classes.root}>
+
+      </List>
+      <List className={classes.root}>
+        {filteredChat.map(chat=>{
+          return (
+            <ListItem alignItems="flex-start" className={classes.listItem}>
+              <ListItemAvatar>
+                <StyledBadge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  variant={chat.status=="Online"?"dot": ''}
+                >
+                  <Avatar alt={chat.name} src={chat.avatar} />
+                </StyledBadge>
+              </ListItemAvatar>
+              <ListItemText
+                primary={chat.name}
+                secondary={chat.message}
+              />
+            </ListItem>
+          )
+        })}
+      </List>
+    </>
   );
 }
 

@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.875rem",
     fontWeight: 300,
     marginBottom: "12px",
+    pointer: 'cursor'
   },
   roleDetails: {
     position: 'absolute',
@@ -85,7 +86,7 @@ const list = [
   }
 ]
 
-export default function Chat({ filter }) {
+export default function Chat({ filter, selectContact }) {
   const classes = useStyles();
   const [Chats, setChats] = useState(list)
   const [filteredChat, setFilteredChats] = useState(list)
@@ -107,7 +108,7 @@ export default function Chat({ filter }) {
     <List className={classes.root}>
       {filteredChat.map(chat=>{
         return (
-          <ListItem alignItems="flex-start" className={classes.listItem}>
+          <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
             <ListItemAvatar>
               <StyledBadge
                 overlap="circle"
