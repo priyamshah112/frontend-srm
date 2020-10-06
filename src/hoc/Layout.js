@@ -27,6 +27,9 @@ import ChevronRightSharpIcon from '@material-ui/icons/ChevronRightSharp';
 import Slide from '@material-ui/core/Slide';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
 
 import { onMessageListener } from '../firebaseInit';
 
@@ -45,6 +48,7 @@ import TimetableIcon from '../assets/images/navigation/DesktopTimetable.svg';
 import DesktopAttendanceIcon from '../assets/images/navigation/DesktopAttendance.svg';
 import HamburgerIcon from '../assets/images/navigation/Hamburger.svg';
 import DesktopMessageIcon from '../assets/images/navigation/DesktopMessage.svg';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 import Logout from '../app/auth/Logout';
 import RoleSelection from '../app/auth/RoleSelection';
@@ -203,7 +207,7 @@ const useStyles = makeStyles((theme) => ({
       width: 280,
     },
   },
-  
+
   drawerRightContainer: {
     overflow: 'auto',
   },
@@ -291,6 +295,16 @@ const useStyles = makeStyles((theme) => ({
   snackBarDescription: {
     color: `${theme.palette.common.lightFont}`,
   },
+  reportMenu: {
+    marginLeft: '45px',
+    color: '#8E8E93',
+    fontSize: '10px',
+    marginRight: '5px'
+  },
+  reportName: {
+    color: '#8E8E93',
+    fontSize: '18px'
+  }
 }));
 
 const Layout = (props) => {
@@ -304,6 +318,7 @@ const Layout = (props) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarTitle, setSnackbarTitle] = useState('');
   const [snackbarDescription, setSnackbarDescription] = useState('');
+  const [reportItem, setReportItem] = React.useState(true);
 
   const matchesSm = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -336,6 +351,11 @@ const Layout = (props) => {
   const handleProfile = (event) => {
     localStorage.setItem('srmCurrentRoute', '/profile');
     history.push('/profile');
+  };
+  
+  const handleReportMenu = () => {
+    setReportItem(!reportItem);
+    history.push('/report-card');
   };
 
   const handleOpenLogoutDialog = () => {
@@ -448,6 +468,23 @@ const Layout = (props) => {
       linkTo: '/support',
       itemIndex: 13,
     },
+    {
+      name: 'Student Report Card',
+      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
+      linkTo: '/report',
+      itemIndex: 14
+    }, {
+      name: 'Student Reports',
+      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
+      linkTo: '/report-card',
+      itemIndex: 15,
+    },
+    {
+      name: 'Bulk Upload',
+      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
+      linkTo: '/report-upload',
+      itemIndex: 16,
+    }
   ];
 
   /*
@@ -645,6 +682,78 @@ const Layout = (props) => {
                   );
                 }
               } else if (
+                (props.selectedRole === 'admin' ||
+                  props.selectedRole === 'teacher') &&
+                item.name === 'Student Report Card' ||
+                item.name === 'Student Reports' ||
+                item.name === 'Bulk Upload'
+              ) {
+                if (item.itemIndex === 14) {
+                  return (
+                    <ListItem
+                      button
+                      key={item.name}
+                      component={Link}
+                      to={item.linkTo}
+                      className={classes.listItem}
+                      onClick={() => {
+                        handleChange(item.itemIndex)
+                        handleReportMenu()
+                      }}
+                    >
+
+                      <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.name}
+                        className={classes.listItemText}
+                      />
+                      {reportItem ? <ExpandLess style={{ fontSize: 20, color: 'gray' }} /> : <ExpandMore />}
+                    </ListItem>
+                  );
+                }
+                if (item.itemIndex === 15) {
+                  return (
+                    <Collapse in={reportItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={classes.listItem}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        button
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText primary={item.name} className={classes.reportName} />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+                if (item.itemIndex === 16) {
+                  return (
+                    <Collapse in={reportItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={classes.listItem}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        button
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText primary={item.name} className={classes.reportName} />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+              } else if (
                 item.name !== 'News & Announcements' &&
                 item.name !== 'Events'
               ) {
@@ -682,13 +791,13 @@ const Layout = (props) => {
       <div className={classes.drawerContainer}>
         <ChatIndex />
       </div>
-      
+
     </>
   );
   return (
     <>
       {!props.isAuthenticated ? <Redirect to='/login' /> : ''}
-      
+
       <ElevationScroll>
         <div className={classes.grow}>
           <AppBar position='fixed' className={classes.appBar}>
@@ -786,7 +895,7 @@ const Layout = (props) => {
           </AppBar>
           {matchesSm ? renderMobileMenu : renderMenu}
         </div>
-        
+
       </ElevationScroll>
       <div className={classes.toolbarMargin}></div>
 
@@ -832,7 +941,7 @@ const Layout = (props) => {
             PaperProps={{ elevation: 3 }}
           >
             {rightDrawer}
-            
+
           </Drawer>
         </Hidden>
       </nav>
@@ -868,18 +977,18 @@ const Layout = (props) => {
           }
         />
       ) : (
-        ''
-      )}
+          ''
+        )}
       {openLogoutDialog ? (
         <Logout open={openLogoutDialog} handleClose={handleCloseLogoutDialog} />
       ) : (
-        ''
-      )}
-      
+          ''
+        )}
+
       {props.changeRole ? (
         <RoleSelection open={true} handleClose={handleCloseLogoutDialog} />
       ) : null}
-      
+
     </>
   );
 };
