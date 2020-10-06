@@ -41,6 +41,9 @@ import Syllabus from "./app/syllabus/Syllabus";
 import EditChapter from "./app/syllabus/teacher/editChapter";
 import { Chat } from 'react-chat-popup';
 import ChatFullScreen from "./app/chatUsers/ChatFullScreen";
+import ReportContainer from "./app/report/student/ReportContainer";
+import StudentCard from "./app/report/student/StudentCard";
+import ReportUpload from "./app/report/student/ReportUpload";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -133,6 +136,9 @@ function App(props) {
           <Route path="/support/create/:id" exact component={CreateSupport} />
           <Route path="/support/:id" exact component={SupportSection} />
           <Route path="/chat" exact component={ChatFullScreen} />
+          <Route path="/report" exact component={ReportContainer} />
+          <Route path="/report-card" exact component={StudentCard} />
+          <Route path="/report-upload" exact component={ReportUpload} />
         </Switch>
       </Layout>
     </>
