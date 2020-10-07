@@ -1,17 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import { getSubjects } from "../../../redux/actions/attendence.action";
+import { getSingleClass } from "../../../redux/actions/attendence.action";
 import { connect } from "react-redux";
 
 const SubjectsDropdown = (props) => {
-  const { data = [], loading } = props;
+  const [data, setData] = useState([]);
+  const { loading } = props;
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [props.class_id]);
 
   const fetchData = () => {
-    props.getSubjects();
+    if (!props.class_id) return;
+    props.getSingleClass(props.class_id, onGet, onFail);
+  };
+
+  const onGet = (d = {}) => {
+    console.log("SubjectsDropdown onGet", { d, props });
+    const { data = {} } = d;
+    const { subject_lists = [] } = data;
+    setData(subject_lists);
+
+    if(!subject_lists.length) return;
+    const first = subject_lists[0] || {};
+    const {subject_data={}} = first;
+    props.onChange(subject_data.id);
+  };
+
+  const onFail = () => {
+    fetchData();
   };
 
   const handleClassChange = (event) => {
@@ -19,7 +37,10 @@ const SubjectsDropdown = (props) => {
   };
 
   const renderData = () =>
-    data.map((item) => <option value={item.id}>{item.name}</option>);
+    data.map((item) => {
+      const {subject_data={}} = item;
+      return <option value={subject_data.id}>{subject_data.name}</option>;
+    });
 
   return (
     <NativeSelect
@@ -29,17 +50,17 @@ const SubjectsDropdown = (props) => {
       inputProps={{ "aria-label": "classNum" }}
     >
       {loading && <option disabled>Loading...</option>}
-      {renderData()}
+      {!loading ? renderData() : null}
     </NativeSelect>
   );
 };
 
 const mapStateToProps = ({ Attendence }) => {
-  const { subjects = [], subjectsLoading } = Attendence;
+  const { subjects = [], singleClassLoading } = Attendence;
   return {
     data: subjects,
-    loading: subjectsLoading,
+    loading: singleClassLoading,
   };
 };
 
-export default connect(mapStateToProps, { getSubjects })(SubjectsDropdown);
+export default connect(mapStateToProps, { getSingleClass })(SubjectsDropdown);

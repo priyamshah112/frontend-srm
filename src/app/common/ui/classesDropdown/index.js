@@ -10,6 +10,12 @@ const ClassesDropdown = (props) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if(data.length && !props.value){
+      props.onChange(data[0].id)
+    }
+  }, [loading]);
+
   const fetchData = () => {
     props.getClasses();
   };

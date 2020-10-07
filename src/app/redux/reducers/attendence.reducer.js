@@ -14,6 +14,7 @@ const initialState = {
   subjectsLoading: false,
 
   postAttendanceLoading: false,
+  singleClassLoading: false,
 };
 
 const AttendenceReducer = (state = initialState, action) => {
@@ -51,6 +52,22 @@ const AttendenceReducer = (state = initialState, action) => {
       return {
         ...state,
         classesLoading: false,
+      };
+
+    case attendenceActionTypes.GET_SINGLE_CLASS.START:
+      return {
+        ...state,
+        singleClassLoading: true,
+      };
+    case attendenceActionTypes.GET_SINGLE_CLASS.SUCCESS:
+      return {
+        ...state,
+        singleClassLoading: false,
+      };
+    case attendenceActionTypes.GET_SINGLE_CLASS.FAIL:
+      return {
+        ...state,
+        singleClassLoading: false,
       };
 
     case attendenceActionTypes.GET_STUDENTS.START:

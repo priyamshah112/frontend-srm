@@ -122,6 +122,15 @@ const useStyle = makeStyles((theme) => ({
     marginLeft: '20px',
     cursor: 'pointer',
   },
+  card: {
+    margin: 0,
+  },
+  pendingTask: {
+    marginLeft: 0,
+  },
+  doneTask: {
+    marginRight: 0,
+  }
 }));
 
 const TaskContent = (props) => {
@@ -335,8 +344,8 @@ const TaskContent = (props) => {
 
   return (
     <>
-      {showNoContent ? (
-        <Card className={classes.taskCard}>
+      {!showNoContent ? (
+        <Card className={`${classes.taskCard} ${classes.card}`}>
           <CardContent
             className={classes.clickCard}
             onClick={(event) => {
@@ -357,8 +366,10 @@ const TaskContent = (props) => {
       ) : (
         <Grid container>
           <Grid item md={6}>
-            <Card className={`${classes.taskCard} ${classes.pendingTasks}`}>
-              <Typography className={classes.cardTitle}>Done Tasks</Typography>
+            <Card className={`${classes.taskCard} ${classes.pendingTask}`}>
+              <Typography className={classes.cardTitle}>
+                Pending Tasks
+              </Typography>
               <CardContent className={classes.CardContent} id='scrollable'>
                 {doneLoading ? (
                   <>
@@ -448,9 +459,7 @@ const TaskContent = (props) => {
           </Grid>
           <Grid item md={6}>
             <Card className={`${classes.taskCard} ${classes.doneTask}`}>
-              <Typography className={classes.cardTitle}>
-                Pending Tasks
-              </Typography>
+              <Typography className={classes.cardTitle}>Done Tasks</Typography>
               <CardContent
                 className={classes.CardContent}
                 id='secondScrollable'

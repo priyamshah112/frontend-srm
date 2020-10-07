@@ -44,6 +44,7 @@ const AttendanceFilter = (props) => {
           <SubjectsDropdown
             value={props.subject_id}
             onChange={props.setSubjectId}
+            class_id={props.class_id}
           />
         </FormControl>
 

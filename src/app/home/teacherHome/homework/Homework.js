@@ -35,7 +35,7 @@ const useStyle = makeStyles((theme) => ({
   homeworkheader: {
     width: '100%',
     display: 'table-row',
-    height: '30px',
+    height: '35px',
   },
   homeworks: {
     width: '100%',
@@ -59,7 +59,8 @@ const useStyle = makeStyles((theme) => ({
     borderRadius: '10px',
     height: '100px',
     overflow: 'none',
-    width: '95%',
+    // width: '95%',
+    margin: 'auto',
     boxShadow: 'none',
     // overflow: 'none',
     overflowY: 'auto',
