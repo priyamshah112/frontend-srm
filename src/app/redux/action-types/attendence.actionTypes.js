@@ -9,6 +9,11 @@ export default {
     SUCCESS: "attendence.get_classes:success",
     FAIL: "attendence.get_classes:fail",
   },
+  GET_SINGLE_CLASS: {
+    START: "attendence.get_single_class:start",
+    SUCCESS: "attendence.get_single_class:success",
+    FAIL: "attendence.get_single_class:fail",
+  },
   GET_STUDENTS: {
     START: "attendence.get_students:start",
     SUCCESS: "attendence.get_students:success",
@@ -23,5 +28,10 @@ export default {
     START: "attendence.post_attendance:start",
     SUCCESS: "attendence.post_attendance:success",
     FAIL: "attendence.post_attendance:fail",
+  },
+  UPDATE_ATTENDANCE: {
+    START: "attendence.update_attendance:start",
+    SUCCESS: "attendence.update_attendance:success",
+    FAIL: "attendence.update_attendance:fail",
   },
 };

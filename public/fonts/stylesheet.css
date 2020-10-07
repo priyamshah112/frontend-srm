@@ -1,5 +1,5 @@
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Roman';
     src: url('Avenir-Roman.eot');
     src: local('Avenir Roman'), local('Avenir-Roman'),
         url('Avenir-Roman.eot?#iefix') format('embedded-opentype'),
@@ -11,7 +11,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Light';
     src: url('Avenir-Light.eot');
     src: local('Avenir Light'), local('Avenir-Light'),
         url('Avenir-Light.eot?#iefix') format('embedded-opentype'),
@@ -22,17 +22,6 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'Avenir Book';
-    src: url('Avenir-BookOblique.eot');
-    src: local('Avenir Book Oblique'), local('Avenir-BookOblique'),
-        url('Avenir-BookOblique.eot?#iefix') format('embedded-opentype'),
-        url('Avenir-BookOblique.woff2') format('woff2'),
-        url('Avenir-BookOblique.woff') format('woff'),
-        url('Avenir-BookOblique.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
-}
 
 @font-face {
     font-family: 'Avenir Black Oblique';
@@ -47,7 +36,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Heavy';
     src: url('Avenir-Heavy.eot');
     src: local('Avenir Heavy'), local('Avenir-Heavy'),
         url('Avenir-Heavy.eot?#iefix') format('embedded-opentype'),
@@ -59,7 +48,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Heavy Oblique';
     src: url('Avenir-HeavyOblique.eot');
     src: local('Avenir Heavy Oblique'), local('Avenir-HeavyOblique'),
         url('Avenir-HeavyOblique.eot?#iefix') format('embedded-opentype'),
@@ -71,7 +60,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Medium Oblique';
     src: url('Avenir-MediumOblique.eot');
     src: local('Avenir Medium Oblique'), local('Avenir-MediumOblique'),
         url('Avenir-MediumOblique.eot?#iefix') format('embedded-opentype'),
@@ -83,7 +72,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Light Oblique';
     src: url('Avenir-LightOblique.eot');
     src: local('Avenir Light Oblique'), local('Avenir-LightOblique'),
         url('Avenir-LightOblique.eot?#iefix') format('embedded-opentype'),
@@ -108,6 +97,18 @@
 
 @font-face {
     font-family: 'Avenir';
+    src: url('Avenir-Book.eot');
+    src: local('Avenir Book'), local('Avenir-Book'),
+        url('Avenir-Book.eot?#iefix') format('embedded-opentype'),
+        url('Avenir-Book.woff2') format('woff2'),
+        url('Avenir-Book.woff') format('woff'),
+        url('Avenir-Book.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Avenir Black';
     src: url('Avenir-Black.eot');
     src: local('Avenir Black'), local('Avenir-Black'),
         url('Avenir-Black.eot?#iefix') format('embedded-opentype'),
@@ -119,7 +120,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Oblique';
     src: url('Avenir-Oblique.eot');
     src: local('Avenir Oblique'), local('Avenir-Oblique'),
         url('Avenir-Oblique.eot?#iefix') format('embedded-opentype'),
@@ -131,7 +132,7 @@
 }
 
 @font-face {
-    font-family: 'Avenir';
+    font-family: 'Avenir Medium';
     src: url('Avenir-Medium.eot');
     src: local('Avenir Medium'), local('Avenir-Medium'),
         url('Avenir-Medium.eot?#iefix') format('embedded-opentype'),

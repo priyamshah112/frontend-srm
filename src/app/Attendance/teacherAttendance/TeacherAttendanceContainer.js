@@ -16,7 +16,7 @@ import AttendanceFilter from "./filters";
 import {
   getAttendence,
   getStudents,
-  postAddendance,
+  updateAddendance,
 } from "../../redux/actions/attendence.action";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { attendanceData } from "../dummyData";
@@ -127,12 +127,14 @@ const TeacherAttendanceContainer = (props) => {
   const classes = useStyles();
 
   useEffect(() => {
-    fetchAttendence();
-  }, []);
+    if(class_id && subject_id){
+      fetchAttendence();
+    }
+  }, [class_id, subject_id]);
 
-  const fetchAttendence = async () => {
+  const fetchAttendence = () => {
     props.getAttendence();
-    props.getStudents({class_id: 1});
+    props.getStudents({ class_id: 1 });
   };
 
   const data = formatAttendanceData(attendanceData);
@@ -184,7 +186,7 @@ const TeacherAttendanceContainer = (props) => {
       status: attendanceStatus[d.status] || "absent",
     };
     console.log("TeacherAttendanceContainer changeAttendanceStatus", d);
-    props.postAddendance(data);
+    props.updateAddendance(data, d.id);
   };
 
   const renderDots = (row = {}) => {
@@ -204,13 +206,18 @@ const TeacherAttendanceContainer = (props) => {
     ));
   };
 
+  const onChangeClass = (id) => {
+    setClassId(id);
+    setSubjectId("");
+  };
+
   return (
     <div className={classes.container}>
       <Grid container className={classes.content}>
         <Grid item sm={12} className={classes.panel}>
           <AttendanceFilter
             class_id={class_id}
-            setClassId={setClassId}
+            setClassId={onChangeClass}
             subject_id={subject_id}
             setSubjectId={setSubjectId}
           />
@@ -278,6 +285,8 @@ const mapStateToProps = ({ auth, Attendence }) => {
   };
 };
 
-export default connect(mapStateToProps, { getAttendence, postAddendance, getStudents })(
-  TeacherAttendanceContainer
-);
+export default connect(mapStateToProps, {
+  getAttendence,
+  updateAddendance,
+  getStudents,
+})(TeacherAttendanceContainer);
