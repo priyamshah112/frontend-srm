@@ -3,8 +3,24 @@ import { connect } from "react-redux";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from '@material-ui/styles';
+import { Typography } from '@material-ui/core';
+import { withStyles } from "@material-ui/core/styles";
 
 import NotificationService from "../../notification/NotificationService";
+
+const AutoComplete = withStyles({
+    option: {
+        "&.MuiAutocomplete-option": {
+            borderColor: "purple",
+            borderBottom: "1px solid #d3d3d3"
+        }
+    },
+    listbox: {
+        "&.MuiAutocomplete-listbox": {
+            padding: '0px'
+        }
+    }
+})(Autocomplete);
 
 const useStyle = makeStyles((theme) => ({
     searchContainer: {
@@ -28,6 +44,14 @@ const useStyle = makeStyles((theme) => ({
             transitionDuration: "500ms",
             transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
         },
+    },
+    optionContainer: {
+        width: "100%",
+    },
+    className: {
+        fontWeight: '300',
+        fontSize: '15px',
+        color: '#8E8E93'
     }
 }));
 
@@ -53,7 +77,7 @@ const StudentSearch = (props) => {
                     );
                     const dataExits = response && response.data && response.data.data[0] && response.data.data[0].roles[0];
                     if (dataExits) {
-                        setSearchData([...searchData, ...response.data.data]);
+                        setSearchData([...response.data.data]);
                     }
                 } catch (e) {
                     console.log(e);
@@ -64,15 +88,37 @@ const StudentSearch = (props) => {
 
     const onChange = (event, value) => {
         if (value) {
-            console.log("props=>", props);
             props.getSearch(value)
         }
     }
 
+    const styleOptions = (option) => {
+        if (option.roles && option.roles.length !== 0 && option.roles[0].name.toLowerCase() == 'student') {
+            return (
+                <div className={classes.optionContainer}>
+                    <Typography className={classes.optionTitle}>
+                        {`${option.firstname} ${option.lastname} - ${option.roles[0].name}`}
+                    </Typography>
+                    {
+                        option.user_classes && option.user_classes.classes_data &&
+                        <Typography>
+                            <span className={classes.className}>{option.user_classes.classes_data.class_name}</span>
+                        </Typography>
+                    }
+                    <Typography>
+                        <span className={classes.className}> {option.username}</span>
+                    </Typography>
+                </div>
+            );
+        } else {
+            return option.username;
+        }
+    };
+
     return (
         <div className={classes.searchContainer}>
             <div className={classes.fieldStyle}>
-                <Autocomplete
+                <AutoComplete
                     {...suggestions}
                     open={openUserSearch}
                     onOpen={() => {
@@ -93,13 +139,12 @@ const StudentSearch = (props) => {
                             label="Search - Name / User ID"
                         />
                     )}
+                    renderOption={(option) => styleOptions(option)}
                 />
             </div>
         </div>
     );
 }
-
-
 
 const mapStateToProps = (state) => {
     return {

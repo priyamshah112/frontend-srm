@@ -21,9 +21,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '40px'
     },
     gridItem: {
-        width: '138px',
-        height: '100%',
-        padding: '0px 15px'
+        padding: '0% 7%'
     },
     card: {
         border: '1px solid #7B72AF',
@@ -33,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         flexDirection: 'column',
         background: '#fff',
-        padding: '8px'
+        padding: '8px',
+        cursor: 'pointer'
     },
     badgeWrapper: {
         width: '100%',
@@ -66,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
     },
     headerIcon: {
         fill: '#1c1c1c',
-        fontSize: '18px'
+        fontSize: '18px',
+        cursor: 'pointer'
     }
 }));
 
@@ -99,7 +99,6 @@ const StudentTest = (props) => {
 
                     if (response.status === 200) {
                         if (loading) {
-                            console.log("response", response)
                             setTestData(response.data.data.data || []);
                             setLoading(false);
                         }
@@ -123,7 +122,7 @@ const StudentTest = (props) => {
         return (
             <div className={classes.navigationBack}>
                 <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
-                <Typography>{props.searchData.firstname}</Typography>
+                <Typography>{props.searchData.firstname} {props.searchData.lastname}</Typography>
                 <span />
             </div>
         )
@@ -131,14 +130,14 @@ const StudentTest = (props) => {
 
     const renderGrid = () => {
         return (
-            <Box className={classes.gridRoot}>
-                <Grid container spacing={3}>
+            <div className={classes.gridRoot} >
+                <Grid container>
                     {
                         testDate.map((obj, key) => {
                             return (
-                                <Grid item xs={6} sm={3} onClick={() => onTest(obj)} key={key}>
+                                <Grid item xs={6} sm={3} key={key}>
                                     <div className={classes.gridItem}>
-                                        <div className={classes.card}>
+                                        <div className={classes.card} onClick={() => onTest(obj)} key={key}>
                                             <div className={classes.flex1}>
                                                 <div className={classes.badgeWrapper}>
                                                     <img src={ReportLogo} alt='report logo' height={78} width={59} />
@@ -156,7 +155,7 @@ const StudentTest = (props) => {
                         })
                     }
                 </Grid>
-            </Box>
+            </div>
         )
     }
 
