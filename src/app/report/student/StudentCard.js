@@ -17,8 +17,6 @@ const StudentCard = () => {
     }
 
     const handleTest = (value) => {
-        console.log("value", value);
-
         if (value.id) {
             setTestValue(value);
             setView('report');

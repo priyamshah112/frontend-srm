@@ -3,10 +3,6 @@ import { connect } from 'react-redux';
 import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import editIcon from '../../../assets/images/Edit.svg';
 import downloadIcon from '../../../assets/images/attendance/download.svg';
 import PrintIcon from '../../../assets/images/report/printer.svg';
 
@@ -14,6 +10,7 @@ import ReportService from '../ReportService';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 import TextField from '@material-ui/core/TextField';
 import StudentGrade from './StudentGrade';
+import StudentSkills from './StudentSkills';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -192,50 +189,14 @@ const useStyles = makeStyles((theme) => ({
 
 const StudentDetails = (props) => {
     const classes = useStyles(props);
-
-    const [reportData, setReportData] = useState([]);
     const [attendanceData, setAttendanceData] = useState({});
-
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
 
-    const { token, searchData = searchValue1, testData = testValue1 } = props;
+    const { token, searchData, testData } = props;
     const goToSearch = () => {
         props.home();
     }
-
-    /* Fetch Report Card */
-
-    useEffect(() => {
-        let loading = true;
-
-        if (searchData && searchData.user_classes) {
-            async function getReportCard() {
-                try {
-                    const response = await ReportService.fetchReportCard(token, searchData.id, testData.school_id);
-
-                    if (response.status === 200) {
-                        if (loading) {
-                            setReportData(response.data.data.data);
-                            setLoading(false);
-                            console.log(" fetchReportCard response.data.data.data", response.data.data.data);
-
-                        }
-                    }
-                } catch (error) {
-                    console.log(error);
-                    setError('Error in student test');
-                    setLoading(false);
-                }
-            }
-            getReportCard();
-        } else {
-            setLoading(false);
-        }
-        return () => {
-            loading = false;
-        };
-    }, []);
 
     /* Fetch Student Attendance */
 
@@ -341,57 +302,6 @@ const StudentDetails = (props) => {
         )
     }
 
-    const renderSkill = () => {
-        return (
-            <Box className={classes.rootGrid}>
-                <Grid container spacing={3}>
-                    {[1, 2, 3, 4].map((item, key) => {
-                        return (
-                            <Grid item xs={6} key={key}>
-                                <Paper className={classes.paper} elevation={0}>
-                                    <div className={classes.cardTitle}>
-                                        <span>&nbsp;</span>
-                                        <Typography>
-                                            English
-                                </Typography>
-                                        <span>
-                                            <img
-                                                src={editIcon} className={classes.editIcon} />
-                                        </span>
-                                    </div>
-                                    <div className={classes.cardHeader}>
-                                        <Typography className={classes.cardHeaderSkill}>
-                                            <span className={classes.colorWhite}>Skill</span>
-                                        </Typography>
-                                        <Typography className={classes.cardHeaderGrade}>
-                                            <span className={classes.colorWhite}>Grade</span>
-                                        </Typography>
-                                    </div>
-                                    {[1, 2, 3].map((item, key) => {
-                                        return (
-                                            <span key={key}>
-                                                <div className={classes.cardItem}>
-                                                    <Typography className={classes.cardItemSkill}>
-                                                        Listening Skill
-                                            </Typography>
-                                                    <Typography className={classes.cardItemGrade}>
-                                                        A+
-                                            </Typography>
-                                                </div>
-                                            </span>
-                                        )
-                                    })
-                                    }
-                                </Paper>
-                            </Grid>
-                        )
-                    })
-                    }
-                </Grid>
-            </Box>
-        )
-    }
-
     const renderRemark = () => {
         return (
             <div className={classes.remark}>
@@ -421,10 +331,10 @@ const StudentDetails = (props) => {
         <div className={classes.container}>
             {renderHeader()}
             {renderAttendace()}
-            {renderSkill()}
-            {renderRemark()}
+            <StudentSkills />
             <StudentGrade {...props} />
-            <div className={classes.publish}>
+            {renderRemark()}
+            {/* <div className={classes.publish}>
                 <Box>
                     <Button
                         variant='contained'
@@ -441,7 +351,7 @@ const StudentDetails = (props) => {
                         Publish
                     </Button>
                 </Box>
-            </div>
+            </div> */}
             <BackdropLoader open={isLoading} />
         </div>
     );

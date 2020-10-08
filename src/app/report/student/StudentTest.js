@@ -7,7 +7,6 @@ import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import ReportLogo from '../../../assets/images/report/ReportLogo.svg';
 import ReportService from '../ReportService';
 import Grid from "@material-ui/core/Grid";
-import Box from '@material-ui/core/Box';
 
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
