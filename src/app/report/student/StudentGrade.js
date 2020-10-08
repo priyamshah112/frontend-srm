@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import editIcon from '../../../assets/images/Edit.svg';
 import ReportService from '../ReportService';
 import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -47,6 +48,17 @@ const useStyles = makeStyles((theme) => ({
     },
     fillGradeWrapper: {
         marginBottom: '30px',
+    },
+    publish: {
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        marginTop: "10px"
+    },
+    cancelBtn: {
+        background: "#fff",
+        marginRight: "10px"
     }
 }));
 
@@ -56,10 +68,11 @@ const StudentGrade = (props) => {
     const [gradeData, setGradeData] = useState([]);
     const [newGrade, setNewGrade] = useState(false);
     const [editGrade, setEditGrade] = useState(false);
+    const [showGrade, setShowGrade] = useState(false);
 
     const [errMessage, setError] = useState('');
 
-    const { token, testData = testValue1 } = props;
+    const { token, testData } = props;
 
     useEffect(() => {
         let loading = true;
@@ -68,17 +81,18 @@ const StudentGrade = (props) => {
             async function getGrades() {
                 try {
                     const response = await ReportService.getGrades(token, testData.class_id);
+                    console.log("response getGrades", response);
 
                     if (response.status === 200) {
                         if (loading) {
                             setGradeData(response.data.data || []);
-                            setNewGrade(false);
+                            setShowGrade(true);
                         }
                     }
                 } catch (error) {
-                    console.log(error);
-                    setError('Grade Access Failed');
-                    setNewGrade(true);
+                    console.log("getGrades Error", error);
+                    setError('User does not belong to any school');
+                    setShowGrade(false);
                 }
             }
             getGrades();
@@ -90,13 +104,13 @@ const StudentGrade = (props) => {
 
 
 
-    const updateGrade = () => {
+    const updateGradeCall = () => {
 
         let loading = true;
 
         const data = {
-            "class_id": 2,
-            "grade": "A++",
+            "class_id": testData.class_id,
+            "grade": "A",
             "percentage_from": 100,
             "percentage_to": 80
         }
@@ -106,6 +120,42 @@ const StudentGrade = (props) => {
         async function getGrades() {
             try {
                 const response = await ReportService.updateGrades(token, gradeId, data);
+
+                if (response.status === 200) {
+                    if (loading) {
+                        setNewGrade(false);
+                        setEditGrade(false);
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+                setError('');
+                setNewGrade(false);
+                setEditGrade(false);
+            }
+        }
+        getGrades();
+        return () => {
+            loading = false;
+        };
+    }
+
+    const createGradeCall = () => {
+
+        const token = localStorage.getItem('srmToken');
+
+        let loading = true;
+
+        const data = {
+            "class_id": 3,
+            "grade": "B",
+            "percentage_from": 90,
+            "percentage_to": 70
+        }
+
+        async function getGrades() {
+            try {
+                const response = await ReportService.createGrades(token, data);
 
                 if (response.status === 200) {
                     if (loading) {
@@ -177,7 +227,7 @@ const StudentGrade = (props) => {
                         variant='contained'
                         color='primary'
                         disableElevation
-                        onClick={() => updateGrade()}
+                        onClick={() => updateGradeCall()}
                     >
                         Update
                     </Button>
@@ -186,57 +236,71 @@ const StudentGrade = (props) => {
         )
     }
 
+
     const renderNewGrade = () => {
         return (
             <div className={classes.fillGradeWrapper}>
                 <div className={classes.title}>
                     <Typography>Create Grades</Typography>
                 </div>
-                {defaultGrades.map((obj, key) => {
-                    return (
-                        <div className={classes.fillGrade} key={key}>
-                            <TextField
-                                id="outlined-textarea"
-                                label="Grade Name"
-                                placeholder={obj.grade}
-                                multiline
-                                variant="outlined"
-                                classes={{
-                                    root: classes.root
-                                }}
-                            />
-                            <TextField
-                                id="outlined-textarea"
-                                label="From Percentage"
-                                multiline
-                                variant="outlined"
-                                placeholder={obj.percentage_from}
-                                classes={{
-                                    root: classes.root
-                                }}
-                            />
-                            <TextField
-                                id="outlined-textarea"
-                                label=" To Percentage"
-                                multiline
-                                variant="outlined"
-                                placeholder={obj.percentage_to}
-                                classes={{
-                                    root: classes.root
-                                }}
-                            />
-                        </div>
-                    )
-                })}
-                <div className={classes.setGrade} >
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        disableElevation
-                    >
-                        Add
+                {
+                    defaultGrades.map((obj, key) => {
+                        return (
+                            <div className={classes.fillGrade} key={key}>
+                                <TextField
+                                    id="outlined-textarea"
+                                    label="Grade Name"
+                                    placeholder={obj.grade}
+                                    multiline
+                                    variant="outlined"
+                                    classes={{
+                                        root: classes.root
+                                    }}
+                                />
+                                <TextField
+                                    id="outlined-textarea"
+                                    label="From Percentage"
+                                    multiline
+                                    variant="outlined"
+                                    placeholder={obj.percentage_from}
+                                    classes={{
+                                        root: classes.root
+                                    }}
+                                />
+                                <TextField
+                                    id="outlined-textarea"
+                                    label=" To Percentage"
+                                    multiline
+                                    variant="outlined"
+                                    placeholder={obj.percentage_to}
+                                    classes={{
+                                        root: classes.root
+                                    }}
+                                />
+                            </div>
+                        )
+                    })
+                }
+                <div className={classes.publish}>
+                    <Box>
+                        <Button
+                            variant='contained'
+                            disableElevation
+                            className={classes.cancelBtn}
+                        >
+                            Cancel
                     </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            disableElevation
+                            onClick={() => createGradeCall()}
+                        >
+                            Add
+                    </Button>
+                    </Box>
                 </div>
+
             </div>
         )
     }
@@ -245,41 +309,64 @@ const StudentGrade = (props) => {
         return (
             <div>
                 {
-                    gradeData.length > 0 &&
-                    <div className={classes.gridContainer}>
-                        {
-                            gradeData.map((obj, key) => {
-                                return (
-                                    <>
-                                        <Typography className={classes.itemGrade}>
-                                            {obj.grade} - {obj.percentage_to}% - {obj.percentage_from}%
-                                            </Typography>
-                                        {
-                                            gradeData.length === key + 1 &&
+                    gradeData.length > 0 ?
+                        <div className={classes.gridContainer}>
+                            {
+                                gradeData.map((obj, key) => {
+                                    return (
+                                        <>
                                             <Typography className={classes.itemGrade}>
-                                                <img
-                                                    src={editIcon}
-                                                    className={classes.editIcon}
-                                                    onClick={() => setEditGrade(true)} />
-                                            </Typography>
-                                        }
-                                    </>
-                                )
-                            })
-                        }
-                    </div>
+                                                {obj.grade} - {obj.percentage_to}% - {obj.percentage_from}%
+                                        </Typography>
+                                            {
+                                                gradeData.length === key + 1 &&
+                                                <Typography className={classes.itemGrade}>
+                                                    <img
+                                                        src={editIcon}
+                                                        className={classes.editIcon}
+                                                        onClick={() => setEditGrade(true)} />
+                                                </Typography>
+                                            }
+                                        </>
+                                    )
+                                })
+                            }
+                        </div> : renderEmptyGrade()
                 }
             </div>
         )
     }
 
+    const renderEmptyGrade = () => {
+        return (
+            <div>
+                <div className={classes.gridContainer}>
+                    <>
+                        <Typography className={classes.itemGrade}>
+                            Grades default values not available.
+                        </Typography>
+                        <Typography className={classes.itemGrade}>
+                            <img
+                                src={editIcon}
+                                className={classes.editIcon}
+                                onClick={() => setNewGrade(true)} />
+                        </Typography>
+                    </>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <div className={classes.container}>
-            {!editGrade && !newGrade && renderGrade()}
-            {editGrade && renderGradeEdit()}
-            {newGrade && renderNewGrade()}
-            {errMessage}
-        </div>
+        <>
+            {showGrade && <div className={classes.container}>
+                {!editGrade && !newGrade && renderGrade()}
+                {editGrade && renderGradeEdit()}
+                {newGrade && renderNewGrade()}
+                {errMessage}
+            </div>
+            }
+        </>
     );
 }
 
