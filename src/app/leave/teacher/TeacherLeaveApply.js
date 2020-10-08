@@ -433,6 +433,17 @@ const TeacherLeaveApply = (props) => {
                           name: 'type',
                           id: 'type',
                         }}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "center",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "center",
+                          },
+                          getContentAnchorEl: null,
+                        }}
                       >
                         <MenuItem  value={0}>First Half</MenuItem>
                         <MenuItem  value={1}>Second Half</MenuItem>
@@ -449,11 +460,17 @@ const TeacherLeaveApply = (props) => {
                   value={teachersValue}
                   className={classes.tchSelect}
                   onChange={handleTeachersValue}
-                  // inputProps={{
-                  //   name: 'teachers',
-                  //   id: 'teachers',
-                  // }}
-
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "center",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "center",
+                    },
+                    getContentAnchorEl: null,
+                  }}
                 >
                       {allAdmin.map((admin) => (
                         <MenuItem  value={admin.user_id}>

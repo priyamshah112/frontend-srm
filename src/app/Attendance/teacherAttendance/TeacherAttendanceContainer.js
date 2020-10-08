@@ -15,7 +15,6 @@ import TableTopHead from "../components/tableTopHeader";
 import AttendanceFilter from "./filters";
 import {
   getAttendence,
-  getStudents,
   updateAddendance,
 } from "../../redux/actions/attendence.action";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -27,9 +26,13 @@ import {
   getPreviousWeekStartDate,
   currentMonth,
   getMonth,
+  isFutureDate,
+  getWeekEndDate,
 } from "../../../shared/datediff";
 import { formatAttendanceData } from "../../../shared/filter";
 import AttendanceFooter from "../components/attendanceFooter";
+import moment from "moment";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -96,6 +99,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItem: "center",
   },
+  emptyData: {
+    padding: '50px 20px',
+  }
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -116,39 +122,69 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
+const todayDate = moment().format("YY-MM-DD");
+
 const TeacherAttendanceContainer = (props) => {
+  const [attendence, setAttendence] = useState([]);
   const [class_id, setClassId] = useState("");
   const [subject_id, setSubjectId] = useState("");
   const [weekStart, setWeekStart] = useState(weekStartDate);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [error, setError] = useState("");
+  const [aError, setAError] = useState({});
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   const { loading } = props;
 
   const classes = useStyles();
 
   useEffect(() => {
-    if(class_id && subject_id){
+    if (class_id && subject_id) {
       fetchAttendence();
     }
-  }, [class_id, subject_id]);
+  }, [class_id, subject_id, weekStart]);
 
   const fetchAttendence = () => {
-    props.getAttendence();
-    props.getStudents({ class_id: 1 });
+    const from_date = moment(weekStart).format("YYYY-MM-DD");
+    const to_date = moment(getWeekEndDate(weekStart)).format("YYYY-MM-DD");
+    const params = {
+      class_id,
+      subject_id,
+      current_role: props.selectedRole,
+      from_date,
+      to_date,
+    };
+    props.getAttendence(params, onGet, onFail);
+  };
+
+  const onGet = (d = {}) => {
+    const { data = {} } = d;
+    const atData = formatAttendanceData(data);
+    setAttendence(atData);
+  };
+
+  const onFail = (err = {}) => {
+    setError(err.message);
   };
 
   const data = formatAttendanceData(attendanceData);
   const weekData = getWeekDates(weekStart);
 
-  console.log("TeacherAttendanceContainer filterData", weekData, data);
+  console.log("TeacherAttendanceContainer filterData", {
+    weekStart: moment(weekStart).format("YYYY-MM-DD"),
+    endDate: moment(weekStartDate).format("YYYY-MM-DD"),
+    isFuture: isFutureDate(weekStart, weekStartDate),
+  });
 
   const onPrevious = () => {
     const startDate = getPreviousWeekStartDate(weekStart);
+
     setWeekStart(startDate);
     setSelectedMonth(getMonth(startDate));
   };
 
   const onNext = () => {
+    if(moment(weekStart).format("YYYY-MM-DD") === moment(weekStartDate).format("YYYY-MM-DD")) return;
     const startDate = getNextWeekStartDate(weekStart);
     setWeekStart(startDate);
     setSelectedMonth(getMonth(startDate));
@@ -172,7 +208,10 @@ const TeacherAttendanceContainer = (props) => {
     return newDates;
   };
 
-  const changeAttendanceStatus = (d = {}) => {
+  const changeAttendanceStatus = (d = {}, path) => {
+    //path = rowIndex+dateIndex
+    setUpdateLoading(path);
+    setAError({ ...aError, [path]: false });
     const attendanceStatus = {
       present: "absent",
       absent: "holiday",
@@ -183,27 +222,95 @@ const TeacherAttendanceContainer = (props) => {
       user_id: d.user_id,
       class_id: d.class_id,
       attendance_date: d.attendance_date,
+      subject_id,
       status: attendanceStatus[d.status] || "absent",
     };
     console.log("TeacherAttendanceContainer changeAttendanceStatus", d);
-    props.updateAddendance(data, d.id);
+    props.updateAddendance(
+      data,
+      d.id,
+      (d) => onUpdateSuccess(d, path),
+      (e) => onUpdateFail(e, path)
+    );
   };
 
-  const renderDots = (row = {}) => {
+  const onUpdateSuccess = (d = {}, path) => {
+    const { data = {} } = d;
+    setUpdateLoading(false);
+    updateStatus(data, path);
+  };
+
+  const onUpdateFail = (e = {}, path) => {
+    setAError({ ...aError, [path]: "Update Error" });
+    setUpdateLoading(false);
+  };
+
+  const getIsLoading = (rI, dI) => {
+    if (updateLoading === false) return false;
+    return `${rI}${dI}` === updateLoading;
+  };
+
+  const getIsError = (rI, dI) => {
+    const ePath = `${rI}${dI}`;
+    return aError[ePath];
+  };
+
+  const updateStatus = (d = {}, path) => {
+    const pathArr = path.split("");
+    const rowIndex = Number(pathArr[0]);
+
+    const aData = [...attendence];
+    const dates = aData[rowIndex].dates || [];
+
+    dates.map((date) => {
+      if (date.attendance_date === d.attendance_date) {
+        date.status = d.status;
+      }
+    });
+
+    aData[rowIndex].dates = dates;
+    console.log("TeacherAttendanceContainer updateStatus", {
+      status: d.status,
+      path,
+      pathArr,
+      aData,
+      dates,
+    });
+    setAttendence(aData);
+  };
+
+  const renderDots = (row = {}, rowIndex) => {
     const { dates = [] } = row;
     const datesData = getAttendanceDates(dates);
-
+    console.log("TeacherAttendanceContainer renderDots getAttendanceDates", {
+      datesData,
+      dates,
+    });
     const userData = {
       class_id: row.class_id,
       roll_no: row.roll_no,
       user_id: row.user_id,
     };
-    return datesData.map((date) => (
-      <AttendanceDot
-        onClick={() => changeAttendanceStatus({ ...userData, ...date })}
-        status={date.status}
-      />
-    ));
+
+    return datesData.map((date, dateIndex) => {
+      const isFuture = isFutureDate(date.attendance_date);
+      const isLoading = getIsLoading(rowIndex, dateIndex);
+      const isError = getIsError(rowIndex, dateIndex);
+
+      return (
+        <AttendanceDot
+          loading={isLoading}
+          error={isError}
+          onClick={() =>
+            changeAttendanceStatus(
+              { ...userData, ...date },
+              `${rowIndex}${dateIndex}`
+            )
+          }
+          status={isFuture ? "" : date.status}
+        />
+      );
+    });
   };
 
   const onChangeClass = (id) => {
@@ -251,7 +358,7 @@ const TeacherAttendanceContainer = (props) => {
                 <CircularProgress center alignCenter />
               ) : (
                 <TableBody>
-                  {data.map((row, rowIndex) => (
+                  {attendence.length ? attendence.map((row, rowIndex) => (
                     <StyledTableRow key={rowIndex} className="statusTable">
                       <StyledTableCell className={classes.tableNoColumn}>
                         {row.roll_no}
@@ -263,9 +370,9 @@ const TeacherAttendanceContainer = (props) => {
                       >
                         {`${row.firsname} ${row.lastname}`}
                       </StyledTableCell>
-                      {renderDots(row)}
+                      {renderDots(row, rowIndex)}
                     </StyledTableRow>
-                  ))}
+                  )) : <Typography className={classes.emptyData}>Attendance Data Not Available</Typography>}
                 </TableBody>
               )}
             </Table>
@@ -278,15 +385,14 @@ const TeacherAttendanceContainer = (props) => {
 };
 
 const mapStateToProps = ({ auth, Attendence }) => {
-  const { attendence = [], attendenceLoading } = Attendence;
+  const { classesLoading, attendenceLoading, singleClassLoading } = Attendence;
   return {
     selectedRole: auth.selectedRole,
-    loading: attendenceLoading,
+    loading: attendenceLoading || classesLoading || singleClassLoading,
   };
 };
 
 export default connect(mapStateToProps, {
   getAttendence,
   updateAddendance,
-  getStudents,
 })(TeacherAttendanceContainer);

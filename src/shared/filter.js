@@ -11,7 +11,7 @@ export const formatAttendanceData = (data = {}) => {
       let dates = Object.keys(rollNumberData);
       let formatDates = [];
       if (dates.length) {
-        itemData = { ...rollNumberData[1] };
+        itemData = { ...rollNumberData[0] };
 
         dates.map((date) => {
           const dateData = rollNumberData[date];

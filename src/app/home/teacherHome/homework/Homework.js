@@ -47,6 +47,12 @@ const useStyle = makeStyles((theme) => ({
     cursor: 'pointer',
     padding: '8px',
   },
+  cardContentStyle1: {
+    cursor: 'pointer',
+    padding: '5px',
+    textAlign:'center',
+    transform: 'translateY(30px)'
+  },
   addhomeworkIcon: {
     float: 'right',
     cursor: 'pointer',
@@ -187,8 +193,8 @@ const Homework = (props) => {
                 className={`${classes.homeworkCard}`}
                 onClick={handleCreateHomework}
               >
-                <CardContent className={classes.cardContentStyle}>
-                  <Typography className={classes.cardTitle}>
+                <CardContent className={classes.cardContentStyle1}>
+                  <Typography >
                     Click here to create homework
                   </Typography>
                 </CardContent>

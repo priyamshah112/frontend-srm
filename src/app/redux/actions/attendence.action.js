@@ -2,12 +2,15 @@ import * as attendenceApi from "../api/attendence.api";
 import commonActions from "../action-types/common";
 import attendenceActionTypes from "../action-types/attendence.actionTypes";
 
-export const getAttendence = (data) => {
+export const getAttendence = (params, onSuccess, onFail) => {
+  console.log('getAttendence', params)
   return {
     type: commonActions.COMMON_API_CALL,
     subtypes: attendenceActionTypes.GET_ATTENDENCE,
-    data: { data },
-    promise: () => attendenceApi.getAttendenceApi(data),
+    onSuccessCallback: onSuccess,
+    onFailCallback: onFail,
+    data: { params },
+    promise: () => attendenceApi.getAttendenceApi(params),
   };
 };
 

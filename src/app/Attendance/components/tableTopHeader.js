@@ -28,7 +28,7 @@ const TableTopHead = (props) => {
   const classes = useStyles();
   return (
     <div className={classes.tableHeader}>
-      <Typography onClick={props.onPrevious} className={classes.tableHeaderBtn}>Preview</Typography>
+      <Typography onClick={props.onPrevious} className={classes.tableHeaderBtn}>Previous</Typography>
       <Typography className={classes.tableHeadermid}>Weekly</Typography>
       <Typography onClick={props.onNext} className={classes.tableHeaderBtn}>Next</Typography>
     </div>

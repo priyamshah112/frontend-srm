@@ -1,8 +1,8 @@
 import apiService from "./axios-service";
 import { attendancesEndpoint, classesEndpoint, studentEndpoint, subjectsEndpoint } from "./endpoint-constants";
 
-export const getAttendenceApi = (data) =>
-  apiService.get(`${attendancesEndpoint}`, {params: data});
+export const getAttendenceApi = (params) =>
+  apiService.get(`${attendancesEndpoint}`, {params});
 
 export const getClassesApi = () =>
   apiService.get(`${classesEndpoint}`);

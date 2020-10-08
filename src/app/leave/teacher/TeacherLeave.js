@@ -200,15 +200,15 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     paddingLeft: '15px',
     fontFamily:
-      'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
-    fontWeight: '400',
+      'Avenir Book',
+    fontSize: '1rem',
   },
   name1: {
     transform: 'translateY(17px)',
     textAlign: 'left',
     paddingLeft: '15px',
     fontFamily:
-      'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+      'Avenir Book',
     fontWeight: '400',
   },
   stat: {
