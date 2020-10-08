@@ -193,7 +193,7 @@ const StudentDetails = (props) => {
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
 
-    const { token, searchData, testData } = props;
+    const { token, searchData = searchValue1, testData = testValue1 } = props;
     const goToSearch = () => {
         props.home();
     }
@@ -364,3 +364,8 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(StudentDetails);
+
+
+/*Temp */
+const searchValue1 = {}
+const testValue1 = {}
