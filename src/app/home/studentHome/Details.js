@@ -73,6 +73,7 @@ const useStyle = makeStyles((theme) => ({
         fontSize: '16px',
       },
     },
+
   },
   titleContent: {
     fontSize: '18px',
@@ -114,6 +115,9 @@ const useStyle = makeStyles((theme) => ({
   editBtn: {
     paddingLeft: '16px',
   },
+  DateAlign: {
+    transform: 'translate(-8px,15px)'
+  }
 }));
 
 const Details = (props) => {
@@ -254,7 +258,7 @@ const Details = (props) => {
                 className={classes.NewsHeader}
                 action={
                   <>
-                    <Typography variant='body2'>
+                    <Typography variant='body2' className={classes.DateAlign}>
                       {details.published_date ? (
                         <span className={classes.publishDate}>
                           {`${moment(details.published_date).format(

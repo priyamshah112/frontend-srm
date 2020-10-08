@@ -55,6 +55,9 @@ const useStyle = makeStyles((theme) => ({
     paddingRight: '20px',
     textAlign: 'right',
   },
+  textTask: {
+    marginTop: '5px'
+  }
 }));
 
 const Tasks = (props) => {
@@ -148,9 +151,9 @@ const Tasks = (props) => {
                 </Button>
               ) : (
                 <Button
-                  variant='contained'
+                  variant='outlined'
                   onClick={handleDeleteTask}
-                  color='secondary'
+                  color='primary'
                   disableElevation
                   className={classes.menuBtn}
                 >
@@ -158,7 +161,7 @@ const Tasks = (props) => {
                 </Button>
               )}
             </Grid>
-            <Grid item xs={4} className={classes.menuItems}>
+            <Grid item xs={4} className={`${classes.menuItems} ${classes.textTask}`}>
               <Typography className={classes.title}>Task Editor</Typography>
             </Grid>
             <Grid item xs={4} className={classes.menuItems}>

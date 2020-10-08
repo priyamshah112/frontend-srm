@@ -6,14 +6,14 @@ import { makeStyles } from '@material-ui/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import editIcon from '../../../assets/images/Edit.svg';
-import UserIcon from '../../../assets/images/profile/User.svg';
 import downloadIcon from '../../../assets/images/attendance/download.svg';
-import PrintIcon from '@material-ui/icons/PrintOutlined';
+import PrintIcon from '../../../assets/images/report/printer.svg';
 
 import ReportService from '../ReportService';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
+import TextField from '@material-ui/core/TextField';
+import StudentGrade from './StudentGrade';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
         width: "50px",
         height: "50px",
         borderRadius: "50%",
-        display: "inline-block"
+        display: "inline-block",
+        border: "1px solid lightgrey"
     },
     photoName: {
         margin: "15px 0px"
@@ -86,10 +87,6 @@ const useStyles = makeStyles((theme) => ({
         flexFlow: "1",
         marginTop: "20px"
     },
-    paper: {
-        padding: "2",
-        textAlign: "center"
-    },
     cardTitle: {
         display: "flex",
         justifyContent: "space-between",
@@ -114,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
     cardItem: {
         display: "flex",
         justifyContent: "space-between",
-        borderBottom: "1px solid lightgrey"
+        borderTop: "1px solid lightgrey"
     },
     cardItemSkill: {
         flexBasis: "70%",
@@ -128,15 +125,6 @@ const useStyles = makeStyles((theme) => ({
     remark: {
         margin: "20px 0px",
         textAlign: "center"
-    },
-    textArea: {
-        fontSize: "1rem",
-        fontWeight: 400,
-        lineHeight: 1.5,
-        width: "96%",
-        border: "1px solid #7B72AF",
-        padding: "10px",
-        borderRadius: "5px"
     },
     Size14: {
         fontSize: "14px"
@@ -157,18 +145,18 @@ const useStyles = makeStyles((theme) => ({
         fill: "#1c1c1c",
         height: "18px",
         width: "18px",
-        marginRight: '40px'
+        marginRight: '40px',
+        cursor: 'pointer'
     },
     printIcon: {
-        fontSize: '20px',
-        fill: '#8E8E93',
-        marginRight: '25px'
+        marginRight: '30px'
     },
     downloadIcon: {
         fontSize: '17px',
         height: '20px',
         width: '20px',
-        fill: 'gray'
+        fill: 'gray',
+        cursor: 'pointer'
     },
     userIcon: {
         height: '100%',
@@ -179,37 +167,59 @@ const useStyles = makeStyles((theme) => ({
     editIcon: {
         fontSize: '17px',
         marginTop: '2px',
-        fill: 'gray'
+        fill: 'gray',
+        cursor: 'pointer'
     },
     colorWhite: {
         color: '#fff'
-    }
+    },
+    remarkInput: {
+        fontSize: "1rem",
+        fontWeight: 400,
+        lineHeight: 1.5,
+        border: "1px solid #7B72AF",
+        borderRadius: "1px",
+        backgroundColor: '#fff'
+    },
+    fontSize14: {
+        fontSize: '14px'
+    },
+    root: {
+        backgroundColor: '#fff',
+        boxShadow: 'none'
+    },
 }));
 
 const StudentDetails = (props) => {
     const classes = useStyles(props);
-    const [isLoading, setLoading] = useState(true);
+
     const [reportData, setReportData] = useState([]);
     const [attendanceData, setAttendanceData] = useState({});
-    const [errMessage, setError] = useState('');
 
+    const [errMessage, setError] = useState('');
+    const [isLoading, setLoading] = useState(true);
+
+    const { token, searchData = searchValue1, testData = testValue1 } = props;
     const goToSearch = () => {
         props.home();
     }
 
+    /* Fetch Report Card */
+
     useEffect(() => {
         let loading = true;
 
-        if (props.searchData && props.searchData.user_classes) {
+        if (searchData && searchData.user_classes) {
             async function getReportCard() {
                 try {
-                    const response = await ReportService.fetchReportCard(props.token, props.searchData.id, props.testData.school_id);
+                    const response = await ReportService.fetchReportCard(token, searchData.id, testData.school_id);
 
                     if (response.status === 200) {
                         if (loading) {
-                            console.log("response", response)
                             setReportData(response.data.data.data);
                             setLoading(false);
+                            console.log(" fetchReportCard response.data.data.data", response.data.data.data);
+
                         }
                     }
                 } catch (error) {
@@ -227,13 +237,15 @@ const StudentDetails = (props) => {
         };
     }, []);
 
+    /* Fetch Student Attendance */
+
     useEffect(() => {
         let loading = true;
 
-        if (props.searchData && props.searchData.id) {
+        if (searchData && searchData.id) {
             async function getAttendence() {
                 try {
-                    const response = await ReportService.studentAttendance(props.token, props.searchData.id);
+                    const response = await ReportService.studentAttendance(token, searchData.id);
 
                     if (response.status === 200) {
                         if (loading) {
@@ -260,23 +272,29 @@ const StudentDetails = (props) => {
             <>
                 <div className={classes.navigationBack}>
                     <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
-                    <Typography>{props.testData.name}</Typography>
+                    <Typography>{testData.name}</Typography>
                     <div>
-                        <PrintIcon className={classes.printIcon} />
-                        <img
-                            src={downloadIcon} className={classes.downloadIcon} />
+                        <span className={classes.printIcon}>
+                            <img
+                                src={PrintIcon} className={classes.downloadIcon} />
+                        </span>
+                        <span>
+                            <img
+                                src={downloadIcon} className={classes.downloadIcon} />
+                        </span>
+
                     </div>
                 </div>
                 <div className={classes.studentPhoto}>
                     <div className={classes.photo}>
                         <img
-                            src={UserIcon}
+                            src={searchData.thumbnail}
                             className={classes.userIcon}
                         />
 
                     </div>
                     <div className={classes.photoName}>
-                        <Typography>{props.searchData.firstname}</Typography>
+                        <Typography className={classes.fontSize14}>{searchData.firstname} {searchData.lastname}</Typography>
                     </div>
                 </div>
             </>
@@ -330,7 +348,7 @@ const StudentDetails = (props) => {
                     {[1, 2, 3, 4].map((item, key) => {
                         return (
                             <Grid item xs={6} key={key}>
-                                <Paper className={classes.paper}>
+                                <Paper className={classes.paper} elevation={0}>
                                     <div className={classes.cardTitle}>
                                         <span>&nbsp;</span>
                                         <Typography>
@@ -349,9 +367,9 @@ const StudentDetails = (props) => {
                                             <span className={classes.colorWhite}>Grade</span>
                                         </Typography>
                                     </div>
-                                    {[1, 2, 3].map((item) => {
+                                    {[1, 2, 3].map((item, key) => {
                                         return (
-                                            <span>
+                                            <span key={key}>
                                                 <div className={classes.cardItem}>
                                                     <Typography className={classes.cardItemSkill}>
                                                         Listening Skill
@@ -376,51 +394,26 @@ const StudentDetails = (props) => {
 
     const renderRemark = () => {
         return (
-            <div>
+            <div className={classes.remark}>
                 <div className={classes.remark}>
-                    <Typography>General Remark</Typography>
+                    <Typography>General Remark </Typography>
                 </div>
-                <TextareaAutosize
-                    rows={5}
-                    className={classes.textArea}
-                    aria-label="maximum height"
-                    placeholder="Maximum 4 rows"
-                    defaultValue={dummyTest}
+                <TextField
+                    id="outlined-basic"
+                    label=""
+                    variant="outlined"
+                    classes={{
+                        root: classes.root
+                    }}
+                    fullWidth={true}
+                    multiline
+                    rows={4}
+                    rowsMax={4}
+                    size="medium"
+                    type="string"
                 />
+
             </div>
-        )
-    }
-
-    const renderGrade = () => {
-        return (
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <Paper>
-                        <Grid container spacing={3} style={{ margin: '10px 5px' }}>
-                            <Grid item xs={2.5}>
-                                <Typography className={classes.Size14}>A+ - 90%-100%</Typography>
-                            </Grid>
-                            <Grid item xs={2.5}>
-                                <Typography className={classes.Size14} >A- 75%-89%</Typography>
-                            </Grid>
-                            <Grid item xs={2.5}>
-                                <Typography className={classes.Size14}>B - 56%-74%</Typography>
-                            </Grid>
-                            <Grid item xs={2.5}>
-                                <Typography className={classes.Size14}>C - 35%-55%</Typography>
-                            </Grid>
-                            <Grid item xs={2.5}>
-                                <Typography className={classes.Size14}>D - Below 35%</Typography>
-                            </Grid>
-                            <Grid item xs={2.5}>
-                                <img
-                                    src={editIcon} className={classes.editIcon} />
-                            </Grid>
-                        </Grid>
-                    </Paper>
-                </Grid>
-            </Grid>
-
         )
     }
 
@@ -430,7 +423,7 @@ const StudentDetails = (props) => {
             {renderAttendace()}
             {renderSkill()}
             {renderRemark()}
-            {renderGrade()}
+            <StudentGrade {...props} />
             <div className={classes.publish}>
                 <Box>
                     <Button
@@ -440,7 +433,6 @@ const StudentDetails = (props) => {
                     >
                         Cancel
                     </Button>
-
                     <Button
                         variant='contained'
                         color='primary'
@@ -457,11 +449,8 @@ const StudentDetails = (props) => {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.auth.token,
-        userInfo: state.auth.userInfo
+        token: state.auth.token
     };
 };
 
 export default connect(mapStateToProps)(StudentDetails);
-
-const dummyTest = "Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled"
