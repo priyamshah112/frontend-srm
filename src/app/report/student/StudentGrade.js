@@ -97,7 +97,6 @@ const StudentGrade = (props) => {
             async function getGrades() {
                 try {
                     const response = await ReportService.getGrades(token, testData.class_id);
-                    console.log("response getGrades", response);
 
                     if (response.status === 200) {
                         if (loading) {

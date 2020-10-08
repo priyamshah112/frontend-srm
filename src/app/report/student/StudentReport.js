@@ -190,7 +190,6 @@ const useStyles = makeStyles((theme) => ({
 const StudentDetails = (props) => {
     const classes = useStyles(props);
     const [attendanceData, setAttendanceData] = useState({});
-    const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
 
     const { token, searchData = searchValue1, testData = testValue1 } = props;
@@ -334,24 +333,6 @@ const StudentDetails = (props) => {
             <StudentSkills />
             <StudentGrade {...props} />
             {renderRemark()}
-            {/* <div className={classes.publish}>
-                <Box>
-                    <Button
-                        variant='contained'
-                        disableElevation
-                        className={classes.cancelBtn}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        disableElevation
-                    >
-                        Publish
-                    </Button>
-                </Box>
-            </div> */}
             <BackdropLoader open={isLoading} />
         </div>
     );
