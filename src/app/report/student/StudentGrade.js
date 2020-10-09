@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: "space-between",
         margin: '10px 5px',
+        background: '#fff',
+        padding: '16px',
+        borderRadius: "2px"
     },
     fillGradeWrapper: {
         marginBottom: '30px',

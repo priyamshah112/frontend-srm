@@ -99,6 +99,15 @@ class ReportService {
             },
         });
     }
+
+    updateSkill(token, data) {
+        return axios.put(`${BACKEND_API_URL}/grades/${data.id}`, data, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
 }
 
 export default new ReportService();

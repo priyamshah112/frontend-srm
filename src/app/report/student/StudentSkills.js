@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Typography } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import editIcon from '../../../assets/images/Edit.svg';
 import ReportService from '../ReportService';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -83,23 +84,39 @@ const useStyles = makeStyles((theme) => ({
         margin: "20px 0px",
         textAlign: "center"
     },
+    remark: {
+        margin: "20px 0px",
+        textAlign: "center"
+    },
+    fillGrade: {
+        display: 'flex',
+        justifyContent: "space-around",
+        margin: '10px 5px',
+        background: '#fff',
+        padding: '16px',
+        borderRadius: "2px"
+    },
+    fillGradeWrapper: {
+        marginBottom: '30px',
+    },
 }));
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
 
     const [reportData, setReportData] = useState({});
+    const [skillData, setSkillData] = useState({});
+    const [editSkill, setEditSkill] = useState(false);
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
 
     const { searchData = searchValue1, testData = testValue1 } = props;
-    console.log("props=>", props);
+    const token = localStorage.getItem('srmToken');
 
     /* Fetch Report Card */
 
     useEffect(() => {
         let loading = true;
-        const token = localStorage.getItem('srmToken');
 
         if (searchData && searchData.user_classes) {
             async function getReportCard() {
@@ -107,7 +124,6 @@ const StudentSkills = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
-                        // console.log(" fetchReportCard response.data.data.data", JSON.stringify(response.data.data));
                     }
                 } else {
                     setError('Error in fetching report card');
@@ -123,9 +139,101 @@ const StudentSkills = (props) => {
         };
     }, []);
 
+    const setSkill = (obj) => {
+        setSkillData(obj)
+        setEditSkill(true)
+    }
+
+    const addSkillCall = (data) => {
+
+        let loading = true;
+
+        async function addSkill() {
+            try {
+                const response = await ReportService.updateSkill(token, skillsDefault);
+
+                if (response.status === 200) {
+                    if (loading) {
+                        setEditSkill(false)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+                setEditSkill(false)
+                setError('');
+            }
+        }
+        addSkill();
+        return () => {
+            loading = false;
+        };
+    }
+
+    const renderEditSkill = () => {
+        return (
+            <div className={classes.fillGradeWrapper}>
+                <div className={classes.remark}>
+                    <Typography>Student Skill</Typography>
+                </div>
+                {
+                    skillData.user_skill.map((obj, key) => {
+                        return (
+                            <div className={classes.fillGrade} key={key}>
+                                <TextField
+                                    id="outlined-textarea"
+                                    label="Skill"
+                                    value={obj.skill_list_data.skill_name}
+                                    placeholder={obj.skill_list_data.skill_name}
+                                    multiline
+                                    variant="outlined"
+                                    fullWidth={true}
+                                    onChange={(event) => { }}
+                                />
+                                <TextField
+                                    id="outlined-textarea"
+                                    label="Grade"
+                                    multiline
+                                    variant="outlined"
+                                    placeholder={'A'}
+                                    value={'A'}
+                                    style={{ marginLeft: '10px' }}
+                                    onChange={(event) => { }}
+                                />
+
+                            </div>
+                        )
+                    })
+                }
+                <Box>
+                    {renderRemark()}
+                </Box>
+                <div className={classes.publish}>
+
+                    <Box>
+                        <Button
+                            variant='contained'
+                            disableElevation
+                            className={classes.cancelBtn}
+                            onClick={() => setEditSkill(false)}
+                        >
+                            Cancel
+                    </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            disableElevation
+                            onClick={() => addSkillCall()}
+                        >
+                            Add
+                    </Button>
+                    </Box>
+                </div>
+
+            </div>
+        )
+    }
 
     const skillName = (skill) => {
-
         return (
             skill.user_skill.map((list, key) => {
                 return (
@@ -133,12 +241,10 @@ const StudentSkills = (props) => {
                         <div className={classes.cardItem}>
                             <Typography className={classes.cardItemSkill}>
                                 {
-                                    list.skill_list_data ?
-                                     <>
+                                    list.skill_list_data &&
+                                    <>
                                         {list.skill_list_data.skill_name}
-                                     </> 
-                                     :
-                                      ''
+                                    </>
                                 }
                             </Typography>
                             <Typography className={classes.cardItemGrade}>
@@ -152,16 +258,9 @@ const StudentSkills = (props) => {
         )
     }
 
+
+
     const renderSkill = () => {
-
-        console.log("reportData", reportData.subjectDetails)
-
-        if (reportData.subjectDetails) {
-            // Object.entries(reportData.subjectDetails).map(([key, value], i) => {
-            //     console.log(key, value);
-            // })
-        }
-
         return (
             <Box className={classes.rootGrid}>
                 {
@@ -183,7 +282,7 @@ const StudentSkills = (props) => {
                                                             <Typography>
                                                                 {item.name}
                                                             </Typography>
-                                                            <span>
+                                                            <span onClick={() => setSkill(item)}>
                                                                 <img
                                                                     src={editIcon} className={classes.editIcon} />
                                                             </span>
@@ -197,24 +296,7 @@ const StudentSkills = (props) => {
                                                             </Typography>
                                                         </div>
                                                         {
-
                                                             skillName(item)
-                                                            //     item.user_skill.map((skill, key) => {
-                                                            //     {console.log(skill.skill_list_data)}
-                                                            //     return (
-                                                            //         <span key={key}>
-                                                            //             <div className={classes.cardItem}>
-                                                            //                 <Typography className={classes.cardItemSkill}>
-                                                            //                     Listening Skill
-                                                            //                 </Typography>
-                                                            //                 <Typography className={classes.cardItemGrade}>
-                                                            //                     A+
-                                                            //                 </Typography>
-                                                            //             </div>
-                                                            //         </span>
-                                                            //     )
-                                                            // })
-
                                                         }
                                                     </Paper>
                                                 </Grid>
@@ -223,19 +305,43 @@ const StudentSkills = (props) => {
                                     })
                                     }
                                 </Grid>
-
                             </>
                         )
                     })
                 }
-
             </Box >
+        )
+    }
+
+    const renderRemark = () => {
+        return (
+            <div className={classes.remark}>
+                <div className={classes.remark}>
+                    <Typography>General Remark </Typography>
+                </div>
+                <TextField
+                    id="outlined-basic"
+                    label=""
+                    variant="outlined"
+                    classes={{
+                        root: classes.root
+                    }}
+                    fullWidth={true}
+                    multiline
+                    rows={4}
+                    rowsMax={4}
+                    size="medium"
+                    type="string"
+                />
+            </div>
         )
     }
 
     return (
         <div className={classes.container}>
-            {reportData.subjectDetails && renderSkill()}
+            {editSkill && renderEditSkill()}
+            {!editSkill && reportData.subjectDetails && renderSkill()}
+
         </div>
     );
 }
@@ -249,6 +355,37 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(StudentSkills);
 
 /*Temp */
+const skillsDefault = {
+    "id": 1,
+    "student_id": 1,
+    "test_id": 1,
+    "remarks": "Remarks",
+    "status": "draft",
+    "subject": [
+
+        {
+            'skill_id': 1,
+            'skill_name': '',
+            'grade': ''
+        },
+        {
+            'skill_id': 2,
+            'skill_name': '',
+            'grade': ''
+        },
+        {
+            'skill_id': 3,
+            'skill_name': '',
+            'grade': ''
+        },
+        {
+            'skill_id': 4,
+            'skill_name': '',
+            'grade': ''
+        }
+    ]
+}
+
 const searchValue1 = {}
 const testValue1 = {}
 

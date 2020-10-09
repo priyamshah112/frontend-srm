@@ -8,7 +8,7 @@ import PrintIcon from '../../../assets/images/report/printer.svg';
 
 import ReportService from '../ReportService';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
-import TextField from '@material-ui/core/TextField';
+
 import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
 
@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         backgroundColor: "#fff",
         width: "100%",
-        marginTop: "3%"
+        marginTop: "3%",
+        borderRadius: "2px"
     },
     attendanceWrapper2: {
         display: "flex",
@@ -119,10 +120,7 @@ const useStyles = makeStyles((theme) => ({
         flexBasis: "30%",
         padding: "5px"
     },
-    remark: {
-        margin: "20px 0px",
-        textAlign: "center"
-    },
+    
     Size14: {
         fontSize: "14px"
     },
@@ -302,30 +300,7 @@ const StudentDetails = (props) => {
         )
     }
 
-    const renderRemark = () => {
-        return (
-            <div className={classes.remark}>
-                <div className={classes.remark}>
-                    <Typography>General Remark </Typography>
-                </div>
-                <TextField
-                    id="outlined-basic"
-                    label=""
-                    variant="outlined"
-                    classes={{
-                        root: classes.root
-                    }}
-                    fullWidth={true}
-                    multiline
-                    rows={4}
-                    rowsMax={4}
-                    size="medium"
-                    type="string"
-                />
-
-            </div>
-        )
-    }
+    
 
     return (
         <div className={classes.container}>
@@ -333,7 +308,6 @@ const StudentDetails = (props) => {
             {renderAttendace()}
             <StudentSkills {...props} searchData={searchData} testData={testData} />
             <StudentGrade {...props} searchData={searchData} testData={testData} />
-            {renderRemark()}
             <BackdropLoader open={isLoading} />
         </div>
     );
