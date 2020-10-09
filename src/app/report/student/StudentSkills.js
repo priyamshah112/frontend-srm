@@ -79,16 +79,21 @@ const useStyles = makeStyles((theme) => ({
     colorWhite: {
         color: '#fff'
     },
+    subjectTitle: {
+        margin: "20px 0px",
+        textAlign: "center"
+    },
 }));
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
 
-    const [reportData, setReportData] = useState([]);
+    const [reportData, setReportData] = useState({});
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
 
     const { searchData = searchValue1, testData = testValue1 } = props;
+    console.log("props=>", props);
 
     /* Fetch Report Card */
 
@@ -102,7 +107,7 @@ const StudentSkills = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
-                        console.log(" fetchReportCard response.data.data.data", response.data.data);
+                        // console.log(" fetchReportCard response.data.data.data", JSON.stringify(response.data.data));
                     }
                 } else {
                     setError('Error in fetching report card');
@@ -119,60 +124,118 @@ const StudentSkills = (props) => {
     }, []);
 
 
+    const skillName = (skill) => {
+
+        return (
+            skill.user_skill.map((list, key) => {
+                return (
+                    <span>
+                        <div className={classes.cardItem}>
+                            <Typography className={classes.cardItemSkill}>
+                                {
+                                    list.skill_list_data ?
+                                     <>
+                                        {list.skill_list_data.skill_name}
+                                     </> 
+                                     :
+                                      ''
+                                }
+                            </Typography>
+                            <Typography className={classes.cardItemGrade}>
+                                A+
+                        </Typography>
+                        </div>
+                    </span>
+                )
+            }
+            )
+        )
+    }
+
     const renderSkill = () => {
+
+        console.log("reportData", reportData.subjectDetails)
+
+        if (reportData.subjectDetails) {
+            // Object.entries(reportData.subjectDetails).map(([key, value], i) => {
+            //     console.log(key, value);
+            // })
+        }
+
         return (
             <Box className={classes.rootGrid}>
-                <Grid container spacing={3}>
-                    {[1, 2, 3, 4].map((item, key) => {
+                {
+                    Object.entries(reportData.subjectDetails).map(([name, value], i) => {
                         return (
-                            <Grid item xs={6} key={key}>
-                                <Paper className={classes.paper} elevation={0}>
-                                    <div className={classes.cardTitle}>
-                                        <span>&nbsp;</span>
-                                        <Typography>
-                                            English
-                                </Typography>
-                                        <span>
-                                            <img
-                                                src={editIcon} className={classes.editIcon} />
-                                        </span>
-                                    </div>
-                                    <div className={classes.cardHeader}>
-                                        <Typography className={classes.cardHeaderSkill}>
-                                            <span className={classes.colorWhite}>Skill</span>
-                                        </Typography>
-                                        <Typography className={classes.cardHeaderGrade}>
-                                            <span className={classes.colorWhite}>Grade</span>
-                                        </Typography>
-                                    </div>
-                                    {[1, 2, 3].map((item, key) => {
+                            <>
+                                < div className={classes.subjectTitle}>
+                                    <Typography>{name}</Typography>
+                                </div>
+                                <Grid container spacing={3}>
+                                    {value.map((item, key) => {
                                         return (
-                                            <span key={key}>
-                                                <div className={classes.cardItem}>
-                                                    <Typography className={classes.cardItemSkill}>
-                                                        Listening Skill
-                                            </Typography>
-                                                    <Typography className={classes.cardItemGrade}>
-                                                        A+
-                                            </Typography>
-                                                </div>
-                                            </span>
+                                            <>
+
+                                                <Grid item xs={6} key={key}>
+                                                    <Paper className={classes.paper} elevation={0}>
+                                                        <div className={classes.cardTitle}>
+                                                            <span>&nbsp;</span>
+                                                            <Typography>
+                                                                {item.name}
+                                                            </Typography>
+                                                            <span>
+                                                                <img
+                                                                    src={editIcon} className={classes.editIcon} />
+                                                            </span>
+                                                        </div>
+                                                        <div className={classes.cardHeader}>
+                                                            <Typography className={classes.cardHeaderSkill}>
+                                                                <span className={classes.colorWhite}>Skill</span>
+                                                            </Typography>
+                                                            <Typography className={classes.cardHeaderGrade}>
+                                                                <span className={classes.colorWhite}>Grade</span>
+                                                            </Typography>
+                                                        </div>
+                                                        {
+
+                                                            skillName(item)
+                                                            //     item.user_skill.map((skill, key) => {
+                                                            //     {console.log(skill.skill_list_data)}
+                                                            //     return (
+                                                            //         <span key={key}>
+                                                            //             <div className={classes.cardItem}>
+                                                            //                 <Typography className={classes.cardItemSkill}>
+                                                            //                     Listening Skill
+                                                            //                 </Typography>
+                                                            //                 <Typography className={classes.cardItemGrade}>
+                                                            //                     A+
+                                                            //                 </Typography>
+                                                            //             </div>
+                                                            //         </span>
+                                                            //     )
+                                                            // })
+
+                                                        }
+                                                    </Paper>
+                                                </Grid>
+                                            </>
                                         )
                                     })
                                     }
-                                </Paper>
-                            </Grid>
+                                </Grid>
+
+                            </>
                         )
                     })
-                    }
-                </Grid>
-            </Box>
+                }
+
+            </Box >
         )
     }
 
     return (
         <div className={classes.container}>
-            {renderSkill()}
+            {reportData.subjectDetails && renderSkill()}
         </div>
     );
 }
