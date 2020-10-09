@@ -1,19 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import FormControl from "@material-ui/core/FormControl";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-
-import DescriptionIcon from "@material-ui/icons/Description";
-import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
-import VerticalAlignTopIcon from "@material-ui/icons/VerticalAlignTop";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import LogIcon from "../../../assets/images/attendance/log.svg";
-import SummaryIcon from "../../../assets/images/attendance/summary.svg";
+import AttendanceFooter from "../components/attendanceFooter";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -23,9 +15,14 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { getAttendence } from "../../redux/actions/attendence.action";
-import AnnouncementService from "../../newsAnnouncement/AnnouncementService";
-
-// import './Attendance.css';
+import Summary from "./summary";
+import { CircularProgress } from "@material-ui/core";
+import AttendanceDot from "../components/attendanceDot";
+import {
+  getWeekDates,
+  weekStartDate,
+  currentMonth,
+} from "../../../shared/datediff";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -59,45 +56,12 @@ const useStyles = makeStyles((theme) => ({
   panelCol: {
     width: "100%",
   },
-  summaryHerderTitle: {
-    display: "flex",
-  },
-  summaryIcon: {
-    color: "rgb(142 142 147)",
-  },
   summaryTitle: {
     textAlign: "left",
     font: "normal normal 900 15px Avenir",
     letterSpacing: "0px",
     color: "#2C2C2E",
     padding: "3px 0px 0px 3px",
-  },
-  summaryContent: {
-    marginTop: "10px",
-    borderRadius: "10px",
-    padding: "10px",
-    marginBottom: "30px",
-  },
-  contentRow: {
-    display: "flex",
-    padding: "20px 10px 0px 10px",
-  },
-  dayNum: {
-    background: "rgb(123 114 175 / 0.2) 0% 0% no-repeat padding-box;",
-    borderRadius: "4px",
-    padding: "1px 6px",
-    width: "fit-content",
-    fontSize: "14px",
-    letterSpacing: "0px",
-    color: "#2C2C2E",
-    margin: "0px 20px 0px 10px",
-  },
-  summaryMainContent: {
-    color: "var(--unnamed-color-1c1c1e)",
-    textAlign: "left",
-    font: "normal normal 300 14px/24px Avenir",
-    letterSpacing: "0px",
-    color: "#1C1C1E",
   },
   contentTitle: {
     display: "flex",
@@ -130,6 +94,18 @@ const useStyles = makeStyles((theme) => ({
     color: "#1C1C1E !important",
     opacity: "1",
   },
+  loadingView: {
+    height: "150px",
+  },
+  loader: {
+    position: "absolute",
+    left: "30px",
+    right: "50px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "150px",
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -150,58 +126,87 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-function createData(no, sub1, sub2, sub3, sub4, sub5, sub6) {
-  return { no, sub1, sub2, sub3, sub4, sub5, sub6 };
-}
-
 const ParentAttendanceContainer = (props) => {
-  const [state, setState] = React.useState({
-    classNum: "",
-    name: "hai",
-    study: "",
-    studyName: "Social studies",
-  });
+  const [filter, setFilter] = useState("week");
+  const [attendance, setAttendance] = useState({});
+  const [subjects, setSubject] = useState([]);
+  const [weekStart, setWeekStart] = useState(weekStartDate);
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 
   useEffect(() => {
     fetchAttendence();
   }, []);
 
-  const fetchAttendence = async () => {
-    props.getAttendence();
+  const fetchAttendence = () => {
+    setLoading(true);
+    props.getAttendence({ get_by: filter, from_date: "2020-09-28", to_date: "2020-10-05" }, onGet, onFail);
+  };
+
+  const onGet = (d = {}) => {
+    const { data = {} } = d;
+    const { attendance = {} } = data;
+    setAttendance(data);
+    setSubjects(attendance.data);
+  };
+
+  const onFail = (err = {}) => {
+    setLoading(false);
+    setError(err.message);
+  };
+
+  const setSubjects = (att = []) => {
+    const sub = [];
+    att.map((s) => {
+      const name = s.subject_name || s.subject_id;
+      if (!sub.includes(name)) {
+        sub.push(name);
+      }
+    });
+    setSubject(sub);
+    filterAttendanceData(att, sub);
+  };
+
+  const filterAttendanceData = (att = [], sub = []) => {
+    const weekData = getWeekDates(weekStart) || [];
+    weekData.map((d, index) => {
+      const subjectAttendance = {};
+
+      sub.map((s) => {
+        subjectAttendance[s] = {};
+      });
+
+      att.map((a) => {
+        if (d.date === a.attendance_date) {
+          const name = a.subject_name || a.subject_id;
+          subjectAttendance[name] = { ...a, user: undefined };
+        }
+      });
+
+      weekData[index] = { ...d, subjectAttendance };
+    });
+    setAttendanceData(weekData);
+    setLoading(false);
   };
 
   const classes = useStyles();
-  const selectedRole = props.selectedRole;
-  const handleClassChange = (event) => {
-    const name = event.target.name;
-    setState({
-      ...state,
-      [name]: event.target.value,
+
+  const weekData = getWeekDates(weekStart);
+
+  console.log("ParentAttendanceContainer weekData", {
+    weekData,
+    attendance: attendance.attendance,
+  });
+
+  const renderDot = (subjectAttendance = {}) => {
+    const keys = Object.keys(subjectAttendance);
+    return keys.map((k) => {
+      const item = subjectAttendance[k] || {};
+      return <AttendanceDot status={item.status} />;
     });
   };
-  const handleStudyChange = (event) => {
-    console.log(event.target);
-    const studyName = event.target.name;
-    setState({
-      ...state,
-      [studyName]: event.target.value,
-    });
-  };
-
-  const handleClick = () => {
-    console.log("click");
-  };
-
-  // 1=present, 0=absent, 2=holiday, 3=empty
-  const rows = [
-    createData("01", 1, 0, 2, 3, 1, 3, 3),
-    createData("02", 1, 0, 2, 3, 1, 3, 3),
-    createData("03", 1, 0, 2, 3, 1, 3, 3),
-    createData("04", 1, 0, 2, 3, 1, 3, 3),
-    createData("05", 1, 0, 2, 3, 1, 3, 3),
-    createData("06", 1, 0, 2, 3, 1, 3, 3),
-    createData("07", 1, 0, 2, 3, 1, 3, 3),
-  ];
 
   return (
     <div className={classes.container}>
@@ -209,31 +214,7 @@ const ParentAttendanceContainer = (props) => {
         <Grid item sm={12} className={classes.panel}>
           <Grid container className={classes.topPanelRow}>
             <Grid item xs={12} className={classes.panelCol}>
-              <div className={classes.summaryHerderTitle}>
-                <img src={SummaryIcon} alt="Menu" width="24" height="24" />
-                <Typography className={classes.summaryTitle}>
-                  SUMMARY
-                </Typography>
-              </div>
-              <Paper className={classes.summaryContent}>
-                <div className={classes.contentRow}>
-                  <Typography>Total Class Days</Typography>
-                  <Typography className={classes.dayNum}>22</Typography>
-                  <Typography>Holidays</Typography>
-                  <Typography className={classes.dayNum}>06</Typography>
-                  <Typography>Days Attended</Typography>
-                  <Typography className={classes.dayNum}>18</Typography>
-                  <Typography>Days Absent</Typography>
-                  <Typography className={classes.dayNum}>04</Typography>
-                </div>
-                <div className={classes.contentRow}>
-                  <Typography className={classes.summaryMainContent}>
-                    Science - <b>100%</b>, English - <b>99%</b>, Kannada -{" "}
-                    <b>70%</b>, Mathematics - <b>89%</b>, Social Science -{" "}
-                    <b>97%</b>, Moral Science - <b>91%</b>
-                  </Typography>
-                </div>
-              </Paper>
+              <Summary data={attendance} loading={loading} />
 
               <div className={classes.contentTitle}>
                 <img src={LogIcon} alt="Menu" width="24" height="24" />
@@ -252,151 +233,49 @@ const ParentAttendanceContainer = (props) => {
                   </Typography>
                 </div>
                 <Table aria-label="customized table">
-                  <TableHead>
-                    <TableRow className={classes.tableRowHeader}>
-                      <StyledTableCell className={classes.tableTitle}>
-                        {" "}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        className={classes.tableTitle}
-                        align="center"
-                      >
-                        Sci
-                      </StyledTableCell>
-                      <StyledTableCell
-                        className={classes.tableTitle}
-                        align="center"
-                      >
-                        Eng
-                      </StyledTableCell>
-                      <StyledTableCell
-                        className={classes.tableTitle}
-                        align="center"
-                      >
-                        Mat
-                      </StyledTableCell>
-                      <StyledTableCell
-                        className={classes.tableTitle}
-                        align="center"
-                      >
-                        Kan
-                      </StyledTableCell>
-                      <StyledTableCell
-                        className={classes.tableTitle}
-                        align="center"
-                      >
-                        S.Sc
-                      </StyledTableCell>
-                      <StyledTableCell
-                        className={classes.tableTitle}
-                        align="center"
-                      >
-                        M.Sc
-                      </StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row, rowIndex) => (
-                      <StyledTableRow key={rowIndex} className="statusTable">
-                        <StyledTableCell className={classes.tableNoColumn}>
-                          {row.no}
+                  {subjects.length ? (
+                    <TableHead>
+                      <TableRow className={classes.tableRowHeader}>
+                        <StyledTableCell className={classes.tableTitle}>
+                          Month - {selectedMonth}
                         </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <FiberManualRecordIcon
-                            className={
-                              row.sub1 == 0
-                                ? "absentStatus"
-                                : row.sub1 == 1
-                                ? "presentStatus"
-                                : row.sub1 == 2
-                                ? "holidayStatus"
-                                : "emptyStatus"
-                            }
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <FiberManualRecordIcon
-                            className={
-                              row.sub2 == 0
-                                ? "absentStatus"
-                                : row.sub2 == 1
-                                ? "presentStatus"
-                                : row.sub2 == 2
-                                ? "holidayStatus"
-                                : "emptyStatus"
-                            }
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <FiberManualRecordIcon
-                            className={
-                              row.sub3 == 0
-                                ? "absentStatus"
-                                : row.sub3 == 1
-                                ? "presentStatus"
-                                : row.sub3 == 2
-                                ? "holidayStatus"
-                                : "emptyStatus"
-                            }
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <FiberManualRecordIcon
-                            className={
-                              row.sub4 == 0
-                                ? "absentStatus"
-                                : row.sub4 == 1
-                                ? "presentStatus"
-                                : row.sub4 == 2
-                                ? "holidayStatus"
-                                : "emptyStatus"
-                            }
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <FiberManualRecordIcon
-                            className={
-                              row.sub5 == 0
-                                ? "absentStatus"
-                                : row.sub5 == 1
-                                ? "presentStatus"
-                                : row.sub5 == 2
-                                ? "holidayStatus"
-                                : "emptyStatus"
-                            }
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <FiberManualRecordIcon
-                            className={
-                              row.sub6 == 0
-                                ? "absentStatus"
-                                : row.sub6 == 1
-                                ? "presentStatus"
-                                : row.sub6 == 2
-                                ? "holidayStatus"
-                                : "emptyStatus"
-                            }
-                          />
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    ))}
-                  </TableBody>
+                        {subjects.map((s) => (
+                          <StyledTableCell
+                            className={classes.tableTitle}
+                            align="center"
+                          >
+                            {s}
+                          </StyledTableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                  ) : null}
+                  {loading ? (
+                    <div className={classes.loadingView}>
+                      <div className={classes.loader}>
+                        <CircularProgress center alignCenter />
+                      </div>
+                    </div>
+                  ) : (
+                    <TableBody>
+                      {attendanceData.map((row, rowIndex) => {
+                        const { day = {} } = row;
+                        return (
+                          <StyledTableRow
+                            key={rowIndex}
+                            className="statusTable"
+                          >
+                            <StyledTableCell className={classes.tableNoColumn}>
+                              {day.date_day}
+                            </StyledTableCell>
+                            {renderDot(row.subjectAttendance || {})}
+                          </StyledTableRow>
+                        );
+                      })}
+                    </TableBody>
+                  )}
                 </Table>
-                <div className="tableBottom">
-                  <div className="stateRow">
-                    <FiberManualRecordIcon className="presentStatus" />
-                    <p className="rollStatus">Present</p>
-                  </div>
-                  <div className="stateRow">
-                    <FiberManualRecordIcon className="absentStatus" />
-                    <p className="rollStatus">Absent</p>
-                  </div>
-                  <div className="stateRow">
-                    <FiberManualRecordIcon className="holidayStatus" />
-                    <p className="rollStatus">Holiday</p>
-                  </div>
-                </div>
+                <AttendanceFooter />
               </TableContainer>
             </Grid>
           </Grid>
@@ -406,12 +285,14 @@ const ParentAttendanceContainer = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ auth, Attendence }) => {
+  const { attendenceLoading } = Attendence;
   return {
-    selectedRole: state.auth.selectedRole,
+    selectedRole: auth.selectedRole,
+    // loading: attendenceLoading,
   };
 };
 
-export default connect(mapStateToProps, { getAttendence })(
-  ParentAttendanceContainer
-);
+export default connect(mapStateToProps, {
+  getAttendence,
+})(ParentAttendanceContainer);

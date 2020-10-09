@@ -59,7 +59,7 @@ export const getPreviousWeekStartDate = (currentWeek) =>
   moment(currentWeek).add(-7, "days");
 
 export const getWeekEndDate = (startDate) =>
-  moment(startDate).add(7, "days");
+  moment(startDate).add(6, "days");
 
 export const getDatesBetween = (strDate, stpDate) => {
   let dates = [];

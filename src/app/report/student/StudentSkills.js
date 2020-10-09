@@ -88,7 +88,7 @@ const StudentSkills = (props) => {
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
 
-    const { searchData, testData } = props;
+    const { searchData = searchValue1, testData = testValue1 } = props;
 
     /* Fetch Report Card */
 
@@ -173,25 +173,6 @@ const StudentSkills = (props) => {
     return (
         <div className={classes.container}>
             {renderSkill()}
-            {/* <div className={classes.publish}>
-                <Box>
-                    <Button
-                        variant='contained'
-                        disableElevation
-                        className={classes.cancelBtn}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        disableElevation
-                    >
-                        Publish
-                    </Button>
-                </Box>
-            </div> */}
-            {/* <BackdropLoader open={isLoading} /> */}
         </div>
     );
 }
@@ -203,3 +184,10 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(StudentSkills);
+
+/*Temp */
+const searchValue1 = {}
+const testValue1 = {}
+
+
+

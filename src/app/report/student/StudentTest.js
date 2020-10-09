@@ -7,7 +7,6 @@ import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import ReportLogo from '../../../assets/images/report/ReportLogo.svg';
 import ReportService from '../ReportService';
 import Grid from "@material-ui/core/Grid";
-
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 const useStyles = makeStyles((theme) => ({
