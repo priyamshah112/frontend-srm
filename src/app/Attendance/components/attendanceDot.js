@@ -23,7 +23,7 @@ const classNames = {
   holiday: "holidayStatus",
 };
 
-const AttendanceDot = ({ status, onClick, loading, error }) => {
+const AttendanceDot = ({ status, onClick = () => {}, loading, error }) => {
   const onPress = () => {
     if (!classNames[status] || loading) return;
     onClick();

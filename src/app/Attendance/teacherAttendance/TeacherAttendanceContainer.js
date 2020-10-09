@@ -18,7 +18,6 @@ import {
   updateAddendance,
 } from "../../redux/actions/attendence.action";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { attendanceData } from "../dummyData";
 import {
   weekStartDate,
   getWeekDates,
@@ -95,12 +94,20 @@ const useStyles = makeStyles((theme) => ({
     color: "#808082",
     opacity: "1",
   },
-  loader: {
-    justifyContent: "center",
-    alignItem: "center",
-  },
   emptyData: {
     padding: '50px 20px',
+  },
+  loadingView: {
+    height: '150px'
+  },
+  loader: {
+    position: 'absolute',
+    left: '30px',
+    right: '50px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '150px',
   }
 }));
 
@@ -121,8 +128,6 @@ const StyledTableRow = withStyles((theme) => ({
     },
   },
 }))(TableRow);
-
-const todayDate = moment().format("YY-MM-DD");
 
 const TeacherAttendanceContainer = (props) => {
   const [attendence, setAttendence] = useState([]);
@@ -167,14 +172,7 @@ const TeacherAttendanceContainer = (props) => {
     setError(err.message);
   };
 
-  const data = formatAttendanceData(attendanceData);
   const weekData = getWeekDates(weekStart);
-
-  console.log("TeacherAttendanceContainer filterData", {
-    weekStart: moment(weekStart).format("YYYY-MM-DD"),
-    endDate: moment(weekStartDate).format("YYYY-MM-DD"),
-    isFuture: isFutureDate(weekStart, weekStartDate),
-  });
 
   const onPrevious = () => {
     const startDate = getPreviousWeekStartDate(weekStart);
@@ -225,7 +223,6 @@ const TeacherAttendanceContainer = (props) => {
       subject_id,
       status: attendanceStatus[d.status] || "absent",
     };
-    console.log("TeacherAttendanceContainer changeAttendanceStatus", d);
     props.updateAddendance(
       data,
       d.id,
@@ -269,23 +266,12 @@ const TeacherAttendanceContainer = (props) => {
     });
 
     aData[rowIndex].dates = dates;
-    console.log("TeacherAttendanceContainer updateStatus", {
-      status: d.status,
-      path,
-      pathArr,
-      aData,
-      dates,
-    });
     setAttendence(aData);
   };
 
   const renderDots = (row = {}, rowIndex) => {
     const { dates = [] } = row;
     const datesData = getAttendanceDates(dates);
-    console.log("TeacherAttendanceContainer renderDots getAttendanceDates", {
-      datesData,
-      dates,
-    });
     const userData = {
       class_id: row.class_id,
       roll_no: row.roll_no,
@@ -355,7 +341,11 @@ const TeacherAttendanceContainer = (props) => {
                 </TableRow>
               </TableHead>
               {loading ? (
+                <div className={classes.loadingView}>
+                  <div className={classes.loader}>
                 <CircularProgress center alignCenter />
+                </div>
+                </div>
               ) : (
                 <TableBody>
                   {attendence.length ? attendence.map((row, rowIndex) => (
