@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
+import { useReactToPrint } from "react-to-print";
+
 import ArrowBack from '@material-ui/icons/ArrowBackIos';
-import { Typography, Button } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import downloadIcon from '../../../assets/images/attendance/download.svg';
 import PrintIcon from '../../../assets/images/report/printer.svg';
@@ -79,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
     daysNumber: {
         fontSize: "14px !important",
         color: "#1C1C1E",
-        borderBottom: "1px solid #cdcdcd"
+        borderBottom: "1px solid #cdcdcd",
+        maxWidth: "139px"
     },
     rootGrid: {
         flexFlow: "1",
@@ -120,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
         flexBasis: "30%",
         padding: "5px"
     },
-    
+
     Size14: {
         fontSize: "14px"
     },
@@ -189,9 +192,10 @@ const StudentDetails = (props) => {
     const classes = useStyles(props);
     const [attendanceData, setAttendanceData] = useState({});
     const [isLoading, setLoading] = useState(true);
-    
+    const printRef = useRef(null);
 
     const { token, searchData = searchValue1, testData = testValue1 } = props;
+
     const goToSearch = () => {
         props.home();
     }
@@ -226,6 +230,19 @@ const StudentDetails = (props) => {
         };
     }, []);
 
+
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current
+    });
+
+    const loadingPrint = () => {
+        setLoading(true);
+        setTimeout(() => {
+            handlePrint()
+            setLoading(false)
+        }, 2000)
+    };
+
     const renderHeader = () => {
         return (
             <>
@@ -233,9 +250,8 @@ const StudentDetails = (props) => {
                     <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
                     <Typography>{testData.name}</Typography>
                     <div>
-                        <span className={classes.printIcon}>
-                            <img
-                                src={PrintIcon} className={classes.downloadIcon} />
+                        <span className={classes.printIcon} onClick={loadingPrint}>
+                            <img src={PrintIcon} className={classes.downloadIcon} />
                         </span>
                         <span>
                             <img
@@ -300,10 +316,10 @@ const StudentDetails = (props) => {
         )
     }
 
-    
+
 
     return (
-        <div className={classes.container}>
+        <div className={classes.container} ref={printRef}>
             {renderHeader()}
             {renderAttendace()}
             <StudentSkills {...props} searchData={searchData} testData={testData} />
@@ -321,20 +337,23 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(StudentDetails);
 
+
+/* Temp */
+
 var searchValue1 = {
-    "id": 1392,
+    "id": 1240,
     "type": "username",
-    "username": "oral09",
-    "firstname": "Lelia",
-    "lastname": "Sauer",
+    "username": "georgianna.rowe",
+    "firstname": "Catalina",
+    "lastname": "Wiza",
     "gender": "female",
     "verified_at": null,
     "otp": null,
     "otp_expiry": null,
-    "thumbnail": "https://lorempixel.com/640/480/?67589",
+    "thumbnail": "https://lorempixel.com/640/480/?19048",
     "device_tokens": null,
-    "created_at": "2020-10-04T12:05:09.000000Z",
-    "updated_at": "2020-10-04T12:05:09.000000Z",
+    "created_at": "2020-10-04T12:04:57.000000Z",
+    "updated_at": "2020-10-04T12:04:57.000000Z",
     "roles": [
         {
             "id": 4,
@@ -343,32 +362,32 @@ var searchValue1 = {
             "created_at": "2020-10-04T12:03:10.000000Z",
             "updated_at": "2020-10-04T12:03:10.000000Z",
             "pivot": {
-                "model_id": 1392,
+                "model_id": 1240,
                 "role_id": 4,
                 "model_type": "App\\User"
             }
         }
     ],
     "user_classes": {
-        "id": 1391,
-        "user_id": 1392,
-        "school_id": 10,
-        "class_id": 91,
+        "id": 1239,
+        "user_id": 1240,
+        "school_id": 9,
+        "class_id": 82,
         "user_code": null,
         "class_code": null,
         "from_date": "2020-10-04",
         "to_date": "2021-10-04",
         "created_by": 1,
         "updated_by": 1,
-        "created_at": "2020-10-04T12:05:09.000000Z",
+        "created_at": "2020-10-04T12:04:57.000000Z",
         "updated_at": null,
         "deleted_at": null,
         "classes_data": {
-            "id": 91,
-            "code": "SRM-CLASS-5f79b9ff64e961601812991",
-            "school_id": 10,
-            "class_name": "Class 1",
-            "internal_name": "class-1",
+            "id": 82,
+            "code": "SRM-CLASS-5f79b9ff62d501601812991",
+            "school_id": 9,
+            "class_name": "Class 2",
+            "internal_name": "class-2",
             "created_by": 1,
             "updated_by": 1,
             "created_at": "2020-10-04T12:03:11.000000Z",
@@ -376,8 +395,8 @@ var searchValue1 = {
             "deleted_at": null
         },
         "school_data": {
-            "id": 10,
-            "name": "Zoila High School",
+            "id": 9,
+            "name": "Chanel High School",
             "registered_date": "2020-08-21",
             "created_by": 1,
             "updated_by": 1,
@@ -389,10 +408,10 @@ var searchValue1 = {
 }
 
 var testValue1 = {
-    "id": 364,
-    "code": "SRM-EXMTST-5f79ba86db3851601813126",
-    "school_id": 10,
-    "class_id": 91,
+    "id": 328,
+    "code": "SRM-EXMTST-5f79ba86d3d311601813126",
+    "school_id": 9,
+    "class_id": 82,
     "name": "Test 4",
     "image": null,
     "created_by": 1,

@@ -153,7 +153,7 @@ const ReportUpload = (props) => {
                 onChange={handleChange}
                 dropzoneText="Drag file here"
                 classes={{ root: classes.root, icon: classes.icon }}
-                acceptedFiles={['.xlsx']}
+                acceptedFiles={['.xlsx','.xls','.xlsm']}
                 icon={classes.icon}
                 dropzoneParagraphClass={classes.text}
                 showAlerts={false}

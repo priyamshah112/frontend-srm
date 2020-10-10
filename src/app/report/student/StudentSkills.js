@@ -31,12 +31,14 @@ const useStyles = makeStyles((theme) => ({
         flexBasis: "70%",
         background: "#7B72AF",
         padding: "5px",
-        borderRight: "1px solid lightgrey"
+        borderRight: "1px solid lightgrey",
+        textAlign: 'center'
     },
     cardHeaderGrade: {
         flexBasis: "30%",
         background: "#7B72AF",
-        padding: "5px"
+        padding: "5px",
+        textAlign: 'center'
     },
     cardItem: {
         display: "flex",
@@ -50,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
     },
     cardItemGrade: {
         flexBasis: "30%",
-        padding: "5px"
+        padding: "5px",
+        textAlign: 'center'
     },
     publish: {
         display: "flex",
@@ -92,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: "space-around",
         margin: '10px 5px',
-        background: '#fff',
         padding: '16px',
         borderRadius: "2px"
     },
@@ -112,7 +114,7 @@ const StudentSkills = (props) => {
 
     const { searchData = searchValue1, testData = testValue1 } = props;
     const token = localStorage.getItem('srmToken');
-
+    // ReportService.deleteSkill(token, 4);
     /* Fetch Report Card */
 
     useEffect(() => {
@@ -120,7 +122,7 @@ const StudentSkills = (props) => {
 
         if (searchData && searchData.user_classes) {
             async function getReportCard() {
-                const response = await ReportService.fetchReportCard(token, searchData.id, testData.school_id);
+                const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
@@ -140,8 +142,8 @@ const StudentSkills = (props) => {
     }, []);
 
     const setSkill = (obj) => {
-        setSkillData(obj)
-        setEditSkill(true)
+        setSkillData(obj);
+        setEditSkill(true);
     }
 
     const addSkillCall = (data) => {
@@ -150,7 +152,7 @@ const StudentSkills = (props) => {
 
         async function addSkill() {
             try {
-                const response = await ReportService.updateSkill(token, skillsDefault);
+                const response = await ReportService.createSkill(token, data);
 
                 if (response.status === 200) {
                     if (loading) {
@@ -169,6 +171,79 @@ const StudentSkills = (props) => {
         };
     }
 
+    const updateSkillCall = (data) => {
+        let loading = true;
+        async function addSkill() {
+            try {
+                const response = await ReportService.updateSkill(token, data);
+
+                if (response.status === 200) {
+                    if (loading) {
+                        // setEditSkill(false)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+                // setError('');
+                // setEditSkill(false)
+            }
+        }
+        addSkill();
+        return () => {
+            loading = false;
+        };
+    }
+
+    const onChangeSkills = (event, obj, key) => {
+        const skill_list_data = { ...obj.skill_list_data, skill_name: event.target.value };
+        obj.skill_list_data = skill_list_data;
+        skillData.user_skill[key] = obj;
+        const subject = [];
+        skillData.user_skill.map((item, key) => {
+            const value = {
+                'skill_id': item.id,
+                'skill_name': item.skill_list_data.skill_name,
+                'grade': 'B'
+            }
+            subject.push(value)
+        })
+
+        if (reportData.grades[0]) {
+            const updateSkill = {
+                "id": reportData.grades[0].id,
+
+                "student_id": searchData.id,
+                "test_id": testData.id,
+                "remarks": "Remarks",
+                "status": "draft",
+                "subject": [{
+                    "subject_id": skillData.id,
+                    "subject_name": skillData.name,
+                    "skill": subject
+                }]
+            }
+            updateSkillCall(updateSkill)
+        } else {
+            const createSkill = {
+                "student_id": searchData.id,
+                "test_id": testData.id,
+                "remarks": "Remarks",
+                "status": "draft",
+                "subject": [{
+                    "subject_id": skillData.id,
+                    "subject_name": skillData.name,
+                    "skill": subject
+                }]
+            }
+            addSkillCall(createSkill)
+        }
+    }
+
+
+    const onChangeGrade = (event, obj, key) => {
+       
+    }
+
     const renderEditSkill = () => {
         return (
             <div className={classes.fillGradeWrapper}>
@@ -177,27 +252,30 @@ const StudentSkills = (props) => {
                 </div>
                 {
                     skillData.user_skill.map((obj, key) => {
+                        console.log("obj.skill_list_data.skill_name", obj.skill_list_data.skill_name);
+
                         return (
                             <div className={classes.fillGrade} key={key}>
                                 <TextField
                                     id="outlined-textarea"
                                     label="Skill"
-                                    value={obj.skill_list_data.skill_name}
-                                    placeholder={obj.skill_list_data.skill_name}
+                                    placeholder={'Skill Name'}
+                                    defaultValue={obj.skill_list_data.skill_name}
                                     multiline
                                     variant="outlined"
                                     fullWidth={true}
-                                    onChange={(event) => { }}
+                                    style={{ background: '#fff' }}
+                                    onChange={(event) => { onChangeSkills(event, obj, key) }}
                                 />
                                 <TextField
                                     id="outlined-textarea"
                                     label="Grade"
                                     multiline
                                     variant="outlined"
-                                    placeholder={'A'}
+                                    placeholder={'Grade Name'}
                                     value={'A'}
-                                    style={{ marginLeft: '10px' }}
-                                    onChange={(event) => { }}
+                                    style={{ marginLeft: '10px', background: '#fff' }}
+                                    onChange={(event) => { onChangeGrade(event, obj, key) }}
                                 />
 
                             </div>
@@ -236,8 +314,20 @@ const StudentSkills = (props) => {
     const skillName = (skill) => {
         return (
             skill.user_skill.map((list, key) => {
+
+                if (reportData.grades[0]) {
+                    if (reportData.grades[0].report_grade[0]) {
+                        reportData.grades[0].report_grade.map((g, i) => {
+                            console.log("g.school_id", g);
+                            if (list.subject_id == g.subject_id) {
+                                list.skill_list_data.grade_name = g.grade
+                            }
+                        })
+                    }
+                };
+
                 return (
-                    <span>
+                    <span key={key}>
                         <div className={classes.cardItem}>
                             <Typography className={classes.cardItemSkill}>
                                 {
@@ -248,8 +338,8 @@ const StudentSkills = (props) => {
                                 }
                             </Typography>
                             <Typography className={classes.cardItemGrade}>
-                                A+
-                        </Typography>
+                                {list.skill_list_data.grade_name || '-'}
+                            </Typography>
                         </div>
                     </span>
                 )
@@ -258,23 +348,20 @@ const StudentSkills = (props) => {
         )
     }
 
-
-
     const renderSkill = () => {
         return (
             <Box className={classes.rootGrid}>
                 {
                     Object.entries(reportData.subjectDetails).map(([name, value], i) => {
+
                         return (
-                            <>
+                            <div key={i}>
                                 < div className={classes.subjectTitle}>
                                     <Typography>{name}</Typography>
                                 </div>
                                 <Grid container spacing={3}>
                                     {value.map((item, key) => {
                                         return (
-                                            <>
-
                                                 <Grid item xs={6} key={key}>
                                                     <Paper className={classes.paper} elevation={0}>
                                                         <div className={classes.cardTitle}>
@@ -300,12 +387,11 @@ const StudentSkills = (props) => {
                                                         }
                                                     </Paper>
                                                 </Grid>
-                                            </>
                                         )
                                     })
                                     }
                                 </Grid>
-                            </>
+                            </div>
                         )
                     })
                 }
@@ -323,15 +409,13 @@ const StudentSkills = (props) => {
                     id="outlined-basic"
                     label=""
                     variant="outlined"
-                    classes={{
-                        root: classes.root
-                    }}
                     fullWidth={true}
                     multiline
                     rows={4}
                     rowsMax={4}
                     size="medium"
                     type="string"
+                    style={{ background: '#fff' }}
                 />
             </div>
         )
@@ -354,40 +438,89 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(StudentSkills);
 
-/*Temp */
-const skillsDefault = {
-    "id": 1,
-    "student_id": 1,
-    "test_id": 1,
-    "remarks": "Remarks",
-    "status": "draft",
-    "subject": [
+/* Temp */
 
+var searchValue1 = {
+    "id": 1240,
+    "type": "username",
+    "username": "georgianna.rowe",
+    "firstname": "Catalina",
+    "lastname": "Wiza",
+    "gender": "female",
+    "verified_at": null,
+    "otp": null,
+    "otp_expiry": null,
+    "thumbnail": "https://lorempixel.com/640/480/?19048",
+    "device_tokens": null,
+    "created_at": "2020-10-04T12:04:57.000000Z",
+    "updated_at": "2020-10-04T12:04:57.000000Z",
+    "roles": [
         {
-            'skill_id': 1,
-            'skill_name': '',
-            'grade': ''
-        },
-        {
-            'skill_id': 2,
-            'skill_name': '',
-            'grade': ''
-        },
-        {
-            'skill_id': 3,
-            'skill_name': '',
-            'grade': ''
-        },
-        {
-            'skill_id': 4,
-            'skill_name': '',
-            'grade': ''
+            "id": 4,
+            "name": "student",
+            "guard_name": "web",
+            "created_at": "2020-10-04T12:03:10.000000Z",
+            "updated_at": "2020-10-04T12:03:10.000000Z",
+            "pivot": {
+                "model_id": 1240,
+                "role_id": 4,
+                "model_type": "App\\User"
+            }
         }
-    ]
+    ],
+    "user_classes": {
+        "id": 1239,
+        "user_id": 1240,
+        "school_id": 9,
+        "class_id": 82,
+        "user_code": null,
+        "class_code": null,
+        "from_date": "2020-10-04",
+        "to_date": "2021-10-04",
+        "created_by": 1,
+        "updated_by": 1,
+        "created_at": "2020-10-04T12:04:57.000000Z",
+        "updated_at": null,
+        "deleted_at": null,
+        "classes_data": {
+            "id": 82,
+            "code": "SRM-CLASS-5f79b9ff62d501601812991",
+            "school_id": 9,
+            "class_name": "Class 2",
+            "internal_name": "class-2",
+            "created_by": 1,
+            "updated_by": 1,
+            "created_at": "2020-10-04T12:03:11.000000Z",
+            "updated_at": "2020-10-04T12:03:11.000000Z",
+            "deleted_at": null
+        },
+        "school_data": {
+            "id": 9,
+            "name": "Chanel High School",
+            "registered_date": "2020-08-21",
+            "created_by": 1,
+            "updated_by": 1,
+            "created_at": "2020-10-04T12:03:11.000000Z",
+            "updated_at": "2020-10-04T12:03:11.000000Z",
+            "deleted_at": null
+        }
+    }
 }
 
-const searchValue1 = {}
-const testValue1 = {}
+var testValue1 = {
+    "id": 328,
+    "code": "SRM-EXMTST-5f79ba86d3d311601813126",
+    "school_id": 9,
+    "class_id": 82,
+    "name": "Test 4",
+    "image": null,
+    "created_by": 1,
+    "updated_by": 1,
+    "created_at": "2020-10-04 12:05:26",
+    "updated_at": "2020-10-04 12:05:26",
+    "deleted_at": null
+}
+
 
 
 
