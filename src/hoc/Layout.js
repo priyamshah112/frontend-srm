@@ -323,6 +323,7 @@ const Layout = (props) => {
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const isMenuOpen = Boolean(anchorEl);
+  console.log("props.selectedRole", props.selectedRole);
 
   onMessageListener()
     .then((payload) => {
@@ -683,11 +684,11 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                ((props.selectedRole === "admin" ||
-                  props.selectedRole === "teacher") &&
-                  item.name === "Student Report Card") ||
-                item.name === "Student Reports" ||
-                item.name === "Bulk Upload"
+                (props.selectedRole === 'admin' ||
+                  props.selectedRole === 'teacher') && (
+                  item.name === 'Student Report Card' ||
+                  item.name === 'Student Reports' ||
+                  item.name === 'Bulk Upload')
               ) {
                 if (item.itemIndex === 14) {
                   return (
@@ -764,8 +765,11 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                item.name !== "News & Announcements" &&
-                item.name !== "Events"
+                item.name !== 'News & Announcements' &&
+                item.name !== 'Events' &&
+                item.name !== 'Student Report Card' &&
+                item.name !== 'Student Reports' &&
+                item.name !== 'Bulk Upload'
               ) {
                 return (
                   <ListItem
