@@ -13,7 +13,6 @@ export const dateDiff = (eventDateString) => {
       return 2;
     }
   }
-  // return undefined if not eligible to set reminder
 };
 
 moment.updateLocale("en", {
@@ -33,7 +32,7 @@ export const weekDays = {
   7: { day_sort: "S", day: "Sunday" },
 };
 
-export const getMonth = (date) => moment(date).format("YY-MM");
+export const getMonth = (date) => moment(date).format("YYYY-MM");
 
 export const currentMonth = getMonth(moment());
 
@@ -42,7 +41,7 @@ export const getWeekDay = (dateString) => {
   return weekDays[dayNumber] || {};
 };
 
-export const getDaysByMonth = (month) => {
+export const getDaysByMonth = (month = currentMonth) => {
   const daysInMonth = moment(month).daysInMonth();
   return Array.from({ length: daysInMonth }, (v, k) => {
     return `${month}-${k + 1}`;
@@ -50,7 +49,8 @@ export const getDaysByMonth = (month) => {
 };
 
 export const currentMonthDates = getDaysByMonth(currentMonth);
-export const weekStartDate = today.startOf("week");
+export const weekStartDate = moment().startOf("week");
+export const monthStartDate = today.startOf("month");
 
 export const getNextWeekStartDate = (currentWeek) =>
   moment(currentWeek).add(7, "days");
@@ -58,8 +58,18 @@ export const getNextWeekStartDate = (currentWeek) =>
 export const getPreviousWeekStartDate = (currentWeek) =>
   moment(currentWeek).add(-7, "days");
 
-export const getWeekEndDate = (startDate) =>
-  moment(startDate).add(6, "days");
+export const getNextMonthStartDate = (currentMonth) =>
+  moment(currentMonth).add(1, "months");
+
+export const getPreviousMonthStartDate = (currentMonth) =>
+  moment(currentMonth).add(-1, "months");
+
+export const getWeekEndDate = (startDate) => moment(startDate).add(6, "days");
+
+export const getMonthEndDate = (startDate) => {
+  const daysInMonth = moment(getMonth(startDate)).daysInMonth();
+  return moment(startDate).add(daysInMonth - 1, "days");
+};
 
 export const getDatesBetween = (strDate, stpDate) => {
   let dates = [];
@@ -79,7 +89,13 @@ export const getWeekDates = (startDate) => {
   return getDatesBetween(startDate, endDate);
 };
 
-export const isFutureDate = (d, current=moment()) => {
+export const getMonthDates = (month = currentMonth) => {
+  const monthDays = getDaysByMonth(month);
+  const endDate = moment(monthDays[monthDays.length - 1]);
+  return getDatesBetween(moment(monthDays[0]), endDate);
+};
+
+export const isFutureDate = (d, current = moment()) => {
   const date = moment(d);
 
   if (current > date) {

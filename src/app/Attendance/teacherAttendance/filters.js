@@ -1,10 +1,9 @@
 import React from "react";
-import { Grid, FormControl, IconButton } from "@material-ui/core";
-import VerticalAlignBottomIcon from "@material-ui/icons/VerticalAlignBottom";
-import VerticalAlignTopIcon from "@material-ui/icons/VerticalAlignTop";
+import { Grid, FormControl } from "@material-ui/core";
 import SubjectsDropdown from "../../common/ui/subjectsDropdown";
 import ClassesDropdown from "../../common/ui/classesDropdown";
 import { makeStyles } from "@material-ui/core/styles";
+import ImportExport from "./importExport";
 
 const useStyles = makeStyles((theme) => ({
   topPanelRow: {
@@ -47,27 +46,7 @@ const AttendanceFilter = (props) => {
             class_id={props.class_id}
           />
         </FormControl>
-
-        <div className={classes.topButton}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleClick}
-            className={classes.menuButton}
-          >
-            <VerticalAlignTopIcon style={{ color: "#ababaf" }} />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleClick}
-            className={classes.menuButton}
-          >
-            <VerticalAlignBottomIcon style={{ color: "#ababaf" }} />
-          </IconButton>
-        </div>
+        <ImportExport {...props} />
       </Grid>
     </Grid>
   );

@@ -55,3 +55,19 @@ export const updateAddendance = (data, id, onSuccess, onFail) => ({
   onFailCallback: onFail,
   promise: () => attendenceApi.updateAddendanceApi(data, id),
 });
+
+export const importAttendance = (data, onSuccess, onFail) => ({
+  type: commonActions.COMMON_API_CALL,
+  subtypes: attendenceActionTypes.IMPORT_ATTENDANCE,
+  onSuccessCallback: onSuccess,
+  onFailCallback: onFail,
+  promise: () => attendenceApi.importAttendanceApi(data),
+});
+
+export const exportAttendance = (data, onSuccess, onFail) => ({
+  type: commonActions.COMMON_API_CALL,
+  subtypes: attendenceActionTypes.EXPORT_ATTENDANCE,
+  onSuccessCallback: onSuccess,
+  onFailCallback: onFail,
+  promise: () => attendenceApi.exportAddendanceApi(data),
+});

@@ -6,3 +6,5 @@ export const supportsEndpoint = "/supports";
 export const categoryEndpoint = "/category";
 export const supportCommentEndpoint = "/supportComments";
 export const supportsHistoryEndpoint = "/supportHistories";
+export const importAttendanceEndpoint = "/attendancesimport";
+export const exportAttendanceEndpoint = "/attendancesexport";

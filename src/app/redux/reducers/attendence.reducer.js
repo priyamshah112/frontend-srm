@@ -1,4 +1,4 @@
-import attendenceActionTypes from "../action-types/attendence.actionTypes";
+import attendenceActionTypes from '../action-types/attendence.actionTypes';
 
 const initialState = {
   attendence: [],
@@ -15,10 +15,13 @@ const initialState = {
 
   postAttendanceLoading: false,
   singleClassLoading: false,
+
+  importLoading: false,
+  exportLoading: false,
 };
 
 const AttendenceReducer = (state = initialState, action) => {
-  console.log("AttendenceReducer action", action);
+  // console.log("AttendenceReducer action", action);
   switch (action.type) {
     case attendenceActionTypes.GET_ATTENDENCE.START:
       return {
@@ -118,6 +121,38 @@ const AttendenceReducer = (state = initialState, action) => {
       return {
         ...state,
         postAttendanceLoading: false,
+      };
+
+    case attendenceActionTypes.IMPORT_ATTENDANCE.START:
+      return {
+        ...state,
+        importLoading: true,
+      };
+    case attendenceActionTypes.IMPORT_ATTENDANCE.SUCCESS:
+      return {
+        ...state,
+        importLoading: false,
+      };
+    case attendenceActionTypes.IMPORT_ATTENDANCE.FAIL:
+      return {
+        ...state,
+        importLoading: false,
+      };
+
+    case attendenceActionTypes.EXPORT_ATTENDANCE.START:
+      return {
+        ...state,
+        exportLoading: true,
+      };
+    case attendenceActionTypes.EXPORT_ATTENDANCE.SUCCESS:
+      return {
+        ...state,
+        exportLoading: false,
+      };
+    case attendenceActionTypes.EXPORT_ATTENDANCE.FAIL:
+      return {
+        ...state,
+        exportLoading: false,
       };
     default:
       return state;

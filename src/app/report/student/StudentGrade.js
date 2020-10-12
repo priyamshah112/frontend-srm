@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: "space-between",
         margin: '10px 5px',
+        padding: '16px',
+        borderRadius: "2px"
     },
     fillGradeWrapper: {
         marginBottom: '30px',
@@ -246,6 +248,7 @@ const StudentGrade = (props) => {
                                 variant="outlined"
                                 defaultValue={obj.grade}
                                 onChange={(event) => { onChangeGrade('grade', event, obj) }}
+                                style={{ background: '#fff' }}
                                 classes={{
                                     root: classes.root
                                 }}
@@ -257,6 +260,7 @@ const StudentGrade = (props) => {
                                 multiline
                                 variant="outlined"
                                 defaultValue={obj.percentage_from}
+                                style={{ background: '#fff' }}
                                 onChange={(event) => { onChangeGrade('from', event, obj) }}
                                 classes={{
                                     root: classes.root
@@ -269,6 +273,7 @@ const StudentGrade = (props) => {
                                 multiline
                                 variant="outlined"
                                 defaultValue={obj.percentage_to}
+                                style={{ background: '#fff' }}
                                 onChange={(event) => { onChangeGrade('to', event, obj) }}
                                 classes={{
                                     root: classes.root
@@ -279,6 +284,7 @@ const StudentGrade = (props) => {
                                 disableElevation
                                 className={classes.cancelBtn}
                                 onClick={() => { deleteGradeCall(obj) }}
+                                style={{ marginLeft: '10px', background: '#fff' }}
                             >
                                 <HighlightOffOutlinedIcon
                                     className={classes.deleteBtn}
@@ -406,7 +412,7 @@ const StudentGrade = (props) => {
                             {
                                 gradeData.map((obj, key) => {
                                     return (
-                                        <>
+                                        <React.Fragment key={key}>
                                             <Typography className={classes.itemGrade}>
                                                 {obj.grade} - {obj.percentage_to}% - {obj.percentage_from}%
                                         </Typography>
@@ -419,7 +425,7 @@ const StudentGrade = (props) => {
                                                         onClick={() => setEditGrade(true)} />
                                                 </Typography>
                                             }
-                                        </>
+                                        </React.Fragment>
                                     )
                                 })
                             }

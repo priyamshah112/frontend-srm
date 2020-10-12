@@ -55,8 +55,9 @@ const Homework = (props) => {
     const fetchClasses = async () => {
       const classesResponse = await HomeworkService.fetchClasses(props.token);
       let initialClassState = {};
+
       classesResponse.data.data.forEach((className) => {
-        initialClassState[className.class_name] = className.id;
+        initialClassState[className.id] = className.class_name;
       });
 
       setClassState({ ...initialClassState });

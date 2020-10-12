@@ -8,6 +8,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DropzoneArea } from 'material-ui-dropzone'
 import ReportService from '../ReportService';
+import Alert from '@material-ui/lab/Alert';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 const useStyles = makeStyles((theme) => ({
@@ -75,6 +76,9 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         display: 'none'
+    },
+    errorView: {
+        marginTop: "20px"
     }
 }));
 
@@ -86,6 +90,8 @@ const ReportUpload = (props) => {
     const [allClassList, setAllClassList] = useState([]);
     const [classNumber, setClassNumber] = useState(0);
     const [files, setFiles] = useState('');
+    const [uploadError, setUploadError] = useState(false);
+    const [uploadSucess, setUploadSucess] = useState(false);
 
     const token = localStorage.getItem('srmToken');
 
@@ -107,10 +113,12 @@ const ReportUpload = (props) => {
 
                 if (response.status === 200) {
                     setLoading(false);
+                    setUploadSucess(true)
                 }
             } catch (error) {
                 console.log(error);
                 setLoading(false);
+                setUploadError(true)
             }
         }
         upload();
@@ -145,7 +153,7 @@ const ReportUpload = (props) => {
                 onChange={handleChange}
                 dropzoneText="Drag file here"
                 classes={{ root: classes.root, icon: classes.icon }}
-                acceptedFiles={['.xlsx']}
+                acceptedFiles={['.xlsx','.xls','.xlsm']}
                 icon={classes.icon}
                 dropzoneParagraphClass={classes.text}
                 showAlerts={false}
@@ -208,15 +216,20 @@ const ReportUpload = (props) => {
     const classes = useStyles(props);
     return (
         <div className={classes.container}>
-            <div>
+            <div >
                 {renderHeader()}
             </div>
             <div className={classes.uploadWrapper}>
                 {renderUpload()}
             </div>
+            <div className={classes.errorView}>
+                {uploadError && <Alert severity="error">Error occured while uploading report</Alert>}
+                {uploadSucess && <Alert severity="success">Report uploaded successfully</Alert>}
+            </div>
             <div className={classes.uploadFooter}>
                 {renderFooter()}
             </div>
+
             <BackdropLoader open={isLoading} />
         </div>
     );

@@ -17,19 +17,7 @@ class ReportService {
         });
     }
 
-    fetchReportCard(token, student_id, test_id) {
-        return axios.get(`${BACKEND_API_URL}/report_cards`, {
-            params: {
-                student_id: student_id,
-                test_id: test_id
-            },
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-        });
-    }
-
+    
     studentAttendance(token, student_id) {
         return axios.get(`${BACKEND_API_URL}/report_card_attendanceDetails`, {
             params: {
@@ -93,6 +81,47 @@ class ReportService {
 
     fetchStudentClass(token) {
         return axios.get(`${BACKEND_API_URL}/classes`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+
+    fetchReportCard(token, student_id, test_id) {
+        return axios.get(`${BACKEND_API_URL}/report_cards`, {
+            params: {
+                student_id: student_id,
+                test_id: test_id
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+
+    createSkill(token, data) {
+        return axios.post(`${BACKEND_API_URL}/report_cards`, data, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+    updateSkill(token, data) {
+        return axios.put(`${BACKEND_API_URL}/report_cards/${data.id}`, data, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+    deleteSkill(token, reportCardId) {
+        return axios.delete(`${BACKEND_API_URL}/report_cards/${reportCardId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,

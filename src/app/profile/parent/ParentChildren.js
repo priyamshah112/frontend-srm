@@ -116,11 +116,11 @@ const ParentChildren = (props) => {
                           'background-repeat': 'no-repeat',
                           'background-size': 'cover',
                           'background-position': 'center',
-                        }}
-                      ></div>
+                        }}></div>
                     </div>
                   </Grid>
                 </Grid>
+                <br />
               </div>
             );
           })}

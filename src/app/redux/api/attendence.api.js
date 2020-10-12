@@ -1,5 +1,5 @@
 import apiService from "./axios-service";
-import { attendancesEndpoint, classesEndpoint, studentEndpoint, subjectsEndpoint } from "./endpoint-constants";
+import { attendancesEndpoint, classesEndpoint, exportAttendanceEndpoint, importAttendanceEndpoint, studentEndpoint, subjectsEndpoint } from "./endpoint-constants";
 
 export const getAttendenceApi = (params) =>
   apiService.get(`${attendancesEndpoint}`, {params});
@@ -21,3 +21,9 @@ export const postAttendanceApi = (data) =>
 
 export const updateAddendanceApi = (data, id) =>
   apiService.put(`${attendancesEndpoint}/${id}`, data);
+
+export const importAttendanceApi = (data) =>
+  apiService.post(`${importAttendanceEndpoint}`, data);
+
+export const exportAddendanceApi = (params) =>
+  apiService.get(`${exportAttendanceEndpoint}`, {params});

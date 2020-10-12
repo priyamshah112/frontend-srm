@@ -95,20 +95,20 @@ const useStyles = makeStyles((theme) => ({
     opacity: "1",
   },
   emptyData: {
-    padding: '50px 20px',
+    padding: "50px 20px",
   },
   loadingView: {
-    height: '150px'
+    height: "150px",
   },
   loader: {
-    position: 'absolute',
-    left: '30px',
-    right: '50px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '150px',
-  }
+    position: "absolute",
+    left: "30px",
+    right: "50px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "150px",
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -142,6 +142,8 @@ const TeacherAttendanceContainer = (props) => {
   const { loading } = props;
 
   const classes = useStyles();
+  const from_date = moment(weekStart).format("YYYY-MM-DD");
+  const to_date = moment(getWeekEndDate(weekStart)).format("YYYY-MM-DD");
 
   useEffect(() => {
     if (class_id && subject_id) {
@@ -150,8 +152,6 @@ const TeacherAttendanceContainer = (props) => {
   }, [class_id, subject_id, weekStart]);
 
   const fetchAttendence = () => {
-    const from_date = moment(weekStart).format("YYYY-MM-DD");
-    const to_date = moment(getWeekEndDate(weekStart)).format("YYYY-MM-DD");
     const params = {
       class_id,
       subject_id,
@@ -182,7 +182,11 @@ const TeacherAttendanceContainer = (props) => {
   };
 
   const onNext = () => {
-    if(moment(weekStart).format("YYYY-MM-DD") === moment(weekStartDate).format("YYYY-MM-DD")) return;
+    if (
+      moment(weekStart).format("YYYY-MM-DD") ===
+      moment(weekStartDate).format("YYYY-MM-DD")
+    )
+      return;
     const startDate = getNextWeekStartDate(weekStart);
     setWeekStart(startDate);
     setSelectedMonth(getMonth(startDate));
@@ -313,6 +317,8 @@ const TeacherAttendanceContainer = (props) => {
             setClassId={onChangeClass}
             subject_id={subject_id}
             setSubjectId={setSubjectId}
+            from_date={from_date}
+            to_date={to_date}
           />
 
           <TableContainer component={Paper}>
@@ -343,26 +349,32 @@ const TeacherAttendanceContainer = (props) => {
               {loading ? (
                 <div className={classes.loadingView}>
                   <div className={classes.loader}>
-                <CircularProgress center alignCenter />
-                </div>
+                    <CircularProgress center alignCenter />
+                  </div>
                 </div>
               ) : (
                 <TableBody>
-                  {attendence.length ? attendence.map((row, rowIndex) => (
-                    <StyledTableRow key={rowIndex} className="statusTable">
-                      <StyledTableCell className={classes.tableNoColumn}>
-                        {row.roll_no}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        component="th"
-                        scope="row"
-                        className={classes.tableNameColumn}
-                      >
-                        {`${row.firsname} ${row.lastname}`}
-                      </StyledTableCell>
-                      {renderDots(row, rowIndex)}
-                    </StyledTableRow>
-                  )) : <Typography className={classes.emptyData}>Attendance Data Not Available</Typography>}
+                  {attendence.length ? (
+                    attendence.map((row, rowIndex) => (
+                      <StyledTableRow key={rowIndex} className="statusTable">
+                        <StyledTableCell className={classes.tableNoColumn}>
+                          {row.roll_no}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          component="th"
+                          scope="row"
+                          className={classes.tableNameColumn}
+                        >
+                          {`${row.firsname} ${row.lastname}`}
+                        </StyledTableCell>
+                        {renderDots(row, rowIndex)}
+                      </StyledTableRow>
+                    ))
+                  ) : (
+                    <Typography className={classes.emptyData}>
+                      Attendance Data Not Available
+                    </Typography>
+                  )}
                 </TableBody>
               )}
             </Table>
