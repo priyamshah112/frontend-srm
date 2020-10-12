@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import HomeworkCard from './HomeworkCard';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { makeStyles } from '@material-ui/styles';
-import { CircularProgress } from '@material-ui/core';
-import HomeSerivce from '../../HomeSerivce';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import HomeworkCard from "./HomeworkCard";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { makeStyles } from "@material-ui/styles";
+import { CircularProgress, Typography } from "@material-ui/core";
+import HomeSerivce from "../../HomeSerivce";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
-    width: '100%',
-    textAlign: 'center',
-    paddingTop: '8px',
-    fontSize: '20px',
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
+  },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
   },
 }));
 
@@ -20,7 +26,7 @@ const Homework = (props) => {
   const [hasMore, setHasMore] = useState(true);
   const [homework, setHomework] = useState([]);
 
-  const [nextUrl, setNextUrl] = useState('');
+  const [nextUrl, setNextUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const selectedRole = props.selectedRole;
 
@@ -29,7 +35,7 @@ const Homework = (props) => {
     let isHomeworkLoading = true;
     const fetchHomework = async () => {
       try {
-        const token = localStorage.getItem('srmToken');
+        const token = localStorage.getItem("srmToken");
         const response = await HomeSerivce.fetchHomework(
           token,
           props.selectedRole
@@ -48,7 +54,7 @@ const Homework = (props) => {
           console.log(response.data);
         }
       } catch (error) {
-        console.log('Error: ', error);
+        console.log("Error: ", error);
       }
     };
     fetchHomework();
@@ -59,14 +65,14 @@ const Homework = (props) => {
 
   const fetchHomeworkOnScroll = () => {
     const fetchMoreHomework = async () => {
-      const token = localStorage.getItem('srmToken');
+      const token = localStorage.getItem("srmToken");
       if (hasMore) {
         const response = await HomeSerivce.fetchMoreHomework(
           token,
           nextUrl,
           props.selectedRole
         );
-        console.log('Fetch More', response.data.data.data);
+        console.log("Fetch More", response.data.data.data);
         setHomework([...homework, ...response.data.data.data]);
         let last_page_url = response.data.data.last_page_url;
         if (nextUrl === last_page_url) {
@@ -89,13 +95,12 @@ const Homework = (props) => {
       loader={
         <>
           <div className={classes.loading}>
-            {/* <Typography>Loading...</Typography> */}
-            <CircularProgress color='primary' size={30} />
+            <CircularProgress color="primary" size={30} />
           </div>
           <br />
         </>
       }
-      scrollableTarget='scrollable'
+      scrollableTarget="scrollable"
       scrollThreshold={0.2}
     >
       {homework.map((hw, index) => (
@@ -107,6 +112,14 @@ const Homework = (props) => {
           content={hw.main_content}
         />
       ))}
+      {isLoading ?  <div className={classes.loading}>
+            <CircularProgress color="primary" size={30} />
+          </div> : null}
+      {!isLoading && !homework.length ? (
+        <div className={classes.emptyView}>
+          <Typography>You don't have any homework.</Typography>
+        </div>
+      ) : null}
     </InfiniteScroll>
   );
 };

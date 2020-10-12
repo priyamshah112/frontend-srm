@@ -3,10 +3,9 @@ import Typography from "@material-ui/core/Typography";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import LogIcon from "../../../assets/images/attendance/log.svg";
 import AttendanceFooter from "../components/attendanceFooter";
-
+import moment from "moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -14,7 +13,10 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { getAttendence } from "../../redux/actions/attendence.action";
+import {
+  getAttendence,
+  getSingleClass,
+} from "../../redux/actions/attendence.action";
 import Summary from "./summary";
 import { CircularProgress } from "@material-ui/core";
 import AttendanceDot from "../components/attendanceDot";
@@ -22,7 +24,19 @@ import {
   getWeekDates,
   weekStartDate,
   currentMonth,
+  getMonth,
+  getMonthDates,
+  getWeekEndDate,
+  monthStartDate,
+  getMonthEndDate,
+  getPreviousWeekStartDate,
+  getPreviousMonthStartDate,
+  getNextMonthStartDate,
+  getNextWeekStartDate,
 } from "../../../shared/datediff";
+import TableTopHead from "../components/tableTopHeader";
+import WeekMonthFilter from "./weekMonthFilter";
+import { formatSujectName } from "../../../shared/filter";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -80,8 +94,6 @@ const useStyles = makeStyles((theme) => ({
   },
   tableHeadermid: {
     width: "100%",
-    padding: "10px 20px",
-    textAlign: "center",
   },
   tableRowHeader: {
     backgroundColor: "white",
@@ -127,29 +139,63 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const ParentAttendanceContainer = (props) => {
-  const [filter, setFilter] = useState("week");
+  const [filter, setFilter] = useState("");
   const [attendance, setAttendance] = useState({});
   const [subjects, setSubject] = useState([]);
   const [weekStart, setWeekStart] = useState(weekStartDate);
+  const [monthStart, setMonthStart] = useState(monthStartDate);
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [classId, setClassId] = useState("");
+  const [subjectIdName, setSubjectIdName] = useState({});
 
   useEffect(() => {
-    fetchAttendence();
-  }, []);
+    if (!filter) return;
+    fetchAttendence(filter);
+  }, [monthStart, weekStart]);
 
-  const fetchAttendence = () => {
+  const fetchAttendence = (get_by) => {
+    if (loading) return;
+    const fDate = get_by === "month" ? monthStart : weekStart;
+    const eDate =
+      get_by === "month"
+        ? getMonthEndDate(monthStart)
+        : getWeekEndDate(weekStart);
+    const from_date = moment(fDate).format("YYYY-MM-DD");
+    const to_date = moment(eDate).format("YYYY-MM-DD");
+    console.log("/attendance fetchAttendance get_by", {
+      fDate,
+      from_date,
+      weekStartDate,
+    });
     setLoading(true);
-    props.getAttendence({ get_by: filter, from_date: "2020-09-28", to_date: "2020-10-05" }, onGet, onFail);
+    props.getAttendence(
+      { get_by, from_date, to_date },
+      (d) => onGet(d, get_by),
+      onFail
+    );
   };
 
-  const onGet = (d = {}) => {
+  const onChangeFilter = (f) => {
+    setFilter(f);
+    setSelectedMonth(getMonth(f === "month" ? monthStart : weekStart));
+    if (f === filter) return;
+    fetchAttendence(f);
+  };
+
+  const onGet = (d = {}, get_by) => {
     const { data = {} } = d;
     const { attendance = {} } = data;
+    const aData = attendance.data;
     setAttendance(data);
-    setSubjects(attendance.data);
+    // setSubjects(aData);
+    if (aData.length) {
+      const cId = aData[0] || {};
+      setClassId(cId);
+      fetchClassData(cId.class_id, aData, get_by);
+    }
   };
 
   const onFail = (err = {}) => {
@@ -157,47 +203,125 @@ const ParentAttendanceContainer = (props) => {
     setError(err.message);
   };
 
-  const setSubjects = (att = []) => {
-    const sub = [];
-    att.map((s) => {
-      const name = s.subject_name || s.subject_id;
-      if (!sub.includes(name)) {
-        sub.push(name);
-      }
-    });
-    setSubject(sub);
-    filterAttendanceData(att, sub);
+  const fetchClassData = (class_id = classId, aData = [], get_by) => {
+    if (subjects.length) {
+      filterAttendanceData(subjects, aData, subjectIdName, get_by);
+      return;
+    }
+    props.getSingleClass(
+      class_id,
+      (d) => onGetClassData(d, aData, get_by),
+      onFailFetchClassData
+    );
   };
 
-  const filterAttendanceData = (att = [], sub = []) => {
-    const weekData = getWeekDates(weekStart) || [];
-    weekData.map((d, index) => {
+  const onFailFetchClassData = () => {
+    fetchClassData();
+  };
+
+  const onGetClassData = (d = {}, aData, get_by) => {
+    console.log("ParentAttendanceContainer onGetClassData", { d, props });
+    const { data = {} } = d;
+    const { subject_lists = [] } = data;
+    const sData = [];
+    const sIdName = {};
+
+    subject_lists.map((s) => {
+      const { subject_data = {} } = s;
+      sData.push({
+        ...subject_data,
+        subject_id: subject_data.id,
+        subject_name: subject_data.name,
+      });
+      sIdName[subject_data.id] = subject_data.name;
+      setSubjectIdName(sIdName);
+    });
+
+    setSubject(sData);
+    filterAttendanceData(sData, aData, sIdName, get_by);
+  };
+
+  const filterAttendanceData = (
+    sub = [],
+    att = [],
+    sIdName = subjectIdName,
+    filter = "week"
+  ) => {
+    let aData = [];
+    if (filter === "month") {
+      aData = getMonthDates() || [];
+    } else {
+      aData = getWeekDates(weekStart) || [];
+    }
+
+    aData.map((d, index) => {
       const subjectAttendance = {};
 
       sub.map((s) => {
-        subjectAttendance[s] = {};
+        subjectAttendance[s.name || s.id] = {};
       });
 
       att.map((a) => {
         if (d.date === a.attendance_date) {
-          const name = a.subject_name || a.subject_id;
+          const name = sIdName[Number(a.subject_id)];
+          console.log("ParentAttendanceContainer att loop", {
+            d,
+            a,
+            name,
+          });
           subjectAttendance[name] = { ...a, user: undefined };
         }
       });
 
-      weekData[index] = { ...d, subjectAttendance };
+      aData[index] = { ...d, subjectAttendance };
     });
-    setAttendanceData(weekData);
+    setAttendanceData(aData);
     setLoading(false);
+  };
+
+  const onPrevious = () => {
+    if (loading) return;
+    if (filter === "month") {
+      const startDate = getPreviousMonthStartDate(monthStart);
+      setMonthStart(startDate);
+      setSelectedMonth(getMonth(startDate));
+    } else {
+      const startDate = getPreviousWeekStartDate(weekStart);
+      setWeekStart(startDate);
+      setSelectedMonth(getMonth(startDate));
+    }
+  };
+
+  const onNext = () => {
+    if (loading) return;
+    if (filter === "month") {
+      if (
+        moment(monthStart).format("YYYY-MM-DD") ===
+        moment(monthStartDate).format("YYYY-MM-DD")
+      )
+        return;
+
+      const startDate = getNextMonthStartDate(monthStart);
+      setMonthStart(startDate);
+      setSelectedMonth(getMonth(startDate));
+    } else {
+      if (
+        moment(weekStart).format("YYYY-MM-DD") ===
+        moment(weekStartDate).format("YYYY-MM-DD")
+      )
+        return;
+      const startDate = getNextWeekStartDate(weekStart);
+      setWeekStart(startDate);
+      setSelectedMonth(getMonth(startDate));
+    }
   };
 
   const classes = useStyles();
 
-  const weekData = getWeekDates(weekStart);
-
-  console.log("ParentAttendanceContainer weekData", {
-    weekData,
-    attendance: attendance.attendance,
+  console.log("ParentAttendanceContainer /attendance", {
+    weekStartDate,
+    monthEndDate: getMonthEndDate(monthStartDate),
+    nextMonth: moment(monthStartDate).add(-1, "months"),
   });
 
   const renderDot = (subjectAttendance = {}) => {
@@ -207,6 +331,10 @@ const ParentAttendanceContainer = (props) => {
       return <AttendanceDot status={item.status} />;
     });
   };
+
+  const renderFilter = () => (
+    <WeekMonthFilter selected={filter} onSelect={onChangeFilter} />
+  );
 
   return (
     <div className={classes.container}>
@@ -221,18 +349,13 @@ const ParentAttendanceContainer = (props) => {
                 <Typography className={classes.summaryTitle}>LOGS</Typography>
               </div>
               <TableContainer className={classes.mainContent} component={Paper}>
-                <div className={classes.tableHeader}>
-                  <Typography className={classes.tableHeaderBtn}>
-                    Preview
-                  </Typography>
-                  <Typography className={classes.tableHeadermid}>
-                    Weekly
-                  </Typography>
-                  <Typography className={classes.tableHeaderBtn}>
-                    Next
-                  </Typography>
-                </div>
-                <Table aria-label="customized table">
+                <TableTopHead
+                  renderFilter={renderFilter()}
+                  onNext={onNext}
+                  onPrevious={onPrevious}
+                />
+                <TableContainer>
+                <Table stickyHeader aria-label="customized table">
                   {subjects.length ? (
                     <TableHead>
                       <TableRow className={classes.tableRowHeader}>
@@ -244,7 +367,7 @@ const ParentAttendanceContainer = (props) => {
                             className={classes.tableTitle}
                             align="center"
                           >
-                            {s}
+                            {formatSujectName(s.name) || s.id}
                           </StyledTableCell>
                         ))}
                       </TableRow>
@@ -275,6 +398,7 @@ const ParentAttendanceContainer = (props) => {
                     </TableBody>
                   )}
                 </Table>
+                </TableContainer>
                 <AttendanceFooter />
               </TableContainer>
             </Grid>
@@ -295,4 +419,5 @@ const mapStateToProps = ({ auth, Attendence }) => {
 
 export default connect(mapStateToProps, {
   getAttendence,
+  getSingleClass,
 })(ParentAttendanceContainer);

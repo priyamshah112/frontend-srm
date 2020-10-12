@@ -89,11 +89,6 @@ root: {
     margin: theme.spacing(2),
   },
 },
-loading: {
-  textAlign: 'center',
-  justifyContent: 'center',
-  margin: 'auto',
-},
 headerText:{marginTop:'10px',
 marginLeft:'10px',
 marginRight:'10px',
@@ -138,7 +133,19 @@ Cancelled:{
 ,
 Rejected:{
   color:'#D92424',
-}
+},
+loading: {
+  width: "100%",
+  textAlign: "center",
+  paddingTop: "8px",
+  fontSize: "20px",
+},
+emptyView: {
+  width: "100%",
+  textAlign: "center",
+  paddingTop: "100px",
+  fontSize: "20px",
+},
 }));
 
 const StudentHomeLeave = (props) => {
@@ -148,6 +155,7 @@ const StudentHomeLeave = (props) => {
   const [allLeaves, setLeaves] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
   const { id } = useParams();
 
@@ -157,6 +165,7 @@ const StudentHomeLeave = (props) => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await LeaveService.fetchAllLeaves(token);
+        setLoading(false);
         if (isLoading) {
           setLeaves(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
@@ -170,6 +179,7 @@ const StudentHomeLeave = (props) => {
           }
         }
       } catch (error) {
+        setLoading(false);
         console.log('Error: ', error);
       }
     };
@@ -318,6 +328,11 @@ const StudentHomeLeave = (props) => {
         </Paper>
         
       ))}
+          {!loading && !allLeaves.length ? (
+            <div className={classes.emptyView}>
+              <Typography>You don't have any leave.</Typography>
+            </div>
+          ) : null}
       </Typography>
       </InfiniteScroll>
       <br/><br/><br/><br/>

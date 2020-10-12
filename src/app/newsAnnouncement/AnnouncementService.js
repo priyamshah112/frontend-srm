@@ -24,6 +24,7 @@ class AnnouncementService {
     });
   }
   publishAnnouncement(params, payload, token) {
+    console.log(payload,params);
     return axios.put(`${BACKEND_API_URL}/news/${params.id}`, payload, {
       headers: {
         "Content-Type": "application/json",

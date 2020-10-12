@@ -50,6 +50,10 @@ const useStyle = makeStyles((theme) => ({
 
     cursor: "pointer",
   },
+  sideMargins: {
+    marginLeft: "20px",
+    marginRight: "20px",
+  },
   adornmentColor: {
     color: "rgba(0, 0, 0, 0.54)",
     paddingTop: "6px",
@@ -63,7 +67,7 @@ const useStyle = makeStyles((theme) => ({
     color: "red",
   },
   fieldStyle: {
-    width: "90%",
+    width: "100%",
     margin: "auto",
     "& .MuiInput-underline:before": {
       borderBottom: "2px solid #eaeaea",
@@ -183,7 +187,7 @@ const CreateNotification = (props) => {
     "All Teacher",
     "All Parents",
     "Select All",
-    ...Object.keys(props.classState),
+    ...Object.values(props.classState),
   ];
   const categoryValues = [...Object.values(props.categories)];
 
@@ -202,8 +206,7 @@ const CreateNotification = (props) => {
 
         if (response.status === 200) {
           if (isFormLoading) {
-            let tempClassCheckState = {};
-            console.log(response);
+            let tempClassCheckState = [];
             if (response.data.data.notification_lists.class_mapping) {
               if (response.data.data.notification_lists.class_mapping.parents) {
                 setClassState(["All Parents", ...classState]);
@@ -216,12 +219,13 @@ const CreateNotification = (props) => {
               if (response.data.data.notification_lists.class_mapping.class) {
                 response.data.data.notification_lists.class_mapping.class.forEach(
                   (classId) => {
-                    setClassState((classState) => [
-                      ...classState,
-                      `Class ${classId}`,
-                    ]);
+                    tempClassCheckState.push(props.classState[classId]);
                   }
                 );
+                setClassState((classState) => [
+                  ...classState,
+                  ...tempClassCheckState,
+                ]);
               }
             }
             setUserList([...response.data.data.users_list]);
@@ -270,7 +274,7 @@ const CreateNotification = (props) => {
       if (isSelectAll) {
         classMapping["teachers"] = true;
         classMapping["paresnts"] = true;
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
           if (classnames === "All Parents") {
@@ -278,7 +282,13 @@ const CreateNotification = (props) => {
           } else if (classnames === "All Teachers") {
             classMapping["teachers"] = true;
           } else {
-            classMapping.class.push(props.classState[classnames]);
+            classMapping.class.push(
+              parseInt(
+                Object.keys(props.classState).find(
+                  (classId) => props.classState[classId] === classnames
+                )
+              )
+            );
           }
         });
       }
@@ -288,21 +298,37 @@ const CreateNotification = (props) => {
           classMapping.individual_users.push(user.id || user.user_id);
         });
       }
-      let payload = {
-        type: category,
-        data: {
-          title,
-          summary,
-          main_content: description,
-        },
-        published_to: classMapping,
-      };
+      let payload;
+
+      if (category === "") {
+        payload = {
+          data: {
+            title,
+            summary,
+            main_content: description,
+          },
+          published_to: classMapping,
+        };
+      } else {
+        payload = {
+          type: category,
+          data: {
+            title,
+            summary,
+            main_content: description,
+          },
+          published_to: classMapping,
+        };
+      }
+
       if (category === "payment") {
         payload = {
           ...payload,
           data: { title, summary, main_content: description, payment },
         };
       }
+
+      console.log(payload);
       const response = await NotificationService.saveNotification(
         id,
         payload,
@@ -437,7 +463,7 @@ const CreateNotification = (props) => {
       if (isSelectAll) {
         classMapping["teachers"] = true;
         classMapping["paresnts"] = true;
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
           if (classnames === "All Parents") {
@@ -445,11 +471,16 @@ const CreateNotification = (props) => {
           } else if (classnames === "All Teachers") {
             classMapping["teachers"] = true;
           } else {
-            classMapping.class.push(props.classState[classnames]);
+            classMapping.class.push(
+              parseInt(
+                Object.keys(props.classState).find(
+                  (classId) => props.classState[classId] === classnames
+                )
+              )
+            );
           }
         });
       }
-
       if (userList.length !== 0) {
         classMapping.individual_users = [];
         userList.forEach((user) => {
@@ -474,7 +505,6 @@ const CreateNotification = (props) => {
           data: { title, summary, main_content: description, payment },
         };
       }
-
       const response = await NotificationService.saveNotification(
         id,
         payload,
@@ -507,7 +537,7 @@ const CreateNotification = (props) => {
     <>
       <div>
         <form className={classes.formStyle} onSubmit={submitForm}>
-          <Box className={`${classes.margin} ${classes.fieldStyle}`} pt={2}>
+          <Box className={`${classes.margin}  ${classes.sideMargins}`} pt={4}>
             <div>
               <img
                 src={BackIcon}
@@ -537,7 +567,7 @@ const CreateNotification = (props) => {
           ) : (
             ""
           )}
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <FormControl className={classes.fieldStyle}>
               <TextField
                 label="Title"
@@ -550,7 +580,7 @@ const CreateNotification = (props) => {
               />
             </FormControl>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <FormControl className={classes.fieldStyle}>
               <TextField
                 id="summary"
@@ -563,7 +593,7 @@ const CreateNotification = (props) => {
               />
             </FormControl>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <FormControl className={classes.fieldStyle}>
               <InputLabel>Categories</InputLabel>
               <Select
@@ -604,7 +634,7 @@ const CreateNotification = (props) => {
             </FormControl>
           </Box>
           {openPayment ? (
-            <Box className={classes.margin}>
+            <Box className={`${classes.margin} ${classes.sideMargins}`}>
               <FormControl className={classes.fieldStyle}>
                 <TextField
                   id="payment"
@@ -623,7 +653,7 @@ const CreateNotification = (props) => {
           ) : (
             ""
           )}
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <FormControl className={classes.fieldStyle}>
               <Autocomplete
                 multiple
@@ -654,7 +684,7 @@ const CreateNotification = (props) => {
             </FormControl>
           </Box>
 
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <FormControl className={classes.fieldStyle}>
               <InputLabel>Select classes</InputLabel>
               <Select
@@ -703,7 +733,7 @@ const CreateNotification = (props) => {
             </FormControl>
           </Box>
 
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Grid className={classes.fieldStyle}>
               <Typography className={classes.textAlignLeft}>
                 Description
@@ -715,7 +745,7 @@ const CreateNotification = (props) => {
               />
             </Grid>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
             <Grid
               container
               className={classes.fieldStyle}

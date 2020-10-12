@@ -189,17 +189,11 @@ const CreateHomework = (props) => {
   const [submissionDate, setSubmissionDate] = useState(null);
   const [classState, setClassState] = useState([]);
 
-  const classStateNames = [
-    "All Teachers",
-    "All Parents",
-    "Select All",
-    ...Object.keys(props.classState),
-  ];
-
-  const checkStateLength = [
-    ...Array(Object.keys(props.classState).length).keys(),
-  ];
-  // const classStateNames = ['Select All', ...Object.keys(props.classState)];
+  const [checkState, setCheckState] = useState({
+    ...props.classState,
+    'Select All': false,
+  });
+  const classStateNames = ['Select All', ...Object.values(props.classState)];
 
   const [chipData, setChipData] = useState([]);
   const selectAllObj = {
@@ -244,18 +238,9 @@ const CreateHomework = (props) => {
         if (response.status === 200) {
           if (isFormLoading) {
             let tempClassCheckState = [];
-            if (response.data.data.class_mapping) {
-              if (response.data.data.class_mapping.parents) {
-                console.log("parents");
-                tempClassCheckState.push("All Parents");
-              }
-              if (response.data.data.class_mapping.teachers) {
-                tempClassCheckState.push("All Teachers");
-              }
-              response.data.data.class_mapping.class.forEach((classId) => {
-                tempClassCheckState.push(`Class ${classId}`);
-              });
-            }
+            response.data.data.class_mapping.class.forEach((classId) => {
+              tempClassCheckState.push(props.classState[classId]);
+            });
             setClassState([...tempClassCheckState]);
             setDescription(
               response.data.data.main_content
@@ -286,9 +271,10 @@ const CreateHomework = (props) => {
       // clearInterval(saveDataApi);
     };
   }, []);
-  // const handleSelectClass = (event) => {
-  //   setClassState(event.target.value);
-  // };
+  const handleSelectClass = (event) => {
+    // console.log(event.target.value, classState);
+    setClassState(event.target.value);
+  };
 
   // const hanldeDeleteClass = (value) => {
   //   setClassState(classState.filter((classname) => classname !== value));
@@ -301,23 +287,30 @@ const CreateHomework = (props) => {
         (classname) => classname === 'Select All'
       );
       if (isSelectAll) {
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
-          classMapping.class.push(props.classState[classnames]);
+          // classMapping.class.push(props.classState[classnames]);
+          classMapping.class.push(
+            parseInt(
+              Object.keys(props.classState).find(
+                (classId) => props.classState[classId] === classnames
+              )
+            )
+          );
         });
       }
+
+      // console.log('Class Mapping', classMapping);
       const response = await HomeworkService.saveHomework(
         { id },
         {
-          title,
+          title: title,
           main_content: description,
-          submission_date: submissionDate.toISOString(),
           published_to: classMapping,
         },
         props.token
       );
-
       if (response.status === 200) {
         console.log('Saved');
       }
@@ -335,7 +328,7 @@ const CreateHomework = (props) => {
       saveDetails(false);
     }, 10000);
     return () => clearInterval(saveDataApi);
-  }, [title, description, submissionDate, classState]);
+  }, [title, description, classState]);
 
   const handleChangeInput = (event) => {
     let name = event.target.name;
@@ -371,9 +364,9 @@ const CreateHomework = (props) => {
   //   }
   // };
 
-  const handleSelectClass = (event) => {
-    setClassState(event.target.value);
-  };
+  // const handleSelectClass = (event) => {
+  //   setClassState(event.target.value);
+  // };
 
   const hanldeDeleteClass = (value) => {
     setClassState(classState.filter((classname) => classname !== value));
@@ -405,14 +398,20 @@ const CreateHomework = (props) => {
         (classname) => classname === 'Select All'
       );
       if (isSelectAll) {
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
-          classMapping.class.push(props.classState[classnames]);
+          // classMapping.class.push(props.classState[classnames]);
+          classMapping.class.push(
+            parseInt(
+              Object.keys(props.classState).find(
+                (classId) => props.classState[classId] === classnames
+              )
+            )
+          );
         });
       }
 
-      // console.log(classMapping, title, summary, eventDate, description);
       const response = await HomeworkService.publishHomework(
         { id },
         {
@@ -426,8 +425,8 @@ const CreateHomework = (props) => {
         props.token
       );
       if (response.status === 200) {
+        console.log('Published');
         history.replace('/assignment');
-        // console.log(response);
       }
     } catch (e) {
       console.log(e);
@@ -472,6 +471,8 @@ const CreateHomework = (props) => {
       setError('Check submission date');
     }
   };
+
+  // console.log('ClassState', props.classState, classStateNames);
   return (
     <>
       <div>
@@ -486,8 +487,7 @@ const CreateHomework = (props) => {
               />
               <Typography
                 variant='h5'
-                className={`${classes.themeColor} ${classes.titleText}`}
-              >
+                className={`${classes.themeColor} ${classes.titleText}`}>
                 Create Homework
               </Typography>
             </div>
@@ -649,8 +649,7 @@ const CreateHomework = (props) => {
                       ))}
                     </div>
                   );
-                }}
-              >
+                }}>
                 {classStateNames.map((classname) => (
                   <MenuItem key={classname} value={classname}>
                     {classname}
@@ -675,8 +674,7 @@ const CreateHomework = (props) => {
             <Grid
               container
               className={classes.fieldStyle}
-              direction='row-reverse'
-            >
+              direction='row-reverse'>
               <Grid item sm={6} xs={12} className={classes.publishBtns}>
                 <Button
                   id='publishLaterBtn'
@@ -685,8 +683,7 @@ const CreateHomework = (props) => {
                   className={`${
                     classes.fieldStyle
                   } ${'publishBtn'} ${'publishLaterBtn'}`}
-                  disableElevation
-                >
+                  disableElevation>
                   Publish Later
                 </Button>
                 <Button
@@ -696,8 +693,7 @@ const CreateHomework = (props) => {
                   color='primary'
                   // onClick={handlePublish}
                   type='submit'
-                  disableElevation
-                >
+                  disableElevation>
                   Publish Now
                 </Button>
               </Grid>

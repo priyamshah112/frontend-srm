@@ -46,9 +46,11 @@ export default createMuiTheme({
     ].join(','),
     body1: {
       fontFamily: 'Avenir Medium',
+      fontSize: '1rem',
     },
     body2: {
       fontFamily: 'Avenir Book',
+      fontSize: '1rem',
     },
   },
   boxHeadingContainer: {

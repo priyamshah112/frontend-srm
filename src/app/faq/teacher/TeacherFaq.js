@@ -48,6 +48,12 @@ const useStyles = makeStyles((theme) => ({
   cardGridStyle: {
     marginTop: '10px',
   },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
 }));
 
 const TeacherFaq = (props) => {
@@ -57,12 +63,14 @@ const TeacherFaq = (props) => {
   const [allFaqs, setFaq] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   const fetchFaqAfterDelete = async () => {
     try {
       const token = localStorage.getItem('srmToken');
       const response = await FaqService.fetchAllFaqs(token);
       setFaq(response.data.data.data);
+      
       let next_page_url = response.data.data.next_page_url;
       let last_page_url = response.data.data.last_page_url;
       if (next_page_url === null) {
@@ -83,6 +91,7 @@ const TeacherFaq = (props) => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await FaqService.fetchAllFaqs(token);
+        setLoading(false)
         if (isLoading) {
           setFaq(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
@@ -98,6 +107,7 @@ const TeacherFaq = (props) => {
         }
       } catch (error) {
         console.log('Error: ', error);
+        setLoading(false)
       }
     };
     fetchFaq();
@@ -176,6 +186,11 @@ const TeacherFaq = (props) => {
                 />
               </Grid>
             ))}
+            {!loading && !allFaqs.length ? (
+            <div className={classes.emptyView}>
+              <Typography>Don't have any FAQ.</Typography>
+            </div>
+          ) : null}
           </InfiniteScroll>
         </Container>
         <br />

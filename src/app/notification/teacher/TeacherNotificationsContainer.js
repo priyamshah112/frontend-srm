@@ -11,7 +11,7 @@ import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 
-import AddIcon from "../../../assets/images/Add.svg";
+import AddIcon from "../../../assets/images/Filled Add.svg";
 
 import NotificationCard from "../NotificationCard";
 import TeacherNotificationCard from "./TeacherNotificationCard";
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formControl: {
-    width: "50%",
+    width: "30%",
     padding: "10px 0px  0px 27px",
   },
   cardBoxPadding: {
@@ -83,6 +83,12 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "8px",
     fontSize: "20px",
   },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
 }));
 
 const TeacherNotificationsContainer = (props) => {
@@ -93,6 +99,7 @@ const TeacherNotificationsContainer = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isNotificationLoading = true;
@@ -102,8 +109,10 @@ const TeacherNotificationsContainer = (props) => {
           props.token,
           props.created_by,
           props.selectedRole,
-          currentPage
+          currentPage,
+          filter.toLowerCase()
         );
+        setLoading(false);
         if (response.status === 200) {
           if (isNotificationLoading) {
             if (
@@ -119,6 +128,7 @@ const TeacherNotificationsContainer = (props) => {
         }
       } catch (e) {
         console.log(e);
+        setLoading(false);
       }
     };
     fetchNotification();
@@ -133,7 +143,8 @@ const TeacherNotificationsContainer = (props) => {
         props.token,
         props.created_by,
         props.selectedRole,
-        currentPage
+        currentPage,
+        filter.toLowerCase()
       );
       if (response.status === 200) {
         if (response.data.data.last_page === response.data.data.current_page) {
@@ -160,9 +171,44 @@ const TeacherNotificationsContainer = (props) => {
       console.log(e);
     }
   };
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
+  const handleFilterChange = async (event) => {
+    if (event.target.value !== filter) {
+      try {
+        setCurrentPage(1);
+        setFilter(event.target.value);
+
+        const token = localStorage.getItem("srmToken");
+        const selectedRole = localStorage.getItem("srmSelectedRole");
+        const response = await NotificationService.fetchNotification(
+          token,
+          false,
+          selectedRole,
+          1,
+          event.target.value.toLowerCase()
+        );
+        if (response.status === 200) {
+          if (
+            response.data.data.last_page === response.data.data.current_page
+          ) {
+            setHasMore(false);
+            setNotifications([...response.data.data.data]);
+          } else {
+            setCurrentPage(currentPage + 1);
+            setNotifications([...response.data.data.data]);
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
   };
+
+  const handleRemoveNotifcation = (id) => {
+    setNotifications([
+      ...notifications.filter((notification) => notification.id !== id),
+    ]);
+  };
+
   let content;
 
   if (props.created_by) {
@@ -174,7 +220,11 @@ const TeacherNotificationsContainer = (props) => {
     ));
   } else {
     content = notifications.map((notification) => (
-      <NotificationCard key={notification.id} notification={notification} />
+      <NotificationCard
+        key={notification.id}
+        notification={notification}
+        handleRemoveNotifcation={handleRemoveNotifcation}
+      />
     ));
   }
 
@@ -203,11 +253,11 @@ const TeacherNotificationsContainer = (props) => {
               labelId="Filter"
               id="demo-simple-select"
               value={filter}
-              onChange={handleFilterChange}
+              onChange={(event) => handleFilterChange(event)}
               className={classes.selectFiler}
             >
               <MenuItem value={"All"}>All</MenuItem>
-              <MenuItem value={"Archived"}>Archived</MenuItem>
+              <MenuItem value={"Archive"}>Archived</MenuItem>
               <MenuItem value={"Read"}>Read</MenuItem>
               <MenuItem value={"Unread"}>Unread</MenuItem>
             </Select>
@@ -230,6 +280,16 @@ const TeacherNotificationsContainer = (props) => {
           scrollableTarget="scrollable"
           scrollThreshold={0.2}
         >
+          {loading ? (
+            <div className={classes.loading}>
+              <CircularProgress color="primary" size={30} />
+            </div>
+          ) : null}
+          {!loading && !notifications.length ? (
+            <div className={classes.emptyView}>
+              <Typography>You don't have any notification.</Typography>
+            </div>
+          ) : null}
           {content}
         </InfiniteScroll>
       </Box>

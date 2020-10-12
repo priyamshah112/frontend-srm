@@ -34,4 +34,14 @@ export default {
     SUCCESS: "attendence.update_attendance:success",
     FAIL: "attendence.update_attendance:fail",
   },
+  IMPORT_ATTENDANCE: {
+    START: "attendence.import_attendance:start",
+    SUCCESS: "attendence.import_attendance:success",
+    FAIL: "attendence.import_attendance:fail",
+  },
+  EXPORT_ATTENDANCE: {
+    START: "attendence.export_attendance:start",
+    SUCCESS: "attendence.export_attendance:success",
+    FAIL: "attendence.export_attendance:fail",
+  },
 };

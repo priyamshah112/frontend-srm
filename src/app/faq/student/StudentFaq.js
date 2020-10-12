@@ -44,6 +44,12 @@ const useStyles = makeStyles((theme) => ({
   cardGridStyle: {
     marginTop: '20px',
   },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
 }));
 
 const StudentFaq = (props) => {
@@ -52,6 +58,7 @@ const StudentFaq = (props) => {
   const [allFaqs, setFaq] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isLoading = true;
@@ -59,6 +66,7 @@ const StudentFaq = (props) => {
       try {
         const token = localStorage.getItem('srmToken');
         const response = await FaqService.fetchAllFaqs(token);
+        setLoading(false)
         if (isLoading) {
           setFaq(response.data.data.data);
           let next_page_url = response.data.data.next_page_url;
@@ -72,6 +80,7 @@ const StudentFaq = (props) => {
           }
         }
       } catch (error) {
+        setLoading(false)
         console.log('Error: ', error);
       }
     };
@@ -128,6 +137,11 @@ const StudentFaq = (props) => {
                 />
               </Grid>
             ))}
+            {!loading && !allFaqs.length ? (
+            <div className={classes.emptyView}>
+              <Typography>Don't have any FAQ.</Typography>
+            </div>
+          ) : null}
           </InfiniteScroll>
         </Container>
         <br />

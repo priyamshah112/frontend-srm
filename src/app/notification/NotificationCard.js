@@ -139,6 +139,7 @@ const NotificationCard = (props) => {
         updatedStatus,
         token
       );
+      console.log(response);
       if (response.status === 200) {
         if (updatedStatus === "read") {
           props.subNotificationCount();
@@ -212,7 +213,9 @@ const NotificationCard = (props) => {
                 className={`${classes.menuItem} ${classes.menuTopItemMargin} `}
                 value={"archive"}
               >
-                <div className={classes.borderBottomDiv}>Archive</div>
+                <div className={classes.borderBottomDiv}>
+                  <Typography variant="body2">Archive</Typography>
+                </div>
               </MenuItem>
               <MenuItem
                 onClick={handleClose}
@@ -221,7 +224,9 @@ const NotificationCard = (props) => {
                 className={classes.menuItem}
                 value={"delete"}
               >
-                <div className={classes.borderBottomDiv}>Delete</div>
+                <div className={classes.borderBottomDiv}>
+                  <Typography variant="body2">Delete</Typography>
+                </div>
               </MenuItem>
               <MenuItem
                 onClick={handleClose}
@@ -230,7 +235,9 @@ const NotificationCard = (props) => {
                 className={classes.menuItem}
                 value={"read"}
               >
-                <div className={classes.borderBottomDiv}>Mark As Read</div>
+                <div className={classes.borderBottomDiv}>
+                  <Typography variant="body2">Mark As Read</Typography>
+                </div>
               </MenuItem>
               <MenuItem
                 onClick={handleClose}
@@ -240,7 +247,7 @@ const NotificationCard = (props) => {
                 value={"unread"}
               >
                 <div className={classes.borderBottomLastDiv}>
-                  Mark As Unread
+                  <Typography variant="body2"> Mark As Unread</Typography>
                 </div>
               </MenuItem>
             </Menu>
