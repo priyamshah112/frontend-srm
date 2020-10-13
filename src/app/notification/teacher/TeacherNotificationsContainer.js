@@ -255,6 +255,17 @@ const TeacherNotificationsContainer = (props) => {
               value={filter}
               onChange={(event) => handleFilterChange(event)}
               className={classes.selectFiler}
+              MenuProps={{
+                anchorOrigin: {
+                  vertical: "bottom",
+                  horizontal: "center",
+                },
+                transformOrigin: {
+                  vertical: "top",
+                  horizontal: "center",
+                },
+                getContentAnchorEl: null,
+              }}
             >
               <MenuItem value={"All"}>All</MenuItem>
               <MenuItem value={"Archive"}>Archived</MenuItem>

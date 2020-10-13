@@ -111,11 +111,11 @@ function App(props) {
           <Route path="/gallery" exact component={Gallery} />
           <Route path="/gallery/upload" exact component={ImageUpload} />
 
-          <Route
+          {/* <Route
             path="/curriculum"
             exact
             component={() => <Typography>Curriculum Home</Typography>}
-          />
+          /> */}
           <Route
             path="/payments"
             exact

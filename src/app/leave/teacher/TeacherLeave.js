@@ -163,12 +163,12 @@ const useStyles = makeStyles((theme) => ({
   createButtonIconCircle: {
     cursor: "pointer",
     backgroundColor: "#fff",
-    borderRadius: "50%",
+    borderRadius: "100%",
     display: "inline-block",
     border: "1px solid red",
     width: "18px",
     height: "18px",
-    marginRight: "60px",
+    marginRight: "70px"
   },
   createButtonIconCircleOk: {
     backgroundColor: "#fff",
@@ -190,9 +190,7 @@ const useStyles = makeStyles((theme) => ({
   Rejected: {
     color: "#D92424",
   },
-  leavereason: {
-    fontSize: "15px",
-  },
+
   name: {
     transform: "translateY(10px)",
     textAlign: "left",
@@ -514,7 +512,7 @@ const TeacherLeave = (props) => {
           <div className={classes.container} id="scrollable">
             <div className={classes.root}>
               <div className={classes.headerText}>
-                <Typography variant="h5" className={classes.status}>
+                <Typography variant="body1" className={classes.status}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className={classes.statusIcon}
@@ -611,7 +609,7 @@ const TeacherLeave = (props) => {
                           <div className={classes.rowflex}>
                             <Grid item xs={10} className={classes.align}>
                               <Typography
-                                variant="h5"
+                                variant="body1"
                                 className={classes.leavereason}
                               >
                                 <div className={classes.uppertext}>
@@ -629,20 +627,15 @@ const TeacherLeave = (props) => {
 
                             <Grid item xs={2} className={classes.stat}>
                               <Typography
-                                variant="h5"
+                                variant="body1"
                                 className={classes.leavereason}
                               >
                                 {leaves.leave_status == "PENDING" ? (
                                   <CloseIcon
                                     color="action"
                                     className={classes.createButtonIconCircle}
-                                    style={{
-                                      color: red[500],
-                                      cursor: "pointer",
-                                    }}
-                                    onClick={(e) => {
-                                      CancelLeave(leaves.leave_code);
-                                    }}
+                                    style={{  color: red[500]  }}
+                                    onClick={(e) => {  CancelLeave(leaves.leave_code);  }}
                                     value={leaves.leave_code}
                                   />
                                 ) : (
@@ -761,7 +754,7 @@ const TeacherLeave = (props) => {
 
                         <Grid item xs={5} className={classes.borderLeft}>
                           <Typography
-                            variant="h5"
+                            variant="body1"
                             className={classes.leavereason}
                           >
                             <div className={classes.uppertext}>
@@ -775,14 +768,14 @@ const TeacherLeave = (props) => {
                         </Grid>
                         <Grid item xs={2}>
                           <Typography
-                            variant="h5"
+                            variant="body1"
                             className={classes.leavereason}
                           >
                             {leaves.leave_status == "PENDING" ? (
                               <CloseIcon
                                 color="action"
                                 className={`${classes.createButtonIconCircle} ${classes.actionBtns}`}
-                                style={{ color: red[500] }}
+                                style={{ color: red[500],marginTop: '20px' }}
                                 onClick={(e) => {
                                   RejectLeave(leaves.leave_code);
                                 }}
@@ -834,7 +827,7 @@ const TeacherLeave = (props) => {
                       </div>
                     </Paper>
                   ))}
-                  {!loading && !allLeaves.length ? (
+                  {!loading && !allLeavesStud.length ? (
                     <div className={classes.emptyView}>
                       <Typography>You don't have any leave.</Typography>
                     </div>

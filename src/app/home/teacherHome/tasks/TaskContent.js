@@ -363,7 +363,7 @@ const TaskContent = (props) => {
           <Grid item md={6}>
             <Card className={`${classes.taskCard} ${classes.pendingTask}`}>
               <Typography className={classes.cardTitle} variant='body1'>
-                Pending Tasks
+                Done Tasks
               </Typography>
               <CardContent className={classes.CardContent} id="scrollable">
                 {doneLoading ? (
@@ -462,7 +462,7 @@ const TaskContent = (props) => {
           <Grid item md={6}>
             <Card className={`${classes.taskCard} ${classes.doneTask}`}>
               <Typography className={classes.cardTitle} variant='body1'>
-                Done Tasks
+                Pending Tasks
               </Typography>
               <CardContent
                 className={classes.CardContent}
