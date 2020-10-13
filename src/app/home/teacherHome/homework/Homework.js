@@ -53,9 +53,9 @@ const useStyle = makeStyles((theme) => ({
     cursor: 'pointer',
     bottom: 0,
   },
-  cardTitle: {
-    fontWeight: 600,
-  },
+  // cardTitle: {
+  //   fontWeight: 600,
+  // },
   homeworkCard: {
     borderRadius: '10px',
     height: '100px',

@@ -433,12 +433,12 @@ const Layout = (props) => {
       linkTo: "/gallery",
       itemIndex: 7,
     },
-    {
-      name: "Curriculum",
-      icon: <img src={CurriculumIcon} alt="Menu" width="24" height="24" />,
-      linkTo: "/curriculum",
-      itemIndex: 8,
-    },
+    // {
+    //   name: "Curriculum",
+    //   icon: <img src={CurriculumIcon} alt="Menu" width="24" height="24" />,
+    //   linkTo: "/curriculum",
+    //   itemIndex: 8,
+    // },
     {
       name: "Payments",
       icon: <img src={PaymentIcon} alt="Menu" width="24" height="24" />,
