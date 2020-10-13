@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
 import UserIcon from "../../assets/images/chat/User.svg";
 
 import Chat from "./Chat";
-import { Badge, Input, ListItem } from "@material-ui/core";
+import { Badge, Grid, Input, ListItem } from "@material-ui/core";
 import { ArrowForward, BluetoothSearching, CloseRounded } from "@material-ui/icons";
 import search from '../../assets/images/chat/ic_search.svg'
 import plus from '../../assets/images/chat/ic_plus.svg'
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import RenderUsers from "./RenderGroupUser";
+import Group from '../../assets/images/chat/group.png';
+import GroupDetails from "./GroupName";
+import { toast, ToastContainer } from "react-toastify";
 
 
 
@@ -124,6 +127,9 @@ const useStyles = makeStyles((theme) => ({
   },
   nextText:{
     marginTop: 5,
+  },
+  groupUser:{
+    flexDirection: 'row'
   }
 }));
 
@@ -154,6 +160,8 @@ const ChatIndex = (props) => {
   const [selectedUsers, setSelectedUsers] = useState([])
   const [newGroup, selectNewGroup] = useState(false)
   const [chat, setChat] = useState({})
+  const [groupInfo, showGroupInfo] = useState(false)
+  const [groupName, setGroupName] = useState('')
 
   const addContactToGroup = (item) => {
     let users = selectedUsers;
@@ -164,6 +172,8 @@ const ChatIndex = (props) => {
     users.push(item)
     setSelectedUsers([...users])
   }
+
+  
 
   const removeContactFromGroup = (item) => {
     let users = selectedUsers;
@@ -179,6 +189,21 @@ const ChatIndex = (props) => {
 
   const selectChat = (chat) => {
     setChat(chat)
+  }
+
+  if(groupInfo){
+    return (
+      <GroupDetails selectedUsers={selectedUsers} />
+    )
+  }
+
+  const setGroupInfo = () =>{
+    if(selectedUsers.length>0){
+      showGroupInfo(true)
+    }
+    else{
+      toast("No Member Selected!")
+    }
   }
 
   return (
@@ -203,7 +228,7 @@ const ChatIndex = (props) => {
           </div>
         }
         {newGroup && 
-          <div className={[classes.headingContainer, classes.borderBottom].join(' ')}>
+          <div className={[classes.headingContainer, classes.groupUser, classes.borderBottom].join(' ')}>
             {selectedUsers.map(user=>(
               <RenderUsers user={user} removeContact={removeContactFromGroup} />
             ))}
@@ -213,7 +238,7 @@ const ChatIndex = (props) => {
               </div>
             }
             {selectedUsers.length > 0 &&
-              <div onClick={()=>setNewGroup(false)} className={classes.nextBtn}>
+              <div onClick={()=>{showGroupInfo(true)}} className={classes.nextBtn}>
                 <Typography>
                   <div className={classes.nextIcon}>
                     <ArrowForward />
@@ -223,6 +248,29 @@ const ChatIndex = (props) => {
               </div>
             }
           </div>
+        }
+
+        {newGroup && groupInfo && 
+          <ListItem className={classes.inputContainer} alignItems="flex-start">
+            <img
+              src={Group}
+              alt='Group'
+              className={classes.externalIcon}
+            />
+            <Input
+                id='search'
+                placeholder="Search - Name/User ID"
+                name='search'
+                value={filter}
+                onChange={(event)=>setFilter(event.target.value)}
+                className={classes.inputBorder}
+                required={true}
+                disableUnderline={true}
+              />
+            <Typography className={classes.emojiContainer}>
+              <img src={search} className={classes.smiley} />
+            </Typography>
+          </ListItem>
         }
         
         <div className={classes.conversationContainer}>
@@ -242,6 +290,7 @@ const ChatIndex = (props) => {
             </Typography>
           </ListItem>
           <Chat selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <ToastContainer />
         </div>
       </div>
     </>
