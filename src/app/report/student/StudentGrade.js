@@ -80,7 +80,7 @@ const StudentGrade = (props) => {
     const [gradeData, setGradeData] = useState([]);
     const [newGrade, setNewGrade] = useState(false);
     const [editGrade, setEditGrade] = useState(false);
-    const [showGrade, setShowGrade] = useState(false);
+    const [showGrade, setShowGrade] = useState(true);
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(false);
 
@@ -94,7 +94,6 @@ const StudentGrade = (props) => {
 
     useEffect(() => {
         let loading = true;
-
         if (testData && testData.class_id) {
             async function getGrades() {
                 try {
@@ -109,7 +108,7 @@ const StudentGrade = (props) => {
                 } catch (error) {
                     console.log("getGrades Error", error);
                     setError('User does not belong to any school');
-                    setShowGrade(false);
+                    setNewGrade(false);
                 }
             }
             getGrades();
@@ -457,14 +456,12 @@ const StudentGrade = (props) => {
 
     return (
         <>
-            {showGrade && <div className={classes.container}>
+            <div className={classes.container}>
                 {!editGrade && !newGrade && renderGrade()}
                 {editGrade && renderGradeEdit()}
                 {newGrade && renderNewGrade()}
-                {errMessage}
                 <BackdropLoader open={isLoading} />
             </div>
-            }
         </>
     );
 }
