@@ -39,12 +39,13 @@ import LeaveCreateContainer from "./app/leave/LeaveCreateContainer";
 import Attendance from "./app/Attendance/Attendance";
 import Syllabus from "./app/syllabus/Syllabus";
 import EditChapter from "./app/syllabus/teacher/editChapter";
-import { Chat } from 'react-chat-popup';
+import { Chat } from "react-chat-popup";
 import ChatFullScreen from "./app/chatUsers/ChatFullScreen";
 import ReportContainer from "./app/report/student/ReportContainer";
 // import StudentCard from "./app/report/student/StudentCard";
 import StudentCard from "./app/report/student/StudentReport";
 import ReportUpload from "./app/report/student/ReportUpload";
+import AttendanceUpload from "./app/Attendance/teacherAttendance/AttendanceUpload";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -53,13 +54,13 @@ function App(props) {
     onAutoSignup(props.isAuthenticated);
   }, [onAutoSignup, props.isAuthenticated]);
   if (props.isAuthenticated) {
-    requestFirebaseNotificationPermission()
-      .then((firebaseToken) => {
-        // console.log(firebaseToken);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    // requestFirebaseNotificationPermission()
+    //   .then((firebaseToken) => {
+    //     console.log(firebaseToken);
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //   });
   }
 
   const protectedRoutes = () => (
@@ -84,6 +85,7 @@ function App(props) {
           <Route path="/create-homework/:id" exact component={Assignment} />
 
           <Route path="/attendance" exact component={Attendance} />
+          <Route path="/attendance/upload" exact component={AttendanceUpload} />
           <Route
             path="/events"
             exact
@@ -154,7 +156,6 @@ function App(props) {
         <Route path="/otp" exact component={Otp} />
         <Route path="/changepwdotp" component={ChangePwdUser} />
         <Route path="/roleselection" component={RoleSelection} />
-
 
         <Route component={protectedRoutes} />
       </Switch>

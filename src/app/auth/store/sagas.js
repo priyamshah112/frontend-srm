@@ -13,6 +13,7 @@ import * as actionTypes from "./actionTypes";
 import AuthService from "../AuthService";
 import * as moment from "moment";
 import axiosService from "../../redux/api/axios-service";
+import { requestFirebaseNotificationPermission } from "../../../firebaseInit";
 const USE_API = process.env.REACT_APP_USE_API;
 
 export function* watchAuth() {
@@ -34,7 +35,6 @@ export function* authUserSaga(action) {
     username: action.userName,
     password: action.password,
   };
-  console.log(authData)
   try {
     let response = "";
     if (USE_API === "Y") {
@@ -42,6 +42,34 @@ export function* authUserSaga(action) {
     }
 
     if (response.status === 200) {
+      const deviceToken = yield requestFirebaseNotificationPermission();
+      
+      if (response.data.user.device_tokens !== null) {
+        const checkDeviceToken = JSON.parse(
+          response.data.user.device_tokens
+        ).find((token) => token === deviceToken);
+
+        if (!checkDeviceToken) {
+          const deviceTokenList = [
+            ...JSON.parse(response.data.user.device_tokens),
+            deviceToken,
+          ];
+
+          const saveDeviceTokenResponse = yield AuthService.addDeviceToken(
+            response.data.access_token,
+            deviceTokenList,
+            response.data.user.id
+          );
+        }
+      } else {
+        const deviceTokenList = [deviceToken];
+        const saveDeviceTokenResponse = yield AuthService.addDeviceToken(
+          response.data.access_token,
+          deviceTokenList,
+          response.data.user.id
+        );
+      }
+
       const expirationDate = yield new Date(response.data.expires_at);
       yield localStorage.setItem("srmToken", response.data.access_token);
       yield localStorage.setItem(
