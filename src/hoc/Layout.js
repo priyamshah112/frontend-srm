@@ -769,9 +769,8 @@ const Layout = (props) => {
               } else if (
                 item.name !== 'News & Announcements' &&
                 item.name !== 'Events' &&
-                item.name !== 'Student Report Card' &&
-                item.name !== 'Student Reports' &&
-                item.name !== 'Bulk Upload'
+                item.name !== 'Bulk Upload' &&
+                item.name !== 'Student Report Card' 
               ) {
                 return (
                   <ListItem
