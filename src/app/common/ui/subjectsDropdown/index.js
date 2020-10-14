@@ -1,10 +1,26 @@
 import React, { useEffect, useState } from "react";
-import NativeSelect from "@material-ui/core/NativeSelect";
 import { getSingleClass } from "../../../redux/actions/attendence.action";
 import { connect } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const useStyle = makeStyles((theme) => ({
+  categoryClass: {
+    "& span": {
+      textAlign: "left",
+    },
+  },
+
+  categorySelect: {
+    textAlign: "left",
+  },
+}));
 
 const SubjectsDropdown = (props) => {
   const [data, setData] = useState([]);
+  const classes = useStyle();
+
   const { loading } = props;
 
   useEffect(() => {
@@ -22,9 +38,9 @@ const SubjectsDropdown = (props) => {
     const { subject_lists = [] } = data;
     setData(subject_lists);
 
-    if(!subject_lists.length) return;
+    if (!subject_lists.length) return;
     const first = subject_lists[0] || {};
-    const {subject_data={}} = first;
+    const { subject_data = {} } = first;
     props.onChange(subject_data.id);
   };
 
@@ -38,20 +54,26 @@ const SubjectsDropdown = (props) => {
 
   const renderData = () =>
     data.map((item) => {
-      const {subject_data={}} = item;
-      return <option value={subject_data.id}>{subject_data.name}</option>;
+      const { subject_data = {} } = item;
+      return <MenuItem value={subject_data.id}>{subject_data.name}</MenuItem>;
     });
 
   return (
-    <NativeSelect
+    <Select
+      labelId="Categories"
+      id="demo-simple-select-helper"
       value={props.value}
       onChange={handleClassChange}
-      name="classNum"
-      inputProps={{ "aria-label": "classNum" }}
+      className={classes.categoryClass}
+      classes={{ select: classes.categorySelect }}
     >
-      {loading && <option disabled>Loading...</option>}
+      {loading ? (
+        <MenuItem disabled value="">
+          Loading...
+        </MenuItem>
+      ) : null}
       {!loading ? renderData() : null}
-    </NativeSelect>
+    </Select>
   );
 };
 

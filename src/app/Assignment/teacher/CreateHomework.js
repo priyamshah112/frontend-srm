@@ -300,15 +300,26 @@ const CreateHomework = (props) => {
           );
         });
       }
-
-      // console.log('Class Mapping', classMapping);
-      const response = await HomeworkService.saveHomework(
-        { id },
-        {
+      let submissionData = {};
+      if (submissionDate) {
+        submissionData = {
+          title: title,
+          main_content: description,
+          submission_date: submissionDate.toISOString(),
+          published_to: classMapping,
+        };
+      } else {
+        submissionData = {
           title: title,
           main_content: description,
           published_to: classMapping,
-        },
+        };
+      }
+
+      // console.log('submissionData', submissionData);
+      const response = await HomeworkService.saveHomework(
+        { id },
+        submissionData,
         props.token
       );
       if (response.status === 200) {
@@ -328,7 +339,7 @@ const CreateHomework = (props) => {
       saveDetails(false);
     }, 10000);
     return () => clearInterval(saveDataApi);
-  }, [title, description, classState]);
+  }, [title, description, submissionDate, classState]);
 
   const handleChangeInput = (event) => {
     let name = event.target.name;

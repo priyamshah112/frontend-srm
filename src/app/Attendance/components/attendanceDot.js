@@ -23,7 +23,7 @@ const classNames = {
   holiday: "holidayStatus",
 };
 
-const AttendanceDot = ({ status, onClick = () => {}, loading, error }) => {
+const AttendanceDot = ({ status, onClick = () => {}, loading, error, className="" }) => {
   const onPress = () => {
     if (!classNames[status] || loading) return;
     onClick();
@@ -34,7 +34,7 @@ const AttendanceDot = ({ status, onClick = () => {}, loading, error }) => {
         <CircularProgress size={12} />
       ) : (
         <FiberManualRecordIcon
-          className={classNames[status] || "emptyStatus"}
+          className={`${classNames[status] || "emptyStatus"} ${className}`}
         />
       )}
       {error ? (

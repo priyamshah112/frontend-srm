@@ -8,6 +8,7 @@ import HomeworkService from './HomeworkService';
 import Box from '@material-ui/core/Grid';
 import CreateHomework from './teacher/CreateHomework';
 import StudentHomework from '../home/studentHome/homeWork/Homeworks';
+import BackdropLoader from '../common/ui/backdropLoader/BackdropLoader';
 
 import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
@@ -48,11 +49,12 @@ const Homework = (props) => {
   const location = useLocation();
   const { id } = useParams();
   const [classState, setClassState] = useState(null);
-  const [isClassLoading, setIsClassLoading] = useState(true);
+  const [isClassLoading, setIsClassLoading] = useState(null);
   const [openLoader, setOpenLoader] = useState(false);
   const selectedRole = props.selectedRole;
   useEffect(() => {
     const fetchClasses = async () => {
+      setIsClassLoading(true);
       const classesResponse = await HomeworkService.fetchClasses(props.token);
       let initialClassState = {};
 
@@ -103,6 +105,7 @@ const Homework = (props) => {
       ) : (
         ''
       )}
+      <BackdropLoader open={isClassLoading} />
     </div>
   );
 };
