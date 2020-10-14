@@ -168,7 +168,12 @@ const TeacherNotificationCard = (props) => {
         }
         title={
           <>
-            <Typography className={classes.cardTitle}>
+            <Typography
+              className={classes.cardTitle}
+              onClick={() =>
+                history.push(`/notifications/${props.notification.id}?cby=true`)
+              }
+            >
               {props.notification.data
                 ? props.notification.data.title
                   ? props.notification.data.title

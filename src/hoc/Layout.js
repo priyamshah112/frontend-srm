@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Redirect, Link, useHistory } from "react-router-dom";
-
+import * as NotificationActions from "../app/notification/store/action";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
@@ -44,6 +44,7 @@ import TransportIcon from "../assets/images/navigation/DesktopTransport.svg";
 import PaymentIcon from "../assets/images/navigation/DesktopPayment.svg";
 import SyllabusIcon from "../assets/images/navigation/DesktopSyllabus.svg";
 import TimetableIcon from "../assets/images/navigation/DesktopTimetable.svg";
+import ReportIcon from "../assets/images/report/ReportLogo.svg";
 
 import DesktopAttendanceIcon from "../assets/images/navigation/DesktopAttendance.svg";
 import HamburgerIcon from "../assets/images/navigation/Hamburger.svg";
@@ -286,6 +287,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   snackbar: {
+    cursor: "pointer",
     "& .MuiSnackbarContent-root": {
       backgroundColor: "#fff",
       color: `${theme.palette.common.blackRussian}`,
@@ -318,6 +320,7 @@ const Layout = (props) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarTitle, setSnackbarTitle] = useState("");
   const [snackbarDescription, setSnackbarDescription] = useState("");
+  const [snackbarId, setSnackBarId] = useState("");
   const [reportItem, setReportItem] = React.useState(true);
 
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
@@ -328,6 +331,8 @@ const Layout = (props) => {
   onMessageListener()
     .then((payload) => {
       console.log(payload);
+      props.onNotificationReceive();
+      setSnackBarId(JSON.parse(payload.data.data.entity_id));
       setSnackbarTitle(payload.notification.title);
       setSnackbarDescription(payload.notification.body);
       setSnackbarOpen(true);
@@ -465,13 +470,13 @@ const Layout = (props) => {
     },
     {
       name: "Support",
-      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      icon: <img src={ReportIcon} alt="Menu" width="24" height="24" />,
       linkTo: "/support",
       itemIndex: 13,
     },
     {
       name: "Student Report Card",
-      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      icon: <img src={ReportIcon} alt="Menu" width="24" height="24" />,
       linkTo: "/report",
       itemIndex: 14,
     },
@@ -960,6 +965,7 @@ const Layout = (props) => {
       {snackbarOpen ? (
         <Snackbar
           open={snackbarOpen}
+          onClick={() => history.push(`/notifications/${snackbarId}`)}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           message={
             <>
@@ -1015,6 +1021,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onNotificationReceive: () =>
+      dispatch(NotificationActions.addNotificationCount()),
     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
   };
 };

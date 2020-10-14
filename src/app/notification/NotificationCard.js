@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     paddingLeft: "10px",
     paddingRight: "10px",
+    colour: "#1C1C1E",
   },
   borderBottomDiv: {
     width: "90%",
@@ -142,7 +143,9 @@ const NotificationCard = (props) => {
       console.log(response);
       if (response.status === 200) {
         if (updatedStatus === "read") {
-          props.subNotificationCount();
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           setStatus("read");
         } else if (updatedStatus === "unread") {
           props.addNotificationCount();
