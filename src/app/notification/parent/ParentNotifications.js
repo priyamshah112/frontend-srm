@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formControl: {
-    width: "50%",
+    width: "30%",
     padding: "10px 0px  0px 27px",
   },
   cardBoxPadding: {

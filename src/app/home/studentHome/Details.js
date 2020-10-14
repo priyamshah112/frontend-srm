@@ -135,6 +135,7 @@ const Details = (props) => {
     try {
       const token = localStorage.getItem("srmToken");
       const response = await HomeService.fetchAnnouncementDetail(newsId, token);
+      console.log(response);
       if (response.status === 200) {
         setDetails(response.data.data);
         setIsLoading(false);

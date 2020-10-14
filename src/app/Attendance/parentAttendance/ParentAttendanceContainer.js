@@ -188,13 +188,11 @@ const ParentAttendanceContainer = (props) => {
   const onGet = (d = {}, get_by) => {
     const { data = {} } = d;
     const { attendance = {} } = data;
-    const aData = attendance.data;
     setAttendance(data);
-    // setSubjects(aData);
-    if (aData.length) {
-      const cId = aData[0] || {};
+    if (attendance.length) {
+      const cId = attendance[0] || {};
       setClassId(cId);
-      fetchClassData(cId.class_id, aData, get_by);
+      fetchClassData(cId.class_id, attendance, get_by);
     }
   };
 

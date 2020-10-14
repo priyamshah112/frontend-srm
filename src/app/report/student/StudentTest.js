@@ -12,8 +12,8 @@ import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 const useStyles = makeStyles((theme) => ({
     container: {
         padding: '2%',
-        height: '100%',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        height: props => props.height
     },
     gridRoot: {
         marginTop: '40px'
@@ -65,14 +65,23 @@ const useStyles = makeStyles((theme) => ({
         fill: '#1c1c1c',
         fontSize: '18px',
         cursor: 'pointer'
+    },
+    headerTitle: {
+        textAlign: 'center'
     }
 }));
 
 
 const StudentTest = (props) => {
-    const classes = useStyles(props);
+    const styleProps = {
+        height: window.innerHeight - 70 + 'px'
+    };
+
+    const classes = useStyles(styleProps);
     const [testDate, setTestData] = useState([]);
     const [errMessage, setError] = useState('');
+    const [isLoading, setLoading] = useState(true);
+    const { searchData, userInfo } = props;
 
     const goToSearch = () => {
         props.home();
@@ -84,16 +93,16 @@ const StudentTest = (props) => {
         }
     }
 
-    const [isLoading, setLoading] = useState(true);
 
+
+    /* for admin | teacher*/
     useEffect(() => {
-        let loading = true;
-
-        if (props.searchData && props.searchData.user_classes) {
-            const { school_id, class_id, id } = props.searchData.user_classes;
+        if (searchData && searchData.user_classes) {
+            let loading = true;
+            const { school_id, class_id, id } = searchData.user_classes;
             async function getStudentReportCard() {
                 try {
-                    const response = await ReportService.fetchStudentTest(props.token, school_id, class_id, id);
+                    const response = await ReportService.fetchStudentList(props.token, school_id, class_id, id);
 
                     if (response.status === 200) {
                         if (loading) {
@@ -108,21 +117,50 @@ const StudentTest = (props) => {
                 }
             }
             getStudentReportCard();
-        } else {
-            setLoading(false);
         }
-        return () => {
-            loading = false;
-        };
     }, []);
+
+    /* for student*/
+
+    useEffect(() => {
+        let loading = true;
+
+        if (props.selectedRole === 'student') {
+            async function getStudentReportCard() {
+                try {
+                    const response = await ReportService.fetchStudentTest(props.token);
+
+                    if (response.status === 200) {
+                        if (loading) {
+                            setTestData(response.data.data.data || []);
+                            setLoading(false);
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                    setError('Error in student test');
+                    setLoading(false);
+                }
+            }
+            getStudentReportCard();
+        }
+    }, []);
+
 
     const renderSubheader = () => {
         return (
-            <div className={classes.navigationBack}>
-                <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
-                <Typography>{props.searchData.firstname} {props.searchData.lastname}</Typography>
-                <span />
-            </div>
+            <>
+                {searchData.user_classes ?
+                    <div className={classes.navigationBack}>
+                        <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
+                        <Typography>{searchData.firstname} {searchData.lastname}</Typography>
+                        <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>
+                    </div> :
+                    <div className={classes.headerTitle}>
+                        {userInfo.firstname && <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>}
+                    </div>
+                }
+            </>
         )
     }
 
@@ -169,7 +207,8 @@ const StudentTest = (props) => {
 const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
-        userInfo: state.auth.userInfo
+        userInfo: state.auth.userInfo,
+        selectedRole: state.auth.selectedRole
     };
 };
 
