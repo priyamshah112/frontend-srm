@@ -45,6 +45,7 @@ import ReportContainer from "./app/report/student/ReportContainer";
 // import StudentCard from "./app/report/student/StudentCard";
 import StudentCard from "./app/report/student/StudentReport";
 import ReportUpload from "./app/report/student/ReportUpload";
+import TimeTable from "./app/timeTable/timeTable";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -124,7 +125,7 @@ function App(props) {
           <Route
             path="/timetable"
             exact
-            component={() => <Typography>Timetable Home</Typography>}
+            component={(TimeTable)}
           />
           <Route path="/leave/" exact component={Leave} />
           <Route path="/leave/create/" exact component={LeaveCreateContainer} />
