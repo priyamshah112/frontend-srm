@@ -109,6 +109,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     height: "150px",
   },
+  dot: {
+    cursor: "pointer",
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -210,8 +213,8 @@ const TeacherAttendanceContainer = (props) => {
     return newDates;
   };
 
-  const changeAttendanceStatus = (d = {}, path) => {
-    //path = rowIndex+dateIndex
+  const changeAttendanceStatus = (d = {}, rowIndex, dateIndex) => {
+    const path = `${rowIndex}${dateIndex}`;
     setUpdateLoading(path);
     setAError({ ...aError, [path]: false });
     const attendanceStatus = {
@@ -230,15 +233,15 @@ const TeacherAttendanceContainer = (props) => {
     props.updateAddendance(
       data,
       d.id,
-      (d) => onUpdateSuccess(d, path),
+      (d) => onUpdateSuccess(d, rowIndex),
       (e) => onUpdateFail(e, path)
     );
   };
 
-  const onUpdateSuccess = (d = {}, path) => {
+  const onUpdateSuccess = (d = {}, rowIndex) => {
     const { data = {} } = d;
     setUpdateLoading(false);
-    updateStatus(data, path);
+    updateStatus(data, rowIndex);
   };
 
   const onUpdateFail = (e = {}, path) => {
@@ -256,13 +259,9 @@ const TeacherAttendanceContainer = (props) => {
     return aError[ePath];
   };
 
-  const updateStatus = (d = {}, path) => {
-    const pathArr = path.split("");
-    const rowIndex = Number(pathArr[0]);
-
+  const updateStatus = (d = {}, rowIndex) => {
     const aData = [...attendence];
     const dates = aData[rowIndex].dates || [];
-
     dates.map((date) => {
       if (date.attendance_date === d.attendance_date) {
         date.status = d.status;
@@ -291,10 +290,12 @@ const TeacherAttendanceContainer = (props) => {
         <AttendanceDot
           loading={isLoading}
           error={isError}
+          className={classes.dot}
           onClick={() =>
             changeAttendanceStatus(
               { ...userData, ...date },
-              `${rowIndex}${dateIndex}`
+              rowIndex,
+              dateIndex
             )
           }
           status={isFuture ? "" : date.status}
@@ -371,9 +372,11 @@ const TeacherAttendanceContainer = (props) => {
                       </StyledTableRow>
                     ))
                   ) : (
-                    <Typography className={classes.emptyData}>
-                      Attendance Data Not Available
-                    </Typography>
+                    <div className={classes.loadingView}>
+                      <div className={classes.loader}>
+                        <Typography>Attendance Data Not Available</Typography>
+                      </div>
+                    </div>
                   )}
                 </TableBody>
               )}
