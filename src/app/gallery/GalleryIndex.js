@@ -230,7 +230,7 @@ const GalleryIndex = (props) => {
             <GridList
               cellHeight={200}
               spacing={2}
-              cols={matches ? 2 : 3}
+              cols={matches ? 4 : 5}
               className={classes.gridList}
             >
               {tileData.map((tile, index) => {

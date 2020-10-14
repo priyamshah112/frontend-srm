@@ -44,7 +44,10 @@ import TransportIcon from "../assets/images/navigation/DesktopTransport.svg";
 import PaymentIcon from "../assets/images/navigation/DesktopPayment.svg";
 import SyllabusIcon from "../assets/images/navigation/DesktopSyllabus.svg";
 import TimetableIcon from "../assets/images/navigation/DesktopTimetable.svg";
-import ReportIcon from "../assets/images/report/ReportLogo.svg";
+import ReportIcon from "../assets/images/report/report_card.svg";
+import SupportIcon from "../assets/images/support/support.svg";
+import FAQIcon from "../assets/images/faq/faq.svg";
+import Logo from "../assets/images/Logo.png";
 
 import DesktopAttendanceIcon from "../assets/images/navigation/DesktopAttendance.svg";
 import HamburgerIcon from "../assets/images/navigation/Hamburger.svg";
@@ -464,13 +467,13 @@ const Layout = (props) => {
     },
     {
       name: "FAQ",
-      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      icon: <img src={FAQIcon} alt="Menu" width="24" height="24" />,
       linkTo: "/faq",
       itemIndex: 12,
     },
     {
       name: "Support",
-      icon: <img src={ReportIcon} alt="Menu" width="24" height="24" />,
+      icon: <img src={SupportIcon} alt="Menu" width="24" height="24" />,
       linkTo: "/support",
       itemIndex: 13,
     },
@@ -833,7 +836,7 @@ const Layout = (props) => {
                 />
               </IconButton>
               <Hidden smDown implementation="css">
-                <Typography>LOGO</Typography>
+              <img src={Logo} alt="Logo" />
               </Hidden>
 
               <div className={classes.grow} />
