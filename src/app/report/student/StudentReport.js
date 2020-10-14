@@ -13,13 +13,11 @@ import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
-
 const useStyles = makeStyles((theme) => ({
     container: {
         padding: "2%",
-        height: "100%",
         overflowY: "auto",
-        height: '600px'
+        height: props => props.height
     },
     navigationBack: {
         display: "flex",
@@ -189,7 +187,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const StudentDetails = (props) => {
-    const classes = useStyles(props);
+    const styleProps = {
+        height: window.innerHeight - 70 + 'px'
+    };
+
+    const classes = useStyles(styleProps);
     const [attendanceData, setAttendanceData] = useState({});
     const [isLoading, setLoading] = useState(true);
     const printRef = useRef(null);
@@ -322,8 +324,8 @@ const StudentDetails = (props) => {
         <div className={classes.container} ref={printRef}>
             {renderHeader()}
             {renderAttendace()}
-            <StudentSkills {...props} searchData={searchData} testData={testData} />
-            <StudentGrade {...props} searchData={searchData} testData={testData} />
+            <StudentSkills {...props} />
+            <StudentGrade {...props} />
             <BackdropLoader open={isLoading} />
         </div>
     );

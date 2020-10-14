@@ -120,7 +120,7 @@ const StudentSkills = (props) => {
     useEffect(() => {
         let loading = true;
 
-        if (searchData && searchData.user_classes) {
+        if (searchData.id && testData.id) {
             async function getReportCard() {
                 const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
                 if (response.status === 200) {
@@ -241,7 +241,7 @@ const StudentSkills = (props) => {
 
 
     const onChangeGrade = (event, obj, key) => {
-       
+
     }
 
     const renderEditSkill = () => {
@@ -318,7 +318,6 @@ const StudentSkills = (props) => {
                 if (reportData.grades[0]) {
                     if (reportData.grades[0].report_grade[0]) {
                         reportData.grades[0].report_grade.map((g, i) => {
-                            console.log("g.school_id", g);
                             if (list.subject_id == g.subject_id) {
                                 list.skill_list_data.grade_name = g.grade
                             }
@@ -362,31 +361,34 @@ const StudentSkills = (props) => {
                                 <Grid container spacing={3}>
                                     {value.map((item, key) => {
                                         return (
-                                                <Grid item xs={6} key={key}>
-                                                    <Paper className={classes.paper} elevation={0}>
-                                                        <div className={classes.cardTitle}>
-                                                            <span>&nbsp;</span>
-                                                            <Typography>
-                                                                {item.name}
-                                                            </Typography>
-                                                            <span onClick={() => setSkill(item)}>
+                                            <Grid item xs={6} key={key}>
+                                                <Paper className={classes.paper} elevation={0}>
+                                                    <div className={classes.cardTitle}>
+                                                        <span>&nbsp;</span>
+                                                        <Typography>
+                                                            {item.name}
+                                                        </Typography>
+                                                        <span >
+                                                            {searchData.user_classes &&
                                                                 <img
-                                                                    src={editIcon} className={classes.editIcon} />
-                                                            </span>
-                                                        </div>
-                                                        <div className={classes.cardHeader}>
-                                                            <Typography className={classes.cardHeaderSkill}>
-                                                                <span className={classes.colorWhite}>Skill</span>
-                                                            </Typography>
-                                                            <Typography className={classes.cardHeaderGrade}>
-                                                                <span className={classes.colorWhite}>Grade</span>
-                                                            </Typography>
-                                                        </div>
-                                                        {
-                                                            skillName(item)
-                                                        }
-                                                    </Paper>
-                                                </Grid>
+                                                                    src={editIcon} className={classes.editIcon} onClick={() => setSkill(item)}
+                                                                />
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <div className={classes.cardHeader}>
+                                                        <Typography className={classes.cardHeaderSkill}>
+                                                            <span className={classes.colorWhite}>Skill</span>
+                                                        </Typography>
+                                                        <Typography className={classes.cardHeaderGrade}>
+                                                            <span className={classes.colorWhite}>Grade</span>
+                                                        </Typography>
+                                                    </div>
+                                                    {
+                                                        skillName(item)
+                                                    }
+                                                </Paper>
+                                            </Grid>
                                         )
                                     })
                                     }

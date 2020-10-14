@@ -3,7 +3,7 @@ import axios from 'axios';
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class ReportService {
-    fetchStudentTest(token, school_id, class_id, student_id) {
+    fetchStudentList(token, school_id, class_id, student_id) {
         return axios.get(`${BACKEND_API_URL}/get_student_test_list`, {
             params: {
                 school_id: school_id,
@@ -17,7 +17,16 @@ class ReportService {
         });
     }
 
-    
+    fetchStudentTest(token) {
+        return axios.get(`${BACKEND_API_URL}/get_student_test_list`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+
     studentAttendance(token, student_id) {
         return axios.get(`${BACKEND_API_URL}/report_card_attendanceDetails`, {
             params: {

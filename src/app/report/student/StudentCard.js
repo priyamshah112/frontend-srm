@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-
+import { connect } from 'react-redux';
 import StudentSearch from './StudentSearch';
 import StudentTest from './StudentTest';
 import StudentReport from './StudentReport';
 
-const StudentCard = () => {
-    const [view, setView] = useState('search');
-    const [searchValue, setSearchValue] = useState({});
+const StudentCard = (props) => {
+
+    const defaultView = props.selectedRole === 'student' ? 'test' : 'search'
+    const [view, setView] = useState(defaultView);
+    const [searchValue, setSearchValue] = useState(props.userInfo);
     const [testValue, setTestValue] = useState({});
 
     const handleSearch = (value) => {
@@ -58,4 +60,14 @@ const StudentCard = () => {
     );
 };
 
-export default StudentCard;
+const mapStateToProps = (state) => {
+    return {
+        token: state.auth.token,
+        selectedRole: state.auth.selectedRole,
+        userInfo: state.auth.userInfo,
+    };
+};
+
+export default connect(mapStateToProps)(StudentCard);
+
+
