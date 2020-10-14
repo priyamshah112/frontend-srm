@@ -103,6 +103,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+let setSubjectArray = [];
+
 const StudentSkills = (props) => {
     const classes = useStyles(props);
 
@@ -111,15 +113,14 @@ const StudentSkills = (props) => {
     const [editSkill, setEditSkill] = useState(false);
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
+    const [allSubject, setAllSubject] = useState(true);
+    const [updateStatus, setUpdateStatus] = useState(false);
 
     const { searchData = searchValue1, testData = testValue1 } = props;
     const token = localStorage.getItem('srmToken');
-    // ReportService.deleteSkill(token, 4);
-    /* Fetch Report Card */
 
     useEffect(() => {
         let loading = true;
-
         if (searchData.id && testData.id) {
             async function getReportCard() {
                 const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
@@ -139,11 +140,17 @@ const StudentSkills = (props) => {
         return () => {
             loading = false;
         };
-    }, []);
+    }, [updateStatus]);
 
     const setSkill = (obj) => {
         setSkillData(obj);
+        setAllSubject(setSubjectArray)
         setEditSkill(true);
+    }
+
+    const cancelUpdate = () => {
+        setEditSkill(false);
+        setUpdateStatus((pre) => !pre);
     }
 
     const addSkillCall = (data) => {
@@ -157,6 +164,7 @@ const StudentSkills = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setEditSkill(false)
+                        setUpdateStatus((pre) => !pre);
                     }
                 }
             } catch (error) {
@@ -179,13 +187,10 @@ const StudentSkills = (props) => {
 
                 if (response.status === 200) {
                     if (loading) {
-                        // setEditSkill(false)
                     }
                 }
             } catch (error) {
                 console.log(error);
-                // setError('');
-                // setEditSkill(false)
             }
         }
         addSkill();
@@ -194,33 +199,45 @@ const StudentSkills = (props) => {
         };
     }
 
-    const onChangeSkills = (event, obj, key) => {
-        const skill_list_data = { ...obj.skill_list_data, skill_name: event.target.value };
+    const onChangeSkills = (event, obj, key, name) => {
+
+        const skill = [];
+        const subject = [];
+        const skill_list_data = name === 'skill' ? { ...obj.skill_list_data, skill_name: event.target.value } : { ...obj.skill_list_data, grade_name: event.target.value }
         obj.skill_list_data = skill_list_data;
         skillData.user_skill[key] = obj;
-        const subject = [];
+
         skillData.user_skill.map((item, key) => {
             const value = {
                 'skill_id': item.id,
-                'skill_name': item.skill_list_data.skill_name,
-                'grade': 'B'
+                'skill_name': item.skill_list_data.skill_name || '',
+                'grade': item.skill_list_data.grade_name || ''
             }
-            subject.push(value)
+            skill.push(value)
+        });
+
+        subject.push(
+            {
+                "subject_id": skillData.id,
+                "subject_name": skillData.name,
+                "skill": skill
+            },
+        )
+
+        const restSubject = allSubject.filter((sub) => {
+            return (sub.subject_name != skillData.name && sub.subject_id)
         })
+
+        const totalSubject = [...restSubject, ...subject]
 
         if (reportData.grades[0]) {
             const updateSkill = {
                 "id": reportData.grades[0].id,
-
                 "student_id": searchData.id,
                 "test_id": testData.id,
                 "remarks": "Remarks",
                 "status": "draft",
-                "subject": [{
-                    "subject_id": skillData.id,
-                    "subject_name": skillData.name,
-                    "skill": subject
-                }]
+                "subject": totalSubject
             }
             updateSkillCall(updateSkill)
         } else {
@@ -229,21 +246,11 @@ const StudentSkills = (props) => {
                 "test_id": testData.id,
                 "remarks": "Remarks",
                 "status": "draft",
-                "subject": [{
-                    "subject_id": skillData.id,
-                    "subject_name": skillData.name,
-                    "skill": subject
-                }]
+                "subject": subject
             }
             addSkillCall(createSkill)
         }
     }
-
-
-    const onChangeGrade = (event, obj, key) => {
-
-    }
-
     const renderEditSkill = () => {
         return (
             <div className={classes.fillGradeWrapper}>
@@ -252,7 +259,6 @@ const StudentSkills = (props) => {
                 </div>
                 {
                     skillData.user_skill.map((obj, key) => {
-                        console.log("obj.skill_list_data.skill_name", obj.skill_list_data.skill_name);
 
                         return (
                             <div className={classes.fillGrade} key={key}>
@@ -265,7 +271,7 @@ const StudentSkills = (props) => {
                                     variant="outlined"
                                     fullWidth={true}
                                     style={{ background: '#fff' }}
-                                    onChange={(event) => { onChangeSkills(event, obj, key) }}
+                                    onChange={(event) => { onChangeSkills(event, obj, key, 'skill') }}
                                 />
                                 <TextField
                                     id="outlined-textarea"
@@ -273,9 +279,9 @@ const StudentSkills = (props) => {
                                     multiline
                                     variant="outlined"
                                     placeholder={'Grade Name'}
-                                    value={'A'}
+                                    defaultValue={obj.skill_list_data.grade_name || ''}
                                     style={{ marginLeft: '10px', background: '#fff' }}
-                                    onChange={(event) => { onChangeGrade(event, obj, key) }}
+                                    onChange={(event) => { onChangeSkills(event, obj, key, 'grade') }}
                                 />
 
                             </div>
@@ -292,7 +298,7 @@ const StudentSkills = (props) => {
                             variant='contained'
                             disableElevation
                             className={classes.cancelBtn}
-                            onClick={() => setEditSkill(false)}
+                            onClick={() => { cancelUpdate() }}
                         >
                             Cancel
                     </Button>
@@ -300,7 +306,10 @@ const StudentSkills = (props) => {
                             variant='contained'
                             color='primary'
                             disableElevation
-                            onClick={() => addSkillCall()}
+                            onClick={() => {
+                                cancelUpdate()
+                                // addSkillCall()
+                            }}
                         >
                             Add
                     </Button>
@@ -312,38 +321,66 @@ const StudentSkills = (props) => {
     }
 
     const skillName = (skill) => {
+        const skillArr = [];
         return (
-            skill.user_skill.map((list, key) => {
+            <>
+                {
+                    skill.user_skill.map((list, key) => {
 
-                if (reportData.grades[0]) {
-                    if (reportData.grades[0].report_grade[0]) {
-                        reportData.grades[0].report_grade.map((g, i) => {
-                            if (list.subject_id == g.subject_id) {
-                                list.skill_list_data.grade_name = g.grade
+                        if (reportData.grades[0]) {
+                            if (reportData.grades[0].report_grade[0]) {
+                                reportData.grades[0].report_grade.map((g, i) => {
+                                    if (list.id == g.skill_id) {
+                                        list.skill_list_data = { ...list.skill_list_data, grade_name: g.grade, skill_name: g.skill_name };
+                                    }
+                                })
                             }
-                        })
-                    }
-                };
+                        };
 
-                return (
-                    <span key={key}>
-                        <div className={classes.cardItem}>
-                            <Typography className={classes.cardItemSkill}>
-                                {
-                                    list.skill_list_data &&
-                                    <>
-                                        {list.skill_list_data.skill_name}
-                                    </>
-                                }
-                            </Typography>
-                            <Typography className={classes.cardItemGrade}>
-                                {list.skill_list_data.grade_name || '-'}
-                            </Typography>
-                        </div>
+                        if (list.skill_list_data.grade_name) {
+
+                            const value = {
+                                'skill_id': list.id,
+                                'skill_name': list.skill_list_data.skill_name || '',
+                                'grade': list.skill_list_data.grade_name || '',
+                                "subject_id": list.subject_id
+                            }
+                            skillArr.push(value)
+                        }
+
+                        return (
+                            <span key={key}>
+                                <div className={classes.cardItem}>
+                                    <Typography className={classes.cardItemSkill}>
+                                        {
+                                            list.skill_list_data &&
+                                            <>
+                                                {list.skill_list_data.skill_name}
+                                            </>
+                                        }
+                                    </Typography>
+                                    <Typography className={classes.cardItemGrade}>
+                                        {list.skill_list_data.grade_name || '-'}
+                                    </Typography>
+                                </div>
+                            </span>
+                        )
+                    }
+                    )
+                }
+                {
+                    <span style={{ display: 'none' }}>
+                        {setSubjectArray.push(
+                            {
+                                "subject_id": skillArr[0] ? skillArr[0].subject_id : null,
+                                "subject_name": skill.name,
+                                "skill": skillArr
+                            }
+                        )}
                     </span>
-                )
-            }
-            )
+                }
+
+            </>
         )
     }
 
@@ -422,7 +459,7 @@ const StudentSkills = (props) => {
             </div>
         )
     }
-
+    setSubjectArray = [];
     return (
         <div className={classes.container}>
             {editSkill && renderEditSkill()}
@@ -443,19 +480,19 @@ export default connect(mapStateToProps)(StudentSkills);
 /* Temp */
 
 var searchValue1 = {
-    "id": 1240,
+    "id": 1392,
     "type": "username",
-    "username": "georgianna.rowe",
-    "firstname": "Catalina",
-    "lastname": "Wiza",
+    "username": "oral09",
+    "firstname": "Lelia",
+    "lastname": "Sauer",
     "gender": "female",
     "verified_at": null,
     "otp": null,
     "otp_expiry": null,
-    "thumbnail": "https://lorempixel.com/640/480/?19048",
+    "thumbnail": "https://lorempixel.com/640/480/?67589",
     "device_tokens": null,
-    "created_at": "2020-10-04T12:04:57.000000Z",
-    "updated_at": "2020-10-04T12:04:57.000000Z",
+    "created_at": "2020-10-04T12:05:09.000000Z",
+    "updated_at": "2020-10-04T12:05:09.000000Z",
     "roles": [
         {
             "id": 4,
@@ -464,32 +501,32 @@ var searchValue1 = {
             "created_at": "2020-10-04T12:03:10.000000Z",
             "updated_at": "2020-10-04T12:03:10.000000Z",
             "pivot": {
-                "model_id": 1240,
+                "model_id": 1392,
                 "role_id": 4,
                 "model_type": "App\\User"
             }
         }
     ],
     "user_classes": {
-        "id": 1239,
-        "user_id": 1240,
-        "school_id": 9,
-        "class_id": 82,
+        "id": 1391,
+        "user_id": 1392,
+        "school_id": 10,
+        "class_id": 91,
         "user_code": null,
         "class_code": null,
         "from_date": "2020-10-04",
         "to_date": "2021-10-04",
         "created_by": 1,
         "updated_by": 1,
-        "created_at": "2020-10-04T12:04:57.000000Z",
+        "created_at": "2020-10-04T12:05:09.000000Z",
         "updated_at": null,
         "deleted_at": null,
         "classes_data": {
-            "id": 82,
-            "code": "SRM-CLASS-5f79b9ff62d501601812991",
-            "school_id": 9,
-            "class_name": "Class 2",
-            "internal_name": "class-2",
+            "id": 91,
+            "code": "SRM-CLASS-5f79b9ff64e961601812991",
+            "school_id": 10,
+            "class_name": "Class 1",
+            "internal_name": "class-1",
             "created_by": 1,
             "updated_by": 1,
             "created_at": "2020-10-04T12:03:11.000000Z",
@@ -497,8 +534,8 @@ var searchValue1 = {
             "deleted_at": null
         },
         "school_data": {
-            "id": 9,
-            "name": "Chanel High School",
+            "id": 10,
+            "name": "Zoila High School",
             "registered_date": "2020-08-21",
             "created_by": 1,
             "updated_by": 1,
@@ -510,10 +547,10 @@ var searchValue1 = {
 }
 
 var testValue1 = {
-    "id": 328,
-    "code": "SRM-EXMTST-5f79ba86d3d311601813126",
-    "school_id": 9,
-    "class_id": 82,
+    "id": 364,
+    "code": "SRM-EXMTST-5f79ba86db3851601813126",
+    "school_id": 10,
+    "class_id": 91,
     "name": "Test 4",
     "image": null,
     "created_by": 1,
@@ -522,7 +559,3 @@ var testValue1 = {
     "updated_at": "2020-10-04 12:05:26",
     "deleted_at": null
 }
-
-
-
-
