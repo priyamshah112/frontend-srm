@@ -102,7 +102,7 @@ const ClassSyllabus = (props) => {
   const fetchClasses = async (isMounted) => {
     const response = await SyllabusService.fetchClasses(token);
     if (response.status === 200) {
-      //console.log("fetchClasses -> "+ response.data)
+      // console.log("fetchClasses -> "+ response.data)
 
       if (response.data.status == "success" && isLoading && classList == null) {
         //console.log(response.data.data)
@@ -115,22 +115,22 @@ const ClassSyllabus = (props) => {
   const table =
     isLoading == false && syllabusDetails !== null
       ? syllabusDetails.map(function (subject, index) {
-          return (
-            <div key={`${classID}${index}`}>
-              <div style={{ background: "#fff" }}>
-                <SubjectSyllabus
-                  class_id={classID}
-                  key={`${classID}${index}`}
-                  subjectDetails={Object.values(subject)[0]}
-                  subjectName={subject.subjectName}
-                  subjectID={Object.keys(subject)[0]}
-                />
-              </div>
-              <br />
-              <br />
+        return (
+          <div key={`${classID}${index}`}>
+            <div style={{ background: "#fff" }}>
+              <SubjectSyllabus
+                class_id={classID}
+                key={`${classID}${index}`}
+                subjectDetails={Object.values(subject)[0]}
+                subjectName={subject.subjectName}
+                subjectID={Object.keys(subject)[0]}
+              />
             </div>
-          );
-        })
+            <br />
+            <br />
+          </div>
+        );
+      })
       : null;
 
   useEffect(() => {
@@ -177,12 +177,12 @@ const ClassSyllabus = (props) => {
         >
           {classList != null
             ? Object.keys(classList).map(function (key, index) {
-                return (
-                  <MenuItem key={index} value={classList[key].id}>
-                    {classList[key].class_name}
-                  </MenuItem>
-                );
-              })
+              return (
+                <MenuItem key={index} value={classList[key].id}>
+                  {classList[key].class_name}
+                </MenuItem>
+              );
+            })
             : null}
         </Select>
         <br />
