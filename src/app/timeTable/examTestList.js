@@ -7,6 +7,8 @@ import { Container } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import Typography from '@material-ui/core/Typography';
+
 
 
 
@@ -21,10 +23,11 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         textAlign: 'center',
-        height: "80px",
-        width: "75px",
+        // height: "80px",
+        // width: "75px",
         marginTop: "30px",
-        border: "1px solid #7b72af"
+        border: "1px solid #7b72af",
+        marginRight:"0"
     },
 }));
 
@@ -45,7 +48,7 @@ export default function TestList(props) {
     const forwardTick = () => {
         setTestListUi(true)
     }
-   
+
 
 
     return (
@@ -53,29 +56,33 @@ export default function TestList(props) {
         <div style={{ marginTop: '20px' }}>
             {testListUi === false ?
                 <Container>
+                    <Grid container spacing={12}>
+
                     <Grid item xs={12} style={{ textAlign: 'center' }}>
                         <div style={{ float: 'left' }}>
                             <ArrowBackIosIcon fontSize="small" onClick={props.backtickTestList}></ArrowBackIosIcon>
                         </div>
                         <div style={{ float: 'right', display: forwardtick }}><ArrowForwardIosIcon fontSize="small" onClick={forwardTick}></ArrowForwardIosIcon></div>
-                        <h3 style={{ margin: '0' }}>Test</h3>
+                        <Typography >Test List</Typography>
 
+                    </Grid>
                     </Grid>
                     <div className={classes.root}>
 
-                    <Grid container spacing={6}>
-                    {props.testNmae.map((key, index) => {
+                        <Grid container spacing={10}>
+                            {props.testNmae.map((key, index) => {
 
-                        return  <Grid item xs={3}>
-                         <Paper  className={classes.paper} onClick={clickTestList}>
-                            <div>
-                                <img src={medal} alt="medalavt" width='60%' height="80%" />
-                            </div>
-                            <span style={{ color: '#1C1C1E)' }}>{props.testNmae[index]}</span>
-                        </Paper>
+                                return <Grid item xs={6} lg={3} sm={4} style={{justifyContent:'space-between'}}>
+                                    <Paper className={classes.paper} onClick={clickTestList}>
+                                        <div>
+                                            <img src={medal} alt="medalavt" width='65%' height="50%" />
+                                        </div>
+                                        <Typography>{props.testNmae[index]}</Typography>
+
+                                    </Paper>
+                                </Grid>
+                            })}
                         </Grid>
-                    })}
-                    </Grid>
                     </div>
 
                 </Container> :

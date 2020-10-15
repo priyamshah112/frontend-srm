@@ -4,6 +4,9 @@ import Paper from '@material-ui/core/Paper';
 import medal from '../../assets/images/Medal.png'
 import Grid from '@material-ui/core/Grid';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import Typography from '@material-ui/core/Typography';
+import EditLogo from '../../assets/images/Edit.svg';
+
 
 
 
@@ -19,12 +22,11 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         // padding: theme.spacing(2),
-        textAlign: 'center',
+        textAlign: '',
         height: "auto",
         background: "none",
         boxShadow: "none",
         padding: "10px",
-
     },
     headingList: {
         background: "#7b72af", borderRight: "1px solid #707070", padding: '5px', textAlign: 'center',
@@ -43,49 +45,88 @@ export default function TestListUi(props) {
 
 
     return (
-        <Grid container spacing={3} style={{ marginTop: "10px", paddingLeft: '15px', paddingRight: '15px' }}>
-            <Grid item xs={12} style={{ textAlign: 'center' }}>
+        <Grid container spacing={3} style={{ marginTop: "20px", paddingLeft: '15px', paddingRight: '15px' }}>
+            <Grid item xs={12} style={{ textAlign: 'center' ,paddingTop:"0"}}>
                 <div style={{ float: 'left' }}>
-                    <ArrowBackIosIcon fontSize="small" onClick={props.backTick}></ArrowBackIosIcon>
+                    <ArrowBackIosIcon  fontSize="small" onClick={props.backTick}></ArrowBackIosIcon>
                 </div>
-                <h3 style={{ margin: '0' }}>Test 1</h3>
+                <Typography>Test List</Typography>
+
+
 
             </Grid>
+           
 
-            <Grid fixed item xs={6}>
+            <Grid  item xs={12} lg={6} style={{marginTop:"20px"}}>
                 <div style={{ background: "#FFFFFF 0% 0% no-repeat padding-box" }}>
-                    <Paper className={classes.paper}>
-                        <div> <span>Math</span></div>
-                    </Paper>
+                    <Grid  xs={12}>
+                        <Typography display="" align="center" gutterBottom className={classes.paper}>
+                        <span style={{}}>Math</span>
+                     <span style={{float:'right',marginRight:"10px",marginTop:'2px'}}> <img src={EditLogo} alt="editLogo" /></span> 
+                        </Typography>
+
+                    </Grid>
                     <Grid container style={{ color: '#FFFFFF' }}>
-                        <Grid item xs={4} className={classes.headingList} style={{ borderTopLeftRadius: '5px' }}>Exam Date</Grid>
-                        <Grid item xs={4} className={classes.headingList} >Start Time</Grid>
-                        <Grid item xs={4} className={classes.headingList} style={{ borderTopRightRadius: '5px', borderRight: '0' }}>End Time</Grid>
+                        <Grid item xs={4} className={classes.headingList} style={{ borderTopLeftRadius: '5px' }}>
+                            <Typography>Exam Date</Typography>
+                        </Grid>
+                        <Grid item xs={4} className={classes.headingList} >
+                        <Typography>Start Time</Typography>
+
+                        </Grid>
+                        <Grid item xs={4} className={classes.headingList} style={{ borderTopRightRadius: '5px', borderRight: '0' }}>
+                        <Typography>End Time</Typography>
+
+                        </Grid>
 
                     </Grid>
                     <Grid container>
-                        <Grid item xs={4} className={classes.dataList}>15-12-2020</Grid>
-                        <Grid item xs={4} className={classes.dataList}>10.20 PM</Grid>
-                        <Grid item xs={4} className={classes.dataList} style={{ borderRight: "0" }}>12.20 PM</Grid>
+                        <Grid item xs={4} className={classes.dataList}>
+                            <Typography>15-12-2020</Typography>
+                        </Grid>
+                        <Grid item xs={4} className={classes.dataList}>
+                            <Typography>10.20 PM</Typography>
+                        </Grid>
+                        <Grid item xs={4} className={classes.dataList} style={{ borderRight: "0" }}>
+                            <Typography>12.20 PM</Typography>
+                        </Grid>
 
                     </Grid>
                 </div>
             </Grid>
-            <Grid fixed item xs={6}>
+            <Grid  item xs={12} lg={6} style={{marginTop:"20px"}}>
                 <div style={{ background: "#FFFFFF 0% 0% no-repeat padding-box" }}>
-                    <Paper className={classes.paper}>
-                        <div> <span>English</span></div>
-                    </Paper>
+                    <Grid  xs={12}>
+                        <Typography display="" align="center" gutterBottom className={classes.paper}>
+                        <span style={{}}>Math</span>
+                     <span style={{float:'right',marginRight:"10px",marginTop:'2px'}}> <img src={EditLogo} alt="editLogo" /></span> 
+                        </Typography>
+
+                    </Grid>
                     <Grid container style={{ color: '#FFFFFF' }}>
-                        <Grid item xs={4} className={classes.headingList} style={{ borderTopLeftRadius: '5px' }}>Exam Date</Grid>
-                        <Grid item xs={4} className={classes.headingList} >Start Time</Grid>
-                        <Grid item xs={4} className={classes.headingList} style={{ borderTopRightRadius: '5px', borderRight: '0' }}>End Time</Grid>
+                        <Grid item xs={4} className={classes.headingList} style={{ borderTopLeftRadius: '5px' }}>
+                            <Typography>Exam Date</Typography>
+                        </Grid>
+                        <Grid item xs={4} className={classes.headingList} >
+                        <Typography>Start Time</Typography>
+
+                        </Grid>
+                        <Grid item xs={4} className={classes.headingList} style={{ borderTopRightRadius: '5px', borderRight: '0' }}>
+                        <Typography>End Time</Typography>
+
+                        </Grid>
 
                     </Grid>
                     <Grid container>
-                        <Grid item xs={4} className={classes.dataList}>15-12-2020</Grid>
-                        <Grid item xs={4} className={classes.dataList}>10.20 PM</Grid>
-                        <Grid item xs={4} className={classes.dataList} style={{ borderRight: "0" }}>12.20 PM</Grid>
+                        <Grid item xs={4} className={classes.dataList}>
+                            <Typography>15-12-2020</Typography>
+                        </Grid>
+                        <Grid item xs={4} className={classes.dataList}>
+                            <Typography>10.20 PM</Typography>
+                        </Grid>
+                        <Grid item xs={4} className={classes.dataList} style={{ borderRight: "0" }}>
+                            <Typography>12.20 PM</Typography>
+                        </Grid>
 
                     </Grid>
                 </div>
