@@ -7,12 +7,14 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import downloadIcon from '../../../assets/images/attendance/download.svg';
 import PrintIcon from '../../../assets/images/report/printer.svg';
+import Avatar from "@material-ui/core/Avatar";
 
 import ReportService from '../ReportService';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
+
 const useStyles = makeStyles((theme) => ({
     container: {
         padding: "2%",
@@ -157,8 +159,7 @@ const useStyles = makeStyles((theme) => ({
     userIcon: {
         height: '100%',
         width: '100%',
-        borderRadius: '50%',
-        border: '1px solid gray'
+        borderRadius: '50%'
     },
     editIcon: {
         fontSize: '17px',
@@ -194,6 +195,7 @@ const StudentDetails = (props) => {
     const classes = useStyles(styleProps);
     const [attendanceData, setAttendanceData] = useState({});
     const [isLoading, setLoading] = useState(true);
+    const [loadImage, setLoadImage] = useState(true);
     const printRef = useRef(null);
 
     const { token, searchData = searchValue1, testData = testValue1 } = props;
@@ -245,6 +247,16 @@ const StudentDetails = (props) => {
         }, 2000)
     };
 
+    const onError = () => {
+        // this.setState({
+        //     imageUrl: "img/default.png"
+        // })
+    }
+
+    const onErrorImg = () => {
+        setLoadImage(false)
+    }
+
     const renderHeader = () => {
         return (
             <>
@@ -264,11 +276,13 @@ const StudentDetails = (props) => {
                 </div>
                 <div className={classes.studentPhoto}>
                     <div className={classes.photo}>
-                        <img
+                        {loadImage ? <img
                             src={searchData.thumbnail}
                             className={classes.userIcon}
-                        />
-
+                            onError={onErrorImg}
+                        /> :
+                            <Avatar src="/broken-image.jpg" className={classes.userIcon} />
+                        }
                     </div>
                     <div className={classes.photoName}>
                         <Typography className={classes.fontSize14}>{searchData.firstname} {searchData.lastname}</Typography>

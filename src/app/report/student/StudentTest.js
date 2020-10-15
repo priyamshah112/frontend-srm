@@ -93,8 +93,6 @@ const StudentTest = (props) => {
         }
     }
 
-
-
     /* for admin | teacher*/
     useEffect(() => {
         if (searchData && searchData.user_classes) {
@@ -154,7 +152,7 @@ const StudentTest = (props) => {
                     <div className={classes.navigationBack}>
                         <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
                         <Typography>{searchData.firstname} {searchData.lastname}</Typography>
-                        <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>
+                        <div>&nbsp;</div>
                     </div> :
                     <div className={classes.headerTitle}>
                         {userInfo.firstname && <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>}
@@ -163,6 +161,8 @@ const StudentTest = (props) => {
             </>
         )
     }
+
+    
 
     const renderGrid = () => {
         return (
@@ -176,7 +176,13 @@ const StudentTest = (props) => {
                                         <div className={classes.card} onClick={() => onTest(obj)} key={key}>
                                             <div className={classes.flex1}>
                                                 <div className={classes.badgeWrapper}>
-                                                    <img src={ReportLogo} alt='report logo' height={78} width={59} />
+                                                    <img
+                                                        src={ReportLogo}
+                                                        alt='student-logo'
+                                                        height={78}
+                                                        width={59}
+                                                        
+                                                    />
                                                 </div>
                                             </div>
                                             <div className={classes.flex2}>
