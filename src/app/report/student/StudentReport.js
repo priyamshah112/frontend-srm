@@ -357,57 +357,57 @@ var searchValue1 = {
     "created_at": "2020-10-04T12:05:09.000000Z",
     "updated_at": "2020-10-04T12:05:09.000000Z",
     "roles": [
-      {
-        "id": 4,
-        "name": "student",
-        "guard_name": "web",
-        "created_at": "2020-10-04T12:03:10.000000Z",
-        "updated_at": "2020-10-04T12:03:10.000000Z",
-        "pivot": {
-          "model_id": 1392,
-          "role_id": 4,
-          "model_type": "App\\User"
+        {
+            "id": 4,
+            "name": "student",
+            "guard_name": "web",
+            "created_at": "2020-10-04T12:03:10.000000Z",
+            "updated_at": "2020-10-04T12:03:10.000000Z",
+            "pivot": {
+                "model_id": 1392,
+                "role_id": 4,
+                "model_type": "App\\User"
+            }
         }
-      }
     ],
     "user_classes": {
-      "id": 1391,
-      "user_id": 1392,
-      "school_id": 10,
-      "class_id": 91,
-      "user_code": null,
-      "class_code": null,
-      "from_date": "2020-10-04",
-      "to_date": "2021-10-04",
-      "created_by": 1,
-      "updated_by": 1,
-      "created_at": "2020-10-04T12:05:09.000000Z",
-      "updated_at": null,
-      "deleted_at": null,
-      "classes_data": {
-        "id": 91,
-        "code": "SRM-CLASS-5f79b9ff64e961601812991",
+        "id": 1391,
+        "user_id": 1392,
         "school_id": 10,
-        "class_name": "Class 1",
-        "internal_name": "class-1",
+        "class_id": 91,
+        "user_code": null,
+        "class_code": null,
+        "from_date": "2020-10-04",
+        "to_date": "2021-10-04",
         "created_by": 1,
         "updated_by": 1,
-        "created_at": "2020-10-04T12:03:11.000000Z",
-        "updated_at": "2020-10-04T12:03:11.000000Z",
-        "deleted_at": null
-      },
-      "school_data": {
-        "id": 10,
-        "name": "Zoila High School",
-        "registered_date": "2020-08-21",
-        "created_by": 1,
-        "updated_by": 1,
-        "created_at": "2020-10-04T12:03:11.000000Z",
-        "updated_at": "2020-10-04T12:03:11.000000Z",
-        "deleted_at": null
-      }
+        "created_at": "2020-10-04T12:05:09.000000Z",
+        "updated_at": null,
+        "deleted_at": null,
+        "classes_data": {
+            "id": 91,
+            "code": "SRM-CLASS-5f79b9ff64e961601812991",
+            "school_id": 10,
+            "class_name": "Class 1",
+            "internal_name": "class-1",
+            "created_by": 1,
+            "updated_by": 1,
+            "created_at": "2020-10-04T12:03:11.000000Z",
+            "updated_at": "2020-10-04T12:03:11.000000Z",
+            "deleted_at": null
+        },
+        "school_data": {
+            "id": 10,
+            "name": "Zoila High School",
+            "registered_date": "2020-08-21",
+            "created_by": 1,
+            "updated_by": 1,
+            "created_at": "2020-10-04T12:03:11.000000Z",
+            "updated_at": "2020-10-04T12:03:11.000000Z",
+            "deleted_at": null
+        }
     }
-  }
+}
 
 var testValue1 = {
     "id": 364,
@@ -421,5 +421,5 @@ var testValue1 = {
     "created_at": "2020-10-04 12:05:26",
     "updated_at": "2020-10-04 12:05:26",
     "deleted_at": null
-  }
+}
 
