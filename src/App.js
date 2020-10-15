@@ -20,6 +20,7 @@ import Assignment from "./app/Assignment/Assignment";
 import NewsDetails from "./app/home/studentHome/NewsDetails";
 import Announcements from "./app/home/studentHome/Announcements";
 import Gallery from "./app/gallery/GalleryIndex";
+import Payments from "./app/payments/Payments";
 import ImageUpload from "./app/gallery/ImageUpload";
 import Profile from "./app/profile/Profile";
 import Details from "./app/notification/Details";
@@ -118,17 +119,15 @@ function App(props) {
             path="/curriculum"
             exact
             component={() => <Typography>Curriculum Home</Typography>}
+          />
+          <Route path="/payments" exact component={Payments} />
           /> */}
           <Route
             path="/payments"
             exact
             component={() => <Typography>Payments Home</Typography>}
           />
-          <Route
-            path="/timetable"
-            exact
-            component={(TimeTable)}
-          />
+          <Route path="/timetable" exact component={TimeTable} />
           <Route path="/leave/" exact component={Leave} />
           <Route path="/leave/create/" exact component={LeaveCreateContainer} />
           <Route path="/faq" exact component={Faq} />

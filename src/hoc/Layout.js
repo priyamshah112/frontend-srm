@@ -664,6 +664,32 @@ const Layout = (props) => {
                     </ListItem>
                   );
                 }
+              } else if (item.name === "Payments") {
+                if (
+                  props.selectedRole === "parent" ||
+                  props.selectedRole === "teacher"
+                ) {
+                  return (
+                    <ListItem
+                      button
+                      key={item.name}
+                      component={Link}
+                      to={item.linkTo}
+                      className={classes.listItem}
+                      onClick={() => handleChange(item.itemIndex)}
+                      selected={selectedItem === item.itemIndex}
+                      classes={{ selected: classes.listItemSelected }}
+                    >
+                      <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.name}
+                        className={classes.listItemText}
+                      />
+                    </ListItem>
+                  );
+                }
               } else if (item.name === "Leave") {
                 if (
                   props.selectedRole === "teacher" ||
