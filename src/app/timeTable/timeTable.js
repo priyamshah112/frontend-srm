@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import TeacherTimeTable from './teacher/timeTable';
+import StudentTestList from './students/testList';
 
 
 
@@ -12,13 +13,13 @@ const TimeTable = (props) => {
     return (
         <div>
 
-            {/* {selectedRole === "parent" ?
-
-                <TeacherTimeTable /> : ''} */}
             {selectedRole === "student" ?
 
-                <TeacherTimeTable /> : ''}
+                <StudentTestList /> : ''}
+            {selectedRole === "teacher" ?
 
+                <TeacherTimeTable /> : ''}
+            
         </div>
 
 
