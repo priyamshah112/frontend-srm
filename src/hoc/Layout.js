@@ -454,7 +454,7 @@ const Layout = (props) => {
       itemIndex: 9,
     },
     {
-      name: "Timetable",
+      name: "TimeTable",
       icon: <img src={TimetableIcon} alt="Menu" width="24" height="24" />,
       linkTo: "/timetable",
       itemIndex: 10,
