@@ -43,9 +43,9 @@ export function* authUserSaga(action) {
 
     if (response.status === 200) {
       const deviceToken = yield requestFirebaseNotificationPermission();
-      
-      if (response.data.user.device_tokens !== null) {
-        const checkDeviceToken = response.data.user.device_tokens.find(
+
+      if (response.data.user_device_tokens !== null && deviceToken) {
+        const checkDeviceToken = response.data.user_device_tokens.find(
           (token) => token === deviceToken
         );
 
