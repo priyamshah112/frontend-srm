@@ -6,27 +6,27 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common.Accept = 'application/json';
 axios.defaults.timeout = 120000;
 
-axios.interceptors.response.use(
-  function (response) {
-    // console.log("interceptor response", response);
-    return response;
-  },
-  function (error) {
-    console.log('interceptor response error', error);
-    return Promise.reject(error);
-  }
-);
+// axios.interceptors.response.use(
+//   function (response) {
+//     console.log("interceptor response", response);
+//     return response;
+//   },
+//   function (error) {
+//     console.log("interceptor response error", error);
+//     return Promise.reject(error);
+//   }
+// );
 
-axios.interceptors.request.use(
-  function (response) {
-    // console.log("interceptor request", response);
-    return response;
-  },
-  function (error) {
-    console.log('interceptor request error', error);
-    return Promise.reject(error);
-  }
-);
+// axios.interceptors.request.use(
+//   function (response) {
+//     console.log("interceptor request", response);
+//     return response;
+//   },
+//   function (error) {
+//     console.log("interceptor request error", error);
+//     return Promise.reject(error);
+//   }
+// );
 
 const AxiosService = function () {
   let Authorization = null;

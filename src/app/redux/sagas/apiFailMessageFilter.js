@@ -12,7 +12,6 @@ export const extractArrayMessage = (message) => {
 
 export const ApiFailMessageFilter = (error = {}) => {
   const message = {};
-  console.log('ApiFailMessageFilter', error);
 
   if (error.code === 'ECONNABORTED') {
     message.networkError = true;

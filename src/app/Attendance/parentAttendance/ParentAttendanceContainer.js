@@ -165,11 +165,6 @@ const ParentAttendanceContainer = (props) => {
         : getWeekEndDate(weekStart);
     const from_date = moment(fDate).format("YYYY-MM-DD");
     const to_date = moment(eDate).format("YYYY-MM-DD");
-    console.log("/attendance fetchAttendance get_by", {
-      fDate,
-      from_date,
-      weekStartDate,
-    });
     setLoading(true);
     props.getAttendence(
       { get_by, from_date, to_date },
@@ -218,7 +213,6 @@ const ParentAttendanceContainer = (props) => {
   };
 
   const onGetClassData = (d = {}, aData, get_by) => {
-    console.log("ParentAttendanceContainer onGetClassData", { d, props });
     const { data = {} } = d;
     const { subject_lists = [] } = data;
     const sData = [];
@@ -262,11 +256,6 @@ const ParentAttendanceContainer = (props) => {
       att.map((a) => {
         if (d.date === a.attendance_date) {
           const name = sIdName[Number(a.subject_id)];
-          console.log("ParentAttendanceContainer att loop", {
-            d,
-            a,
-            name,
-          });
           subjectAttendance[name] = { ...a, user: undefined };
         }
       });
@@ -315,12 +304,6 @@ const ParentAttendanceContainer = (props) => {
   };
 
   const classes = useStyles();
-
-  console.log("ParentAttendanceContainer /attendance", {
-    weekStartDate,
-    monthEndDate: getMonthEndDate(monthStartDate),
-    nextMonth: moment(monthStartDate).add(-1, "months"),
-  });
 
   const renderDot = (subjectAttendance = {}) => {
     const keys = Object.keys(subjectAttendance);

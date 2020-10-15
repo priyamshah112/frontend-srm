@@ -21,7 +21,6 @@ const initialState = {
 };
 
 const AttendenceReducer = (state = initialState, action) => {
-  // console.log("AttendenceReducer action", action);
   switch (action.type) {
     case attendenceActionTypes.GET_ATTENDENCE.START:
       return {

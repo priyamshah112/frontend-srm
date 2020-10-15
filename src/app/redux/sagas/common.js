@@ -16,7 +16,6 @@ function* handleApiCall(action) {
 
   try {
     const response = yield call(promise);
-    console.log("Response", response);
     const result = yield response.data;
     yield put({
       type: SUCCESS,
