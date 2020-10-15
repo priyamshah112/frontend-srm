@@ -4,7 +4,7 @@ import Select from '@material-ui/core/Select';
 import TimetableService from '../timeTableService';
 import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import TestList from '../examTestList';
+import TestList from './examTestList';
 import { Container } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
