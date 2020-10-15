@@ -5,18 +5,19 @@ import TeacherTimeTable from './teacher/timeTable';
 
 
 
+
 const TimeTable = (props) => {
     const selectedRole = props.selectedRole;
 
     return (
         <div>
 
-            {selectedRole === "parent" ?
+            {/* {selectedRole === "parent" ?
 
-                <TeacherTimeTable /> : ''}
+                <TeacherTimeTable /> : ''} */}
             {selectedRole === "student" ?
 
-                <h1> Student TimeTable</h1> : ''}
+                <TeacherTimeTable /> : ''}
 
         </div>
 
