@@ -34,6 +34,14 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '30px'
 
     },
+    containergrid:{
+        minWidth:'100%',
+        [theme.breakpoints.down('lg',"xl")]: {
+        maxWidth:"55%"
+          },
+          textAlign: "-webkit-center",
+
+    },
     paper: {
         // padding: theme.spacing(2),
         textAlign: '',
@@ -56,7 +64,17 @@ const useStyles = makeStyles((theme) => ({
       textField: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
-        width: 200,
+        width: "25%",
+        [theme.breakpoints.down('xs')]: {
+            width:"50%"
+          },
+      },
+      datepicker:{
+        width:"30%",
+        padding:"0",
+        [theme.breakpoints.down('xs')]: {
+            width:"50%"
+          },
       }
 }));
 
@@ -150,17 +168,18 @@ export default function TestListUi(props) {
                         </div>
                         <Typography>Test List</Typography>
                     </Grid>
-                    <Grid item xs={12} style={{}}>
-                        <Grid container style={{ color: '#FFFFFF'}}>
+                    <Grid item xs={12} >
+                        <Grid container style={{ color: '#FFFFFF'}} className={classes.containergrid} >
                             <Grid item xs={12} className={classes.headingList} style={{ borderTopLeftRadius: '5px',borderTopRightRadius :"5px" }}>
                                 <Typography>Exam Date</Typography>
                             </Grid>
                             <Grid item xs={12} style={{textAlign:'center',background:'#FFFFFF',borderBottomRightRadius: '5px',borderBottomLeftRadius:'5px' }}>
-                                <Typography>
+                                <Typography >
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <Grid container justify="space-around">
 
                                             <KeyboardDatePicker
+                                            className={classes.datepicker}
                                                 margin="normal"
                                                 id="date-picker-dialog"
                                                 // label="Date picker dialog"
@@ -185,7 +204,7 @@ export default function TestListUi(props) {
 
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container style={{ color: '#FFFFFF' }}>
+                        <Grid container style={{ color: '#FFFFFF' }} className={classes.containergrid}>
                             <Grid item xs={12} className={classes.headingList} style={{ borderTopLeftRadius: '5px',borderTopRightRadius :"5px"}}>
                                 <Typography>Exam Date</Typography>
                             </Grid>
@@ -216,7 +235,7 @@ export default function TestListUi(props) {
 
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container style={{ color: '#FFFFFF' }}>
+                        <Grid container style={{ color: '#FFFFFF' }} className={classes.containergrid}>
                             <Grid item xs={12} className={classes.headingList} style={{ borderTopLeftRadius: '5px',borderTopRightRadius :"5px" }}>
                                 <Typography>Exam Date</Typography>
                             </Grid>

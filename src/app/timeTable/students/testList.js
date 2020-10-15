@@ -36,7 +36,7 @@ export default function StudentTestList(props) {
 
     const [testListUi, setTestListUi] = useState(false);
     const [forwardtick, setForwardtick] = useState('none')
-    const [testList,setTtestList] = useState()
+    const [testList, setTtestList] = useState()
     const classes = useStyles();
     const token = localStorage.getItem("srmToken");
     const [isLoading, setLoading] = useState(true);
@@ -46,24 +46,27 @@ export default function StudentTestList(props) {
     const fetchTestList = async (isMounted) => {
         const response = await TimetableService.getTestList(token);
         if (response.status === 200) {
-            console.log("fetchClasses -> ", response.data.data.data)
-            setTtestList(response.data.data.data.map(list=>list.name))
-            console.log(setTtestList(response.data.data.data.map(list=>list.name)));
+            // console.log("fetchClasses -> ", response.data.data.data)
+                setTtestList(response.data.data.data.map(list => list.name))
+            
+
+            console.log(setTtestList(response.data.data.data.map(list => list.name)));
 
         }
         if (response.data.status == "success" && isLoading && testList == null) {
             // console.log(response.data)
-            setLoading(false) 
-        //    console.log(setTestlist(response.data.data.data.map(list=>list.name)));
+            setLoading(false)
+            //    console.log(setTestlist(response.data.data.data.map(list=>list.name)));
             // mobileNo: res.data.map(user => user.mobileNo),
 
         }
     }
+   
 
     useEffect(() => {
         let isMounted = true;
 
-         if (testList == null) {
+        if (testList == null) {
             fetchTestList(isMounted);
         }
         // fetchSubjects(isMounted);
@@ -95,7 +98,7 @@ export default function StudentTestList(props) {
                     <Grid container spacing={12}>
 
                         <Grid item xs={12} style={{ textAlign: 'center' }}>
-                           
+
                             <div style={{ float: 'right', display: forwardtick }}><ArrowForwardIosIcon fontSize="small" onClick={forwardTick}></ArrowForwardIosIcon></div>
                             <Typography >Test List</Typography>
 
@@ -104,10 +107,11 @@ export default function StudentTestList(props) {
                     <div className={classes.root}>
 
                         <Grid container spacing={10}>
-                            {/* {testList.map((key, index) => { */}
+                           
+                            {/* {  testList.map((key, index) => { */}
 
-                                {/* return  */}
-                                <Grid item xs={6} lg={3} sm={4} style={{ justifyContent: 'space-between' }}>
+                                {/*  return */}
+                                 <Grid item xs={6} lg={3} sm={4} style={{ justifyContent: 'space-between' }}>
                                     <Paper className={classes.paper} onClick={clickTestList}>
                                         <div>
                                             <img src={medal} alt="medalavt" width='65%' height="50%" />
@@ -122,7 +126,7 @@ export default function StudentTestList(props) {
 
                 </Container> :
                 <TestListUi backTick={backTick} />
-                }
+            }
         </div>
 
     );

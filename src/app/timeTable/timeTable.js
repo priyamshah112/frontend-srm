@@ -15,10 +15,10 @@ const TimeTable = (props) => {
 
             {selectedRole === "student" ?
 
-                <StudentTestList /> : ''}
-            {selectedRole === "teacher" ?
-
                 <TeacherTimeTable /> : ''}
+            {/* {selectedRole === "student" ?
+
+                <StudentTestList /> : ''} */}
             
         </div>
 
