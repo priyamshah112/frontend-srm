@@ -7,12 +7,14 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import downloadIcon from '../../../assets/images/attendance/download.svg';
 import PrintIcon from '../../../assets/images/report/printer.svg';
+import Avatar from "@material-ui/core/Avatar";
 
 import ReportService from '../ReportService';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
+
 const useStyles = makeStyles((theme) => ({
     container: {
         padding: "2%",
@@ -157,8 +159,7 @@ const useStyles = makeStyles((theme) => ({
     userIcon: {
         height: '100%',
         width: '100%',
-        borderRadius: '50%',
-        border: '1px solid gray'
+        borderRadius: '50%'
     },
     editIcon: {
         fontSize: '17px',
@@ -194,6 +195,7 @@ const StudentDetails = (props) => {
     const classes = useStyles(styleProps);
     const [attendanceData, setAttendanceData] = useState({});
     const [isLoading, setLoading] = useState(true);
+    const [loadImage, setLoadImage] = useState(true);
     const printRef = useRef(null);
 
     const { token, searchData = searchValue1, testData = testValue1 } = props;
@@ -245,6 +247,16 @@ const StudentDetails = (props) => {
         }, 2000)
     };
 
+    const onError = () => {
+        // this.setState({
+        //     imageUrl: "img/default.png"
+        // })
+    }
+
+    const onErrorImg = () => {
+        setLoadImage(false)
+    }
+
     const renderHeader = () => {
         return (
             <>
@@ -264,11 +276,13 @@ const StudentDetails = (props) => {
                 </div>
                 <div className={classes.studentPhoto}>
                     <div className={classes.photo}>
-                        <img
+                        {loadImage ? <img
                             src={searchData.thumbnail}
                             className={classes.userIcon}
-                        />
-
+                            onError={onErrorImg}
+                        /> :
+                            <Avatar src="/broken-image.jpg" className={classes.userIcon} />
+                        }
                     </div>
                     <div className={classes.photoName}>
                         <Typography className={classes.fontSize14}>{searchData.firstname} {searchData.lastname}</Typography>
@@ -357,57 +371,57 @@ var searchValue1 = {
     "created_at": "2020-10-04T12:05:09.000000Z",
     "updated_at": "2020-10-04T12:05:09.000000Z",
     "roles": [
-      {
-        "id": 4,
-        "name": "student",
-        "guard_name": "web",
-        "created_at": "2020-10-04T12:03:10.000000Z",
-        "updated_at": "2020-10-04T12:03:10.000000Z",
-        "pivot": {
-          "model_id": 1392,
-          "role_id": 4,
-          "model_type": "App\\User"
+        {
+            "id": 4,
+            "name": "student",
+            "guard_name": "web",
+            "created_at": "2020-10-04T12:03:10.000000Z",
+            "updated_at": "2020-10-04T12:03:10.000000Z",
+            "pivot": {
+                "model_id": 1392,
+                "role_id": 4,
+                "model_type": "App\\User"
+            }
         }
-      }
     ],
     "user_classes": {
-      "id": 1391,
-      "user_id": 1392,
-      "school_id": 10,
-      "class_id": 91,
-      "user_code": null,
-      "class_code": null,
-      "from_date": "2020-10-04",
-      "to_date": "2021-10-04",
-      "created_by": 1,
-      "updated_by": 1,
-      "created_at": "2020-10-04T12:05:09.000000Z",
-      "updated_at": null,
-      "deleted_at": null,
-      "classes_data": {
-        "id": 91,
-        "code": "SRM-CLASS-5f79b9ff64e961601812991",
+        "id": 1391,
+        "user_id": 1392,
         "school_id": 10,
-        "class_name": "Class 1",
-        "internal_name": "class-1",
+        "class_id": 91,
+        "user_code": null,
+        "class_code": null,
+        "from_date": "2020-10-04",
+        "to_date": "2021-10-04",
         "created_by": 1,
         "updated_by": 1,
-        "created_at": "2020-10-04T12:03:11.000000Z",
-        "updated_at": "2020-10-04T12:03:11.000000Z",
-        "deleted_at": null
-      },
-      "school_data": {
-        "id": 10,
-        "name": "Zoila High School",
-        "registered_date": "2020-08-21",
-        "created_by": 1,
-        "updated_by": 1,
-        "created_at": "2020-10-04T12:03:11.000000Z",
-        "updated_at": "2020-10-04T12:03:11.000000Z",
-        "deleted_at": null
-      }
+        "created_at": "2020-10-04T12:05:09.000000Z",
+        "updated_at": null,
+        "deleted_at": null,
+        "classes_data": {
+            "id": 91,
+            "code": "SRM-CLASS-5f79b9ff64e961601812991",
+            "school_id": 10,
+            "class_name": "Class 1",
+            "internal_name": "class-1",
+            "created_by": 1,
+            "updated_by": 1,
+            "created_at": "2020-10-04T12:03:11.000000Z",
+            "updated_at": "2020-10-04T12:03:11.000000Z",
+            "deleted_at": null
+        },
+        "school_data": {
+            "id": 10,
+            "name": "Zoila High School",
+            "registered_date": "2020-08-21",
+            "created_by": 1,
+            "updated_by": 1,
+            "created_at": "2020-10-04T12:03:11.000000Z",
+            "updated_at": "2020-10-04T12:03:11.000000Z",
+            "deleted_at": null
+        }
     }
-  }
+}
 
 var testValue1 = {
     "id": 364,
@@ -421,5 +435,5 @@ var testValue1 = {
     "created_at": "2020-10-04 12:05:26",
     "updated_at": "2020-10-04 12:05:26",
     "deleted_at": null
-  }
+}
 

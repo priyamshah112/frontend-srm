@@ -82,6 +82,7 @@ const StudentGrade = (props) => {
     const [editGrade, setEditGrade] = useState(false);
     const [showGrade, setShowGrade] = useState(true);
     const [errMessage, setError] = useState('');
+    const [getError, setGetError] = useState(null);
     const [isLoading, setLoading] = useState(false);
 
     const [state, setState] = useState({
@@ -90,7 +91,7 @@ const StudentGrade = (props) => {
         percentage_to: ''
     });
 
-    const { token, testData = testValue1 } = props;
+    const { token, testData = testValue1, searchData = searchValue1 } = props;
 
     useEffect(() => {
         let loading = true;
@@ -103,12 +104,12 @@ const StudentGrade = (props) => {
                         if (loading) {
                             setGradeData(response.data.data || []);
                             setShowGrade(true);
+                            setGetError(null);
                         }
                     }
                 } catch (error) {
                     console.log("getGrades Error", error);
-                    setError('User does not belong to any school');
-                    setNewGrade(false);
+                    setGetError('User not belong to school')
                 }
             }
             getGrades();
@@ -330,6 +331,11 @@ const StudentGrade = (props) => {
         )
     }
 
+    const setGradeValue = (event, type) => {
+        state[type] = event.target.value
+        setState(state);
+    }
+
     const renderNewGrade = () => {
         return (
             <div className={classes.fillGradeWrapper}>
@@ -346,7 +352,7 @@ const StudentGrade = (props) => {
                                     placeholder={obj.grade}
                                     multiline
                                     variant="outlined"
-                                    onChange={(event) => { setState((state) => { return { ...state, "grade": event.target.value } }) }}
+                                    onChange={(event) => setGradeValue(event, 'grade')}
                                     classes={{
                                         root: classes.root
                                     }}
@@ -357,7 +363,7 @@ const StudentGrade = (props) => {
                                     multiline
                                     variant="outlined"
                                     placeholder={obj.percentage_from}
-                                    onChange={(event) => { setState((state) => { return { ...state, "percentage_from": event.target.value } }) }}
+                                    onChange={(event) => setGradeValue(event, 'percentage_from')}
                                     classes={{
                                         root: classes.root
                                     }}
@@ -367,7 +373,7 @@ const StudentGrade = (props) => {
                                     label=" To Percentage"
                                     multiline
                                     variant="outlined"
-                                    onChange={(event) => { setState((state) => { return { ...state, "percentage_to": event.target.value } }) }}
+                                    onChange={(event) => setGradeValue(event, 'percentage_to')}
                                     placeholder={obj.percentage_to}
                                     classes={{
                                         root: classes.root
@@ -418,10 +424,12 @@ const StudentGrade = (props) => {
                                             {
                                                 gradeData.length === key + 1 &&
                                                 <Typography className={classes.itemGrade}>
-                                                    <img
-                                                        src={editIcon}
-                                                        className={classes.editIcon}
-                                                        onClick={() => setEditGrade(true)} />
+                                                    {searchData.user_classes &&
+                                                        <img
+                                                            src={editIcon}
+                                                            className={classes.editIcon}
+                                                            onClick={() => setEditGrade(true)} />
+                                                    }
                                                 </Typography>
                                             }
                                         </React.Fragment>
@@ -440,13 +448,14 @@ const StudentGrade = (props) => {
                 <div className={classes.gridContainer}>
                     <>
                         <Typography className={classes.itemGrade}>
-                            Grades values not available.
+                            <span>Grades not available. {getError}</span>
                         </Typography>
                         <Typography className={classes.itemGrade}>
-                            <img
+                            {!getError && <img
                                 src={editIcon}
                                 className={classes.editIcon}
                                 onClick={() => setNewGrade(true)} />
+                            }
                         </Typography>
                     </>
                 </div>
@@ -484,7 +493,19 @@ var defaultGrades = [
 
 /*Temp */
 const searchValue1 = {}
-const testValue1 = {}
+const testValue1 = {
+    "id": 364,
+    "code": "SRM-EXMTST-5f79ba86db3851601813126",
+    "school_id": 10,
+    "class_id": 91,
+    "name": "Test 4",
+    "image": null,
+    "created_by": 1,
+    "updated_by": 1,
+    "created_at": "2020-10-04 12:05:26",
+    "updated_at": "2020-10-04 12:05:26",
+    "deleted_at": null
+}
 
 
 
