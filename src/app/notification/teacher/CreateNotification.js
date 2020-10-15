@@ -505,6 +505,7 @@ const CreateNotification = (props) => {
           data: { title, summary, main_content: description, payment },
         };
       }
+      console.log(payload);
       const response = await NotificationService.saveNotification(
         id,
         payload,

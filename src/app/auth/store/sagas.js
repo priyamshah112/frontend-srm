@@ -43,15 +43,21 @@ export function* authUserSaga(action) {
 
     if (response.status === 200) {
       const deviceToken = yield requestFirebaseNotificationPermission();
+<<<<<<< HEAD
+
+      if (response.data.user_device_tokens !== null && deviceToken) {
+        const checkDeviceToken = response.data.user_device_tokens.find(
+=======
       
       if (response.data.user.device_tokens !== null) {
         const checkDeviceToken = response.data.user.device_tokens.find(
+>>>>>>> 88b80e7f69fe4418a82af4ead8cfe88e84afa57e
           (token) => token === deviceToken
         );
 
         if (!checkDeviceToken) {
           const deviceTokenList = [
-            ...response.data.user.device_tokens,
+            ...response.data.user_device_tokens,
             deviceToken,
           ];
 
@@ -61,7 +67,7 @@ export function* authUserSaga(action) {
             response.data.user.id
           );
         }
-      } else {
+      } else if (deviceToken) {
         const deviceTokenList = [deviceToken];
         const saveDeviceTokenResponse = yield AuthService.addDeviceToken(
           response.data.access_token,
