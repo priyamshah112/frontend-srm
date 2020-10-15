@@ -66,7 +66,6 @@ class NotificationService {
     });
   }
   updateStatus(id, status, token) {
-    console.log(id, status);
     return axios.put(
       `${BACKEND_API_URL}/notificationStatusUsers/${id}`,
       { status: status },

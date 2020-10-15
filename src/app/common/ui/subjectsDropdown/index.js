@@ -1,17 +1,50 @@
-import React, { useEffect } from "react";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import { getSubjects } from "../../../redux/actions/attendence.action";
+import React, { useEffect, useState } from "react";
+import { getSingleClass } from "../../../redux/actions/attendence.action";
 import { connect } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const useStyle = makeStyles((theme) => ({
+  categoryClass: {
+    "& span": {
+      textAlign: "left",
+    },
+  },
+
+  categorySelect: {
+    textAlign: "left",
+  },
+}));
 
 const SubjectsDropdown = (props) => {
-  const { data = [], loading } = props;
+  const [data, setData] = useState([]);
+  const classes = useStyle();
+
+  const { loading } = props;
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [props.class_id]);
 
   const fetchData = () => {
-    props.getSubjects();
+    if (!props.class_id) return;
+    props.getSingleClass(props.class_id, onGet, onFail);
+  };
+
+  const onGet = (d = {}) => {
+    const { data = {} } = d;
+    const { subject_lists = [] } = data;
+    setData(subject_lists);
+
+    if (!subject_lists.length) return;
+    const first = subject_lists[0] || {};
+    const { subject_data = {} } = first;
+    props.onChange(subject_data.id);
+  };
+
+  const onFail = () => {
+    fetchData();
   };
 
   const handleClassChange = (event) => {
@@ -19,27 +52,36 @@ const SubjectsDropdown = (props) => {
   };
 
   const renderData = () =>
-    data.map((item) => <option value={item.id}>{item.name}</option>);
+    data.map((item) => {
+      const { subject_data = {} } = item;
+      return <MenuItem value={subject_data.id}>{subject_data.name}</MenuItem>;
+    });
 
   return (
-    <NativeSelect
+    <Select
+      labelId="Categories"
+      id="demo-simple-select-helper"
       value={props.value}
       onChange={handleClassChange}
-      name="classNum"
-      inputProps={{ "aria-label": "classNum" }}
+      className={classes.categoryClass}
+      classes={{ select: classes.categorySelect }}
     >
-      {loading && <option disabled>Loading...</option>}
-      {renderData()}
-    </NativeSelect>
+      {loading ? (
+        <MenuItem disabled value="">
+          Loading...
+        </MenuItem>
+      ) : null}
+      {!loading ? renderData() : null}
+    </Select>
   );
 };
 
 const mapStateToProps = ({ Attendence }) => {
-  const { subjects = [], subjectsLoading } = Attendence;
+  const { subjects = [], singleClassLoading } = Attendence;
   return {
     data: subjects,
-    loading: subjectsLoading,
+    loading: singleClassLoading,
   };
 };
 
-export default connect(mapStateToProps, { getSubjects })(SubjectsDropdown);
+export default connect(mapStateToProps, { getSingleClass })(SubjectsDropdown);

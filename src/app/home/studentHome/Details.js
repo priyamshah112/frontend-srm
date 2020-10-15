@@ -1,118 +1,121 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { CardHeader, CardActions, Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { makeStyles } from '@material-ui/styles';
-import Typography from '@material-ui/core/Typography';
-import * as moment from 'moment';
-import { dateDiff } from '../../../shared/datediff';
-import remindersvg from '../../../assets/images/home/reminder.svg';
-import HomeService from '../HomeSerivce';
-import Reminder from './Reminder';
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { CardHeader, CardActions, Button } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import Grid from "@material-ui/core/Grid";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import { makeStyles } from "@material-ui/styles";
+import Typography from "@material-ui/core/Typography";
+import * as moment from "moment";
+import { dateDiff } from "../../../shared/datediff";
+import remindersvg from "../../../assets/images/home/reminder.svg";
+import HomeService from "../HomeSerivce";
+import Reminder from "./Reminder";
 const useStyle = makeStyles((theme) => ({
   cardContainer: {
-    overflowY: 'auto',
-    '&::-webkit-scrollbar': {
-      display: 'none',
+    overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      display: "none",
     },
   },
   card: {
-    width: '95%',
-    margin: 'auto',
-    marginTop: '20px',
-    borderRadius: '10px',
-    boxShadow: 'none',
+    width: "95%",
+    margin: "auto",
+    marginTop: "20px",
+    borderRadius: "10px",
+    boxShadow: "none",
   },
   reminder: {
     // width: "100%",
     // textAlign: "right",
-    paddingLeft: '20px',
-    transform: 'translateY(4px)',
+    paddingLeft: "20px",
+    transform: "translateY(4px)",
   },
   title: {
     fontWeight: 600,
-    fontStyle: 'normal',
+    fontStyle: "normal",
     // fontSize: '14px',
   },
   media: {
-    '& img': {
-      margin: 'auto',
+    "& img": {
+      margin: "auto",
     },
   },
   announcementText: {
-    fontStyle: 'normal',
-    fontSize: '16px',
-    color: '#1C1C1E',
+    fontStyle: "normal",
+    fontSize: "16px",
+    color: "#1C1C1E",
   },
   announcementImg: {
-    justifyContent: 'center',
-    textAlign: 'center',
-    '& img': {
-      maxWidth: '100%',
+    justifyContent: "center",
+    textAlign: "center",
+    "& img": {
+      maxWidth: "100%",
       border: `1px solid ${theme.palette.common.deluge}`,
-      borderRadius: '4px',
+      borderRadius: "4px",
     },
   },
   descriptionContent: {
-    width: '100%',
-    marginTop: '6px',
-    margin: 'auto',
+    width: "100%",
+    marginTop: "6px",
+    margin: "auto",
   },
   descriptionContent1: {
-    width: '100%',
-    marginTop: '16px',
-    margin: 'auto',
+    width: "100%",
+    marginTop: "16px",
+    margin: "auto",
   },
   NewsHeader: {
-    [theme.breakpoints.down('sm')]: {
-      padding: '8px 16px 8px 16px !important',
-      '& span': {
-        fontSize: '16px',
+    [theme.breakpoints.down("sm")]: {
+      padding: "8px 16px 8px 16px !important",
+      "& span": {
+        fontSize: "16px",
       },
     },
   },
   titleContent: {
-    fontSize: '18px',
+    fontSize: "18px",
   },
   publishDate: {
-    fontSize: '14px',
-    color: '#AEAEB2',
+    fontSize: "14px",
+    color: "#AEAEB2",
   },
   cardContent: {
-    padding: '0px 16px 0px 16px',
+    padding: "0px 16px 0px 16px",
   },
   statusText: {
-    fontStyle: 'normal',
-    textTransform: 'capitalize',
-    fontSize: '16px',
-    color: '#1C1C1E',
+    fontStyle: "normal",
+    textTransform: "capitalize",
+    fontSize: "16px",
+    color: "#1C1C1E",
   },
   cardActionStyle: {
-    padding: '8px 16px 8px 16px',
-    color: '#6C757D',
+    padding: "8px 16px 8px 16px",
+    color: "#6C757D",
   },
   contentCenter: {
-    textAlign: 'right',
-    height: '50%',
+    textAlign: "right",
+    height: "50%",
 
-    '& img': {
-      marginTop: '25px',
-      width: '25px',
-      cursor: 'pointer',
+    "& img": {
+      marginTop: "25px",
+      width: "25px",
+      cursor: "pointer",
 
-      [theme.breakpoints.down('xs')]: {
-        marginTop: '10px',
+      [theme.breakpoints.down("xs")]: {
+        marginTop: "10px",
       },
     },
-    [theme.breakpoints.down('xs')]: {
-      textAlign: 'right',
+    [theme.breakpoints.down("xs")]: {
+      textAlign: "right",
     },
   },
   editBtn: {
-    paddingLeft: '16px',
+    paddingLeft: "16px",
+  },
+  DateAlign: {
+    transform: "translate(-8px,15px)",
   },
 }));
 
@@ -130,8 +133,9 @@ const Details = (props) => {
 
   async function getNewsDetails(newsId) {
     try {
-      const token = localStorage.getItem('srmToken');
+      const token = localStorage.getItem("srmToken");
       const response = await HomeService.fetchAnnouncementDetail(newsId, token);
+      console.log(response);
       if (response.status === 200) {
         setDetails(response.data.data);
         setIsLoading(false);
@@ -149,7 +153,7 @@ const Details = (props) => {
       try {
         const response = await HomeService.fetchReminder(
           props.token,
-          'news',
+          "news",
           details.id
         );
         if (response.data.data) {
@@ -187,19 +191,19 @@ const Details = (props) => {
       let entityDate = {};
 
       if (checkboxes.oneDayBefore === true) {
-        entityDate['1_day_before'] = moment(details.event_date)
-          .subtract(1, 'days')
-          .format('YYYY-MM-DD');
+        entityDate["1_day_before"] = moment(details.event_date)
+          .subtract(1, "days")
+          .format("YYYY-MM-DD");
       }
       if (checkboxes.twoDayBefore === true) {
-        entityDate['2_day_before'] = moment(details.event_date)
-          .subtract(2, 'days')
-          .format('YYYY-MM-DD');
+        entityDate["2_day_before"] = moment(details.event_date)
+          .subtract(2, "days")
+          .format("YYYY-MM-DD");
       }
       if (checkboxes.threeDayBefore === true) {
-        entityDate['3_day_before'] = moment(details.event_date)
-          .subtract(3, 'days')
-          .format('YYYY-MM-DD');
+        entityDate["3_day_before"] = moment(details.event_date)
+          .subtract(3, "days")
+          .format("YYYY-MM-DD");
       }
       if (entityReminderDate) {
         const response = await HomeService.updateReminder(
@@ -207,7 +211,7 @@ const Details = (props) => {
             entity_id: details.id,
             entity_date:
               Object.keys(entityDate).length === 0 ? null : entityDate,
-            entity_type: 'news',
+            entity_type: "news",
           },
           props.token,
           reminderId
@@ -221,7 +225,7 @@ const Details = (props) => {
             {
               entity_id: details.id,
               entity_date: entityDate,
-              entity_type: 'news',
+              entity_type: "news",
             },
             props.token
           );
@@ -244,9 +248,9 @@ const Details = (props) => {
         <>
           <Grid
             container
-            direction='row'
-            justify='center'
-            alignContent='center'
+            direction="row"
+            justify="center"
+            alignContent="center"
             className={classes.cardContainer}
           >
             <Card className={classes.card}>
@@ -254,84 +258,97 @@ const Details = (props) => {
                 className={classes.NewsHeader}
                 action={
                   <>
-                    <Typography variant='body2'>
+                    <Typography variant="body2" className={classes.DateAlign}>
                       {details.published_date ? (
                         <span className={classes.publishDate}>
                           {`${moment(details.published_date).format(
-                            'DD MMM, hh:mm A'
+                            "DD MMM, hh:mm A"
                           )}`}
                         </span>
                       ) : (
-                        ''
+                        ""
                       )}
-                      {details.status === 'published' && reminderIcon ? (
+                      {details.status === "published" && reminderIcon ? (
                         <span>
                           <img
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: "pointer" }}
                             className={classes.reminder}
                             src={remindersvg}
-                            alt='reminder'
+                            alt="reminder"
                             onClick={handleReminderOpen}
                           ></img>
                         </span>
                       ) : (
-                        ''
+                        ""
                       )}
                     </Typography>
                   </>
                 }
                 title={
                   <span className={classes.titleContent}>
-                    {details.title && details.event_date ? (
-                      `${details.title} - ${moment(details.event_date).format(
-                        'DD/MM/YYYY'
-                      )}`
-                    ) : <Typography variant='body1'>
-                        {details.title}
-                      </Typography> ? (
-                      `${details.title} - N/A`
+                    {details.status === "published" ? (
+                      details.title && details.event_date ? (
+                        <Typography variant="body1">{`${
+                          details.title
+                        } - ${moment(details.event_date).format(
+                          "DD/MM/YYYY"
+                        )}`}</Typography>
+                      ) : (
+                        <Typography variant="body1">{`${details.title} - N/A`}</Typography>
+                      )
+                    ) : details.title && details.event_date ? (
+                      <Typography variant="body1">{`${details.title} - ${moment(
+                        details.event_date
+                      ).format("DD/MM/YYYY")}`}</Typography>
+                    ) : details.title ? (
+                      <Typography variant="body1">{`${details.title} - N/A`}</Typography>
                     ) : details.event_date ? (
-                      `N/A - ${details.event_date}`
+                      <Typography variant="body1">{`N/A - ${moment(
+                        details.event_date
+                      ).format("DD/MM/YYYY")}`}</Typography>
                     ) : (
-                      'N/A'
+                      <Typography variant="body1">N/A</Typography>
                     )}
                   </span>
                 }
                 subheader={
                   <>
-                    <Typography className={classes.statusText} variant='body2'>
+                    <Typography className={classes.statusText} variant="body2">
                       Status - {details.status}
                     </Typography>
                   </>
                 }
               />
               <CardContent className={classes.cardContent}>
-                <Grid container direction='row'>
+                <Grid container direction="row">
                   <Typography
                     className={classes.announcementText}
-                    variant='body2'
+                    variant="body2"
                   >
                     {details.summary}
                   </Typography>
                 </Grid>
-                <Grid container direction='row'>
+                <Grid container direction="row">
                   {details.main_content ? (
                     <div
                       className={`${classes.descriptionContent} ${classes.announcementText}`}
                       dangerouslySetInnerHTML={{ __html: details.main_content }}
                     />
                   ) : (
-                    <Typography className={`${classes.title} ${classes.descriptionContent1}`} variant='body2'>
-                      {'No description provided'}
+                    <Typography
+                      className={`${classes.title} ${classes.descriptionContent1}`}
+                      variant="body2"
+                    >
+                      {"No description provided"}
                     </Typography>
                   )}
                 </Grid>
               </CardContent>
-              {selectedRole === 'teacher' && details.status !== 'published' ? (
+              {selectedRole === "teacher" && details.status !== "published" ? (
                 <CardActions className={classes.editBtn}>
                   <Button
-                    color='primary'
-                    variant='contained'
+                    color="primary"
+                    variant="contained"
                     disableElevation
                     onClick={(event) => {
                       history.push(`/create-announcement/${details.id}`);
@@ -341,7 +358,7 @@ const Details = (props) => {
                   </Button>
                 </CardActions>
               ) : (
-                ''
+                ""
               )}
             </Card>
           </Grid>
@@ -361,11 +378,11 @@ const Details = (props) => {
               entityDate={entityReminderDate}
             />
           ) : (
-            ''
+            ""
           )}
         </>
       ) : (
-        ''
+        ""
       )}
     </>
   );

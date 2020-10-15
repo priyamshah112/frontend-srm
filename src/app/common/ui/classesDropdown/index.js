@@ -1,14 +1,35 @@
 import React, { useEffect } from "react";
-import NativeSelect from "@material-ui/core/NativeSelect";
 import { getClasses } from "../../../redux/actions/attendence.action";
 import { connect } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const useStyle = makeStyles((theme) => ({
+  categoryClass: {
+    "& span": {
+      textAlign: "left",
+    },
+  },
+
+  categorySelect: {
+    textAlign: "left",
+  },
+}));
 
 const ClassesDropdown = (props) => {
   const { data = [], loading } = props;
+  const classes = useStyle();
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (data.length && !props.value) {
+      props.onChange(data[0].id);
+    }
+  }, [loading]);
 
   const fetchData = () => {
     props.getClasses();
@@ -19,18 +40,24 @@ const ClassesDropdown = (props) => {
   };
 
   const renderData = () =>
-    data.map((item) => <option value={item.id}>{item.class_name}</option>);
+    data.map((item) => <MenuItem value={item.id}>{item.class_name}</MenuItem>);
 
   return (
-    <NativeSelect
+    <Select
+      labelId="Categories"
+      id="demo-simple-select-helper"
       value={props.value}
       onChange={handleClassChange}
-      name="classNum"
-      inputProps={{ "aria-label": "classNum" }}
+      className={classes.categoryClass}
+      classes={{ select: classes.categorySelect }}
     >
-      {loading && <option disabled>Loading...</option>}
+      {loading ? (
+        <MenuItem disabled value="">
+          Loading...
+        </MenuItem>
+      ) : null}
       {renderData()}
-    </NativeSelect>
+    </Select>
   );
 };
 

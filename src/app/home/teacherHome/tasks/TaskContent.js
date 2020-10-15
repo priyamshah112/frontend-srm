@@ -1,64 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Typography, Box, Grid, Card } from '@material-ui/core';
-import CardContent from '@material-ui/core/CardContent';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/styles";
+import { Typography, Box, Grid, Card } from "@material-ui/core";
+import CardContent from "@material-ui/core/CardContent";
+import InfiniteScroll from "react-infinite-scroll-component";
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import RedFlagIcon from '../../../../assets/images/home/teacher/RedFlag.svg';
-import YellowFlagIcon from '../../../../assets/images/home/teacher/YellowFlag.svg';
-import GreenTickIcon from '../../../../assets/images/home/teacher/GreenTick.svg';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import RedFlagIcon from "../../../../assets/images/home/teacher/RedFlag.svg";
+import YellowFlagIcon from "../../../../assets/images/home/teacher/YellowFlag.svg";
+import GreenTickIcon from "../../../../assets/images/home/teacher/GreenTick.svg";
 
-import TaskEditor from './TaskEditor';
+import TaskEditor from "./TaskEditor";
 
-import HomeSerivce from '../../HomeSerivce';
+import HomeSerivce from "../../HomeSerivce";
 
 const useStyle = makeStyles((theme) => ({
   taskDiv: {
-    height: '100%',
-    display: 'table',
-    width: '100%',
+    height: "100%",
+    display: "table",
+    width: "100%",
   },
   title: {
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     fontWeight: 800,
-    letterSpacing: '1px',
+    letterSpacing: "1px",
     color: `${theme.palette.common.bastille}`,
   },
   taskIcon: {
-    transform: 'translateY(5px)',
+    transform: "translateY(5px)",
   },
   flag: {
-    cursor: 'pointer',
-    width: '14px',
+    cursor: "pointer",
+    width: "14px",
   },
   taskheader: {
-    width: '100%',
-    display: 'table-row',
-    height: '30px',
+    width: "100%",
+    display: "table-row",
+    height: "30px",
   },
   tasks: {
     width: '100%',
     height: '100%',
     display: 'table-row',
+    boxShadow: 'none',
   },
   addTaskIcon: {
-    float: 'right',
-    cursor: 'pointer',
+    float: "right",
+    cursor: "pointer",
     bottom: 0,
   },
   taskCard: {
     borderRadius: '10px',
+    boxShadow: 'none',
     height: '365px',
   },
-  loading: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    margin: 'auto',
-  },
-
   taskCard: {
     borderRadius: '10px',
+    boxShadow: 'none',
+
     margin: '0 10px 0 10px',
     height: '365px',
     [theme.breakpoints.down('xs')]: {
@@ -66,61 +64,69 @@ const useStyle = makeStyles((theme) => ({
     },
   },
   clickCard: {
-    cursor: 'pointer',
-    padding: '0 !important',
+    cursor: "pointer",
+    padding: "0 !important",
     margin: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   clickHere: {
-    width: '100%',
-    transform: 'translateY(160px)',
+    width: "100%",
+    transform: "translateY(160px)",
     // padding: '50%, 0',
-    textAlign: 'center',
+    textAlign: "center",
   },
   clickContent: {
     // paddingTop: '35%',
   },
   cardTitle: {
     fontWeight: 500,
-    fontSize: '20px',
     marginTop: '10px',
     textAlign: 'center',
   },
   pendingTasks: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   doneTask: {
-    marginRight: 'auto',
+    marginRight: "auto",
   },
   CardContent: {
-    borderTop: '1px solid rgba(0,0,0,0.2)',
-    margin: '0 0 10px !important',
+    borderTop: "1px solid rgba(0,0,0,0.2)",
+    margin: "0 0 10px !important",
     paddingTop: 0,
-    height: '280px',
-    overflow: 'auto',
-    '&::-webkit-scrollbar': {
-      width: '0.4em',
+    height: "280px",
+    overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.4em",
     },
-    '&::-webkit-scrollbar-track': {
-      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
-      outline: 'none',
-      borderRadius: '5px',
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.2)",
+      outline: "none",
+      borderRadius: "5px",
     },
-    '&::-webkit-scrollbar-thumb': {
+    "&::-webkit-scrollbar-thumb": {
       backgroundColor: `${theme.palette.primary.main}`,
-      borderRadius: '5px',
+      borderRadius: "5px",
     },
-    '& .taskContentDiv': {
-      marginTop: '10px',
+    "& .taskContentDiv": {
+      marginTop: "10px",
     },
   },
   taskContentStyle: {
-    display: 'flex',
+    display: "flex",
   },
   taskContDiv: {
-    marginLeft: '20px',
-    cursor: 'pointer',
+    marginLeft: "20px",
+    cursor: "pointer",
+  },
+  card: {
+    margin: 0,
+  },
+  pendingTask: {
+    marginLeft: 0,
+  },
+  doneTask: {
+    marginRight: 0,
   },
 }));
 
@@ -132,8 +138,8 @@ const TaskContent = (props) => {
   const [openEditor, setOpenEditor] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [doneTasks, setDoneTasks] = useState([]);
-  const [nextUrl, setNextUrl] = useState('');
-  const [nextUrl1, setNextUrl1] = useState('');
+  const [nextUrl, setNextUrl] = useState("");
+  const [nextUrl1, setNextUrl1] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [showNoContent, setShowNoContent] = useState(false);
@@ -143,13 +149,13 @@ const TaskContent = (props) => {
   const [doneLoading, setDoneLoading] = useState(false);
 
   const styleContent = {
-    done: ['line-through', '#C0C0C3'],
-    pending: ['none', 'black'],
-    'on-going': ['none', 'black'],
+    done: ["line-through", "#C0C0C3"],
+    pending: ["none", "black"],
+    "on-going": ["none", "black"],
   };
 
   const fetchDoneTask = async () => {
-    const token = localStorage.getItem('srmToken');
+    const token = localStorage.getItem("srmToken");
     const response = await HomeSerivce.getDoneTask(token);
     setDoneTasks(response.data.data.data);
     setPendingLoading(false);
@@ -163,7 +169,7 @@ const TaskContent = (props) => {
   };
 
   const fetchTask = async () => {
-    const token = localStorage.getItem('srmToken');
+    const token = localStorage.getItem("srmToken");
     const response = await HomeSerivce.getTask(token);
     setTasks(response.data.data.data);
     setPendingLoading(false);
@@ -176,7 +182,7 @@ const TaskContent = (props) => {
   };
 
   async function updateFlag(idTask, contentTask, statusTask) {
-    const token = localStorage.getItem('srmToken');
+    const token = localStorage.getItem("srmToken");
     // console.log('Update Flag: ', idTask, contentTask, statusTask);
     const response = await HomeSerivce.updateTask(token, idTask, {
       content: contentTask,
@@ -192,7 +198,7 @@ const TaskContent = (props) => {
     let isAnnouncementLoading = true;
     const fetchDoneTask = async () => {
       try {
-        const token = localStorage.getItem('srmToken');
+        const token = localStorage.getItem("srmToken");
         const response = await HomeSerivce.getDoneTask(token);
         if (isAnnouncementLoading) {
           if (response.data.data.data.length === 0) {
@@ -211,12 +217,12 @@ const TaskContent = (props) => {
           // console.log(response.data.data.data);
         }
       } catch (error) {
-        console.log('Error: ', error);
+        console.log("Error: ", error);
       }
     };
     const fetchTask = async () => {
       try {
-        const token = localStorage.getItem('srmToken');
+        const token = localStorage.getItem("srmToken");
         const response = await HomeSerivce.getTask(token);
         if (isAnnouncementLoading) {
           if (response.data.data.data.length === 0) {
@@ -235,7 +241,7 @@ const TaskContent = (props) => {
           // console.log(response.data.data.data);
         }
       } catch (error) {
-        console.log('Error: ', error);
+        console.log("Error: ", error);
       }
     };
     fetchTask();
@@ -251,7 +257,7 @@ const TaskContent = (props) => {
 
   const fetchMoreTasks = () => {
     const fetchTasks = async () => {
-      const token = localStorage.getItem('srmToken');
+      const token = localStorage.getItem("srmToken");
       const response = await HomeSerivce.getMoreTask(token, nextUrl);
       let nextData = response.data.data.data;
       setTasks([...tasks, ...response.data.data.data]);
@@ -266,7 +272,7 @@ const TaskContent = (props) => {
 
   const fetchMoreDoneTasks = () => {
     const fetchDoneTasks = async () => {
-      const token = localStorage.getItem('srmToken');
+      const token = localStorage.getItem("srmToken");
       const response = await HomeSerivce.getMoreTask(token, nextUrl1);
       let nextData = response.data.data.data;
       setDoneTasks([...tasks, ...response.data.data.data]);
@@ -280,39 +286,39 @@ const TaskContent = (props) => {
   };
 
   const handleChangeFlag = (event, statusTask, idTask, contentTask) => {
-    if (statusTask === 'pending') {
+    if (statusTask === "pending") {
       setPendingLoading(true);
-      updateFlag(idTask, contentTask, 'on-going');
+      updateFlag(idTask, contentTask, "on-going");
     }
-    if (statusTask === 'on-going') {
+    if (statusTask === "on-going") {
       setPendingLoading(true);
       setDoneLoading(true);
-      updateFlag(idTask, contentTask, 'done');
+      updateFlag(idTask, contentTask, "done");
     }
-    if (statusTask === 'done') {
+    if (statusTask === "done") {
       setPendingLoading(true);
       setDoneLoading(true);
-      updateFlag(idTask, contentTask, 'pending');
+      updateFlag(idTask, contentTask, "pending");
     }
   };
 
   const setFlag = (status, id, content) => {
-    if (status === 'pending') {
+    if (status === "pending") {
       return (
         <img
           src={RedFlagIcon}
-          alt='Pending task'
+          alt="Pending task"
           className={classes.flag}
           onClick={(event) => {
             handleChangeFlag(event, status, id, content);
           }}
         />
       );
-    } else if (status === 'on-going') {
+    } else if (status === "on-going") {
       return (
         <img
           src={YellowFlagIcon}
-          alt='Pending task'
+          alt="Pending task"
           className={classes.flag}
           onClick={(event) => {
             handleChangeFlag(event, status, id, content);
@@ -323,7 +329,7 @@ const TaskContent = (props) => {
       return (
         <img
           src={GreenTickIcon}
-          alt='Pending task'
+          alt="Pending task"
           className={classes.flag}
           onClick={(event) => {
             handleChangeFlag(event, status, id, content);
@@ -336,19 +342,17 @@ const TaskContent = (props) => {
   return (
     <>
       {showNoContent ? (
-        <Card className={classes.taskCard}>
+        <Card className={`${classes.taskCard} ${classes.card}`}>
           <CardContent
             className={classes.clickCard}
             onClick={(event) => {
               props.handleCreateNew();
-            }}
-          >
+            }}>
             <Box className={classes.clickHere}>
               <Typography
                 color='primary'
                 variant='body1'
-                className={classes.clickContent}
-              >
+                className={classes.clickContent}>
                 Create your first task by clicking here
               </Typography>
             </Box>
@@ -357,9 +361,11 @@ const TaskContent = (props) => {
       ) : (
         <Grid container>
           <Grid item md={6}>
-            <Card className={`${classes.taskCard} ${classes.pendingTasks}`}>
-              <Typography className={classes.cardTitle}>Done Tasks</Typography>
-              <CardContent className={classes.CardContent} id='scrollable'>
+            <Card className={`${classes.taskCard} ${classes.pendingTask}`}>
+              <Typography className={classes.cardTitle} variant='body1'>
+                Done Tasks
+              </Typography>
+              <CardContent className={classes.CardContent} id="scrollable">
                 {doneLoading ? (
                   <>
                     <div className={classes.loading}>
@@ -381,18 +387,16 @@ const TaskContent = (props) => {
                       </>
                     }
                     scrollableTarget='scrollable'
-                    scrollThreshold={0.5}
-                  >
+                    scrollThreshold={0.5}>
                     {isLoading === false
                       ? doneTasks.map((task) => {
                           return (
-                            <Box key={task.id} className='taskContentDiv'>
+                            <Box key={task.id} className="taskContentDiv">
                               <Grid container>
                                 <Grid
                                   item
                                   xs={12}
-                                  className={classes.taskContentStyle}
-                                >
+                                  className={classes.taskContentStyle}>
                                   <div>
                                     <span>
                                       {setFlag(
@@ -403,7 +407,7 @@ const TaskContent = (props) => {
                                     </span>
                                   </div>
                                   <div className={classes.taskContDiv}>
-                                    <Typography>
+                                    <Typography variant='body2'>
                                       <span
                                         className={classes.taskContent}
                                         onClick={(event) => {
@@ -416,10 +420,9 @@ const TaskContent = (props) => {
                                         style={{
                                           textDecoration:
                                             styleContent[task.status][0],
-                                          textDecorationColor: '#C0C0C3',
+                                          textDecorationColor: "#C0C0C3",
                                           color: styleContent[task.status][1],
-                                        }}
-                                      >
+                                        }}>
                                         {task.content}
                                       </span>
                                     </Typography>
@@ -427,18 +430,28 @@ const TaskContent = (props) => {
 
                                   {doneTasks.length === 0 &&
                                   hasMore1 === false ? (
-                                    <Typography variant='h6'>
+                                    <Typography variant='body1'>
                                       No task available
                                     </Typography>
                                   ) : (
-                                    ''
+                                    ""
                                   )}
                                 </Grid>
                               </Grid>
                             </Box>
                           );
                         })
-                      : ''}
+                      : ""}
+                      {isLoading ? (
+                      <div className={classes.loading}>
+                        <CircularProgress color="primary" size={30} />
+                      </div>
+                    ) : null}
+                    {!isLoading && !doneTasks.length ? (
+                      <div className={classes.emptyView}>
+                        <Typography>Don't have any Task.</Typography>
+                      </div>
+                    ) : null}
                   </InfiniteScroll>
                 )}
                 <br />
@@ -448,13 +461,12 @@ const TaskContent = (props) => {
           </Grid>
           <Grid item md={6}>
             <Card className={`${classes.taskCard} ${classes.doneTask}`}>
-              <Typography className={classes.cardTitle}>
+              <Typography className={classes.cardTitle} variant='body1'>
                 Pending Tasks
               </Typography>
               <CardContent
                 className={classes.CardContent}
-                id='secondScrollable'
-              >
+                id='secondScrollable'>
                 {pendingLoading ? (
                   <>
                     <div className={classes.loading}>
@@ -476,18 +488,16 @@ const TaskContent = (props) => {
                       </>
                     }
                     scrollableTarget='secondScrollable'
-                    scrollThreshold={0.5}
-                  >
+                    scrollThreshold={0.5}>
                     {isLoading === false
                       ? tasks.map((task) => {
                           return (
-                            <Box key={task.id} className='taskContentDiv'>
+                            <Box key={task.id} className="taskContentDiv">
                               <Grid container>
                                 <Grid
                                   item
                                   xs={12}
-                                  className={classes.taskContentStyle}
-                                >
+                                  className={classes.taskContentStyle}>
                                   <div>
                                     <span>
                                       {setFlag(
@@ -498,7 +508,7 @@ const TaskContent = (props) => {
                                     </span>
                                   </div>
                                   <div className={classes.taskContDiv}>
-                                    <Typography>
+                                    <Typography variant='body2'>
                                       <span
                                         className={classes.taskContent}
                                         onClick={(event) => {
@@ -511,28 +521,37 @@ const TaskContent = (props) => {
                                         style={{
                                           textDecoration:
                                             styleContent[task.status][0],
-                                          textDecorationColor: '#C0C0C3',
+                                          textDecorationColor: "#C0C0C3",
                                           color: styleContent[task.status][1],
-                                        }}
-                                      >
+                                        }}>
                                         {task.content}
                                       </span>
                                     </Typography>
                                   </div>
 
                                   {tasks.length === 0 && hasMore === false ? (
-                                    <Typography variant='h6'>
+                                    <Typography variant='body1'>
                                       No task available
                                     </Typography>
                                   ) : (
-                                    ''
+                                    ""
                                   )}
                                 </Grid>
                               </Grid>
                             </Box>
                           );
                         })
-                      : ''}
+                      : ""}
+                    {isLoading ? (
+                      <div className={classes.loading}>
+                        <CircularProgress color="primary" size={30} />
+                      </div>
+                    ) : null}
+                    {!isLoading && !tasks.length ? (
+                      <div className={classes.emptyView}>
+                        <Typography>Don't have any Task.</Typography>
+                      </div>
+                    ) : null}
                   </InfiniteScroll>
                 )}
                 <br />

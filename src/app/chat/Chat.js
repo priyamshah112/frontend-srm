@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -6,6 +6,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import Badge from "@material-ui/core/Badge";
+import { Typography } from "@material-ui/core";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -43,52 +44,100 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.875rem",
     fontWeight: 300,
     marginBottom: "12px",
+    pointer: 'cursor'
   },
+  roleDetails: {
+    position: 'absolute',
+    right: 15,
+    top: 30,
+  },
+  date:{
+    color: theme.palette.grey[400],
+    fontSize: 14,
+    marginBottom: 3,
+    fontWeight: 200
+  }
 }));
 
-export default function Chat() {
+const list = [
+  {
+    name: 'Akshay Srinivas',
+    avatar: "/static/images/avatar/1.jpg",
+    message: "Are you attending class today?",
+    status: 'Online',
+    date: '08 June',
+    role: 'Faculty'
+  },
+  {
+    name: 'Isha Roy',
+    avatar: "/static/images/avatar/2.jpg",
+    message: "Need project details. Share with me?",
+    status: '',
+    date: '07 June',
+    role: 'Student'
+  },
+  {
+    name: 'Cindy Baker',
+    avatar: "/static/images/avatar/3.jpg",
+    message: "Are you attending class today?",
+    status: '',
+    date: '07 June',
+    role: 'Student'
+  }
+]
+
+export default function Chat({ filter, selectContact }) {
   const classes = useStyles();
+  const [Chats, setChats] = useState(list)
+  const [filteredChat, setFilteredChats] = useState(list)
+
+  useEffect(()=>{
+    if(filter == ''){
+      setFilteredChats([...Chats])
+    }
+    else{
+      let chat = Chats.filter(c=>{
+        return c.name.toLowerCase().includes(filter.toLowerCase());
+      })
+      
+      setFilteredChats([...chat])
+    }
+  }, [filter])
 
   return (
     <List className={classes.root}>
-      <ListItem alignItems="flex-start" className={classes.listItem}>
-        <ListItemAvatar>
-          <StyledBadge
-            overlap="circle"
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            variant="dot"
-          >
-            <Avatar alt="Akshay Srinivas" src="/static/images/avatar/1.jpg" />
-          </StyledBadge>
-        </ListItemAvatar>
-        <ListItemText
-          primary="Akshay Srinivas"
-          secondary={"Are you attending class today?"}
-        />
-      </ListItem>
-
-      <ListItem alignItems="flex-start" className={classes.listItem}>
-        <ListItemAvatar>
-          <Avatar alt="Isha Roy" src="/static/images/avatar/2.jpg" />
-        </ListItemAvatar>
-        <ListItemText
-          primary="Isha Roy"
-          secondary={"Need project details. Share with me?"}
-        />
-      </ListItem>
-
-      <ListItem alignItems="flex-start" className={classes.listItem}>
-        <ListItemAvatar>
-          <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-        </ListItemAvatar>
-        <ListItemText
-          primary="Akshay Srinivas"
-          secondary={"Are you attending class today?"}
-        />
-      </ListItem>
+      {filteredChat.map(chat=>{
+        return (
+          <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
+            <ListItemAvatar>
+              <StyledBadge
+                overlap="circle"
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                variant={chat.status=="Online"?"dot": ''}
+              >
+                <Avatar alt={chat.name} src={chat.avatar} />
+              </StyledBadge>
+            </ListItemAvatar>
+            <ListItemText
+              style={{ width: '60%' }}
+              secondaryTypographyProps={{ style: { width: '60%'} }}
+              primary={chat.name}
+              secondary={chat.message}
+            />
+            <div className={classes.roleDetails}>
+              <Typography className={classes.date}>
+                {chat.date}
+              </Typography>
+              <Typography className={classes.date}>
+                {chat.role}
+              </Typography>
+            </div>
+          </ListItem>
+        )
+      })}
     </List>
   );
 }

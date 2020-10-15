@@ -56,7 +56,7 @@ const useStyle = makeStyles((theme) => ({
     color: 'red',
   },
   fieldStyle: {
-    width: '90%',
+    width: '97%',
     margin: 'auto',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
@@ -120,23 +120,6 @@ const useStyle = makeStyles((theme) => ({
     margin: 2,
   },
 
-  margin: {
-    marginTop: '30px',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: '10px',
-    },
-    '& .publishBtn': {
-      borderRadius: '3px',
-      width: '100%',
-      // opacity: '0.5',
-      marginBottom: '15px',
-    },
-    '& .publishLaterBtn': {
-      backgroundColor: `${theme.palette.common.white}`,
-      border: `1px solid ${theme.palette.common.adornment}`,
-      marginRight: '5px',
-    },
-  },
   form_txtarea: {
     marginBottom: '20px',
   },
@@ -181,10 +164,38 @@ const useStyle = makeStyles((theme) => ({
   },
   tchClassRoot:{
     marginLeft:"27px",
-    transform:'translateY(-13px)'
+    transform:'translateY(-10px)'
   },
   tchSelect:{
     width:'150px'
+  },
+  sideMargins: {
+    marginLeft: '20px',
+  },
+  publishBtns: {
+    textAlign: 'right',
+    justifyContent: 'right',
+  },
+  margin: {
+    marginTop: '30px',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: '10px',
+    },
+    '& .publishBtn': {
+      borderRadius: '3px',
+      width: 'inherit',
+      margin: 0,
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
+        marginRight: 0,
+        width: '100%',
+      },
+    },
+    '& .publishLaterBtn': {
+
+      border: `1px solid ${theme.palette.common.adornment}`,
+      marginRight: '5px',
+    },
   },
 }));
 
@@ -433,6 +444,17 @@ const TeacherLeaveApply = (props) => {
                           name: 'type',
                           id: 'type',
                         }}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "center",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "center",
+                          },
+                          getContentAnchorEl: null,
+                        }}
                       >
                         <MenuItem  value={0}>First Half</MenuItem>
                         <MenuItem  value={1}>Second Half</MenuItem>
@@ -449,11 +471,17 @@ const TeacherLeaveApply = (props) => {
                   value={teachersValue}
                   className={classes.tchSelect}
                   onChange={handleTeachersValue}
-                  // inputProps={{
-                  //   name: 'teachers',
-                  //   id: 'teachers',
-                  // }}
-
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "center",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "center",
+                    },
+                    getContentAnchorEl: null,
+                  }}
                 >
                       {allAdmin.map((admin) => (
                         <MenuItem  value={admin.user_id}>
@@ -484,9 +512,50 @@ const TeacherLeaveApply = (props) => {
               </div>
             </Grid>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
+            <Grid
+              container
+              className={classes.fieldStyle}
+              direction='row-reverse'>
+              <Grid item sm={6} xs={12} className={classes.publishBtns}>
+                <Button
+                  id='publishBtn'
+                  variant='contained'
+                  color='primary'
+                  // onClick={handleOpenPubLater}
+                  type='submit'
+                  className={`${
+                    classes.fieldStyle
+                  } ${'publishBtn'} ${'publishLaterBtn'}`}
+                  disableElevation>
+                  Submit
+                </Button>
+                <Button
+                  id='publishLaterBtn'
+                  variant='outlined'
+                  className={`${classes.fieldStyle} ${'publishBtn'}`}
+                  color='primary'
+                  // onClick={handlePublish}
+                  disableElevation
+                  onClick={(event) => {
+                    history.push('/leave');
+                  }}
+                  >
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid item sm={3} xs={12} className={classes.textAlignLeft}>
+                <br />
+                <br />
+              </Grid>
+              <br/>
+              <br/>
+              <br/>
+            </Grid>
+          </Box>
+          {/* <Box className={classes.margin}>
             <Grid container className={classes.fieldStyle}>
-              <Grid item xs={12}>
+              <Grid item xs={4}>
                 <Button
                   id='publishBtn'
                   variant='contained'
@@ -500,7 +569,7 @@ const TeacherLeaveApply = (props) => {
                 </Button>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={4}>
                 <Button
                   id='publishLaterBtn'
                   variant='contained'
@@ -516,7 +585,7 @@ const TeacherLeaveApply = (props) => {
                 </Button>
               </Grid>
             </Grid>
-          </Box>
+          </Box> */}
         </form>
       </div>
     </>

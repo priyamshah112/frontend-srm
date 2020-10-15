@@ -48,3 +48,7 @@
 .emptyStatus {
     color: #d1d1d6;
 }
+.error{
+    color: red;
+    font-size: 10px;
+}

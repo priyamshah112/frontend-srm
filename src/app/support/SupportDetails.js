@@ -142,7 +142,7 @@ const SupportDetails = (props) => {
 
   useEffect(() => {
     setStatus(pendingStatus);
-  }, [updateStatusValue])
+  }, [updateStatusValue]);
 
   useEffect(() => {
     setStatus(data.status);
@@ -179,7 +179,7 @@ const SupportDetails = (props) => {
 
   const handleApproveClose = () => {
     handleCloseApproveDialog();
-    updateStatus(status);
+    updateStatus(pendingStatus);
   };
 
   const updateStatus = (status) => {
@@ -206,6 +206,22 @@ const SupportDetails = (props) => {
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
+
+  const normalData = [
+    { key: "submitted", title: "Submitted" },
+    { key: "acknowledge", title: "Acknowledged" },
+    { key: "in-progress", title: "InProgress" },
+    { key: "resolved", title: "Resolved" },
+    { key: "canceled", title: "Canceled" },
+  ];
+
+  const addressStatus = [
+    { key: "submitted", title: "Submitted" },
+    { key: "canceled", title: "Canceled" },
+    { key: "approved", title: "Approved" },
+  ];
+
+  const statusData = data.address_id ? addressStatus : normalData;
 
   return (
     <>
@@ -272,28 +288,27 @@ const SupportDetails = (props) => {
                     )}
                   </div>
                 </div>
-                {selectedRole === "admin"  ? (
+                {selectedRole === "admin" ? (
                   <div className={classes.selectDiv}>
                     <FormControl className={classes.formControl}>
                       <InputLabel id="demo-controlled-open-select-label">
                         Status
                       </InputLabel>
-                      {status ? <Select
-                        labelId="demo-controlled-open-select-label"
-                        id="demo-controlled-open-select"
-                        open={open}
-                        onClose={handleClose}
-                        onOpen={handleOpen}
-                        value={status}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value={"submitted"}>Submitted</MenuItem>
-                        <MenuItem value={"acknowledge"}>Acknowledged</MenuItem>
-                        <MenuItem value={"in-progress"}>InProgress</MenuItem>
-                        <MenuItem value={"resolved"}>Resolved</MenuItem>
-                        <MenuItem value={"canceled"}>Canceled</MenuItem>
-                        <MenuItem value={"approved"}>Approved</MenuItem>
-                      </Select> : null}
+                      {status ? (
+                        <Select
+                          labelId="demo-controlled-open-select-label"
+                          id="demo-controlled-open-select"
+                          open={open}
+                          onClose={handleClose}
+                          onOpen={handleOpen}
+                          value={status}
+                          onChange={handleChange}
+                        >
+                          {statusData.map((item) => (
+                            <MenuItem value={item.key}>{item.title}</MenuItem>
+                          ))}
+                        </Select>
+                      ) : null}
                     </FormControl>
                   </div>
                 ) : (

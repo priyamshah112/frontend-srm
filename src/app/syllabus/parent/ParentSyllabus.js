@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -31,6 +32,18 @@ const useStyles = makeStyles((theme) => ({
   },
   select: {
     width: "45%",
+  },
+  loading: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
+  },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
   },
 }));
 
@@ -108,7 +121,7 @@ const ParentSyllabus = (props) => {
 
   const classes = useStyles();
   const table =
-    isLoading == false ? (
+    !isLoading && syllabus ? (
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="spanning table">
           <TableHead>
@@ -208,6 +221,16 @@ const ParentSyllabus = (props) => {
         <br />
 
         {table}
+        {isLoading ? (
+          <div className={classes.loading}>
+            <CircularProgress color="primary" size={30} />
+          </div>
+        ) : null}
+        {!isLoading && !syllabus ? (
+          <div className={classes.emptyView}>
+            <Typography>Don't have any syllabus.</Typography>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -53,7 +53,6 @@ const useStyle = makeStyles((theme) => ({
   },
   announcementText: {
     fontStyle: 'normal',
-    fontSize: '14px',
   },
   announcementImg: {
     justifyContent: 'center',
@@ -110,7 +109,6 @@ const useStyle = makeStyles((theme) => ({
     padding: '20px 20px 10px',
   },
   labelText: {
-    fontSize: '18px',
     fontStyle: 'normal',
     color: '#8E8E93',
   },
@@ -127,7 +125,6 @@ const useStyle = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   normalText: {
-    fontSize: '14px',
     fontStyle: 'normal',
     color: `${theme.palette.common.blackRussian}`,
     fontWeight: 500,
@@ -138,7 +135,6 @@ const useStyle = makeStyles((theme) => ({
   },
   highlightedText: {
     // fontFamily:theme.typography.fon,
-    fontSize: '18px',
   },
   textAlignRight: {
     textAlign: 'right',
@@ -199,8 +195,7 @@ const HomeworkCard = (props) => {
         direction='row'
         justify='center'
         alignContent='center'
-        className={classes.cardContainer}
-      >
+        className={classes.cardContainer}>
         <Card className={classes.card}>
           <CardContent className={classes.cardContent}>
             {/* {props.children} */}
@@ -210,15 +205,13 @@ const HomeworkCard = (props) => {
                   {title ? (
                     <Typography
                       variant='body1'
-                      className={classes.highlightedText}
-                    >
+                      className={classes.highlightedText}>
                       {title}
                     </Typography>
                   ) : (
                     <Typography
                       variant='body1'
-                      className={classes.highlightedText}
-                    >
+                      className={classes.highlightedText}>
                       N/A
                     </Typography>
                   )}
@@ -227,8 +220,7 @@ const HomeworkCard = (props) => {
               <Grid item xs={4}>
                 <Typography
                   className={`${classes.textAlignRight} ${classes.highlightedText}`}
-                  variant='body2'
-                >
+                  variant='body2'>
                   Created at: {moment(created_date).format('DD MMM YY')}
                 </Typography>
               </Grid>
@@ -237,8 +229,7 @@ const HomeworkCard = (props) => {
               <Grid item xs={12}>
                 <Typography
                   className={`${classes.labelText} ${classes.textAlignRight}`}
-                  variant='body2'
-                >
+                  variant='body2'>
                   Status :{' '}
                   <span style={{ textTransform: 'capitalize' }}>{status}</span>
                 </Typography>
@@ -259,8 +250,7 @@ const HomeworkCard = (props) => {
               <Grid item xs={1} className={classes.imgGrid}>
                 {status !== 'published' ? (
                   <div
-                    className={`${classes.imgDiv} ${classes.textAlignRight}`}
-                  >
+                    className={`${classes.imgDiv} ${classes.textAlignRight}`}>
                     <img
                       src={EditIcon}
                       className={classes.editBtn}

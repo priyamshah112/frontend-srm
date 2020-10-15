@@ -4,7 +4,7 @@ const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class AuthService {
   login(credentials) {
-    console.log(`${BACKEND_API_URL}/login`)
+    console.log(`${BACKEND_API_URL}/login`);
     return axios.post(`${BACKEND_API_URL}/login`, credentials);
   }
   sendOtp(username) {
@@ -27,8 +27,22 @@ class AuthService {
     });
   }
   getParents(username) {
-    console.log(username);
+    
     return axios.post(`${BACKEND_API_URL}/get-parents`, username);
+  }
+  addDeviceToken(token, DeviceToken, id) {
+    return axios.put(
+      `${BACKEND_API_URL}/user/${id}`,
+      {
+        device_tokens: DeviceToken,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   }
 }
 

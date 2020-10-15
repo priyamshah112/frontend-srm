@@ -30,7 +30,7 @@ const useStyle = makeStyles((theme) => ({
   taskheader: {
     width: '100%',
     display: 'table-row',
-    height: '30px',
+    height: '35px',
   },
   tasks: {
     width: '100%',
@@ -75,6 +75,9 @@ const useStyle = makeStyles((theme) => ({
   taskContentStyle: {
     cursor: 'pointer',
   },
+  titleName: {
+    // marginBottom: 20,
+  }
 }));
 const Tasks = (props) => {
   const classes = useStyle();

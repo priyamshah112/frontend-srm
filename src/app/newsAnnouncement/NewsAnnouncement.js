@@ -112,7 +112,7 @@ const NewsAnnouncement = (props) => {
       );
       let initialClassState = [];
       classesResponse.data.data.forEach((className) => {
-        initialClassState[className.class_name] = className.id;
+        initialClassState[className.id] = className.class_name;
       });
 
       const categoryResponse = await AnnouncementService.fetchCategories(
