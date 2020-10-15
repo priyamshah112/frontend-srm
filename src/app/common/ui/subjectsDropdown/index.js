@@ -33,7 +33,6 @@ const SubjectsDropdown = (props) => {
   };
 
   const onGet = (d = {}) => {
-    console.log("SubjectsDropdown onGet", { d, props });
     const { data = {} } = d;
     const { subject_lists = [] } = data;
     setData(subject_lists);

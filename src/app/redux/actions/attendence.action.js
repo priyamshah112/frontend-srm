@@ -3,7 +3,6 @@ import commonActions from "../action-types/common";
 import attendenceActionTypes from "../action-types/attendence.actionTypes";
 
 export const getAttendence = (params, onSuccess, onFail) => {
-  console.log('getAttendence', params)
   return {
     type: commonActions.COMMON_API_CALL,
     subtypes: attendenceActionTypes.GET_ATTENDENCE,
