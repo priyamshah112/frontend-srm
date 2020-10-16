@@ -13,13 +13,13 @@ const TimeTable = (props) => {
     return (
         <div>
 
-            {selectedRole === "student" ?
+            {selectedRole === "teacher" ?
 
                 <TeacherTimeTable /> : ''}
-            {/* {selectedRole === "student" ?
+            {selectedRole === "student" ?
 
-                <StudentTestList /> : ''} */}
-            
+                <StudentTestList /> : ''}
+
         </div>
 
 
