@@ -83,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
     colorWhite: {
         color: '#fff'
     },
+    bgWhite: {
+        background: '#fff'
+    },
     subjectTitle: {
         margin: "20px 0px",
         textAlign: "center"
@@ -104,6 +107,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 let setSubjectArray = [];
+let remarkText = 'Remark';
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
@@ -127,6 +131,9 @@ const StudentSkills = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
+                        if (response.data.data.grades[0]) {
+                            remarkText = response.data.data.grades[0].remarks
+                        }
                     }
                 } else {
                     setError('Error in fetching report card');
@@ -203,54 +210,58 @@ const StudentSkills = (props) => {
 
         const skill = [];
         const subject = [];
-        const skill_list_data = name === 'skill' ? { ...obj.skill_list_data, skill_name: event.target.value } : { ...obj.skill_list_data, grade_name: event.target.value }
-        obj.skill_list_data = skill_list_data;
-        skillData.user_skill[key] = obj;
+        const saveStatus = 'draft';
 
-        skillData.user_skill.map((item, key) => {
-            const value = {
-                'skill_id': item.id,
-                'skill_name': item.skill_list_data.skill_name || '',
-                'grade': item.skill_list_data.grade_name || ''
-            }
-            skill.push(value)
-        });
+        if (name === 'skill' || name === 'grade') {
 
-        subject.push(
-            {
-                "subject_id": skillData.id,
-                "subject_name": skillData.name,
-                "skill": skill
-            },
-        )
+            const skill_list_data = name === 'skill' ? { ...obj.skill_list_data, skill_name: event.target.value } : { ...obj.skill_list_data, grade_name: event.target.value }
+            obj.skill_list_data = skill_list_data;
+            skillData.user_skill[key] = obj;
+
+            skillData.user_skill.map((item) => {
+                const value = {
+                    'skill_id': item.id,
+                    'skill_name': item.skill_list_data.skill_name || '',
+                    'grade': item.skill_list_data.grade_name || ''
+                }
+                skill.push(value)
+            });
+
+            subject.push(
+                {
+                    "subject_id": skillData.id,
+                    "subject_name": skillData.name,
+                    "skill": skill
+                },
+            )
+        }
 
         const restSubject = allSubject.filter((sub) => {
             return (sub.subject_name != skillData.name && sub.subject_id)
-        })
+        });
 
-        const totalSubject = [...restSubject, ...subject]
+        const totalSubject = [...restSubject, ...subject];
+        const test = {
+            "student_id": searchData.id,
+            "test_id": testData.id,
+            "remarks": remarkText || '',
+            "status": saveStatus
+        }
 
         if (reportData.grades[0]) {
-            const updateSkill = {
+            updateSkillCall({
                 "id": reportData.grades[0].id,
-                "student_id": searchData.id,
-                "test_id": testData.id,
-                "remarks": "Remarks",
-                "status": "draft",
-                "subject": totalSubject
-            }
-            updateSkillCall(updateSkill)
+                "subject": totalSubject,
+                ...test
+            })
         } else {
-            const createSkill = {
-                "student_id": searchData.id,
-                "test_id": testData.id,
-                "remarks": "Remarks",
-                "status": "draft",
-                "subject": subject
-            }
-            addSkillCall(createSkill)
+            addSkillCall({
+                "subject": subject,
+                ...test
+            })
         }
     }
+
     const renderEditSkill = () => {
         return (
             <div className={classes.fillGradeWrapper}>
@@ -259,7 +270,6 @@ const StudentSkills = (props) => {
                 </div>
                 {
                     skillData.user_skill.map((obj, key) => {
-
                         return (
                             <div className={classes.fillGrade} key={key}>
                                 <TextField
@@ -270,7 +280,7 @@ const StudentSkills = (props) => {
                                     multiline
                                     variant="outlined"
                                     fullWidth={true}
-                                    style={{ background: '#fff' }}
+                                    className={classes.bgWhite}
                                     onChange={(event) => { onChangeSkills(event, obj, key, 'skill') }}
                                 />
                                 <TextField
@@ -280,7 +290,8 @@ const StudentSkills = (props) => {
                                     variant="outlined"
                                     placeholder={'Grade Name'}
                                     defaultValue={obj.skill_list_data.grade_name || ''}
-                                    style={{ marginLeft: '10px', background: '#fff' }}
+                                    className={classes.bgWhite}
+                                    style={{ background: '#fff' }}
                                     onChange={(event) => { onChangeSkills(event, obj, key, 'grade') }}
                                 />
 
@@ -315,7 +326,6 @@ const StudentSkills = (props) => {
                     </Button>
                     </Box>
                 </div>
-
             </div>
         )
     }
@@ -338,7 +348,6 @@ const StudentSkills = (props) => {
                         };
 
                         if (list.skill_list_data.grade_name) {
-
                             const value = {
                                 'skill_id': list.id,
                                 'skill_name': list.skill_list_data.skill_name || '',
@@ -347,7 +356,6 @@ const StudentSkills = (props) => {
                             }
                             skillArr.push(value)
                         }
-
                         return (
                             <span key={key}>
                                 <div className={classes.cardItem}>
@@ -379,7 +387,6 @@ const StudentSkills = (props) => {
                         )}
                     </span>
                 }
-
             </>
         )
     }
@@ -389,7 +396,6 @@ const StudentSkills = (props) => {
             <Box className={classes.rootGrid}>
                 {
                     Object.entries(reportData.subjectDetails).map(([name, value], i) => {
-
                         return (
                             <div key={i}>
                                 < div className={classes.subjectTitle}>
@@ -438,6 +444,10 @@ const StudentSkills = (props) => {
         )
     }
 
+    const onChangeRemark = (event) => {
+        remarkText = event.target.value;
+    }
+
     const renderRemark = () => {
         return (
             <div className={classes.remark}>
@@ -454,7 +464,10 @@ const StudentSkills = (props) => {
                     rowsMax={4}
                     size="medium"
                     type="string"
-                    style={{ background: '#fff' }}
+                    defaultValue={remarkText}
+                    placeholder={'Remark'}
+                    className={classes.bgWhite}
+                    onChange={(event) => { onChangeRemark(event) }}
                 />
             </div>
         )

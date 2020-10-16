@@ -340,7 +340,6 @@ const StudentDetails = (props) => {
             {renderAttendace()}
             <StudentSkills {...props} />
             <StudentGrade {...props} />
-            <BackdropLoader open={isLoading} />
         </div>
     );
 }
