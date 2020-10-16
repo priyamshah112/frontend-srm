@@ -36,11 +36,13 @@ const useStyles = makeStyles((theme) => ({
 const TeacherTimeTable = () => {
     const classes = useStyles();
     const [classList, setClasses] = useState(null);
+    
     const [classNmae, setClassName] = useState("");
     const token = localStorage.getItem("srmToken");
     const [isLoading, setLoading] = useState(true);
     const [testList, setTestList] = useState(false);
-    const [testlist, setTestlist] = useState(null)
+    const [testlist, setTestlist] = useState(null);
+    const [classId, setClassId] = useState(null);
 
     const handleChange = (e) => {
         setClassName(e.target.value)
@@ -61,19 +63,20 @@ const TeacherTimeTable = () => {
         }
     };
 
-    const fetchTestList = async (isMounted) => {
-        const response = await TimetableService.getTestList(token);
+    const fetchTestList = async (classId) => {
+        const response = await TimetableService.getTestList(token, classId);
         if (response.status === 200) {
-            console.log("fetchClasses -> ", response.data.data.data)
-            setTestlist(response.data.data.data.map(list=>list.name))
-            console.log(setTestlist(response.data.data.data.map(list=>list.name)));
-
+            // console.log("fetchClasses -> ", response.data.data.data)
+            setTestlist(response.data.data)
+            console.log(setTestlist(response.data.data.data.map(list => list.name)));
+            setTestList(true);
+            // console.log("raju", response.data.data.data)
+            setTestlist(response.data.data.data.map(list => list))
         }
         if (response.data.status == "success" && isLoading && testlist == null) {
-            // console.log(response.data)
-            setLoading(false) 
-        //    console.log(setTestlist(response.data.data.data.map(list=>list.name)));
-            // mobileNo: res.data.map(user => user.mobileNo),
+            setLoading(false)
+            // setTestlist(response.data.data.data)
+            // console.log("raju",response.data.data.data)
 
         }
     }
@@ -85,9 +88,6 @@ const TeacherTimeTable = () => {
         if (classList == null) {
             fetchClasses(isMounted);
         }
-         if (testlist == null) {
-            fetchTestList(isMounted);
-        }
         // fetchSubjects(isMounted);
 
         return () => {
@@ -95,11 +95,10 @@ const TeacherTimeTable = () => {
         };
     });
 
-    const handlemenuitem = (e) => {
+    const handlemenuitem = async (e, classes) => {
         e.preventDefault();
-
-        console.log(classNmae)
-        setTestList(true)
+        fetchTestList(classes.id);
+        setClassId(classes.id);
     }
     const backtickTestList = () => {
         setTestList(false)
@@ -115,8 +114,8 @@ const TeacherTimeTable = () => {
     //  }
 
     return (
-        // console.log(testlist),
-        <div >
+
+        <div>
             {testList === false ?
                 <div className={classes.grid} >
                     <div item className={classes.container}>
@@ -130,12 +129,11 @@ const TeacherTimeTable = () => {
                             style={{ width: "50%" }}
                         >
 
-
                             {classList != null
                                 ? Object.keys(classList).map(function (key, index) {
                                     return (
 
-                                        <MenuItem key={index} value={classList[key]} onClick={handlemenuitem}>
+                                        <MenuItem key={index} value={classList[key]} onClick={(e) => handlemenuitem(e, classList[key])}>
                                             {classList[key].class_name}
                                         </MenuItem>
                                     );
@@ -155,12 +153,8 @@ const TeacherTimeTable = () => {
                     </div>
                 </div> :
                 <Container>
-                  
-                    {/* {testlist.map((key,index)=>{ */}
-                        {/* return   */}
-                        <TestList backtickTestList={backtickTestList} testNmae={testlist}   />
-
-                    {/* })} */}
+                        {/* "raju" */}
+                    <TestList backtickTestList={backtickTestList} classId={classId} testNmae={testlist} />
 
                 </Container>
 
