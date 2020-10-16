@@ -10,7 +10,7 @@ import PrintIcon from '../../../assets/images/report/printer.svg';
 import Avatar from "@material-ui/core/Avatar";
 
 import ReportService from '../ReportService';
-import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
+
 
 import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
@@ -247,11 +247,6 @@ const StudentDetails = (props) => {
         }, 2000)
     };
 
-    const onError = () => {
-        // this.setState({
-        //     imageUrl: "img/default.png"
-        // })
-    }
 
     const onErrorImg = () => {
         setLoadImage(false)

@@ -8,6 +8,7 @@ import Box from '@material-ui/core/Box';
 import editIcon from '../../../assets/images/Edit.svg';
 import ReportService from '../ReportService';
 import TextField from '@material-ui/core/TextField';
+import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -134,6 +135,7 @@ const StudentSkills = (props) => {
                         if (response.data.data.grades[0]) {
                             remarkText = response.data.data.grades[0].remarks
                         }
+                        setLoading(false);
                     }
                 } else {
                     setError('Error in fetching report card');
@@ -206,25 +208,28 @@ const StudentSkills = (props) => {
         };
     }
 
-    const onChangeSkills = (event, obj, key, name) => {
+    const onChangeSkills = (input, obj, key, name) => {
 
         const skill = [];
         const subject = [];
         const saveStatus = 'draft';
+        const { value } = input.target;
 
         if (name === 'skill' || name === 'grade') {
+            if (name === 'skill') {
+                obj.skill_list_data = { ...obj.skill_list_data, skill_name: value };
+            } else {
+                obj.skill_list_data = { ...obj.skill_list_data, grade_name: value };
+            }
 
-            const skill_list_data = name === 'skill' ? { ...obj.skill_list_data, skill_name: event.target.value } : { ...obj.skill_list_data, grade_name: event.target.value }
-            obj.skill_list_data = skill_list_data;
             skillData.user_skill[key] = obj;
-
             skillData.user_skill.map((item) => {
-                const value = {
+                const makeSkill = {
                     'skill_id': item.id,
                     'skill_name': item.skill_list_data.skill_name || '',
                     'grade': item.skill_list_data.grade_name || ''
                 }
-                skill.push(value)
+                skill.push(makeSkill)
             });
 
             subject.push(
@@ -291,10 +296,9 @@ const StudentSkills = (props) => {
                                     placeholder={'Grade Name'}
                                     defaultValue={obj.skill_list_data.grade_name || ''}
                                     className={classes.bgWhite}
-                                    style={{ background: '#fff' }}
+                                    style={{ marginLeft: '10px' }}
                                     onChange={(event) => { onChangeSkills(event, obj, key, 'grade') }}
                                 />
-
                             </div>
                         )
                     })
@@ -477,7 +481,7 @@ const StudentSkills = (props) => {
         <div className={classes.container}>
             {editSkill && renderEditSkill()}
             {!editSkill && reportData.subjectDetails && renderSkill()}
-
+            <BackdropLoader open={isLoading} />
         </div>
     );
 }
