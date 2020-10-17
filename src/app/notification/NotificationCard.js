@@ -170,6 +170,7 @@ const NotificationCard = (props) => {
           token
         );
       }
+      props.subNotificationCount();
       history.push(`/notifications/${props.notification.id}`);
     } catch (e) {
       console.log(e);
