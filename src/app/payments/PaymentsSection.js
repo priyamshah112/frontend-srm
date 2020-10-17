@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
+
+import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Select from "@material-ui/core/Select";
-import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
-
+import PaymentCard from "./PaymentCard";
+import PaymentService from "./PaymentService";
 const useStyles = makeStyles((theme) => ({
   sectionContainer: {
     height: "100%",
@@ -19,14 +19,106 @@ const useStyles = makeStyles((theme) => ({
       padding: "16px",
     },
   },
+  loading: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
+  },
 }));
-const PaymentSection = () => {
+const PaymentSection = (props) => {
   const classes = useStyles();
+  const [payments, setPayments] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem("srmToken");
+        if (props.filter) {
+          const response = await PaymentService.fetchFilterPayments(
+            token,
+            props.filter,
+            currentPage
+          );
+          if (response.status === 200) {
+            setPayments(response.data.data.data);
+            if (
+              response.data.data.current_page === response.data.data.last_page
+            ) {
+              setHasMore(false);
+            } else {
+              setCurrentPage(currentPage + 1);
+            }
+          }
+        } else {
+          const response = await PaymentService.fetchPayments(
+            token,
+            currentPage
+          );
+          if (response.status === 200) {
+            setPayments(response.data.data.data);
+            if (
+              response.data.data.current_page === response.data.data.last_page
+            ) {
+              setHasMore(false);
+            } else {
+              setCurrentPage(currentPage + 1);
+            }
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchPayments();
+  }, []);
+
+  const fetchPaymentOnScroll = async () => {
+    try {
+      const token = localStorage.getItem("srmToken");
+      if (props.filter) {
+        const response = await PaymentService.fetchFilterPayments(
+          token,
+          props.filter,
+          currentPage
+        );
+        console.log(response);
+        if (response.status === 200) {
+          setPayments(response.data.data.data);
+          if (
+            response.data.data.current_page === response.data.data.last_page
+          ) {
+            setHasMore(false);
+          } else {
+            setCurrentPage(currentPage + 1);
+          }
+        }
+      } else {
+        const response = await PaymentService.fetchPayments(token, currentPage);
+        if (response.status === 200) {
+          setPayments(response.data.data.data);
+          if (
+            response.data.data.current_page === response.data.data.last_page
+          ) {
+            setHasMore(false);
+          } else {
+            setCurrentPage(currentPage + 1);
+          }
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  let content = payments.map((payment) => (
+    <PaymentCard payments={payment} key={payment.id} />
+  ));
   return (
     <div className={classes.sectionContainer} id="scrollable">
       <Box className={classes.cardBoxPadding}>
         <InfiniteScroll
-          dataLength={notifications.length}
+          dataLength={payments.length}
           next={fetchPaymentOnScroll}
           hasMore={hasMore}
           loader={
@@ -43,6 +135,9 @@ const PaymentSection = () => {
           {content}
         </InfiniteScroll>
       </Box>
+      <br />
+      <br />
+      <br />
     </div>
   );
 };

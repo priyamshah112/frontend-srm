@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { AppBar, Tabs, Tab, Box } from "@material-ui/core";
 
-
+import PaymentSection from "./PaymentsSection";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -100,13 +100,13 @@ const Payments = () => {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-
+        <PaymentSection key={0} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-
+        <PaymentSection key={1} filter={0} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-   
+        <PaymentSection key={2} filter={1} />
       </TabPanel>
     </div>
   );

@@ -21,6 +21,7 @@ import NewsDetails from "./app/home/studentHome/NewsDetails";
 import Announcements from "./app/home/studentHome/Announcements";
 import Gallery from "./app/gallery/GalleryIndex";
 import Payments from "./app/payments/Payments";
+import PaymentDetails from "./app/payments/PaymentDetails";
 import ImageUpload from "./app/gallery/ImageUpload";
 import Profile from "./app/profile/Profile";
 import Details from "./app/notification/Details";
@@ -85,7 +86,6 @@ function App(props) {
           />
           <Route path="/assignment" exact component={Assignment} />
           <Route path="/create-homework/:id" exact component={Assignment} />
-
           <Route path="/attendance" exact component={Attendance} />
           <Route path="/attendance/upload" exact component={AttendanceUpload} />
           <Route
@@ -111,22 +111,16 @@ function App(props) {
             exact
             component={() => <Typography>Transport Home</Typography>}
           />
-
           <Route path="/gallery" exact component={Gallery} />
           <Route path="/gallery/upload" exact component={ImageUpload} />
-
           {/* <Route
             path="/curriculum"
             exact
             component={() => <Typography>Curriculum Home</Typography>}
           />
+           */}
           <Route path="/payments" exact component={Payments} />
-          /> */}
-          <Route
-            path="/payments"
-            exact
-            component={() => <Typography>Payments Home</Typography>}
-          />
+          <Route path="/payments/:id" exact component={PaymentDetails} />
           <Route path="/timetable" exact component={TimeTable} />
           <Route path="/leave/" exact component={Leave} />
           <Route path="/leave/create/" exact component={LeaveCreateContainer} />

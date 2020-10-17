@@ -292,7 +292,7 @@ const NotificationCard = (props) => {
           </Grid>
         </Grid>
       </CardContent>
-      {props.notification.type === "payment" &&
+      {/* {props.notification.type === "payment" &&
       props.selectedRole === "parent" ? (
         <CardActions classes={{ root: classes.cardActions }}>
           <Button
@@ -306,7 +306,7 @@ const NotificationCard = (props) => {
         </CardActions>
       ) : (
         ""
-      )}
+      )} */}
     </Card>
   );
 };

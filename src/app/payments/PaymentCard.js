@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
 import {
   IconButton,
   Typography,
@@ -13,9 +12,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
-
-import * as actions from "./store/action";
-import NotificationService from "./NotificationService";
+import NumberFormat from "react-number-format";
 
 import GreenTick from "../../assets/images/greenTick.svg";
 
@@ -37,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
   },
   titleIcon: {
     transform: "translateY(3px)",
+  },
+  greentick: {
+    padding: "5px 5px 0px 0px",
   },
   cardTitle: {
     fontSize: "16px",
@@ -105,10 +105,13 @@ const useStyles = makeStyles((theme) => ({
   },
   readClass: {
     textAlign: "right",
+    position: "relative",
   },
-  payBtn: {
-    width: "113px",
-    height: "36px",
+  amount: {
+    color: `${theme.palette.common.lightFont}`,
+    position: "absolute",
+    bottom: "0px",
+    right: "0px",
   },
 }));
 
@@ -116,119 +119,53 @@ const PaymentCard = (props) => {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [status, setStatus] = useState(props.notification.status);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = async (event) => {
-    const updatedStatus = event.currentTarget.getAttribute("value");
-    setAnchorEl(null);
-
-    try {
-      const token = localStorage.getItem("srmToken");
-      const response = await NotificationService.updateStatus(
-        props.notification.notify_status_id,
-        updatedStatus,
-        token
-      );
-      console.log(response);
-      if (response.status === 200) {
-        if (updatedStatus === "read") {
-          if (props.notificationCount !== 0) {
-            props.subNotificationCount();
-          }
-          setStatus("read");
-        } else if (updatedStatus === "unread") {
-          props.addNotificationCount();
-          setStatus("unread");
-        } else {
-          props.subNotificationCount();
-          props.handleRemoveNotifcation(props.notification.id);
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const hanldeDetails = async () => {
-    try {
-      if (props.notification.status === "unread") {
-        const token = localStorage.getItem("srmToken");
-        const response = await NotificationService.updateStatus(
-          props.notification.notify_status_id,
-          "read",
-          token
-        );
-      }
-      history.push(`/notifications/${props.notification.id}`);
-    } catch (e) {
-      console.log(e);
-    }
-  };
   return (
     <Card className={classes.card}>
       <CardHeader
         className={classes.cardHeader}
         action={
           <>
-            <img src={GreenTick} alt="done" />
+            {props.payments.status === "1" ? (
+              <img src={GreenTick} alt="done" className={classes.greentick} />
+            ) : (
+              ""
+            )}
           </>
         }
         title={
           <>
-            {status === "read" || status === "archived" ? (
-              <Typography
-                className={classes.cardTitle}
-                style={{ color: theme.palette.common.lightFont }}
-                onClick={hanldeDetails}
-              >
-                {props.notification.data.title}
-              </Typography>
-            ) : (
-              <Typography className={classes.cardTitle} onClick={hanldeDetails}>
-                {props.notification.data.title}
-              </Typography>
-            )}
+            <Typography
+              className={classes.cardTitle}
+              onClick={() => history.push(`/payments/${props.payments.id}`)}
+            >
+              {props.payments.payment_title}
+            </Typography>
           </>
         }
       />
       <CardContent classes={{ root: classes.cardContent }}>
         <Grid container>
-          <Grid item xs={11}>
+          <Grid item xs={9}>
             <Typography className={classes.contentStyle}>
-              {props.notification.data.summary}
+              {props.payments.payment_summary}
             </Typography>
           </Grid>
-          <Grid item xs={1} className={classes.readClass}>
-            {status === "unread" ? (
-              <img src={UnReadIcon} alt="unread" />
-            ) : status === "read" ? (
-              <img src={ReadIcon} alt="read" />
-            ) : (
-              ""
-            )}
+          <Grid item xs={3} className={classes.readClass}>
+            <Typography variant="body2" className={classes.amount}>
+              <span>&#8377;</span>
+
+              <span>&nbsp;</span>
+              <NumberFormat
+                value={parseInt(props.payments.amount) / 100}
+                displayType={"text"}
+                thousandSeparator={true}
+                thousandsGroupStyle="lakh"
+              />
+            </Typography>
           </Grid>
         </Grid>
       </CardContent>
-      {props.notification.type === "payment" &&
-      props.selectedRole === "parent" ? (
-        <CardActions classes={{ root: classes.cardActions }}>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.payBtn}
-            disableElevation
-          >
-            Pay
-          </Button>
-        </CardActions>
-      ) : (
-        ""
-      )}
     </Card>
   );
 };
@@ -236,14 +173,7 @@ const mapStateToProps = (state) => {
   return {
     selectedRole: state.auth.selectedRole,
     token: state.auth.token,
-    notificationCount: state.notification.notificationCount,
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    addNotificationCount: () => dispatch(actions.addNotificationCount()),
-    subNotificationCount: () => dispatch(actions.subNotificationCount()),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PaymentCard);
+export default connect(mapStateToProps)(PaymentCard);
