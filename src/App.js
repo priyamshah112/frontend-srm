@@ -45,9 +45,9 @@ import ReportContainer from "./app/report/student/ReportContainer";
 // import StudentCard from "./app/report/student/StudentCard";
 import StudentCard from "./app/report/student/StudentReport";
 import ReportUpload from "./app/report/student/ReportUpload";
-import TimeTable from "./app/timeTable1/timeTable";
-import TeacherTimeTable from './app/timeTable1/teacher/classDropDownList';
-import ClassTestList from './app/timeTable1/teacher/ClassTestList';
+import TimeTable from "./app/timeTable/timeTable";
+import TeacherTimeTable from './app/timeTable/teacher/classDropDownList';
+import ClassTestList from './app/timeTable/teacher/ClassTestList';
 
 function App(props) {
   const { onAutoSignup } = props;
