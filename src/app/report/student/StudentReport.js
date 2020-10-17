@@ -5,7 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import downloadIcon from '../../../assets/images/attendance/download.svg';
+import downloadIcon from '../../../assets/images/report/download_report.svg';
 import PrintIcon from '../../../assets/images/report/printer.svg';
 import Avatar from "@material-ui/core/Avatar";
 
