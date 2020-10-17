@@ -333,9 +333,9 @@ const Layout = (props) => {
 
   onMessageListener()
     .then((payload) => {
-      console.log(payload);
       props.onNotificationReceive();
-      setSnackBarId(JSON.parse(payload.data.data.entity_id));
+
+      setSnackBarId(JSON.parse(payload.data.data).entity_id);
       setSnackbarTitle(payload.notification.title);
       setSnackbarDescription(payload.notification.body);
       setSnackbarOpen(true);
@@ -718,11 +718,11 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                (props.selectedRole === 'admin' ||
-                  props.selectedRole === 'teacher') && (
-                  item.name === 'Student Report Card' ||
-                  item.name === 'Student Reports' ||
-                  item.name === 'Bulk Upload')
+                (props.selectedRole === "admin" ||
+                  props.selectedRole === "teacher") &&
+                (item.name === "Student Report Card" ||
+                  item.name === "Student Reports" ||
+                  item.name === "Bulk Upload")
               ) {
                 if (item.itemIndex === 14) {
                   return (
@@ -799,10 +799,10 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                item.name !== 'News & Announcements' &&
-                item.name !== 'Events' &&
-                item.name !== 'Bulk Upload' &&
-                item.name !== 'Student Report Card' 
+                item.name !== "News & Announcements" &&
+                item.name !== "Events" &&
+                item.name !== "Bulk Upload" &&
+                item.name !== "Student Report Card"
               ) {
                 return (
                   <ListItem
@@ -862,7 +862,7 @@ const Layout = (props) => {
                 />
               </IconButton>
               <Hidden smDown implementation="css">
-              <img src={Logo} alt="Logo" />
+                <img src={Logo} alt="Logo" />
               </Hidden>
 
               <div className={classes.grow} />

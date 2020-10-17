@@ -72,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: "normal",
     fontWeight: 500,
     cursor: "pointer",
+    paddingBottom:"16px",
     "&:hover": {
       textDecoration: "underline",
     },
@@ -80,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 20px 20px 20px",
   },
   cardContent: {
-    padding: "5px 20px 20px 20px",
+    padding: "0px 20px 20px 20px",
     "&:last-child": {
       paddingBottom: "20px",
     },
@@ -130,6 +131,7 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.common.lightFont}`,
     fontSize: "14px",
     fontStyle: "normal",
+    paddingBottom: "6px"
   },
   descriptionContent: {
     color: `${theme.palette.common.lightFont}`,
@@ -360,7 +362,7 @@ const Details = (props) => {
                 ""
               )}
             </Grid>
-            <hr style={{ marginBottom: "0px", color: "#8E8E93" }} />
+            {/* <hr style={{ marginBottom: "0px", color: "#8E8E93" }} /> */}
             <Grid container direction="row">
               {details.notification_lists.data.main_content ? (
                 <div
@@ -376,21 +378,6 @@ const Details = (props) => {
               )}
             </Grid>
           </CardContent>
-          {details.notification_lists.type === "payment" &&
-          props.selectedRole === "parent" ? (
-            <CardActions classes={{ root: classes.cardActions }}>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.payBtn}
-                disableElevation
-              >
-                Pay
-              </Button>
-            </CardActions>
-          ) : (
-            ""
-          )}
         </Card>
       ) : (
         ""

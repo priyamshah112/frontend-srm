@@ -184,7 +184,7 @@ const CreateNotification = (props) => {
   const [searchData, setSearchData] = useState([]);
   const loadingUsers = openUserSearch && searchData.length === 0;
   const classStateNames = [
-    "All Teacher",
+    "All Teachers",
     "All Parents",
     "Select All",
     ...Object.values(props.classState),
@@ -273,7 +273,7 @@ const CreateNotification = (props) => {
       );
       if (isSelectAll) {
         classMapping["teachers"] = true;
-        classMapping["paresnts"] = true;
+        classMapping["parents"] = true;
         classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
@@ -324,7 +324,12 @@ const CreateNotification = (props) => {
       if (category === "payment") {
         payload = {
           ...payload,
-          data: { title, summary, main_content: description, payment },
+          data: {
+            title,
+            summary,
+            main_content: description,
+            payment: parseInt(payment) * 100,
+          },
         };
       }
 
@@ -462,9 +467,10 @@ const CreateNotification = (props) => {
       );
       if (isSelectAll) {
         classMapping["teachers"] = true;
-        classMapping["paresnts"] = true;
+        classMapping["parents"] = true;
         classMapping.class = [...Object.keys(props.classState)];
       } else {
+        console.log(classState);
         classState.forEach((classnames) => {
           if (classnames === "All Parents") {
             classMapping["parents"] = true;
@@ -481,6 +487,7 @@ const CreateNotification = (props) => {
           }
         });
       }
+      console.log(classMapping);
       if (userList.length !== 0) {
         classMapping.individual_users = [];
         userList.forEach((user) => {
@@ -499,13 +506,18 @@ const CreateNotification = (props) => {
 
         published_to: classMapping,
       };
+
       if (category === "payment") {
         payload = {
           ...payload,
-          data: { title, summary, main_content: description, payment },
+          data: {
+            title,
+            summary,
+            main_content: description,
+            payment: parseInt(payment) * 100,
+          },
         };
       }
-      console.log(payload);
       const response = await NotificationService.saveNotification(
         id,
         payload,
