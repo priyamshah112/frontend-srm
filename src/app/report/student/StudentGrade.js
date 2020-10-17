@@ -12,7 +12,8 @@ import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        padding: "2%",
+        padding: "0px 10px",
+        marginBottom: '20px'
     },
     title: {
         margin: "20px 0px",
@@ -33,6 +34,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: "space-between",
         margin: '10px 5px',
+        backgroundColor: '#fff'
+    },
+    emptyGrade: {
+        display: 'flex',
+        justifyContent: "space-between",
+        margin: '20px 0px',
         backgroundColor: '#fff'
     },
     itemGrade: {
@@ -66,6 +73,10 @@ const useStyles = makeStyles((theme) => ({
         background: "#fff",
         marginRight: "10px"
     },
+    deleteBtnWrapper: {
+        marginLeft: '10px',
+        background: '#fff'
+    },
     deleteBtn: {
         color: 'red'
     },
@@ -93,6 +104,8 @@ const StudentGrade = (props) => {
 
     const { token, testData = testValue1, searchData = searchValue1 } = props;
 
+
+
     useEffect(() => {
         let loading = true;
         if (testData && testData.class_id) {
@@ -109,7 +122,7 @@ const StudentGrade = (props) => {
                     }
                 } catch (error) {
                     console.log("getGrades Error", error);
-                    setGetError('User not belong to school')
+                    setGetError('')
                 }
             }
             getGrades();
@@ -152,13 +165,10 @@ const StudentGrade = (props) => {
 
                 if (response.status === 200) {
                     if (loading) {
-                        // setNewGrade(false);
-                        // setEditGrade(false);
                     }
                 }
             } catch (error) {
                 console.log(error);
-                // setEditGrade(false);
                 setError('');
             }
         }
@@ -248,7 +258,6 @@ const StudentGrade = (props) => {
                                 variant="outlined"
                                 defaultValue={obj.grade}
                                 onChange={(event) => { onChangeGrade('grade', event, obj) }}
-                                style={{ background: '#fff' }}
                                 classes={{
                                     root: classes.root
                                 }}
@@ -260,7 +269,6 @@ const StudentGrade = (props) => {
                                 multiline
                                 variant="outlined"
                                 defaultValue={obj.percentage_from}
-                                style={{ background: '#fff' }}
                                 onChange={(event) => { onChangeGrade('from', event, obj) }}
                                 classes={{
                                     root: classes.root
@@ -273,7 +281,6 @@ const StudentGrade = (props) => {
                                 multiline
                                 variant="outlined"
                                 defaultValue={obj.percentage_to}
-                                style={{ background: '#fff' }}
                                 onChange={(event) => { onChangeGrade('to', event, obj) }}
                                 classes={{
                                     root: classes.root
@@ -284,7 +291,7 @@ const StudentGrade = (props) => {
                                 disableElevation
                                 className={classes.cancelBtn}
                                 onClick={() => { deleteGradeCall(obj) }}
-                                style={{ marginLeft: '10px', background: '#fff' }}
+                                className={classes.deleteBtnWrapper}
                             >
                                 <HighlightOffOutlinedIcon
                                     className={classes.deleteBtn}
@@ -442,16 +449,23 @@ const StudentGrade = (props) => {
         )
     }
 
+    const editAccess = () => {
+        if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
+            return false;
+        } else {
+            return true;
+        }
+    }
     const renderEmptyGrade = () => {
         return (
             <div>
-                <div className={classes.gridContainer}>
+                <div className={classes.emptyGrade}>
                     <>
                         <Typography className={classes.itemGrade}>
                             <span>Grades not available. {getError}</span>
                         </Typography>
                         <Typography className={classes.itemGrade}>
-                            {!getError && <img
+                            {editAccess() && <img
                                 src={editIcon}
                                 className={classes.editIcon}
                                 onClick={() => setNewGrade(true)} />
@@ -478,6 +492,7 @@ const StudentGrade = (props) => {
 const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
+        selectedRole: state.auth.selectedRole
     };
 };
 

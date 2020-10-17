@@ -105,10 +105,29 @@ const useStyles = makeStyles((theme) => ({
     fillGradeWrapper: {
         marginBottom: '30px',
     },
+    emptyCard: {
+        display: 'flex',
+        justifyContent: "space-between",
+        padding: "0px 10px",
+        margin: '0px 17px',
+        backgroundColor: '#fff'
+    },
+    remarkNote: {
+        display: 'flex',
+        justifyContent: "space-between",
+        margin: '17px 17px',
+        backgroundColor: '#fff'
+    },
+    emptyMessage: {
+        textAlign: 'center',
+        padding: '10px 18px',
+        borderRadius: "1px"
+    }
 }));
 
 let setSubjectArray = [];
 let remarkText = 'Remark';
+let showReport = false;
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
@@ -120,9 +139,38 @@ const StudentSkills = (props) => {
     const [isLoading, setLoading] = useState(true);
     const [allSubject, setAllSubject] = useState(true);
     const [updateStatus, setUpdateStatus] = useState(false);
+    const [refObj, setRefObj] = useState({});
 
     const { searchData = searchValue1, testData = testValue1 } = props;
     const token = localStorage.getItem('srmToken');
+
+
+    const reportVisibility = (data) => {
+
+        if (data.grades[0]) {
+            remarkText = data.grades[0].remarks;
+            if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
+                if (data.grades[0].status == 'published') {
+                    showReport = true;
+                }
+            } else {
+                showReport = true;
+            }
+        } else if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
+            showReport = false;
+        } else {
+            showReport = true;
+        }
+    }
+
+    const editAccess = () => {
+        if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     useEffect(() => {
         let loading = true;
@@ -132,10 +180,9 @@ const StudentSkills = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
-                        if (response.data.data.grades[0]) {
-                            remarkText = response.data.data.grades[0].remarks
-                        }
+                        reportVisibility(response.data.data);
                         setLoading(false);
+
                     }
                 } else {
                     setError('Error in fetching report card');
@@ -149,6 +196,7 @@ const StudentSkills = (props) => {
         return () => {
             loading = false;
         };
+
     }, [updateStatus]);
 
     const setSkill = (obj) => {
@@ -212,10 +260,13 @@ const StudentSkills = (props) => {
 
         const skill = [];
         const subject = [];
-        const saveStatus = 'draft';
-        const { value } = input.target;
+        let saveStatus = 'draft';
+
 
         if (name === 'skill' || name === 'grade') {
+
+            const { value } = input.target;
+
             if (name === 'skill') {
                 obj.skill_list_data = { ...obj.skill_list_data, skill_name: value };
             } else {
@@ -223,24 +274,32 @@ const StudentSkills = (props) => {
             }
 
             skillData.user_skill[key] = obj;
-            skillData.user_skill.map((item) => {
-                const makeSkill = {
-                    'skill_id': item.id,
-                    'skill_name': item.skill_list_data.skill_name || '',
-                    'grade': item.skill_list_data.grade_name || ''
-                }
-                skill.push(makeSkill)
-            });
-
-            subject.push(
-                {
-                    "subject_id": skillData.id,
-                    "subject_name": skillData.name,
-                    "skill": skill
-                },
-            )
         }
 
+
+        skillData.user_skill.map((item) => {
+            const makeSkill = {
+                'skill_id': item.id,
+                'skill_name': item.skill_list_data.skill_name || '',
+                'grade': item.skill_list_data.grade_name || ''
+            }
+            skill.push(makeSkill)
+        });
+
+        subject.push(
+            {
+                "subject_id": skillData.id,
+                "subject_name": skillData.name,
+                "skill": skill
+            },
+        )
+        if (name === 'remark') {
+            remarkText = input.target.value;
+        }
+
+        if (name === 'publish') {
+            saveStatus = 'published';
+        }
         const restSubject = allSubject.filter((sub) => {
             return (sub.subject_name != skillData.name && sub.subject_id)
         });
@@ -321,12 +380,12 @@ const StudentSkills = (props) => {
                             variant='contained'
                             color='primary'
                             disableElevation
-                            onClick={() => {
-                                cancelUpdate()
-                                // addSkillCall()
+                            onClick={(event) => {
+                                onChangeSkills(event, {}, 0, 'publish');
+                                cancelUpdate();
                             }}
                         >
-                            Add
+                            Publish
                     </Button>
                     </Box>
                 </div>
@@ -395,47 +454,70 @@ const StudentSkills = (props) => {
         )
     }
 
+
+    const obj = {}
+    const popupRef = (element, i) => {
+        if (element) {
+            obj[i] = element.clientHeight;
+        }
+    }
+
+
     const renderSkill = () => {
+        setTimeout(() => { setRefObj(obj) }, 1000)
         return (
             <Box className={classes.rootGrid}>
                 {
-                    Object.entries(reportData.subjectDetails).map(([name, value], i) => {
+                    showReport && Object.entries(reportData.subjectDetails).map(([name, value], i) => {
                         return (
                             <div key={i}>
-                                < div className={classes.subjectTitle}>
+                                {refObj[i] > 0 && <div className={classes.subjectTitle}>
                                     <Typography>{name}</Typography>
                                 </div>
-                                <Grid container spacing={3}>
+                                }
+                                <Grid container spacing={3} ref={(e) => popupRef(e, i)}>
                                     {value.map((item, key) => {
-                                        return (
-                                            <Grid item xs={6} key={key}>
-                                                <Paper className={classes.paper} elevation={0}>
-                                                    <div className={classes.cardTitle}>
-                                                        <span>&nbsp;</span>
-                                                        <Typography>
-                                                            {item.name}
-                                                        </Typography>
-                                                        <span >
-                                                            {searchData.user_classes &&
-                                                                <img
-                                                                    src={editIcon} className={classes.editIcon} onClick={() => setSkill(item)}
-                                                                />
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <div className={classes.cardHeader}>
-                                                        <Typography className={classes.cardHeaderSkill}>
-                                                            <span className={classes.colorWhite}>Skill</span>
-                                                        </Typography>
-                                                        <Typography className={classes.cardHeaderGrade}>
-                                                            <span className={classes.colorWhite}>Grade</span>
-                                                        </Typography>
-                                                    </div>
-                                                    {
-                                                        skillName(item)
+                                        let isCardPublished = false;
+                                        if (reportData) {
+                                            if (reportData.grades[0]) {
+                                                reportData.grades[0].report_grade.map((subName) => {
+                                                    if (subName.subject_id == item.id) {
+                                                        isCardPublished = true
                                                     }
-                                                </Paper>
-                                            </Grid>
+                                                })
+                                            }
+                                        }
+                                        return (
+                                            <>
+                                                {(isCardPublished || editAccess()) && <Grid item xs={6} key={key}>
+                                                    <Paper className={classes.paper} elevation={0}>
+                                                        <div className={classes.cardTitle}>
+                                                            <span>&nbsp;</span>
+                                                            <Typography>
+                                                                {item.name}
+                                                            </Typography>
+                                                            <span >
+                                                                {searchData.user_classes &&
+                                                                    <img
+                                                                        src={editIcon} className={classes.editIcon} onClick={() => setSkill(item)}
+                                                                    />
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                        <div className={classes.cardHeader}>
+                                                            <Typography className={classes.cardHeaderSkill}>
+                                                                <span className={classes.colorWhite}>Skill</span>
+                                                            </Typography>
+                                                            <Typography className={classes.cardHeaderGrade}>
+                                                                <span className={classes.colorWhite}>Grade</span>
+                                                            </Typography>
+                                                        </div>
+                                                        {
+                                                            skillName(item)
+                                                        }
+                                                    </Paper>
+                                                </Grid>}
+                                            </>
                                         )
                                     })
                                     }
@@ -448,8 +530,28 @@ const StudentSkills = (props) => {
         )
     }
 
-    const onChangeRemark = (event) => {
-        remarkText = event.target.value;
+    const renderEmptyReport = () => {
+        return (
+            <div className={classes.emptyCard}>
+                <Typography className={classes.emptyMessage}>
+                    <span>Report card not available.</span>
+                </Typography>
+            </div>
+        )
+    }
+
+    const remarkNote = () => {
+        return (
+            <>
+                {remarkText && <div className={classes.remarkNote}>
+                    <Typography className={classes.emptyMessage}>
+                        <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
+                        <span>{remarkText}</span>
+                    </Typography>
+                </div>
+                }
+            </>
+        )
     }
 
     const renderRemark = () => {
@@ -471,31 +573,35 @@ const StudentSkills = (props) => {
                     defaultValue={remarkText}
                     placeholder={'Remark'}
                     className={classes.bgWhite}
-                    onChange={(event) => { onChangeRemark(event) }}
+                    onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
                 />
             </div>
         )
     }
     setSubjectArray = [];
     return (
-        <div className={classes.container}>
-            {editSkill && renderEditSkill()}
-            {!editSkill && reportData.subjectDetails && renderSkill()}
+        <>
+            <div className={classes.container}>
+                {editSkill && renderEditSkill()}
+                {!editSkill && reportData.subjectDetails && renderSkill()}
+            </div>
+            {!showReport && renderEmptyReport()}
+            {showReport && remarkNote()}
             <BackdropLoader open={isLoading} />
-        </div>
+        </>
     );
 }
 
 const mapStateToProps = (state) => {
     return {
-        token: state.auth.token
+        token: state.auth.token,
+        selectedRole: state.auth.selectedRole,
     };
 };
 
 export default connect(mapStateToProps)(StudentSkills);
 
 /* Temp */
-
 var searchValue1 = {
     "id": 1392,
     "type": "username",
