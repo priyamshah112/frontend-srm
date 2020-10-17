@@ -35,46 +35,43 @@ const ClassSyllabus = (props) => {
   const classes = useStyles();
   const [isLoading, setLoading] = useState(true);
   const [classID, setClass] = useState(
-    new URLSearchParams(location.search).get("cid") || 1
+    new URLSearchParams(location.search).get("cid") || ""
   );
   const [classList, setClasses] = useState(null);
   const [subjects, setSubjects] = useState(null);
   const [syllabusDetails, setSyllabusDetails] = useState(null);
   const token = localStorage.getItem("srmToken");
 
-  const fetchClassSyllabus = async (id, isMounted) => {
+  const fetchClassSyllabus = async (id) => {
     try {
-      if (subjects) {
-        const response = await SyllabusService.getSyllabusByClass(token, id);
+      const response = await SyllabusService.getSyllabusByClass(token, id);
 
-        if (response.status === 200) {
-          let tempSyllabusDetails = [];
-          subjects.forEach((subject) => {
-            let subjectDetails = {};
+      if (response.status === 200) {
+        let tempSyllabusDetails = [];
+        classList[classID].subject_lists.forEach((subject) => {
+          let subjectDetails = {};
 
-            subjectDetails[subject.id] = response.data.data.map(
-              (chapterDetails) => {
-                if (chapterDetails.subject_id == subject.id) {
-                  return {
-                    chapter: chapterDetails.chapters.chapter,
-                    term: chapterDetails.chapters.term,
-                    editId: chapterDetails.id,
-                    mainContent: chapterDetails.main_content,
-                  };
-                }
+          subjectDetails[subject.subject_id] = response.data.data.map(
+            (chapterDetails) => {
+              if (chapterDetails.subject_id == subject.subject_id) {
+                return {
+                  chapter: chapterDetails.chapters.chapter,
+                  term: chapterDetails.chapters.term,
+                  editId: chapterDetails.id,
+                  mainContent: chapterDetails.main_content,
+                };
               }
-            );
-            subjectDetails[subject.id] = subjectDetails[subject.id].filter(
-              (value) => value !== undefined
-            );
-            subjectDetails.subjectName = subject.name;
-            tempSyllabusDetails.push(subjectDetails);
-          });
+            }
+          );
+          subjectDetails[subject.subject_id] = subjectDetails[
+            subject.subject_id
+          ].filter((value) => value !== undefined);
+          subjectDetails.subjectName = subject.subject_data.name;
+          tempSyllabusDetails.push(subjectDetails);
+        });
 
-          setLoading(false);
-
-          setSyllabusDetails([...tempSyllabusDetails]);
-        }
+        setLoading(false);
+        setSyllabusDetails([...tempSyllabusDetails]);
       }
     } catch (e) {
       console.log(e);
@@ -99,16 +96,18 @@ const ClassSyllabus = (props) => {
     }
   };
 
-  const fetchClasses = async (isMounted) => {
+  const fetchClasses = async () => {
     const response = await SyllabusService.fetchClasses(token);
+
     if (response.status === 200) {
-      // console.log("fetchClasses -> "+ response.data)
-
-      if (response.data.status == "success" && isLoading && classList == null) {
-        //console.log(response.data.data)
-
-        setClasses(response.data.data);
+      if (classID === "") {
+        setClass(response.data.data[0].id);
       }
+      let tempClassList = {};
+      response.data.data.forEach((classDetails) => {
+        tempClassList[classDetails.id] = classDetails;
+      });
+      setClasses({ ...tempClassList });
     }
   };
 
@@ -134,26 +133,15 @@ const ClassSyllabus = (props) => {
       : null;
 
   useEffect(() => {
-    let isMounted = true;
-
     if (classList == null) {
-      fetchClasses(isMounted);
+      fetchClasses();
     }
-    fetchSubjects(isMounted);
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
   useEffect(() => {
-    let isMounted = true;
-
-    fetchClassSyllabus(classID, isMounted);
-
-    return () => {
-      isMounted = false;
-    };
-  }, [subjects]);
+    if (classList !== null) {
+      fetchClassSyllabus(classID);
+    }
+  }, [classList]);
   return (
     <div className={classes.container}>
       <div style={{ margin: 20 }}>
@@ -176,13 +164,13 @@ const ClassSyllabus = (props) => {
           }}
         >
           {classList != null
-            ? Object.keys(classList).map(function (key, index) {
-              return (
-                <MenuItem key={index} value={classList[key].id}>
-                  {classList[key].class_name}
-                </MenuItem>
-              );
-            })
+            ? Object.keys(classList).map(function (id, index) {
+                return (
+                  <MenuItem key={index} value={classList[id].id}>
+                    {classList[id].class_name}
+                  </MenuItem>
+                );
+              })
             : null}
         </Select>
         <br />

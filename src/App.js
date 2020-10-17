@@ -49,8 +49,6 @@ import StudentCard from "./app/report/student/StudentCard";
 import ReportUpload from "./app/report/student/ReportUpload";
 import AttendanceUpload from "./app/Attendance/teacherAttendance/AttendanceUpload";
 import TimeTable from "./app/timeTable/timeTable";
-import TeacherTimeTable from './app/timeTable/teacher/classDropDownList';
-import ClassTestList from './app/timeTable/teacher/ClassTestList';
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -123,21 +121,7 @@ function App(props) {
            */}
           <Route path="/payments" exact component={Payments} />
           <Route path="/payments/:id" exact component={PaymentDetails} />
-          <Route
-            path="/timetable"
-            exact
-            component={(TimeTable)}
-          />
-           <Route
-            path="/timetableclasslist"
-            exact
-            component={(TeacherTimeTable)}
-          />
-          <Route 
-          path='/teacherclasstestlist'
-          exact
-          component={(ClassTestList)}
-          />
+          <Route path="/timetable" exact component={TimeTable} />
           <Route path="/leave/" exact component={Leave} />
           <Route path="/leave/create/" exact component={LeaveCreateContainer} />
           <Route path="/faq" exact component={Faq} />
