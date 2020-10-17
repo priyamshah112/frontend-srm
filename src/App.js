@@ -45,7 +45,9 @@ import ReportContainer from "./app/report/student/ReportContainer";
 // import StudentCard from "./app/report/student/StudentCard";
 import StudentCard from "./app/report/student/StudentReport";
 import ReportUpload from "./app/report/student/ReportUpload";
-import TimeTable from "./app/timeTable/timeTable";
+import TimeTable from "./app/timeTable1/timeTable";
+import TeacherTimeTable from './app/timeTable1/teacher/classDropDownList';
+import ClassTestList from './app/timeTable1/teacher/ClassTestList';
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -126,6 +128,16 @@ function App(props) {
             path="/timetable"
             exact
             component={(TimeTable)}
+          />
+           <Route
+            path="/timetableclasslist"
+            exact
+            component={(TeacherTimeTable)}
+          />
+          <Route 
+          path='/teacherclasstestlist'
+          exact
+          component={(ClassTestList)}
           />
           <Route path="/leave/" exact component={Leave} />
           <Route path="/leave/create/" exact component={LeaveCreateContainer} />
