@@ -21,16 +21,27 @@ class TimetableService {
         })
     }
 
-    getTestSbjectList(token,classID,TestID) {
-        return axios.get(`${BACKEND_API_URL}/exam_time_tables?class_id=` +
-        classID +
-        `&test_id=`+
-        TestID,{
+    getStudentTestList(token) {
+        return axios.get(`${BACKEND_API_URL}/get_student_test_list`, {
             headers: {
                 accept: "application/json",
                 Authorization: `Bearer ${token}`,
             },
         })
+    }
+
+    // student exam subject list from class_id and examtestid
+    getExamTestSubList(token, class_id, test_id) {
+        return axios.get(`${BACKEND_API_URL}/exam_time_tables?class_id=` +
+            class_id +
+            `&test_id=` +
+            test_id
+            , {
+                headers: {
+                    accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            })
     }
 
 }

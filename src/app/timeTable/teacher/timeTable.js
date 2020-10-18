@@ -6,8 +6,15 @@ import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import TestList from './examTestList';
 import { Container } from '@material-ui/core';
+<<<<<<< HEAD:src/app/timeTable/teacher/timeTable.js
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+=======
+import ClassTestList from './ClassTestList';
+
+
+
+>>>>>>> 5ff0e99869b7118e93743297b55ee54a952e2f0b:src/app/timeTable/teacher/classDropDownList.js
 
 
 
@@ -40,9 +47,17 @@ const TeacherTimeTable = () => {
     const [classNmae, setClassName] = useState("");
     const token = localStorage.getItem("srmToken");
     const [isLoading, setLoading] = useState(true);
+<<<<<<< HEAD:src/app/timeTable/teacher/timeTable.js
     const [testList, setTestList] = useState(false);
     const [testlist, setTestlist] = useState(null);
     const [classId, setClassId] = useState(null);
+=======
+    const [classListUi, setClassListUi] = useState(false);
+    const [classID, setClassID] = useState();
+
+
+
+>>>>>>> 5ff0e99869b7118e93743297b55ee54a952e2f0b:src/app/timeTable/teacher/classDropDownList.js
 
     const handleChange = (e) => {
         setClassName(e.target.value)
@@ -62,6 +77,7 @@ const TeacherTimeTable = () => {
             }
         }
     };
+<<<<<<< HEAD:src/app/timeTable/teacher/timeTable.js
 
     const fetchTestList = async (classId) => {
         const response = await TimetableService.getTestList(token, classId);
@@ -79,6 +95,15 @@ const TeacherTimeTable = () => {
             // console.log("raju",response.data.data.data)
 
         }
+=======
+    useEffect(() => {
+        fetchClass()
+    }, [])
+
+    const clickMenuItem = (e, classid) => {
+        setClassID(classid.id)
+        setClassListUi(true)
+>>>>>>> 5ff0e99869b7118e93743297b55ee54a952e2f0b:src/app/timeTable/teacher/classDropDownList.js
     }
 
     useEffect(() => {
@@ -127,18 +152,36 @@ const TeacherTimeTable = () => {
                             value={classNmae}
                             onChange={handleChange}
                             style={{ width: "50%" }}
-                        >
+                            renderValue={(selected) => {
+                                if (selected.length === 0) {
+                                    return <em>Placeholder</em>;
+                                }
 
+                                return selected.join(', ');
+                            }}
+                        >
+                            <MenuItem disabled value="">
+                                Class
+                            </MenuItem>
                             {classList != null
                                 ? Object.keys(classList).map(function (key, index) {
                                     return (
 
+<<<<<<< HEAD:src/app/timeTable/teacher/timeTable.js
                                         <MenuItem key={index} value={classList[key]} onClick={(e) => handlemenuitem(e, classList[key])}>
+=======
+                                        <MenuItem key={index} value={classList[key]} onClick={(e) => clickMenuItem(e, classList[key])}>
+>>>>>>> 5ff0e99869b7118e93743297b55ee54a952e2f0b:src/app/timeTable/teacher/classDropDownList.js
                                             {classList[key].class_name}
                                         </MenuItem>
                                     );
                                 })
+<<<<<<< HEAD:src/app/timeTable/teacher/timeTable.js
                                 : null}
+=======
+                                : null
+                            }
+>>>>>>> 5ff0e99869b7118e93743297b55ee54a952e2f0b:src/app/timeTable/teacher/classDropDownList.js
                         </Select>
 
                         <br />
