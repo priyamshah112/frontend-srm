@@ -50,10 +50,10 @@ const useStyles = makeStyles((theme) => ({
 const ParentSyllabus = (props) => {
   const [syllabus, setSyllabus] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const [subject, setSubject] = useState(1); //Choose Subject ID
-  const [subjects, setSubjects] = useState(1); //subjects ARRAY
+  const [subject, setSubject] = useState(""); //Choose Subject ID
+  const [subjects, setSubjects] = useState(null); //subjects ARRAY
   const [classList, setClasses] = useState(null);
-  const [classID, setClass] = useState(1);
+  const [classID, setClass] = useState("");
   const token = localStorage.getItem("srmToken");
 
   const handleChange = (event) => {
@@ -80,7 +80,14 @@ const ParentSyllabus = (props) => {
     const response = await SyllabusService.fetchClasses(token);
     if (response.status === 200) {
       if (response.data.status == "success") {
-        setClasses(response.data.data);
+        let tempClassList = {};
+        response.data.data.forEach((classDetails) => {
+          tempClassList[classDetails.id] = classDetails;
+        });
+        if (classID === "") {
+          setClass(response.data.data[0].id);
+        }
+        setClasses({ ...tempClassList });
       }
     }
   };
@@ -104,19 +111,31 @@ const ParentSyllabus = (props) => {
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      if (classList == null) {
-        fetchClasses();
-        fetchSubjects();
+      if (classID !== "" && subject !== "") {
+        fetchClassSyllabus(subject, classID);
       }
-      fetchClassSyllabus(subject, classID);
     }
     return () => {
       isMounted = false;
-      console.log(isMounted);
     };
-  }, [classList]);
+  }, [classID, subject]);
+
   useEffect(() => {
-    console.log("loaded");
+    if (classID !== "" && classList !== null) {
+      let tempSubjectList = {};
+      classList[classID].subject_lists.forEach((subject) => {
+        tempSubjectList[subject.subject_id] = subject;
+      });
+      if (subject === "") {
+        setSubject(classList[classID].subject_lists[0].subject_id);
+      }
+      setSubjects({ ...tempSubjectList });
+    }
+  }, [classID, classList]);
+  useEffect(() => {
+    if (classList == null) {
+      fetchClasses();
+    }
   }, []);
 
   const classes = useStyles();
@@ -188,12 +207,23 @@ const ParentSyllabus = (props) => {
           onChange={handleChange}
           className={classes.select}
           style={{ marginRight: "10%" }}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "center",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "center",
+            },
+            getContentAnchorEl: null,
+          }}
         >
           {subjects != null
             ? Object.keys(subjects).map(function (key, index) {
                 return (
-                  <MenuItem key={index} value={subjects[key].id}>
-                    {subjects[key].name}
+                  <MenuItem key={index} value={subjects[key].subject_id}>
+                    {subjects[key].subject_data.name}
                   </MenuItem>
                 );
               })
@@ -206,6 +236,17 @@ const ParentSyllabus = (props) => {
           value={classID}
           onChange={handleClassChange}
           className={classes.select}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "center",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "center",
+            },
+            getContentAnchorEl: null,
+          }}
         >
           {classList != null
             ? Object.keys(classList).map(function (key, index) {
