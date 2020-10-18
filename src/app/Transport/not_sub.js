@@ -92,7 +92,7 @@ const useStyle = makeStyles((theme) => ({
     position: 'absolute',
   },
   snack:{
-    zIndex:'1',
+    // zIndex:'1',
     top:'60%',
     width:"400px",
   },
@@ -135,8 +135,6 @@ const Not_sub = (props) => {
   const [status, setStatusBase] = React.useState(false);
 
 
-
-
   const event_handle_address=()=>{
     setaddress(true);
 
@@ -157,7 +155,7 @@ const Not_sub = (props) => {
     console.log(selectedDate1);
     console.log(selectedDate2);
     console.log(form_comment);
-
+    
     setStatusBase(true);
     props.handle(true);
 

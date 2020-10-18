@@ -37,6 +37,7 @@ const useStyle = makeStyles((theme) => ({
     padding:'3px',
   },
   profileTitle: {
+    font: 'normal normal 900 14px/19px Avenir',
     display: 'inline',
     marginLeft: '5px',
     fontWeight: 700,
@@ -104,7 +105,7 @@ const useStyle = makeStyles((theme) => ({
     float : 'left',
   },
   card_left_1 : {
-    width:'70%',
+    width:'80%',
     float : 'left',
   },
   pad:{
@@ -117,7 +118,7 @@ const useStyle = makeStyles((theme) => ({
 
   },
   card_right_1 : {
-    width:'30%',
+    width:'20%',
     float : 'right',
     textAlign: 'center',
     
@@ -165,7 +166,7 @@ const Subscribred = (props) => {
       {
           mode ?
                 <div>
-                 <Transport_mode />
+                 <Transport_mode change_mode={openmaps} />
                 </div>
           : 
           (
