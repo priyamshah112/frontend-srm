@@ -16,6 +16,7 @@ import RoleSelection from "./app/auth/RoleSelection";
 import Home from "./app/home/Home";
 import Notification from "./app/notification/Notification";
 import NewsAnnouncement from "./app/newsAnnouncement/NewsAnnouncement";
+import Transport from "./app/Transport/Transport";
 import Assignment from "./app/Assignment/Assignment";
 import NewsDetails from "./app/home/studentHome/NewsDetails";
 import Announcements from "./app/home/studentHome/Announcements";
@@ -109,7 +110,7 @@ function App(props) {
           <Route
             path="/transport"
             exact
-            component={() => <Typography>Transport Home</Typography>}
+            component={Transport}
           />
           <Route path="/gallery" exact component={Gallery} />
           <Route path="/gallery/upload" exact component={ImageUpload} />
