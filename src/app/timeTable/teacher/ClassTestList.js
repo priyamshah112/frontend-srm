@@ -1,12 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import TimetableService from '../timeTableService';
 import { makeStyles } from '@material-ui/core/styles';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
 import Paper from '@material-ui/core/Paper';
 import medal from '../../../assets/images/Medal.png'
 import { Container } from '@material-ui/core';
@@ -14,12 +8,8 @@ import Grid from '@material-ui/core/Grid';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
 import TestSubjectPage from './testSubjectPage';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 
@@ -31,12 +21,14 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         textAlign: 'center',
-        // height: "80px",
-        // width: "75px",
         marginTop: "20px",
         border: "1px solid #7b72af",
         marginRight: "0",
-        marginBottom: '20px'
+        marginBottom: '20px',
+        maxHeight: "128px",
+        maxWidth: "138px",
+        opacity: 1
+
 
     },
 
@@ -45,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         justifyContent: 'space-around',
         overflow: 'hidden',
-        backgroundColor: theme.palette.background.paper,
     },
     gridList: {
         width: "90%",
@@ -66,12 +57,8 @@ const ClassTestList = (props) => {
     const [subPageUI, setSubPageUI] = useState(false);
     const [emptyTimeTable, setEmptyTimeTable] = useState("");
     const [TimeTableData, setTimeTableData] = useState(null);
-    const [editTimeTableUI, setEditTimeTableUI] = useState(false);
-    const [timetableinput, setTimetableinput] = useState();
-    const [backticktimetableInput,setBackticktimetableInput] = useState(false);
-    const [hideforwardsubjectick,setHideforwardsubjectick] = useState("none");
-    const [forwardsublistT,setforwardsublistT] = useState("none")
-
+    const [forwardsublistT, setforwardsublistT] = useState("none")
+    const [subjectCategList, setSubjectCategList] = useState([]);
     const fetchClassTestList = async () => {
         const res = await TimetableService.getClassTestList(token, props.classID)
         if (res.status === 200) {
@@ -79,18 +66,54 @@ const ClassTestList = (props) => {
             SetClassTestList(data);
         }
     }
+    const formateSubjectCategory = (data) => {
+        let subjectTimeTable = [];
+        let examTimeTable = data.data.examTimeTable;
+        let subjectDetails = data.data.subjectDetails;
+        for (let dt of examTimeTable) {
+            Array.prototype.push.apply(subjectTimeTable, dt.timetable_data);
+        }
+        let categorySubject = [];
+        for (let key in subjectDetails) {
+            let categoryName = key;
+            let tmpCategorySubject = {
+                categoryName: categoryName,
+                subjectList: [],
+            };
+            for (let sub of subjectDetails[key]) {
+                let timeTable = subjectTimeTable.filter((ele) => ele.subject_id === sub.id);
+                const pTimeTable = timeTable.filter((ele) => ele.status === 'published');
+                let editable = true;
+                if (pTimeTable.length) {
+                    editable = false;
+                }
+                let subjectDetails = {
+                    timeTable: timeTable,
+                    editable: editable,
+                    ...sub,
+                };
+                tmpCategorySubject.subjectList.push(subjectDetails);
+            }
+            categorySubject.push(tmpCategorySubject);
+        }
+        return categorySubject;
+    }
 
     const fetchTestSublistWithTime = async (testid) => {
-        const res = await TimetableService.getTestSbjectList(token, ClassID,testid.id)
+        const res = await TimetableService.getTestSbjectList(token, testid.class_id, testid.id)
 
         if (res.status === 200) {
+            let subjectCategList = formateSubjectCategory(res.data);
+            // console.log(subjectCategList);
+            setSubjectCategList(subjectCategList);
+
+
             let data = res.data.data.examTimeTable;
             if (Array.isArray(data) && data.length) {
-                console.log('fine array')
                 let data1 = res.data.data.examTimeTable[0].timetable_data
 
                 if (Array.isArray(data1) && data1.length) {
-                    console.log(data1)
+                    // console.log(data1)
                     setTimeTableData(data1)
                 }
                 else {
@@ -99,7 +122,6 @@ const ClassTestList = (props) => {
             }
             else {
                 setEmptyTimeTable('TimeTable is not avilabel ')
-                console.log('empty array');
             }
 
         }
@@ -109,86 +131,77 @@ const ClassTestList = (props) => {
 
     useEffect(() => {
         fetchClassTestList()
-    })
+    }, [])
     const clickTest = (e, testid) => {
         setTestID(testid.id)
-            fetchTestSublistWithTime(testid)
-            setSubPageUI(true)
-        
+        fetchTestSublistWithTime(testid)
+        setSubPageUI(true)
+
 
     }
-    const sublistBacktick=()=>{
+    const sublistBacktick = () => {
         setSubPageUI(false)
     }
-    const forwardtestListbacktick=()=>{
+    const forwardtestListbacktick = () => {
         setSubPageUI(true)
         setforwardsublistT('')
 
     }
     return (
         <Fragment>
-            {subPageUI===false ?
-            <div>
+            {subPageUI === false ?
+                <div>
 
-                <Grid container spacing={12} style={{ marginTop: '15px', marginBottom: '15px' }}>
+                    <Grid container spacing={12} style={{ marginTop: '15px', marginBottom: '15px' }}>
 
-                    <Grid item xs={12} style={{ textAlign: 'center' }}>
-                        <div style={{ float: 'left' }}>
-                          <Link to='/timetableclasslist'>
-                          <ArrowBackIosIcon fontSize="small"  ></ArrowBackIosIcon>
-                          </Link> 
-                        </div>
-                        <div style={{ float: 'right',display:forwardsublistT }} onClick={forwardtestListbacktick}><ArrowForwardIosIcon fontSize="small" ></ArrowForwardIosIcon></div>
-                        <Typography >Test List</Typography>
+                        <Grid item xs={12} style={{ textAlign: 'center' }}>
+                            <div style={{ float: 'left' }}>
+                                <Link to='/timetableclasslist'>
+                                    <ArrowBackIosIcon fontSize="small"  ></ArrowBackIosIcon>
+                                </Link>
+                            </div>
+                            <div style={{ float: 'right', display: forwardsublistT }} onClick={forwardtestListbacktick}><ArrowForwardIosIcon fontSize="small" ></ArrowForwardIosIcon></div>
+                            <Typography >Test List</Typography>
 
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <div className={classes.root}>
+                    <div className={classes.root}>
 
-                    <Grid container spacing={10}>
+                        <Grid container spacing={10}>
 
-                        {ClassTestList != null ?
-                            Object.keys(ClassTestList).map((key, index) => {
-                                return (
-                                    <Grid item xs={6} lg={3} sm={4} style={{ justifyContent: 'space-between' }}>
-                                        <Paper className={classes.paper} key={index} onClick={(e) => clickTest(e, ClassTestList[key])}>
-                                            <div>
-                                                <img src={medal} alt="medalavt" width='65%' height="50%" />
-                                            </div>
-                                            <Typography >{ClassTestList[key].name}</Typography>
+                            {ClassTestList != null ?
+                                Object.keys(ClassTestList).map((key, index) => {
+                                    return (
+                                        <Grid item xs={6} lg={3} sm={4} style={{ justifyContent: 'space-between' }}>
+                                            <Paper className={classes.paper} key={index} onClick={(e) => clickTest(e, ClassTestList[key])}>
+                                                <div>
+                                                    <img src={medal} alt="medalavt" width='59px' height="78px" />
+                                                </div>
+                                                <Typography style={{ color: '#1C1C1E', font: 'normal normal medium 18px/25px Avenir', letterSpacing: "0px" }}>{ClassTestList[key].name}</Typography>
 
-                                        </Paper>
+                                            </Paper>
 
-                                    </Grid>
+                                        </Grid>
 
 
-                                )
-                            }) : null}
-                    </Grid>
-                </div>
+                                    )
+                                }) : null}
+                        </Grid>
+                    </div>
 
-                {/*   pagination part  <GridListTile key={tile.img}>
-                                 <img src={tile.img} alt={tile.title} />
-                                 <GridListTileBar
-                                     title={tile.title}
-                                     subtitle={<span>by: {tile.author}</span>}
-                                     actionIcon={
-                                         <IconButton aria-label={`info about ${tile.title}`} className={classes.icon}>
-                                             <InfoIcon />
-                                         </IconButton>
-                                     }
-                                 />
-                             </GridListTile> */}
-            </div>:
 
-            <Container>
-                <TestSubjectPage testID={testID}
-                 ClassID={ClassID}
-                  sublistBacktick={sublistBacktick} 
-                  TimeTableData={TimeTableData}
-                  forwardsublistT={forwardsublistT} />
-            </Container>
+                </div> :
+
+                <Container style={{ marginBottom: '50px',overflow:'auto' }}>
+                    <TestSubjectPage testID={testID}
+                        ClassID={ClassID}
+                        sublistBacktick={sublistBacktick}
+                        TimeTableData={TimeTableData}
+                        forwardsublistT={forwardsublistT}
+
+                        subjectCategList={subjectCategList} />
+                </Container>
             }
 
         </Fragment >

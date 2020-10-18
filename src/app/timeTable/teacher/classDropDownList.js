@@ -5,13 +5,6 @@ import TimetableService from '../timeTableService';
 import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Container } from '@material-ui/core';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import ClassTestList from './ClassTestList';
 
 
@@ -47,7 +40,7 @@ const TeacherTimeTable = () => {
     const [className, setClassName] = useState();
     const [isLoading, setLoading] = useState(true);
     const [classListUi, setClassListUi] = useState(false);
-    const [classID ,setClassID] = useState();
+    const [classID, setClassID] = useState();
 
 
 
@@ -66,9 +59,9 @@ const TeacherTimeTable = () => {
     };
     useEffect(() => {
         fetchClass()
-    })
+    }, [])
 
-    const clickMenuItem = (e,classid) => {
+    const clickMenuItem = (e, classid) => {
         setClassID(classid.id)
         setClassListUi(true)
     }
@@ -89,20 +82,28 @@ const TeacherTimeTable = () => {
                             value={className}
                             onChange={handleChange}
                             style={{ width: "50%" }}
-                        >
+                            renderValue={(selected) => {
+                                if (selected.length === 0) {
+                                    return <em>Placeholder</em>;
+                                }
 
+                                return selected.join(', ');
+                            }}
+                        >
+                            <MenuItem disabled value="">
+                                Class
+                            </MenuItem>
                             {classList != null
                                 ? Object.keys(classList).map(function (key, index) {
                                     return (
 
-                                        <MenuItem key={index} value={classList[key]} onClick={(e)=>clickMenuItem(e,classList[key])}>
+                                        <MenuItem key={index} value={classList[key]} onClick={(e) => clickMenuItem(e, classList[key])}>
                                             {classList[key].class_name}
                                         </MenuItem>
                                     );
                                 })
-                                :
-                                <MenuItem>not data
-                                    </MenuItem>}
+                                : null
+                            }
                         </Select>
 
                         <br />

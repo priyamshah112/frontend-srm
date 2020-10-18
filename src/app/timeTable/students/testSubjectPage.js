@@ -2,14 +2,11 @@ import React, { Fragment, useEffect, useState } from "react";
 import Grid from '@material-ui/core/Grid';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import Typography from '@material-ui/core/Typography';
-import EditLogo from '../../../assets/images/Edit.svg';
-import DateFnsUtils from '@date-io/date-fns';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { makeStyles } from '@material-ui/core/styles';
 import TimetableService from '../timeTableService';
-import { Container } from '@material-ui/core';
+
+
+
 
 
 
@@ -17,197 +14,222 @@ import { Container } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
 
-    form: {
-        "& > *": {
-            margin: theme.spacing(2),
-            width: "25ch",
-        },
-        textAlign: "center",
+    root: {
+        flexGrow: 1,
     },
+    paper2: {
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    },
+    paper1: {
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    },
+    subcategory: {
+        marginTop: "30px",
+        marginBottom: "25px",
+        textAlign: "left",
+        padding: "5px",
+        background: "#7b72af",
+        fontSize: "20px",
+        color: "white",
+        border: "2px sold lightgrey",
+        borderRadius: "5px",
+        width: "50%",
+        paddingLeft: "12px"
+    },
+
     root: {
         flexGrow: 1,
         marginTop: '30px'
 
     },
-    containergrid: {
-        minWidth: '100%',
-        [theme.breakpoints.down('lg', "xl")]: {
-            maxWidth: "55%"
-        },
-        textAlign: "-webkit-center",
 
-    },
     paper: {
-        // padding: theme.spacing(2),
         textAlign: '',
+        margin: '0',
         height: "auto",
-        background: "none",
         boxShadow: "none",
         padding: "10px",
+        background: "#FFFFFF",
+        borderBottom: '2px solid grey',
+        borderTopRightRadius: '5px',
+        borderTopLeftRadius: '5px'
     },
     headingList: {
-        background: "#7b72af", borderRight: "1px solid #707070", padding: '5px', textAlign: 'center',
-        font: "normal normal medium 14px/19px Avenir"
+        background: "#7b72af", padding: '5px', textAlign: 'center',
+        font: "normal normal medium 14px/19px Avenir",
+        borderBottom: "1px solid lightgrey ",
+        borderRight: "1px solid lightgrey",
+        color: "#FFFFFF"
 
     },
-    dataList: {
-        textAlign: "center",
-        padding: '8px', border: "1px solid white"
-        , borderRight: "1px solid #707070"
-    },
-
-    textField: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        width: "25%",
-        [theme.breakpoints.down('xs')]: {
-            width: "50%"
-        },
-    },
-    datepicker: {
-        width: "30%",
-        padding: "0",
-        [theme.breakpoints.down('xs')]: {
-            width: "50%"
-        },
+    headingList1: {
+        padding: '5px', textAlign: 'center',
+        font: "normal normal medium 14px/19px Avenir",
+        borderBottom: "1px solid lightgrey ",
+        borderRight: "1px solid lightgrey",
+        background: "#FFFFFF",
     }
+
+
+
+
 }));
 const TestSubjectPage = (props) => {
     const classes = useStyles();
     const token = localStorage.getItem("srmToken");
-    const [examTimeTable, setExamTimeTable] = useState();
-    const [emptyTimeTable, setEmptyTimeTable] = useState("");
-    const [TimeTableData, setTimeTableData] = useState(null);
-    const [editTimeTableUI, setEditTimeTableUI] = useState(false);
-    const [timetableinput, setTimetableinput] = useState();
-    const [hideforwardsubjectick,setHideforwardsubjectick] = useState("none");
-    const [formData,setFormData] = useState({
-            date:'',
-            start_time:'',
-            end_time:''
+    const [formData, setFormData] = useState({
+        date: '',
+        start_time: '',
+        end_time: ''
     })
 
+    const [examTimeTable, setExamTimeTable] = useState([]);
+    const [subjectCategList, setSubjectCategList] = useState([]);
 
-  
+
+    const formateSubjectCategory = (data) => {
+        let subjectTimeTable = [];
+        let examTimeTable = data.data.examTimeTable.filter((ele) => ele.status === 'published');
+        let subjectDetails = data.data.subjectDetails;
+        for (let dt of examTimeTable) {
+            Array.prototype.push.apply(subjectTimeTable, dt.timetable_data);
+        }
+        let categorySubject = [];
+        for (let key in subjectDetails) {
+            let categoryName = key;
+            let tmpCategorySubject = {
+                categoryName: categoryName,
+                subjectList: [],
+            };
+            for (let sub of subjectDetails[key]) {
+                let timeTable = subjectTimeTable.filter((ele) => ele.subject_id === sub.id);
+                let subjectDetails = {
+                    timeTable: timeTable,
+                    ...sub,
+                };
+                tmpCategorySubject.subjectList.push(subjectDetails);
+            }
+            categorySubject.push(tmpCategorySubject);
+        }
+        return categorySubject;
+    }
+
+
+    const fetchTestSublistWithTime = async (testid) => {
+        const res = await TimetableService.getExamTestSubList(token, testid.class_id, testid.id)
+        if (res.status === 200) {
+            let subjectCategList = formateSubjectCategory(res.data);
+            setSubjectCategList(subjectCategList);
+            setExamTimeTable(res.data.data.examTimeTable.filter((ele) => ele.status === 'published'));
+
+        }
+    }
+
 
     useEffect(() => {
-        console.log(props.ClassID)
-        console.log(props.testID)
+        fetchTestSublistWithTime(props.testID);
 
-    })
-    const handlechange=(e)=>{
-        const {name, value} = e.target
-        setFormData({...formData, [name]: value})
+    }, []);
 
-    }
-    const handleSubmit=(e)=>{
-        const submitformdata={
-            date:timetableinput.date,
-            start_time:timetableinput.start_time,
-            end_time:timetableinput.end_time
-        }
-        console.log(submitformdata)
-    }
-    const editTimeTableClick = (e, timetabledata) => {
-        setFormData({date:timetabledata.date,
-        start_time:timetabledata.start_time,
-        end_time:timetabledata.end_time
-    })
-        setEditTimeTableUI(true)
-        setTimetableinput(timetabledata)
 
-    }
-    const timetableInputbacktik=()=>{
-        setEditTimeTableUI(false)
-        setHideforwardsubjectick("")
 
-    }
-    const forwardsubjecttick=()=>{
-        setEditTimeTableUI(true)
 
-    }
+
     return (
         <Fragment>
-            {editTimeTableUI === false ?
-                <Grid container spacing={3} style={{ marginTop: "20px", paddingLeft: '15px', paddingRight: '15px' }}>
-
-                    <Grid item xs={12} style={{ textAlign: 'center', paddingTop: "0" }}>
-                        <div style={{ float: 'left' }}>
-                            <ArrowBackIosIcon fontSize="small" style={ {float: 'left'}} onClick={props.sublistBacktick}></ArrowBackIosIcon>
-                        </div>
-
-                        <Typography>Test List</Typography>
-                    </Grid>
-                    {props.TimeTableData !== null ?
-                        Object.keys(props.TimeTableData).map((key, index) => {
-                            return <Grid key={index} item xs={12} lg={6} style={{ marginTop: "20px" }}>
-                                <div style={{ background: "#FFFFFF 0% 0% no-repeat padding-box" }}>
-                                    <Grid xs={12}>
-                                        <Typography display="" align="center" gutterBottom className={classes.paper}>
-                                            <span style={{}}>{props.TimeTableData[key].subject_name}</span>
-                                            <span style={{ float: 'right', marginRight: "10px", marginTop: '2px' }} onClick={(e) => editTimeTableClick(e, props.TimeTableData[key])}> <img src={EditLogo} alt="editLogo" /></span>
-                                        </Typography>
-
-                                    </Grid>
-
-                                    <Grid container style={{ color: '#FFFFFF' }}>
-                                        <Grid item xs={4} className={classes.headingList} style={{ borderTopLeftRadius: '5px' }}>
-                                            <Typography>Exam Date</Typography>
-                                        </Grid>
-                                        <Grid item xs={4} className={classes.headingList} >
-                                            <Typography>Start Time</Typography>
-
-                                        </Grid>
-                                        <Grid item xs={4} className={classes.headingList} style={{ borderTopRightRadius: '5px', borderRight: '0' }}>
-                                            <Typography>End Time</Typography>
-
-                                        </Grid>
-
-                                    </Grid>
-                                    <Grid container>
-                                        <Grid item xs={4} className={classes.dataList}>
-                                            <Typography>{props.TimeTableData[key].date}</Typography>
-                                        </Grid>
-                                        <Grid item xs={4} className={classes.dataList}>
-                                            <Typography>
-                                                {props.TimeTableData[key].start_time}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={4} className={classes.dataList} style={{ borderRight: "0" }}>
-                                            <Typography>{props.TimeTableData[key].end_time}</Typography>
-                                        </Grid>
-
-                                    </Grid>
-                                </div>
-                            </Grid>
-                        }) :
-                        <Container > 
-                                 <Typography style={{textAlign:'center'}}><h1>timetable_data is empty</h1></Typography>
-                        </Container>}
-                </Grid> :
-                <Container>
-                    <Grid container spacing={3} style={{ marginTop: "20px", paddingLeft: '15px', paddingRight: '15px',marginBottom:'20px' }}>
-
+            <div>
+                <Grid container spacing={3} style={{}}>
+                    <Grid item xs={12} style={{ paddingLeft: '12px' }}>
                         <Grid item xs={12} style={{ textAlign: 'center', paddingTop: "0" }}>
                             <div style={{ float: 'left' }}>
-                                <ArrowBackIosIcon fontSize="small" onClick={timetableInputbacktik} style={{ float: 'left' }}></ArrowBackIosIcon>
+                                <ArrowBackIosIcon fontSize="small" style={{ float: 'left' }} onClick={props.sublistBacktick}></ArrowBackIosIcon>
                             </div>
 
-                            <Typography>Test List</Typography>
+                            <Typography style={{ marginTop: '15px' }}>Test List</Typography>
                         </Grid>
                     </Grid>
-                    <form className={classes.form} noValidate autoComplete="off" >
-                        <Typography style={{margin:'auto'}}>{timetableinput.subject_name}</Typography>
-                        <TextField id="filled-basic" type="date" variant="outlined" name="date"  value={formData.date} onChange={handlechange}  /><br></br>
-                        <TextField id="filled-basic" type="time" variant="outlined" name="start_time"  value={formData.start_time}onChange={handlechange} /><br></br>
-                        <TextField id="filled-basic" type="time" variant="outlined" name="end_time"  value={formData.end_time} onChange={handlechange}/><br></br>
-                        <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+                </Grid>
+                {(examTimeTable.length ?
+                    <div>
+                        {subjectCategList.map((items, index) => {
+                            return (
+                                <div style={{ display: '', paddingLeft: '50px', paddingRight: '50px' }}>
+                                    <Grid item xs={12} style={{ paddingLeft: '12px' }}>
+                                        <Typography className={classes.subcategory} style={{ marginTop: '25px', marginBottom: '25px', textAlign: 'center' }}>{items.categoryName}</Typography>
+                                    </Grid>
+                                    {items.subjectList.map((sub) => {
+                                        return <Grid container lg={12} sm={12} xs={12} style={{ padding: '2%' }}>
+                                            <Grid lg={12} sm={12} xs={12}>
+                                                <Typography display="" align="center" gutterBottom className={classes.paper} >
+                                                    <span style={{}}>{sub.name}</span>
+                                                </Typography>
+                                            </Grid>
+                                            <Grid items lg={12} sm={12} xs={12}>
+                                                <Grid container lg={12} sm={12} xs={12} >
+                                                    <Grid item xs={4} className={classes.headingList} style={{}}>
+                                                        <Typography>Exam Date</Typography>
+                                                    </Grid>
+                                                    <Grid item xs={4} className={classes.headingList} >
+                                                        <Typography>Start Time</Typography>
 
-                    </form>
-                </Container>
-            }
+                                                    </Grid>
+                                                    <Grid item xs={4} className={classes.headingList}>
+                                                        <Typography>End Time</Typography>
+                                                    </Grid>
+                                                </Grid>
+                                                {sub.timeTable.map((timeTable) => {
+                                                    return <Grid container lg={12} sm={12} xs={12} >
+                                                        <Grid item xs={4} className={classes.headingList1} style={{ borderRight: '0',borderBottomLeftRadius:'5px'
+ }}>
+                                                            <Typography style={{ background: '#FFFFFF' }}>{timeTable.date}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4} className={classes.headingList1} style={{borderLeft:'1px solid lightgrey'}}>
+                                                            <Typography>
+                                                                {timeTable.start_time}
+                                                            </Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4} className={classes.headingList1} style={{borderRight: '0',borderBottomRightRadius:'5px'}}>
+                                                            <Typography>{timeTable.end_time}</Typography>
+                                                        </Grid>
+
+                                                    </Grid>
+                                                })
+                                                }
+                                            </Grid>
+                                        </Grid>
+
+                                    })}
+                                </div>
+                            )
+
+
+                        })}
+                    </div>
+                    :
+                    <Typography style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Create For This Test !</Typography>
+
+
+
+                )}
+
+
+
+
+
+
+
+            </div>
+
 
         </Fragment>
     )
 }
 export default TestSubjectPage;
+
+
+
+

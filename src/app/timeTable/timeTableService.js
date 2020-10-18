@@ -37,7 +37,7 @@ class TimetableService {
     //  student TestList
 
     getStudentTestList(token) {
-        return axios.get(`${BACKEND_API_URL}/examTests`, {
+        return axios.get(`${BACKEND_API_URL}/get_student_test_list`, {
             headers: {
                 accept: "application/json",
                 Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ class TimetableService {
     getExamTestSubList(token, class_id, test_id) {
         return axios.get(`${BACKEND_API_URL}/exam_time_tables?class_id=` +
             class_id +
-            `&id=` +
+            `&test_id=` +
             test_id
             , {
                 headers: {
