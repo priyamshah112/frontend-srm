@@ -32,13 +32,9 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: "25px",
         textAlign: "left",
         padding: "5px",
-        background: "#7b72af",
         fontSize: "20px",
-        color: "white",
-        border: "2px sold lightgrey",
-        borderRadius: "5px",
-        width: "50%",
-        paddingLeft: "12px"
+        paddingLeft: "12px",
+        float:'left'
     },
 
     root: {
@@ -146,7 +142,7 @@ const TestSubjectPage = (props) => {
                     <Grid item xs={12} style={{ paddingLeft: '12px' }}>
                         <Grid item xs={12} style={{ textAlign: 'center', paddingTop: "0" }}>
                             <div style={{ float: 'left' }}>
-                                <ArrowBackIosIcon fontSize="small" style={{ float: 'left' }} onClick={props.sublistBacktick}></ArrowBackIosIcon>
+                                <ArrowBackIosIcon fontSize="small" style={{ float: 'left' ,cursor:'pointer'}} onClick={props.sublistBacktick}></ArrowBackIosIcon>
                             </div>
 
                             <Typography style={{ marginTop: '15px' }}>Test List</Typography>
@@ -157,7 +153,7 @@ const TestSubjectPage = (props) => {
                     <div>
                         {subjectCategList.map((items, index) => {
                             return (
-                                <div style={{ display: '', paddingLeft: '50px', paddingRight: '50px' }}>
+                                <div >
                                     <Grid item xs={12} style={{ paddingLeft: '12px' }}>
                                         <Typography className={classes.subcategory} style={{ marginTop: '25px', marginBottom: '25px', textAlign: 'center' }}>{items.categoryName}</Typography>
                                     </Grid>
@@ -210,7 +206,7 @@ const TestSubjectPage = (props) => {
                         })}
                     </div>
                     :
-                    <Typography style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Create For This Test !</Typography>
+                    <Typography style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
 
 
 

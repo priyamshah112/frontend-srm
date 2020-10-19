@@ -10,6 +10,11 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Typography from '@material-ui/core/Typography';
 import TestSubjectPage from './testSubjectPage';
 import { Link } from "react-router-dom";
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
 
 
 
@@ -19,34 +24,45 @@ const useStyles = makeStyles((theme) => ({
         width: '30%',
     },
     paper: {
+        // padding: theme.spacing(2),
+        // textAlign: 'center',
+        // marginTop: "20px",
+        // border: "1px solid #7b72af",
+        // marginRight: "0",
+        // marginBottom: '20px',
+        // maxHeight: "128px",
+        // maxWidth: "138px",
+        // opacity: 1
         padding: theme.spacing(2),
         textAlign: 'center',
-        marginTop: "20px",
-        border: "1px solid #7b72af",
-        marginRight: "0",
-        marginBottom: '20px',
-        maxHeight: "128px",
-        maxWidth: "138px",
-        opacity: 1
+        cursor:'pointer'
+
 
 
     },
-
+    
+    backarrowbutton:{
+        color:"black",
+    },
     root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-    },
-    gridList: {
-        width: "90%",
-        minHeight: 450,
-        marginTop: '50px'
+        // display: 'flex',
+        // flexWrap: 'wrap',
+        // justifyContent: 'space-around',
+        // overflow: 'hidden',
+        root: {
+            flexGrow: 1,
+        },
 
     },
-    icon: {
-        color: 'rgba(255, 255, 255, 0.54)',
-    },
+    // gridList: {
+    //     width: "90%",
+    //     minHeight: 450,
+    //     marginTop: '50px'
+
+    // },
+    // icon: {
+    //     color: 'rgba(255, 255, 255, 0.54)',
+    // },
 }));
 const ClassTestList = (props) => {
     const classes = useStyles();
@@ -157,7 +173,7 @@ const ClassTestList = (props) => {
                         <Grid item xs={12} style={{ textAlign: 'center' }}>
                             <div style={{ float: 'left' }}>
                                 <Link to='/timetableclasslist'>
-                                    <ArrowBackIosIcon fontSize="small"  ></ArrowBackIosIcon>
+                                    <ArrowBackIosIcon fontSize="small" className={classes.backarrowbutton}  ></ArrowBackIosIcon>
                                 </Link>
                             </div>
                             <div style={{ float: 'right', display: forwardsublistT }} onClick={forwardtestListbacktick}><ArrowForwardIosIcon fontSize="small" ></ArrowForwardIosIcon></div>
@@ -166,35 +182,33 @@ const ClassTestList = (props) => {
                         </Grid>
                     </Grid>
 
-                    <div className={classes.root}>
 
-                        <Grid container spacing={10}>
+                    <Grid container spacing={3}>
 
-                            {ClassTestList != null ?
-                                Object.keys(ClassTestList).map((key, index) => {
-                                    return (
-                                        <Grid item xs={6} lg={3} sm={4} style={{ justifyContent: 'space-between' }}>
-                                            <Paper className={classes.paper} key={index} onClick={(e) => clickTest(e, ClassTestList[key])}>
-                                                <div>
-                                                    <img src={medal} alt="medalavt" width='59px' height="78px" />
-                                                </div>
-                                                <Typography style={{ color: '#1C1C1E', font: 'normal normal medium 18px/25px Avenir', letterSpacing: "0px" }}>{ClassTestList[key].name}</Typography>
+                        {ClassTestList != null ?
+                            Object.keys(ClassTestList).map((key, index) => {
+                                return (
+                                    <Grid item xs={12} lg={4} sm={6} md={6} xl={3}>
+                                        <Paper className={classes.paper} key={index} onClick={(e) => clickTest(e, ClassTestList[key])}>
+                                            
+                                            <img src={medal} alt="medalavt" maxwidth='59px' maxheight="78px" />
+                                            <Typography style={{ color: '#1C1C1E', font: 'normal normal medium 18px/25px Avenir', letterSpacing: "0px" }}>{ClassTestList[key].name}</Typography>
 
-                                            </Paper>
+                                        </Paper>
 
-                                        </Grid>
+                                    </Grid>
 
 
-                                    )
-                                }) : null}
-                        </Grid>
-                    </div>
+                                )
+                            }) : null}
+                    </Grid>
 
 
                 </div> :
 
-                <Container style={{ marginBottom: '50px',overflow:'auto' }}>
-                    <TestSubjectPage testID={testID}
+                <Container style={{ marginBottom: '50px', overflow: 'auto' }}>
+                    <TestSubjectPage 
+                    testID={testID}
                         ClassID={ClassID}
                         sublistBacktick={sublistBacktick}
                         TimeTableData={TimeTableData}

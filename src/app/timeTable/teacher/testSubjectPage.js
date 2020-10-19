@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
+import '../../../assets/css/form.css';
 
 
 
@@ -35,13 +36,11 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: "25px",
         textAlign: "left",
         padding: "5px",
-        background: "#7b72af",
         fontSize: "20px",
-        color: "white",
         border: "2px sold lightgrey",
         borderRadius: "5px",
-        width: "50%",
-        paddingLeft: "12px"
+        paddingLeft: "12px",
+        float:"left"
     },
     paper: {
         textAlign: '',
@@ -89,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.down('xs')]: {
             width: "50%"
         },
-    }
+    },
 }));
 const TestSubjectPage = (props) => {
     const classes = useStyles();
@@ -105,11 +104,7 @@ const TestSubjectPage = (props) => {
 
 
 
-    useEffect(() => {
-        console.log(props.ClassID)
-        console.log(props.testID)
-
-    }, [])
+   
     const handlechange = (e) => {
         const { name, value } = e.target
         setFormData({ ...formData, [name]: value })
@@ -153,10 +148,10 @@ const TestSubjectPage = (props) => {
 
                     <Grid item xs={12} style={{ textAlign: 'center', paddingTop: "0" }}>
                         <div style={{ float: 'left' }}>
-                            <ArrowBackIosIcon fontSize="small" style={{ float: 'left' }} onClick={props.sublistBacktick}></ArrowBackIosIcon>
+                            <ArrowBackIosIcon fontSize="small" style={{ float: 'left',cursor: "pointer" }} onClick={props.sublistBacktick}></ArrowBackIosIcon>
                         </div>
                         <div style={{ float: 'right' }}>
-                            <ArrowForwardIosIcon style={{ float: 'right', display: hideforwardsubjectick }} onClick={forwardsubjecttick} fontSize="small" ></ArrowForwardIosIcon>
+                            <ArrowForwardIosIcon style={{ float: 'right', display: hideforwardsubjectick,cursor: "pointer"}} onClick={forwardsubjecttick} fontSize="small" ></ArrowForwardIosIcon>
                         </div>
                         <Typography>Test List</Typography>
                     </Grid>
@@ -172,7 +167,7 @@ const TestSubjectPage = (props) => {
                                     return <Grid container className={classes.tablestyle} lg={12} sm={12} xs={12} style={{ padding: '2%' }}>
                                         <Grid lg={12} sm={12} xs={12}>
                                             <Typography display="" align="center" gutterBottom className={classes.paper} >
-                                                {(sub.editable ? <span>P</span> : '')}
+                                                {/* {(sub.editable ? <span>P</span> : '')} */}
                                                 <span style={{}}>{sub.name}</span>
                                                 <span disable={sub.editable} style={{ float: 'right', marginRight: "10px", marginTop: '2px' }} onClick={(e) => editTimeTableClick(e, sub.timeTable)}> <img src={EditLogo} alt="editLogo" /></span>
                                             </Typography>

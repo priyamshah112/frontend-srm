@@ -6,14 +6,22 @@ import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Container } from '@material-ui/core';
 import ClassTestList from './ClassTestList';
-
-
-
-
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 
 
 
 const useStyles = makeStyles((theme) => ({
+    loder: {
+        display: 'flex',
+        '& > * + *': {
+            marginLeft: theme.spacing(2),
+        },
+        background: 'lightgrey',
+        height: '100%',
+
+
+    },
     textList: {
         position: '',
         marginTop: '30px'
@@ -30,7 +38,11 @@ const useStyles = makeStyles((theme) => ({
         width: "100%",
         margin: "auto",
 
-    }
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: "40%",
+    },
 }));
 
 const TeacherTimeTable = () => {
@@ -45,9 +57,7 @@ const TeacherTimeTable = () => {
 
 
 
-    const handleChange = (e) => {
-        setClassName(e.target.value)
-    }
+   
     const fetchClass = async (isMounted) => {
         const response = await TimetableService.getClass(token)
 
@@ -71,60 +81,49 @@ const TeacherTimeTable = () => {
 
     return (
         <Fragment>
-            {classListUi === false ?
-                <div className={classes.grid} >
-                    <div item className={classes.container}>
-
-
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={className}
-                            onChange={handleChange}
-                            style={{ width: "50%" }}
-                            renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                    return <em>Placeholder</em>;
-                                }
-
-                                return selected.join(', ');
-                            }}
-                        >
-                            <MenuItem disabled value="">
-                                Class
-                            </MenuItem>
-                            {classList != null
-                                ? Object.keys(classList).map(function (key, index) {
-                                    return (
-
-                                        <MenuItem key={index} value={classList[key]} onClick={(e) => clickMenuItem(e, classList[key])}>
-                                            {classList[key].class_name}
-                                        </MenuItem>
-                                    );
-                                })
-                                : null
-                            }
-                        </Select>
-
-                        <br />
-                        {isLoading ? (
-                            <div className={classes.loading}>
-                                <CircularProgress color="primary" size={30} />
-                            </div>
-                        ) : null}
-                        <br />
-                        <br />
-                        <br />
-                    </div>
+            {isLoading === true ?
+                <div className={classes.loder}>
+                    <CircularProgress color="primary" style={{ position: 'absolute', left: '50%', top: "50%", zIndex: "1" }} />
                 </div> :
-                <Container>
-                    < ClassTestList classID={classID} />
-                </Container>
+                <div>
+                    {classListUi === false ?
+                        <div className={classes.grid} >
+                            <div item className={classes.container}>
+
+
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="grouped-select">Class</InputLabel>
+                                    <Select defaultValue="" id="grouped-select" className={classes.root}>
+                                        <MenuItem value="">
+                                            Class
+                                </MenuItem>
+                                        {classList != null
+                                            ? Object.keys(classList).map(function (key, index) {
+                                                return (
+
+                                                    <MenuItem key={index} name={classList[key].class_name} value={classList[key].class_name} onClick={(e) => clickMenuItem(e, classList[key])}>
+                                                        {classList[key].class_name}
+                                                    </MenuItem>
+                                                );
+                                            })
+                                            : null}
+                                    </Select>
+                                </FormControl>
+
+
+                            </div>
+                        </div> :
+                        <Container>
+                            <ClassTestList classID={classID} />
+                        </Container>
+
+                    }
+                </div>
 
             }
-
-
         </Fragment>
     )
 }
 export default TeacherTimeTable;
+
+

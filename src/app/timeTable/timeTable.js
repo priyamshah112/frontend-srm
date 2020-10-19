@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     marign: "0",
     padding: "0",
-    overflowY: "auto",
+    overflow: "auto",
   },
 }));
 
@@ -19,7 +19,7 @@ const TimeTable = (props) => {
   const selectedRole = props.selectedRole;
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} >
 
                  {selectedRole === "teacher" ?
     

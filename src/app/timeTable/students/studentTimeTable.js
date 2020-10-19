@@ -18,34 +18,41 @@ const useStyles = makeStyles((theme) => ({
         width: '30%',
     },
     paper: {
+        // padding: theme.spacing(2),
+        // textAlign: 'center',
+        // maxHeight: "128px",
+        // maxWidth: "138px",
+        // marginTop: "20px",
+        // border: "1px solid #7b72af",
+        // marginRight: "0",
+        // marginBottom: '20px',
+        // opacity: 1
         padding: theme.spacing(2),
         textAlign: 'center',
-        maxHeight: "128px",
-        maxWidth: "138px",
-        marginTop: "20px",
-        border: "1px solid #7b72af",
-        marginRight: "0",
-        marginBottom: '20px',
-        opacity: 1
+        cursor:'pointer',
+
 
     },
 
     root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-        padding: '20px'
+        // display: 'flex',
+        // flexWrap: 'wrap',
+        // justifyContent: 'space-around',
+        // overflow: 'hidden',
+        // padding: '20px'
+        root: {
+            flexGrow: 1,
+        },
     },
-    gridList: {
-        width: "80%",
-        minHeight: 450,
-        marginTop: '50px'
+    // gridList: {
+    //     width: "80%",
+    //     minHeight: 450,
+    //     marginTop: '50px'
 
-    },
-    icon: {
-        color: 'rgba(255, 255, 255, 0.54)',
-    },
+    // },
+    // icon: {
+    //     color: 'rgba(255, 255, 255, 0.54)',
+    // },
 }));
 const StudentTimeTable = (props) => {
     const classes = useStyles();
@@ -85,23 +92,20 @@ const StudentTimeTable = (props) => {
     return (
         <Fragment>
             {subPageUI === false ?
-                <div>
-                    <Grid container spacing={12} style={{ marginTop: '30px', marginBottom: '15px', display: 'inline' }}>
+                <div >
+                    <Grid container spacing={12} style={{ marginTop: '30px', marginBottom: '15px',justifyContent:'center'}}>
                         <Typography style={{ textAlign: 'center', marginTop: 'inherit', paddingRight: '20px' }}>Test List</Typography>
                     </Grid>
 
-                    <div className={classes.root}>
 
-                        <Grid container spacing={5}>
+                        <Grid container spacing={3} style={{padding:"20px"}}>
 
                             {ClassTestList != null ?
                                 Object.keys(ClassTestList).map((key, index) => {
                                     return (
-                                        <Grid item xs={6} lg={3} sm={4} style={{ justifyContent: 'space-between' }}>
+                                        <Grid item xs={12} lg={4} sm={6} xl={3} >
                                             <Paper className={classes.paper} key={index} onClick={(e) => clickTest(e, ClassTestList[key])}>
-                                                <div>
-                                                    <img src={medal} alt="medalavt" width='59px' height="78px" />
-                                                </div>
+                                                    <img src={medal} alt="medalavt" maxwidth='59px' maxheight="78px" />
                                                 <Typography style={{ color: '#1C1C1E', font: 'normal normal medium 18px/25px Avenir', letterSpacing: "0px" }}>{ClassTestList[key].name}</Typography>
                                             </Paper>
 
@@ -111,7 +115,6 @@ const StudentTimeTable = (props) => {
                                     )
                                 }) : null}
                         </Grid>
-                    </div>
 
 
                 </div>
