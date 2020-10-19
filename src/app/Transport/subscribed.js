@@ -76,7 +76,7 @@ const useStyle = makeStyles((theme) => ({
     width: '81px',
     height: '16px',
     textAlign: 'left',
-    font: 'normal normal medium 14px/19px Avenir',
+    font:' normal normal normal 14px/20px Avenir',
     letterSpacing: '0px',
     color: '#2C2C2E',
     opacity: '1',
@@ -144,9 +144,9 @@ const useStyle = makeStyles((theme) => ({
   button: {
     width: "94%",
   },
-  card2_content1:{fontWeight: '700',"textAlign":"left","font":"normal normal medium 14px/19px Avenir","letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
+  card2_content1:{fontWeight: '700',"textAlign":"left",    font:' normal normal normal 14px/20px Avenir'  ,"letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
   card2_content2:{fontWeight: '550',"color":"#1C1C1E","textAlign":"left","font":"normal normal normal 14px/20px Avenir","letterSpacing":"0px","opacity":"1","width":"164px","height":"40px"},
-  card3_content1:{fontWeight: '700',"width":"100%","height":"100%","textAlign":"left","font":"normal normal medium 14px/19px Avenir","letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
+  card3_content1:{fontWeight: '700',"width":"100%","height":"100%","textAlign":"left",    font:' normal normal normal 14px/20px Avenir',  "letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
   card3_content2:{fontWeight: '550',"top":"441px","left":"37px","width":"100%","height":"17px","color":"#1C1C1E","textAlign":"left","font":"normal normal 300 14px/20px Avenir","letterSpacing":"0px","opacity":"1"},
 
 }));

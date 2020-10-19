@@ -4,6 +4,8 @@ import {
   Typography,
   CardContent,
   Button,
+  InputAdornment,
+  IconButton,
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import userIcon from '../../assets/images/transport/User.svg';
@@ -16,10 +18,11 @@ import Select from '@material-ui/core/Select';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
-  KeyboardDatePicker,
+  DatePicker,
 } from '@material-ui/pickers';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
+import EventIcon from '@material-ui/icons/Event';
 
 const useStyle = makeStyles((theme) => ({
   buttonContainer: {
@@ -77,12 +80,15 @@ const useStyle = makeStyles((theme) => ({
   },
   side1:{
     float:'left',
-    width:'45%',
-    marginTop:'7%',
+    width:'20%',
+    marginTop:'6%',
+    marginLeft:'15%',
+    transform: 'translateY(-50px)'
   },
   side2:{
     float:'right',
     width:'45%',
+    textAlign:'center'
   },
   vertical:{
     height:"100px",
@@ -156,7 +162,8 @@ const Not_sub = (props) => {
     console.log(selectedDate2);
     console.log(form_comment);
     
-    setStatusBase(true);
+    setStatusBase(status => !status);
+    console.log(status);
     props.handle(true);
 
   };
@@ -187,7 +194,7 @@ const Not_sub = (props) => {
     setform_month(event.target.value);
   };
   const event_status=()=>{   
-    setStatusBase(!status);
+    setStatusBase(status => !status);
   };
   
   return (
@@ -245,28 +252,43 @@ const Not_sub = (props) => {
                         <div className={classes.side2}>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                       
-                                      <KeyboardDatePicker
+                                      <DatePicker
                                         margin="normal"
+                                        variant='dialog'
                                         label="From"
                                         format="MM/dd/yyyy"
                                         value={selectedDate1}
                                         onChange={handleDateChange1}
-                                        KeyboardButtonProps={{
-                                          'aria-label': 'change date',
+                                        InputProps={{
+                                          endAdornment: (
+                                            <InputAdornment position='end'>
+                                              <IconButton>
+                                                <EventIcon />
+                                              </IconButton>
+                                            </InputAdornment>
+                                          ),
                                         }}
                                       />
 
                                   </MuiPickersUtilsProvider>
+                                  <br></br>
                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                       
-                                      <KeyboardDatePicker
+                                      <DatePicker
                                         margin="normal"
+                                        variant='dialog'
                                         label="To"
                                         format="MM/dd/yyyy"
                                         value={selectedDate2}
                                         onChange={handleDateChange2}
-                                        KeyboardButtonProps={{
-                                          'aria-label': 'change date',
+                                        InputProps={{
+                                          endAdornment: (
+                                            <InputAdornment position='end'>
+                                              <IconButton>
+                                                <EventIcon />
+                                              </IconButton>
+                                            </InputAdornment>
+                                          ),
                                         }}
                                       />
 
@@ -300,7 +322,7 @@ const Not_sub = (props) => {
                       className={classes.button}
                       onClick={Subscribe}
                     >
-                      Subscribe
+                      Next
                     </Button>
                   </div>
 
