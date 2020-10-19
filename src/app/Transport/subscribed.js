@@ -37,6 +37,7 @@ const useStyle = makeStyles((theme) => ({
     padding:'3px',
   },
   profileTitle: {
+    font: 'normal normal 900 14px/19px Avenir',
     display: 'inline',
     marginLeft: '5px',
     fontWeight: 700,
@@ -75,7 +76,7 @@ const useStyle = makeStyles((theme) => ({
     width: '81px',
     height: '16px',
     textAlign: 'left',
-    font: 'normal normal medium 14px/19px Avenir',
+    font:' normal normal normal 14px/20px Avenir',
     letterSpacing: '0px',
     color: '#2C2C2E',
     opacity: '1',
@@ -104,7 +105,7 @@ const useStyle = makeStyles((theme) => ({
     float : 'left',
   },
   card_left_1 : {
-    width:'70%',
+    width:'80%',
     float : 'left',
   },
   pad:{
@@ -117,7 +118,7 @@ const useStyle = makeStyles((theme) => ({
 
   },
   card_right_1 : {
-    width:'30%',
+    width:'20%',
     float : 'right',
     textAlign: 'center',
     
@@ -143,9 +144,9 @@ const useStyle = makeStyles((theme) => ({
   button: {
     width: "94%",
   },
-  card2_content1:{fontWeight: '700',"textAlign":"left","font":"normal normal medium 14px/19px Avenir","letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
+  card2_content1:{fontWeight: '700',"textAlign":"left",    font:' normal normal normal 14px/20px Avenir'  ,"letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
   card2_content2:{fontWeight: '550',"color":"#1C1C1E","textAlign":"left","font":"normal normal normal 14px/20px Avenir","letterSpacing":"0px","opacity":"1","width":"164px","height":"40px"},
-  card3_content1:{fontWeight: '700',"width":"100%","height":"100%","textAlign":"left","font":"normal normal medium 14px/19px Avenir","letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
+  card3_content1:{fontWeight: '700',"width":"100%","height":"100%","textAlign":"left",    font:' normal normal normal 14px/20px Avenir',  "letterSpacing":"0px","color":"#2C2C2E","opacity":"1"},
   card3_content2:{fontWeight: '550',"top":"441px","left":"37px","width":"100%","height":"17px","color":"#1C1C1E","textAlign":"left","font":"normal normal 300 14px/20px Avenir","letterSpacing":"0px","opacity":"1"},
 
 }));
@@ -165,7 +166,7 @@ const Subscribred = (props) => {
       {
           mode ?
                 <div>
-                 <Transport_mode />
+                 <Transport_mode change_mode={openmaps} />
                 </div>
           : 
           (

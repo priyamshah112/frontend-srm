@@ -12,6 +12,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import MyLocationRoundedIcon from '@material-ui/icons/MyLocationRounded';
 import GoogleMapReact from 'google-map-react';
+import BackIcon from "../../assets/images/Back.svg";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -23,12 +24,28 @@ const useStyles = makeStyles((theme) => ({
     padding: "3%",
     overflowY: "auto",
   },
+  backImg: {
+    float: "left",
+    transform: "translateY(7px)",
+    cursor: "pointer",
+    // width:'10%'
+    width:'15px',
+  },
   tabBar: {
     backgroundColor: theme.palette.mainBackground,
     color: theme.palette.common.deluge,
     boxShadow: 'none',
-  },
+    // backgroundColor:'black',
 
+  },
+  ui_back:{
+    // backgroundColor:'blue',
+    width:'30px',
+  },
+  ui_tabs:{
+    // width:'100%',
+    // backgroundColor:'purple',
+  },
   eventsTab: {
     padding: '6px 0px',
     borderBottom: '1px solid #aeaeb2',
@@ -83,6 +100,17 @@ const Transport_mode = (props) => {
               textColor='primary'
               variant='fullWidth'
             >
+            <div className={classes.ui_back}>
+              <img
+              src={BackIcon}
+              alt="Back"
+              className={classes.backImg}
+              onClick={() => {
+                props.change_mode(false);
+              }}
+            />
+            </div>
+            {/* <div className={classes.ui_tabs}> */}
               <Tab
                 label='Add Stop'
                 {...a11yProps(0)}
@@ -93,6 +121,7 @@ const Transport_mode = (props) => {
                 {...a11yProps(1)}
                 className={classes.eventsTab}
               />
+              {/* </div> */}
             </Tabs>
           </AppBar>
 
