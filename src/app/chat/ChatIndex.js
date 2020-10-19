@@ -289,7 +289,7 @@ const ChatIndex = (props) => {
               <img src={search} className={classes.smiley} />
             </Typography>
           </ListItem>
-          <Chat selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <Chat selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
           <ToastContainer />
         </div>
       </div>
