@@ -33,10 +33,9 @@ const TimeTable = (props) => {
 };
 
 const mapStateToProps = (state) => {
-    return {
-        selectedRole: state.auth.selectedRole,
-    };
+  return {
+    selectedRole: state.auth.selectedRole,
+  };
 };
 
 export default connect(mapStateToProps)(TimeTable);
-

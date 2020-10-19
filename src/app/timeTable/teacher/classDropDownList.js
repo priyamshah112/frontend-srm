@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Select from '@material-ui/core/Select';
 import TimetableService from '../timeTableService';
 import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import TestList from './examTestList';
 import { Container } from '@material-ui/core';
 import ClassTestList from './ClassTestList';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -46,13 +45,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 const TeacherTimeTable = () => {
     const classes = useStyles();
-    const [classList, setClasses] = useState(null);
-    
-    const [classNmae, setClassName] = useState("");
     const token = localStorage.getItem("srmToken");
+    const [classList, setClassList] = useState(null)
+    const [className, setClassName] = useState();
     const [isLoading, setLoading] = useState(true);
     const [classListUi, setClassListUi] = useState(false);
     const [classID, setClassID] = useState();
@@ -65,14 +62,9 @@ const TeacherTimeTable = () => {
         const response = await TimetableService.getClass(token)
 
         if (response.status === 200) {
-            // console.log("fetchClasses -> " + response.data.data)
-
-            if (response.data.status == "success" && isLoading && classList == null) {
-                // console.log(response.data.data)
-                setLoading(false)
-
-                setClasses(response.data.data);
-            }
+            const data = response.data.data;
+            setClassList(data)
+            setLoading(false)
         }
     };
     useEffect(() => {
@@ -84,37 +76,8 @@ const TeacherTimeTable = () => {
         setClassListUi(true)
     }
 
-    useEffect(() => {
-        let isMounted = true;
 
 
-        if (classList == null) {
-            fetchClasses(isMounted);
-        }
-        // fetchSubjects(isMounted);
-
-        return () => {
-            isMounted = false;
-        };
-    });
-
-    const handlemenuitem = async (e, classes) => {
-        e.preventDefault();
-        fetchTestList(classes.id);
-        setClassId(classes.id);
-    }
-    const backtickTestList = () => {
-        setTestList(false)
-
-    }
-    //  const testlistrender=()=>{
-    //     testlist.map((key,index)=>{
-    //             return      <div key={index} >
-    //                 <TestList backtickTestList={backtickTestList} name={testlist[key]} />
-    //             </div>
-
-    //     })
-    //  }
 
     return (
         <Fragment>
