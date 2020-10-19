@@ -6,13 +6,23 @@ import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import TestList from './examTestList';
 import { Container } from '@material-ui/core';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-
+import ClassTestList from './ClassTestList';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 
 
 
 const useStyles = makeStyles((theme) => ({
+    loder: {
+        display: 'flex',
+        '& > * + *': {
+            marginLeft: theme.spacing(2),
+        },
+        background: 'lightgrey',
+        height: '100%',
+
+
+    },
     textList: {
         position: '',
         marginTop: '30px'
@@ -29,7 +39,11 @@ const useStyles = makeStyles((theme) => ({
         width: "100%",
         margin: "auto",
 
-    }
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: "40%",
+    },
 }));
 
 
@@ -40,15 +54,14 @@ const TeacherTimeTable = () => {
     const [classNmae, setClassName] = useState("");
     const token = localStorage.getItem("srmToken");
     const [isLoading, setLoading] = useState(true);
-    const [testList, setTestList] = useState(false);
-    const [testlist, setTestlist] = useState(null);
-    const [classId, setClassId] = useState(null);
+    const [classListUi, setClassListUi] = useState(false);
+    const [classID, setClassID] = useState();
 
-    const handleChange = (e) => {
-        setClassName(e.target.value)
-    }
 
-    const fetchClasses = async (isMounted) => {
+
+
+   
+    const fetchClass = async (isMounted) => {
         const response = await TimetableService.getClass(token)
 
         if (response.status === 200) {
@@ -62,23 +75,13 @@ const TeacherTimeTable = () => {
             }
         }
     };
+    useEffect(() => {
+        fetchClass()
+    }, [])
 
-    const fetchTestList = async (classId) => {
-        const response = await TimetableService.getTestList(token, classId);
-        if (response.status === 200) {
-            // console.log("fetchClasses -> ", response.data.data.data)
-            setTestlist(response.data.data)
-            console.log(setTestlist(response.data.data.data.map(list => list.name)));
-            setTestList(true);
-            // console.log("raju", response.data.data.data)
-            setTestlist(response.data.data.data.map(list => list))
-        }
-        if (response.data.status == "success" && isLoading && testlist == null) {
-            setLoading(false)
-            // setTestlist(response.data.data.data)
-            // console.log("raju",response.data.data.data)
-
-        }
+    const clickMenuItem = (e, classid) => {
+        setClassID(classid.id)
+        setClassListUi(true)
     }
 
     useEffect(() => {
@@ -114,57 +117,50 @@ const TeacherTimeTable = () => {
     //  }
 
     return (
-
-        <div>
-            {testList === false ?
-                <div className={classes.grid} >
-                    <div item className={classes.container}>
-
-
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={classNmae}
-                            onChange={handleChange}
-                            style={{ width: "50%" }}
-                        >
-
-                            {classList != null
-                                ? Object.keys(classList).map(function (key, index) {
-                                    return (
-
-                                        <MenuItem key={index} value={classList[key]} onClick={(e) => handlemenuitem(e, classList[key])}>
-                                            {classList[key].class_name}
-                                        </MenuItem>
-                                    );
-                                })
-                                : null}
-                        </Select>
-
-                        <br />
-                        {isLoading ? (
-                            <div className={classes.loading}>
-                                <CircularProgress color="primary" size={30} />
-                            </div>
-                        ) : null}
-                        <br />
-                        <br />
-                        <br />
-                    </div>
+        <Fragment>
+            {isLoading === true ?
+                <div className={classes.loder}>
+                    <CircularProgress color="primary" style={{ position: 'absolute', left: '50%', top: "50%", zIndex: "1" }} />
                 </div> :
-                <Container>
-                        {/* "raju" */}
-                    <TestList backtickTestList={backtickTestList} classId={classId} testNmae={testlist} />
+                <div>
+                    {classListUi === false ?
+                        <div className={classes.grid} >
+                            <div item className={classes.container}>
 
-                </Container>
+
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="grouped-select">Class</InputLabel>
+                                    <Select defaultValue="" id="grouped-select" className={classes.root}>
+                                        <MenuItem value="">
+                                            Class
+                                </MenuItem>
+                                        {classList != null
+                                            ? Object.keys(classList).map(function (key, index) {
+                                                return (
+
+                                                    <MenuItem key={index} name={classList[key].class_name} value={classList[key].class_name} onClick={(e) => clickMenuItem(e, classList[key])}>
+                                                        {classList[key].class_name}
+                                                    </MenuItem>
+                                                );
+                                            })
+                                            : null}
+                                    </Select>
+                                </FormControl>
 
 
+                            </div>
+                        </div> :
+                        <Container>
+                            <ClassTestList classID={classID} />
+                        </Container>
+
+                    }
+                </div>
 
             }
-        </div>
-
-    );
-
+        </Fragment>
+    )
 }
-
 export default TeacherTimeTable;
+
+
