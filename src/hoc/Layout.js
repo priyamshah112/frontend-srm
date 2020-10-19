@@ -680,7 +680,7 @@ const Layout = (props) => {
     <>
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <ChatIndex />
+        <ChatIndex {...props} />
       </div>
       
     </>
