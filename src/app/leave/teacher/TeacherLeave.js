@@ -735,7 +735,7 @@ const TeacherLeave = (props) => {
                                 {leaves.users.firstname}&nbsp;
                                 {leaves.users.lastname}{" "}
                               </div>
-                              <div className={classes.name1}>
+                              {/* <div className={classes.name1}>
                                 {`${leaves.user_classes.classes_data}` ===
                                 "null" ? (
                                   <div></div>
@@ -747,7 +747,7 @@ const TeacherLeave = (props) => {
                                     }
                                   </div>
                                 )}
-                              </div>
+                              </div> */}
                             </Grid>
                           </div>
                         </Grid>
