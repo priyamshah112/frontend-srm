@@ -200,40 +200,12 @@ const ParentSyllabus = (props) => {
   return (
     <div className={classes.container}>
       <div style={{ margin: 20 }}>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={subject}
-          onChange={handleChange}
-          className={classes.select}
-          style={{ marginRight: "10%" }}
-          MenuProps={{
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "center",
-            },
-            transformOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            getContentAnchorEl: null,
-          }}
-        >
-          {subjects != null
-            ? Object.keys(subjects).map(function (key, index) {
-                return (
-                  <MenuItem key={index} value={subjects[key].subject_id}>
-                    {subjects[key].subject_data.name}
-                  </MenuItem>
-                );
-              })
-            : null}
-        </Select>
 
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={classID}
+          style={{ marginRight: "10%" }}
           onChange={handleClassChange}
           className={classes.select}
           MenuProps={{
@@ -253,6 +225,36 @@ const ParentSyllabus = (props) => {
                 return (
                   <MenuItem key={index} value={classList[key].id}>
                     {classList[key].class_name}
+                  </MenuItem>
+                );
+              })
+            : null}
+        </Select>
+        
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={subject}
+          onChange={handleChange}
+          className={classes.select}
+          
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "center",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "center",
+            },
+            getContentAnchorEl: null,
+          }}
+        >
+          {subjects != null
+            ? Object.keys(subjects).map(function (key, index) {
+                return (
+                  <MenuItem key={index} value={subjects[key].subject_id}>
+                    {subjects[key].subject_data.name}
                   </MenuItem>
                 );
               })
