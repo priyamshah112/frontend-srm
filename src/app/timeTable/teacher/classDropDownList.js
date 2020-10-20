@@ -53,6 +53,7 @@ const TeacherTimeTable = () => {
     const [isLoading, setLoading] = useState(true);
     const [classListUi, setClassListUi] = useState(false);
     const [classID, setClassID] = useState();
+    const [classDetail,setClassDetail]= useState()
 
 
 
@@ -67,13 +68,16 @@ const TeacherTimeTable = () => {
             setLoading(false)
         }
     };
-    useEffect(() => {
+    useEffect((e) => {
         fetchClass()
     }, [])
 
     const clickMenuItem = (e, classid) => {
+        e.preventDefault();
         setClassID(classid.id)
         setClassListUi(true)
+        setClassDetail(classid.class_name)
+
     }
 
 
@@ -83,7 +87,7 @@ const TeacherTimeTable = () => {
         <Fragment>
             {isLoading === true ?
                 <div className={classes.loder}>
-                    <CircularProgress color="primary" style={{ position: 'absolute', left: '50%', top: "50%", zIndex: "1" }} />
+                    <CircularProgress color="primary" thickness={5} style={{ position: 'absolute', left: '50%', top: "50%", zIndex: "1" }} />
                 </div> :
                 <div>
                     {classListUi === false ?
@@ -114,7 +118,7 @@ const TeacherTimeTable = () => {
                             </div>
                         </div> :
                         <Container>
-                            <ClassTestList classID={classID} />
+                            <ClassTestList classID={classID} classDetail={classDetail} />
                         </Container>
 
                     }

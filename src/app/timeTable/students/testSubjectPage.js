@@ -13,7 +13,24 @@ import TimetableService from '../timeTableService';
 
 
 const useStyles = makeStyles((theme) => ({
-
+    timetableheading:{
+        fontSize: "1rem,",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: 1.5,
+    },
+    headingtest:{
+        fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: "1.5",
+    },
+    subjectname:{
+        fontSize: "1rem",
+    fontFamily: "Avenir Medium",
+    fontWeight: "400",
+    lineHeight: "1.5",
+    },
     root: {
         flexGrow: 1,
     },
@@ -29,12 +46,16 @@ const useStyles = makeStyles((theme) => ({
     },
     subcategory: {
         marginTop: "30px",
-        marginBottom: "25px",
+        marginBottom: "15px",
         textAlign: "left",
         padding: "5px",
-        fontSize: "20px",
+        borderRadius: "5px",
         paddingLeft: "12px",
-        float:'left'
+        float:"left",
+        fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: "1.5",
     },
 
     root: {
@@ -142,10 +163,10 @@ const TestSubjectPage = (props) => {
                     <Grid item xs={12} style={{ paddingLeft: '12px' }}>
                         <Grid item xs={12} style={{ textAlign: 'center', paddingTop: "0" }}>
                             <div style={{ float: 'left' }}>
-                                <ArrowBackIosIcon fontSize="small" style={{ float: 'left' ,cursor:'pointer'}} onClick={props.sublistBacktick}></ArrowBackIosIcon>
+                                <ArrowBackIosIcon  style={{ float: 'left' ,cursor:'pointer',fontSize:'1.2rem'}} onClick={props.sublistBacktick}></ArrowBackIosIcon>
                             </div>
 
-                            <Typography style={{ marginTop: '15px' }}>Test List</Typography>
+                            <Typography className={classes.headingtest} style={{ marginTop: '15px' }}>Test List</Typography>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -155,26 +176,26 @@ const TestSubjectPage = (props) => {
                             return (
                                 <div >
                                     <Grid item xs={12} style={{ paddingLeft: '12px' }}>
-                                        <Typography className={classes.subcategory} style={{ marginTop: '25px', marginBottom: '25px', textAlign: 'center' }}>{items.categoryName}</Typography>
+                                        <Typography  className={classes.subcategory} style={{ marginTop: '25px', textAlign: 'center' }}>{items.categoryName}</Typography>
                                     </Grid>
                                     {items.subjectList.map((sub) => {
                                         return <Grid container lg={12} sm={12} xs={12} style={{ padding: '2%' }}>
                                             <Grid lg={12} sm={12} xs={12}>
                                                 <Typography display="" align="center" gutterBottom className={classes.paper} >
-                                                    <span style={{}}>{sub.name}</span>
+                                                    <span className={classes.subjectname}>{sub.name}</span>
                                                 </Typography>
                                             </Grid>
                                             <Grid items lg={12} sm={12} xs={12}>
                                                 <Grid container lg={12} sm={12} xs={12} >
                                                     <Grid item xs={4} className={classes.headingList} style={{}}>
-                                                        <Typography>Exam Date</Typography>
+                                                        <Typography className={classes.timetableheading}>Exam Date</Typography>
                                                     </Grid>
                                                     <Grid item xs={4} className={classes.headingList} >
-                                                        <Typography>Start Time</Typography>
+                                                        <Typography className={classes.timetableheading}>Start Time</Typography>
 
                                                     </Grid>
                                                     <Grid item xs={4} className={classes.headingList}>
-                                                        <Typography>End Time</Typography>
+                                                        <Typography className={classes.timetableheading}>End Time</Typography>
                                                     </Grid>
                                                 </Grid>
                                                 {sub.timeTable.map((timeTable) => {
@@ -206,7 +227,7 @@ const TestSubjectPage = (props) => {
                         })}
                     </div>
                     :
-                    <Typography style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
+                    <Typography className={classes.headingtest} style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
 
 
 
