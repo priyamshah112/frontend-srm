@@ -7,6 +7,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import Badge from "@material-ui/core/Badge";
 import { Typography } from "@material-ui/core";
+import ChatService from "./ChatService";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -86,7 +87,7 @@ const list = [
   }
 ]
 
-export default function Chat({ filter, selectContact }) {
+export default function Chat({ filter, selectContact, selectedRole }) {
   const classes = useStyles();
   const [Chats, setChats] = useState(list)
   const [filteredChat, setFilteredChats] = useState(list)
@@ -103,6 +104,27 @@ export default function Chat({ filter, selectContact }) {
       setFilteredChats([...chat])
     }
   }, [filter])
+
+  useEffect(()=>{
+    fetchChats()
+  }, [])
+
+  const fetchChats = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      const response = await ChatService.fetchChatUsers(
+        token,
+        {selectedRole},
+      );
+      console.log('Scroll response', response);
+      if (response.status === 200) {
+        console.log('On Scroll', response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <List className={classes.root}>

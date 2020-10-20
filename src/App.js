@@ -161,7 +161,8 @@ function App(props) {
 const mapStateToProps = (state) => {
   return {
     isAuthenticated: state.auth.token !== null,
-  };
+    selectedRole: state.auth.selectedRole,
+  }
 };
 
 const mapDispatchToProps = (dispatch) => {
