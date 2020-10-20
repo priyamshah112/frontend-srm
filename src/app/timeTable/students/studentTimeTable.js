@@ -14,45 +14,26 @@ import TestSubjectPage from './testSubjectPage';
 
 
 const useStyles = makeStyles((theme) => ({
+    headingtest:{
+        fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: "1.5",
+    },
     card: {
         width: '30%',
     },
     paper: {
-        // padding: theme.spacing(2),
-        // textAlign: 'center',
-        // maxHeight: "128px",
-        // maxWidth: "138px",
-        // marginTop: "20px",
-        // border: "1px solid #7b72af",
-        // marginRight: "0",
-        // marginBottom: '20px',
-        // opacity: 1
         padding: theme.spacing(2),
         textAlign: 'center',
         cursor:'pointer',
-
-
     },
 
     root: {
-        // display: 'flex',
-        // flexWrap: 'wrap',
-        // justifyContent: 'space-around',
-        // overflow: 'hidden',
-        // padding: '20px'
         root: {
             flexGrow: 1,
         },
     },
-    // gridList: {
-    //     width: "80%",
-    //     minHeight: 450,
-    //     marginTop: '50px'
-
-    // },
-    // icon: {
-    //     color: 'rgba(255, 255, 255, 0.54)',
-    // },
 }));
 const StudentTimeTable = (props) => {
     const classes = useStyles();
@@ -93,8 +74,8 @@ const StudentTimeTable = (props) => {
         <Fragment>
             {subPageUI === false ?
                 <div >
-                    <Grid container spacing={12} style={{ marginTop: '30px', marginBottom: '15px',justifyContent:'center'}}>
-                        <Typography style={{ textAlign: 'center', marginTop: 'inherit', paddingRight: '20px' }}>Test List</Typography>
+                    <Grid container spacing={12} style={{ marginTop: '8px', marginBottom: '15px',justifyContent:'center'}}>
+                        <Typography className={classes.headingtest} style={{ textAlign: 'center', paddingRight: '20px' }}>Test List</Typography>
                     </Grid>
 
 

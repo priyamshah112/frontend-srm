@@ -3,12 +3,12 @@ const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 class TimetableService {
     // teacher class list
-    getClass(token){
-        return axios.get(`${BACKEND_API_URL}/classes`,{
+    getClass(token) {
+        return axios.get(`${BACKEND_API_URL}/classes`, {
             headers: {
-             accept: "application/json",
-             Authorization: `Bearer ${token}`,
-         },
+                accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
         });
     };
 
@@ -34,6 +34,30 @@ class TimetableService {
             },
         })
     }
+    // teacher subject list data updated  
+    putTestSubjectDate(token, exam_time_tableID) {
+        return axios.put(`${BACKEND_API_URL}/exam_time_tables?exam_time_table_id=${exam_time_tableID}`, {
+            headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    }
+    posTestsubjectData(token, classid, testid, status,data) {
+        return axios.post(`${BACKEND_API_URL}/exam_time_tables?class_id=${classid}&test_id=${testid}&status=${status}`,
+            // classid +
+            // `&test_id=` +
+            // testid +
+            // `&status=` +
+            // status,
+            data ,{
+            headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    }
+
     //  student TestList
 
     getStudentTestList(token) {
