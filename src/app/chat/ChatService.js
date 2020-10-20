@@ -31,19 +31,16 @@ class ChatService {
       },
     });
   }
-  fetchChatUsers(params, token) {
+  fetchChatUsers(token, params) {
       console.log(token)
-    return axios.post(`${BACKEND_API_URL}/chat/users`, {
+    return axios.post(`${BACKEND_API_URL}/chat/users`, params, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      params: {
-        selectedRole: params.selectedRole
-      },
     });
-    // return true;
   }
+
   fetchDraftHomework(params, token) {
     return axios.get(`${BACKEND_API_URL}/homework/${params.id}`, {
       headers: {

@@ -114,8 +114,8 @@ export default function Chat({ filter, selectContact, selectedRole }) {
       const token = localStorage.getItem('srmToken');
       // const selectedRole = props.selectedRole;
       const response = await ChatService.fetchChatUsers(
-        {selectedRole},
         token,
+        {selectedRole},
       );
       console.log('Scroll response', response);
       if (response.status === 200) {
