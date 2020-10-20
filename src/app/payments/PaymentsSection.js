@@ -35,7 +35,7 @@ const PaymentSection = (props) => {
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem("srmToken");
-        if (props.filter) {
+        if (props.filter==0 || props.filter==1) {
           const response = await PaymentService.fetchFilterPayments(
             token,
             props.filter,
@@ -77,7 +77,7 @@ const PaymentSection = (props) => {
   const fetchPaymentOnScroll = async () => {
     try {
       const token = localStorage.getItem("srmToken");
-      if (props.filter) {
+      if (props.filter==0 || props.filter==1) {
         const response = await PaymentService.fetchFilterPayments(
           token,
           props.filter,
