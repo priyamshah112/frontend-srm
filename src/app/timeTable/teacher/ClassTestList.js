@@ -10,71 +10,50 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Typography from '@material-ui/core/Typography';
 import TestSubjectPage from './testSubjectPage';
 import { Link } from "react-router-dom";
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+
 
 
 
 
 const useStyles = makeStyles((theme) => ({
+    headingtest:{
+        fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: "1.5",
+    },
     card: {
         width: '30%',
     },
     paper: {
-        // padding: theme.spacing(2),
-        // textAlign: 'center',
-        // marginTop: "20px",
-        // border: "1px solid #7b72af",
-        // marginRight: "0",
-        // marginBottom: '20px',
-        // maxHeight: "128px",
-        // maxWidth: "138px",
-        // opacity: 1
+
         padding: theme.spacing(2),
         textAlign: 'center',
         cursor:'pointer'
-
-
-
     },
     
     backarrowbutton:{
         color:"black",
+        fontSize:'1.1rem'
     },
     root: {
-        // display: 'flex',
-        // flexWrap: 'wrap',
-        // justifyContent: 'space-around',
-        // overflow: 'hidden',
         root: {
             flexGrow: 1,
         },
-
     },
-    // gridList: {
-    //     width: "90%",
-    //     minHeight: 450,
-    //     marginTop: '50px'
-
-    // },
-    // icon: {
-    //     color: 'rgba(255, 255, 255, 0.54)',
-    // },
 }));
 const ClassTestList = (props) => {
     const classes = useStyles();
     const token = localStorage.getItem("srmToken");
     const [ClassTestList, SetClassTestList] = useState(null);
     const [testID, setTestID] = useState();
-    const [ClassID, setClassID] = useState(props.classID);
+    // const [ClassID, setClassID] = useState();
     const [subPageUI, setSubPageUI] = useState(false);
     const [emptyTimeTable, setEmptyTimeTable] = useState("");
     const [TimeTableData, setTimeTableData] = useState(null);
     const [forwardsublistT, setforwardsublistT] = useState("none")
     const [subjectCategList, setSubjectCategList] = useState([]);
+    const [testData,setTestData] = useState({})
     const fetchClassTestList = async () => {
         const res = await TimetableService.getClassTestList(token, props.classID)
         if (res.status === 200) {
@@ -87,6 +66,9 @@ const ClassTestList = (props) => {
         let examTimeTable = data.data.examTimeTable;
         let subjectDetails = data.data.subjectDetails;
         for (let dt of examTimeTable) {
+            dt.timetable_data.map(time => {
+                time.status = dt.status;
+            });
             Array.prototype.push.apply(subjectTimeTable, dt.timetable_data);
         }
         let categorySubject = [];
@@ -98,14 +80,14 @@ const ClassTestList = (props) => {
             };
             for (let sub of subjectDetails[key]) {
                 let timeTable = subjectTimeTable.filter((ele) => ele.subject_id === sub.id);
-                const pTimeTable = timeTable.filter((ele) => ele.status === 'published');
-                let editable = true;
-                if (pTimeTable.length) {
-                    editable = false;
-                }
+                // const pTimeTable = timeTable.filter((ele) => ele.status === 'published');
+                // let editable = true;
+                // if (pTimeTable.length) {
+                //     editable = false;
+                // }
                 let subjectDetails = {
                     timeTable: timeTable,
-                    editable: editable,
+                    // editable: editable,
                     ...sub,
                 };
                 tmpCategorySubject.subjectList.push(subjectDetails);
@@ -122,6 +104,7 @@ const ClassTestList = (props) => {
             let subjectCategList = formateSubjectCategory(res.data);
             // console.log(subjectCategList);
             setSubjectCategList(subjectCategList);
+            console.log(subjectCategList)
 
 
             let data = res.data.data.examTimeTable;
@@ -145,15 +128,15 @@ const ClassTestList = (props) => {
 
     }
 
-    useEffect(() => {
+    useEffect((e) => {
         fetchClassTestList()
     }, [])
     const clickTest = (e, testid) => {
+        e.preventDefault();
+        setTestData(testid)
         setTestID(testid.id)
         fetchTestSublistWithTime(testid)
         setSubPageUI(true)
-
-
     }
     const sublistBacktick = () => {
         setSubPageUI(false)
@@ -177,7 +160,7 @@ const ClassTestList = (props) => {
                                 </Link>
                             </div>
                             <div style={{ float: 'right', display: forwardsublistT }} onClick={forwardtestListbacktick}><ArrowForwardIosIcon fontSize="small" ></ArrowForwardIosIcon></div>
-                            <Typography >Test List</Typography>
+                            <Typography className={classes.headingtest}>{props.classDetail} Test List</Typography>
 
                         </Grid>
                     </Grid>
@@ -208,12 +191,12 @@ const ClassTestList = (props) => {
 
                 <Container style={{ marginBottom: '50px', overflow: 'auto' }}>
                     <TestSubjectPage 
-                    testID={testID}
-                        ClassID={ClassID}
+                        testID={testID}
+                        testData={testData}
+                        // ClassID={ClassID}
                         sublistBacktick={sublistBacktick}
                         TimeTableData={TimeTableData}
                         forwardsublistT={forwardsublistT}
-
                         subjectCategList={subjectCategList} />
                 </Container>
             }
