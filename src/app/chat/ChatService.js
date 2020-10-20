@@ -32,7 +32,6 @@ class ChatService {
     });
   }
   fetchChatUsers(token, params) {
-      console.log(token)
     return axios.post(`${BACKEND_API_URL}/chat/users`, params, {
       headers: {
         'Content-Type': 'application/json',
