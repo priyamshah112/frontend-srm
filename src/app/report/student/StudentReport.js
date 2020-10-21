@@ -5,13 +5,10 @@ import { useReactToPrint } from "react-to-print";
 import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import downloadIcon from '../../../assets/images/report/download_report.svg';
 import PrintIcon from '../../../assets/images/report/printer.svg';
 import Avatar from "@material-ui/core/Avatar";
 
 import ReportService from '../ReportService';
-
-
 import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
 
@@ -143,11 +140,10 @@ const useStyles = makeStyles((theme) => ({
         fill: "#1c1c1c",
         height: "18px",
         width: "18px",
-        marginRight: '40px',
         cursor: 'pointer'
     },
     printIcon: {
-        marginRight: '30px'
+        marginRight: '5px'
     },
     downloadIcon: {
         fontSize: '17px',
@@ -261,10 +257,6 @@ const StudentDetails = (props) => {
                     <div>
                         <span className={classes.printIcon} onClick={loadingPrint}>
                             <img src={PrintIcon} className={classes.downloadIcon} />
-                        </span>
-                        <span>
-                            <img
-                                src={downloadIcon} className={classes.downloadIcon} />
                         </span>
 
                     </div>

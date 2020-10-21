@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
     remarkNote: {
         display: 'flex',
         justifyContent: "space-between",
-        margin: '17px 17px',
+        margin: '17px 0px',
         backgroundColor: '#fff'
     },
     emptyMessage: {
@@ -174,6 +174,7 @@ const StudentSkills = (props) => {
 
     useEffect(() => {
         let loading = true;
+        setLoading(true);
         if (searchData.id && testData.id) {
             async function getReportCard() {
                 const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
@@ -581,12 +582,13 @@ const StudentSkills = (props) => {
     setSubjectArray = [];
     return (
         <>
-            <div className={classes.container}>
+            {!isLoading && <div className={classes.container}>
                 {editSkill && renderEditSkill()}
                 {!editSkill && reportData.subjectDetails && renderSkill()}
-            </div>
-            {!showReport && renderEmptyReport()}
-            {showReport && remarkNote()}
+                {!showReport && renderEmptyReport()}
+                {showReport && remarkNote()}
+            </div>}
+
             <BackdropLoader open={isLoading} />
         </>
     );

@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
 import AddCircleOutlineOutlinedIcon from '@material-ui/icons/AddCircleOutlineOutlined';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -31,10 +32,18 @@ const useStyles = makeStyles((theme) => ({
         width: '170px'
     },
     gridContainer: {
+        margin: '10px 0px',
+        backgroundColor: '#fff',
+        flexBasis: '95%',
+        justifyContent: 'center'
+    },
+    gridContainer2: {
         display: 'flex',
-        justifyContent: "space-between",
-        margin: '10px 5px',
-        backgroundColor: '#fff'
+        margin: '10px 0px',
+        backgroundColor: '#fff',
+        border: '1px solid #7B72AF',
+        borderRadius: "2px",
+        display: '-webkit-box'
     },
     emptyGrade: {
         display: 'flex',
@@ -44,7 +53,12 @@ const useStyles = makeStyles((theme) => ({
     },
     itemGrade: {
         textAlign: 'center',
-        padding: '10px 18px',
+        padding: '5px',
+        borderRadius: "1px"
+    },
+    itemPercent: {
+        textAlign: 'center',
+        padding: '6px',
         borderRadius: "1px"
     },
     setGrade: {
@@ -82,6 +96,14 @@ const useStyles = makeStyles((theme) => ({
     },
     addBtn: {
         color: '#7B72AF'
+    },
+    gradeEdit: {
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        padding: '0px 5px',
+        flexBasis: '5%',
+        marginBottom: '5px'
     }
 }));
 
@@ -108,6 +130,7 @@ const StudentGrade = (props) => {
 
     useEffect(() => {
         let loading = true;
+        setLoading(true);
         if (testData && testData.class_id) {
             async function getGrades() {
                 try {
@@ -118,11 +141,13 @@ const StudentGrade = (props) => {
                             setGradeData(response.data.data || []);
                             setShowGrade(true);
                             setGetError(null);
+                            setLoading(false);
                         }
                     }
                 } catch (error) {
                     console.log("getGrades Error", error);
                     setGetError('')
+                    setLoading(false);
                 }
             }
             getGrades();
@@ -417,34 +442,30 @@ const StudentGrade = (props) => {
 
     const renderGrade = () => {
         return (
-            <div>
+            <div className={classes.gridContainer2}>
                 {
                     gradeData.length > 0 ?
-                        <div className={classes.gridContainer}>
-                            {
-                                gradeData.map((obj, key) => {
-                                    return (
-                                        <React.Fragment key={key}>
-                                            <Typography className={classes.itemGrade}>
-                                                {obj.grade} - {obj.percentage_to}% - {obj.percentage_from}%
+                        <Grid container className={classes.gridContainer}>
+                            {gradeData.map((obj, key) => {
+                                return (
+                                    <React.Fragment key={key}>
+                                        <Typography className={classes.itemPercent}>
+                                            <span style={{ fontSize: '14px' }}>{obj.grade} - {obj.percentage_to}% - {obj.percentage_from}%</span>
                                         </Typography>
-                                            {
-                                                gradeData.length === key + 1 &&
-                                                <Typography className={classes.itemGrade}>
-                                                    {searchData.user_classes &&
-                                                        <img
-                                                            src={editIcon}
-                                                            className={classes.editIcon}
-                                                            onClick={() => setEditGrade(true)} />
-                                                    }
-                                                </Typography>
-                                            }
-                                        </React.Fragment>
-                                    )
-                                })
+                                    </React.Fragment>
+                                )
+                            })
                             }
-                        </div> : renderEmptyGrade()
+                        </Grid> : renderEmptyGrade()
                 }
+                <div className={`${classes.gradeEdit} noprint`}>
+                    {searchData.user_classes &&
+                        <img
+                            src={editIcon}
+                            className={classes.editIcon}
+                            onClick={() => setEditGrade(true)} />
+                    }
+                </div>
             </div>
         )
     }
@@ -478,14 +499,15 @@ const StudentGrade = (props) => {
     }
 
     return (
-        <>
-            <div className={classes.container}>
-                {!editGrade && !newGrade && renderGrade()}
+        <div className="noprint">
+            {!isLoading && <div className={classes.container}>
                 {editGrade && renderGradeEdit()}
                 {newGrade && renderNewGrade()}
-                <BackdropLoader open={isLoading} />
-            </div>
-        </>
+                {!editGrade && !newGrade && renderGrade()}
+            </div>}
+
+            <BackdropLoader open={isLoading} />
+        </div>
     );
 }
 
@@ -521,7 +543,3 @@ const testValue1 = {
     "updated_at": "2020-10-04 12:05:26",
     "deleted_at": null
 }
-
-
-
-
