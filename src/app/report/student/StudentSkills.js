@@ -10,6 +10,8 @@ import ReportService from '../ReportService';
 import TextField from '@material-ui/core/TextField';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
+import StudentGrade from './StudentGrade';
+
 const useStyles = makeStyles((theme) => ({
     container: {
         padding: "2%",
@@ -63,8 +65,18 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "flex-end",
         marginTop: "10px"
     },
+    publishCard: {
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        margin: "10px 0px 20px 0px"
+    },
     cancelBtn: {
         background: "#fff",
+        marginRight: "10px"
+    },
+    iconRemark: {
         marginRight: "10px"
     },
     headerIcon: {
@@ -115,8 +127,9 @@ const useStyles = makeStyles((theme) => ({
     remarkNote: {
         display: 'flex',
         justifyContent: "space-between",
-        margin: '17px 0px',
-        backgroundColor: '#fff'
+        margin: '17px 14px',
+        backgroundColor: '#fff',
+        alignItems: 'center'
     },
     emptyMessage: {
         textAlign: 'center',
@@ -139,6 +152,8 @@ const StudentSkills = (props) => {
     const [isLoading, setLoading] = useState(true);
     const [allSubject, setAllSubject] = useState(true);
     const [updateStatus, setUpdateStatus] = useState(false);
+    const [editRemark, setEditRemark] = useState(false);
+    const [isPublish, setIsPublished] = useState(false);
     const [refObj, setRefObj] = useState({});
 
     const { searchData = searchValue1, testData = testValue1 } = props;
@@ -149,9 +164,13 @@ const StudentSkills = (props) => {
 
         if (data.grades[0]) {
             remarkText = data.grades[0].remarks;
+            if (data.grades[0].status == 'published') {
+                setIsPublished(true);
+            }
             if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
                 if (data.grades[0].status == 'published') {
                     showReport = true;
+                    setIsPublished(true);
                 }
             } else {
                 showReport = true;
@@ -202,12 +221,12 @@ const StudentSkills = (props) => {
 
     const setSkill = (obj) => {
         setSkillData(obj);
-        setAllSubject(setSubjectArray)
-        setEditSkill(true);
+        setEditOption('skill');
     }
 
     const cancelUpdate = () => {
         setEditSkill(false);
+        setEditRemark(false);
         setUpdateStatus((pre) => !pre);
     }
 
@@ -277,15 +296,17 @@ const StudentSkills = (props) => {
             skillData.user_skill[key] = obj;
         }
 
+        if (skillData.user_skill) {
+            skillData.user_skill.map((item) => {
+                const makeSkill = {
+                    'skill_id': item.id,
+                    'skill_name': item.skill_list_data.skill_name || '',
+                    'grade': item.skill_list_data.grade_name || ''
+                }
+                skill.push(makeSkill)
+            });
+        }
 
-        skillData.user_skill.map((item) => {
-            const makeSkill = {
-                'skill_id': item.id,
-                'skill_name': item.skill_list_data.skill_name || '',
-                'grade': item.skill_list_data.grade_name || ''
-            }
-            skill.push(makeSkill)
-        });
 
         subject.push(
             {
@@ -364,19 +385,29 @@ const StudentSkills = (props) => {
                     })
                 }
                 <Box>
-                    {renderRemark()}
                 </Box>
                 <div className={classes.publish}>
-
                     <Box>
                         <Button
                             variant='contained'
+                            color='primary'
                             disableElevation
-                            className={classes.cancelBtn}
                             onClick={() => { cancelUpdate() }}
                         >
-                            Cancel
+                            Update
                     </Button>
+                    </Box>
+                </div>
+            </div>
+        )
+    }
+
+    const publishCard = () => {
+        return (
+            <div className={`${classes.publishCard} noprint`}>
+                {
+                    !isLoading && !editSkill && !editRemark &&
+                    <Box>
                         <Button
                             variant='contained'
                             color='primary'
@@ -386,10 +417,10 @@ const StudentSkills = (props) => {
                                 cancelUpdate();
                             }}
                         >
-                            Publish
+                            Publish Now
                     </Button>
                     </Box>
-                </div>
+                }
             </div>
         )
     }
@@ -533,21 +564,10 @@ const StudentSkills = (props) => {
 
     const renderEmptyReport = () => {
         return (
-            <div className={classes.emptyCard}>
-                <Typography className={classes.emptyMessage}>
-                    <span>Report card not available.</span>
-                </Typography>
-            </div>
-        )
-    }
-
-    const remarkNote = () => {
-        return (
             <>
-                {remarkText && <div className={classes.remarkNote}>
+                {!isLoading && <div className={classes.emptyCard}>
                     <Typography className={classes.emptyMessage}>
-                        <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
-                        <span>{remarkText}</span>
+                        <span>Report card not available.</span>
                     </Typography>
                 </div>
                 }
@@ -555,7 +575,40 @@ const StudentSkills = (props) => {
         )
     }
 
-    const renderRemark = () => {
+    const setEditOption = (option) => {
+        setAllSubject(setSubjectArray);
+        if (option == 'remark') {
+            setEditRemark(true);
+            setEditSkill(false);
+        } else if (option == 'skill') {
+            setEditSkill(true);
+            setEditRemark(false);
+        }
+    }
+
+
+    const remarkNote = () => {
+        return (
+            <>
+                {!isLoading && <div className={classes.remarkNote}>
+                    <Typography className={classes.emptyMessage}>
+                        <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
+                        <span>{remarkText}</span>
+                    </Typography>
+                    <span className={`${classes.iconRemark} noprint`}>
+                        {searchData.user_classes &&
+                            <img
+                                src={editIcon} className={classes.editIcon} onClick={() => setEditOption('remark')}
+                            />
+                        }
+                    </span>
+                </div>
+                }
+            </>
+        )
+    }
+
+    const inputRemark = () => {
         return (
             <div className={classes.remark}>
                 <div className={classes.remark}>
@@ -567,8 +620,8 @@ const StudentSkills = (props) => {
                     variant="outlined"
                     fullWidth={true}
                     multiline
-                    rows={4}
-                    rowsMax={4}
+                    rows={6}
+                    rowsMax={6}
                     size="medium"
                     type="string"
                     defaultValue={remarkText}
@@ -576,19 +629,33 @@ const StudentSkills = (props) => {
                     className={classes.bgWhite}
                     onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
                 />
+                <div className={classes.publish}>
+                    <Box>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            disableElevation
+                            onClick={() => { cancelUpdate() }}
+                        >
+                            Update
+                    </Button>
+                    </Box>
+                </div>
             </div>
         )
     }
     setSubjectArray = [];
     return (
         <>
-            {!isLoading && <div className={classes.container}>
+            <div className={classes.container}>
                 {editSkill && renderEditSkill()}
                 {!editSkill && reportData.subjectDetails && renderSkill()}
-                {!showReport && renderEmptyReport()}
-                {showReport && remarkNote()}
-            </div>}
-
+            </div>
+            {!showReport && renderEmptyReport()}
+            {showReport && !editRemark && remarkNote()}
+            {showReport && editRemark && inputRemark()}
+            {!isLoading && <StudentGrade {...props} />}
+            {!isPublish && publishCard()}
             <BackdropLoader open={isLoading} />
         </>
     );

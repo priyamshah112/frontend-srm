@@ -7,10 +7,13 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import PrintIcon from '../../../assets/images/report/printer.svg';
 import Avatar from "@material-ui/core/Avatar";
+import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
+import Box from '@material-ui/core/Box';
 
 import ReportService from '../ReportService';
-import StudentGrade from './StudentGrade';
 import StudentSkills from './StudentSkills';
+
+import './print.css';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -251,7 +254,7 @@ const StudentDetails = (props) => {
     const renderHeader = () => {
         return (
             <>
-                <div className={classes.navigationBack}>
+                <div className={`${classes.navigationBack} noprint`}>
                     <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
                     <Typography>{testData.name}</Typography>
                     <div>
@@ -262,7 +265,7 @@ const StudentDetails = (props) => {
                     </div>
                 </div>
                 <div className={classes.studentPhoto}>
-                    <div className={classes.photo}>
+                    <div className={`${classes.photo} noprint`}>
                         {loadImage ? <img
                             src={searchData.thumbnail}
                             className={classes.userIcon}
@@ -321,12 +324,28 @@ const StudentDetails = (props) => {
 
 
 
+    const PrintFooter = () => {
+        return (
+            <Box display="none" displayPrint="block" >
+                <div>
+                    <Typography>
+                        Parent Signature
+                    </Typography>
+                    <Typography>
+                        Principal Signature
+                </Typography>
+                </div>
+            </Box>
+        )
+    }
+
     return (
-        <div className={classes.container} ref={printRef}>
+        <div className={`${classes.container}  print-container`} ref={printRef}>
             {renderHeader()}
             {renderAttendace()}
             <StudentSkills {...props} />
-            <StudentGrade {...props} />
+            <PrintFooter />
+            <BackdropLoader open={isLoading} />
         </div>
     );
 }

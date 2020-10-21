@@ -70,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: "space-between",
         margin: '10px 5px',
-        padding: '16px',
         borderRadius: "2px"
     },
     fillGradeWrapper: {
@@ -104,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '0px 5px',
         flexBasis: '5%',
         marginBottom: '5px'
+
     }
 }));
 
@@ -130,7 +130,6 @@ const StudentGrade = (props) => {
 
     useEffect(() => {
         let loading = true;
-        setLoading(true);
         if (testData && testData.class_id) {
             async function getGrades() {
                 try {
@@ -480,32 +479,30 @@ const StudentGrade = (props) => {
     const renderEmptyGrade = () => {
         return (
             <div>
-                <div className={classes.emptyGrade}>
-                    <>
-                        <Typography className={classes.itemGrade}>
-                            <span>Grades not available. {getError}</span>
-                        </Typography>
-                        <Typography className={classes.itemGrade}>
-                            {editAccess() && <img
-                                src={editIcon}
-                                className={classes.editIcon}
-                                onClick={() => setNewGrade(true)} />
-                            }
-                        </Typography>
-                    </>
-                </div>
+
+                {!isLoading && <div className={classes.emptyGrade}>
+                    <Typography className={classes.itemGrade}>
+                        <span>Grades not available. {getError}</span>
+                    </Typography>
+                    <Typography className={classes.itemGrade}>
+                        {editAccess() && <img
+                            src={editIcon}
+                            className={classes.editIcon}
+                            onClick={() => setNewGrade(true)} />
+                        }
+                    </Typography>
+                </div>}
             </div>
         )
     }
 
     return (
         <div className="noprint">
-            {!isLoading && <div className={classes.container}>
+            <div className={classes.container}>
                 {editGrade && renderGradeEdit()}
                 {newGrade && renderNewGrade()}
                 {!editGrade && !newGrade && renderGrade()}
-            </div>}
-
+            </div>
             <BackdropLoader open={isLoading} />
         </div>
     );
