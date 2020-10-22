@@ -124,7 +124,7 @@ const StudentGrade = (props) => {
         percentage_to: ''
     });
 
-    const { token, testData = testValue1, searchData = searchValue1 } = props;
+    const { token, testData, searchData } = props;
 
 
 
@@ -354,7 +354,7 @@ const StudentGrade = (props) => {
                             disableElevation
                             onClick={() => setEditGrade(false)}
                         >
-                            Update
+                            Save
                     </Button>
                     </Box>
                 </div>
@@ -497,7 +497,7 @@ const StudentGrade = (props) => {
     }
 
     return (
-        <div className="noprint">
+        <div>
             <div className={classes.container}>
                 {editGrade && renderGradeEdit()}
                 {newGrade && renderNewGrade()}
@@ -524,19 +524,3 @@ var defaultGrades = [
         "percentage_to": 100,
     }
 ]
-
-/*Temp */
-const searchValue1 = {}
-const testValue1 = {
-    "id": 364,
-    "code": "SRM-EXMTST-5f79ba86db3851601813126",
-    "school_id": 10,
-    "class_id": 91,
-    "name": "Test 4",
-    "image": null,
-    "created_by": 1,
-    "updated_by": 1,
-    "created_at": "2020-10-04 12:05:26",
-    "updated_at": "2020-10-04 12:05:26",
-    "deleted_at": null
-}
