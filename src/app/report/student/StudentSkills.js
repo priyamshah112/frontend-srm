@@ -156,7 +156,7 @@ const StudentSkills = (props) => {
     const [isPublish, setIsPublished] = useState(false);
     const [refObj, setRefObj] = useState({});
 
-    const { searchData = searchValue1, testData = testValue1 } = props;
+    const { searchData , testData } = props;
     const token = localStorage.getItem('srmToken');
 
 
@@ -390,11 +390,19 @@ const StudentSkills = (props) => {
                     <Box>
                         <Button
                             variant='contained'
+                            disableElevation
+                            className={classes.cancelBtn}
+                            onClick={() => { cancelUpdate() }}
+                        >
+                            Cancel
+                    </Button>
+                        <Button
+                            variant='contained'
                             color='primary'
                             disableElevation
                             onClick={() => { cancelUpdate() }}
                         >
-                            Update
+                            Save
                     </Button>
                     </Box>
                 </div>
@@ -529,7 +537,7 @@ const StudentSkills = (props) => {
                                                                 {item.name}
                                                             </Typography>
                                                             <span >
-                                                                {searchData.user_classes &&
+                                                                {searchData.user_classes && !isPublish &&
                                                                     <img
                                                                         src={editIcon} className={classes.editIcon} onClick={() => setSkill(item)}
                                                                     />
@@ -596,7 +604,7 @@ const StudentSkills = (props) => {
                         <span>{remarkText}</span>
                     </Typography>
                     <span className={`${classes.iconRemark} noprint`}>
-                        {searchData.user_classes &&
+                        {searchData.user_classes && !isPublish &&
                             <img
                                 src={editIcon} className={classes.editIcon} onClick={() => setEditOption('remark')}
                             />
@@ -633,11 +641,19 @@ const StudentSkills = (props) => {
                     <Box>
                         <Button
                             variant='contained'
+                            disableElevation
+                            className={classes.cancelBtn}
+                            onClick={() => { cancelUpdate() }}
+                        >
+                            Cancel
+                    </Button>
+                        <Button
+                            variant='contained'
                             color='primary'
                             disableElevation
                             onClick={() => { cancelUpdate() }}
                         >
-                            Update
+                            Save
                     </Button>
                     </Box>
                 </div>
@@ -669,85 +685,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(StudentSkills);
-
-/* Temp */
-var searchValue1 = {
-    "id": 1392,
-    "type": "username",
-    "username": "oral09",
-    "firstname": "Lelia",
-    "lastname": "Sauer",
-    "gender": "female",
-    "verified_at": null,
-    "otp": null,
-    "otp_expiry": null,
-    "thumbnail": "https://lorempixel.com/640/480/?67589",
-    "device_tokens": null,
-    "created_at": "2020-10-04T12:05:09.000000Z",
-    "updated_at": "2020-10-04T12:05:09.000000Z",
-    "roles": [
-        {
-            "id": 4,
-            "name": "student",
-            "guard_name": "web",
-            "created_at": "2020-10-04T12:03:10.000000Z",
-            "updated_at": "2020-10-04T12:03:10.000000Z",
-            "pivot": {
-                "model_id": 1392,
-                "role_id": 4,
-                "model_type": "App\\User"
-            }
-        }
-    ],
-    "user_classes": {
-        "id": 1391,
-        "user_id": 1392,
-        "school_id": 10,
-        "class_id": 91,
-        "user_code": null,
-        "class_code": null,
-        "from_date": "2020-10-04",
-        "to_date": "2021-10-04",
-        "created_by": 1,
-        "updated_by": 1,
-        "created_at": "2020-10-04T12:05:09.000000Z",
-        "updated_at": null,
-        "deleted_at": null,
-        "classes_data": {
-            "id": 91,
-            "code": "SRM-CLASS-5f79b9ff64e961601812991",
-            "school_id": 10,
-            "class_name": "Class 1",
-            "internal_name": "class-1",
-            "created_by": 1,
-            "updated_by": 1,
-            "created_at": "2020-10-04T12:03:11.000000Z",
-            "updated_at": "2020-10-04T12:03:11.000000Z",
-            "deleted_at": null
-        },
-        "school_data": {
-            "id": 10,
-            "name": "Zoila High School",
-            "registered_date": "2020-08-21",
-            "created_by": 1,
-            "updated_by": 1,
-            "created_at": "2020-10-04T12:03:11.000000Z",
-            "updated_at": "2020-10-04T12:03:11.000000Z",
-            "deleted_at": null
-        }
-    }
-}
-
-var testValue1 = {
-    "id": 364,
-    "code": "SRM-EXMTST-5f79ba86db3851601813126",
-    "school_id": 10,
-    "class_id": 91,
-    "name": "Test 4",
-    "image": null,
-    "created_by": 1,
-    "updated_by": 1,
-    "created_at": "2020-10-04 12:05:26",
-    "updated_at": "2020-10-04 12:05:26",
-    "deleted_at": null
-}
