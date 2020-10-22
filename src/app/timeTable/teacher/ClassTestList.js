@@ -155,7 +155,7 @@ const ClassTestList = (props) => {
 
                         <Grid item xs={12} style={{ textAlign: 'center' }}>
                             <div style={{ float: 'left' }}>
-                                <Link to='/timetableclasslist'>
+                                <Link to='/timetable'>
                                     <ArrowBackIosIcon fontSize="small" className={classes.backarrowbutton}  ></ArrowBackIosIcon>
                                 </Link>
                             </div>
@@ -193,6 +193,7 @@ const ClassTestList = (props) => {
                     <TestSubjectPage 
                         testID={testID}
                         testData={testData}
+                        classDetail={props.classDetail}
                         // ClassID={ClassID}
                         sublistBacktick={sublistBacktick}
                         TimeTableData={TimeTableData}

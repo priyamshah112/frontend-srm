@@ -10,9 +10,22 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
 import TimetableService from '../timeTableService';
 import '../../../assets/css/form.css';
-
-
-
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@material-ui/core/styles';
+import DateFnsUtils from "@date-io/date-fns";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import EventIcon from "@material-ui/icons/Event";
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+    KeyboardTimePicker,
+    DatePicker,
+  } from "@material-ui/pickers";
 
 
 
@@ -47,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: "Avenir Medium",
         fontWeight: "400",
         lineHeight: "1.5",
+        // paddingLeft:"45%",
     },
     form: {
         "& > *": {
@@ -67,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
         marginTop: "30px",
         marginBottom: "15px",
         textAlign: "left",
-        padding: "5px",
+        // padding: "5px",
+        textAlign:"center",
         borderRadius: "5px",
         paddingLeft: "12px",
         float: "left",
@@ -75,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: "Avenir Medium",
         fontWeight: "400",
         lineHeight: "1.5",
+        width:"100%",
     },
     paper: {
         textAlign: '',
@@ -98,9 +114,10 @@ const useStyles = makeStyles((theme) => ({
     headingList1: {
         textAlign: 'center',
         font: "normal normal medium 14px/19px Avenir",
-        // borderBottom: "1px solid lightgrey ",
+        borderBottom: "1px solid lightgrey ",
         borderRight: "1px solid lightgrey",
         background: "#FFFFFF",
+        color:"#000000"
     },
     dataList: {
         textAlign: "center",
@@ -123,7 +140,63 @@ const useStyles = makeStyles((theme) => ({
             width: "50%"
         },
     },
+    fieldStyle: {
+        width: "100%",
+        margin: "auto",
+        "& .MuiInput-underline:before": {
+          borderBottom: "2px solid #eaeaea",
+        },
+        "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+          borderBottom: "2px solid #7B72AF",
+          transitionProperty: "border-bottom-color",
+          transitionDuration: "500ms",
+          transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        },
+      },
 }));
+
+
+const styles = (theme) => ({
+    root: {
+      margin: 0,
+      padding: theme.spacing(2),
+    },
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
+    },
+  });
+
+const DialogTitle = withStyles(styles)((props) => {
+    const { children, classes, onClose, ...other } = props;
+    return (
+      <MuiDialogTitle disableTypography className={classes.root} {...other}>
+        <Typography variant="h6">{children}</Typography>
+        {onClose ? (
+          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </MuiDialogTitle>
+    );
+  });
+  
+  const DialogContent = withStyles((theme) => ({
+    root: {
+      padding: theme.spacing(2),
+    },
+  }))(MuiDialogContent);
+  
+  const DialogActions = withStyles((theme) => ({
+    root: {
+      margin: 0,
+      padding: theme.spacing(1),
+    },
+  }))(MuiDialogActions);
+  
+  
 const TestSubjectPage = (props) => {
     const classes = useStyles();
     const token = localStorage.getItem("srmToken");
@@ -141,7 +214,37 @@ const TestSubjectPage = (props) => {
     })
     const [exam_time_tableID, setExam_time_tableID] = useState();
     const [errors, setErrors] = useState({});
+    const [open, setOpen] = React.useState(false);
+    const [modal_sub, setmodal_sub] = React.useState('');
+    const [eventDate, setEventDate] = useState(null);
+    const [start_time, setstart_time] = useState(null);
+    const [end_time, setend_time] = useState(null);
 
+
+    const handleEventDate = (date) => {
+        setEventDate(date);
+      };
+
+    const handlestart_time = (date) => {
+        setstart_time(date);
+    };const handleend_time = (date) => {
+        setend_time(date);
+    };
+      
+    const handleClickOpen = (sub) => {
+      setOpen(true);
+      setmodal_sub(sub);
+    };
+    const handleClose = () => {
+      setOpen(false);
+    };
+    const put_data = () => {
+        setOpen(false);
+        console.log(eventDate);
+        console.log(start_time);
+        console.log(end_time);
+
+      };
 
 
     const fetchTestSublistWithTime = async (exam_time_tableID) => {
@@ -169,9 +272,6 @@ const TestSubjectPage = (props) => {
         setFormData({ [name]: value })
 
     }
-
-
-
 
     const handleSubmit = (e) => {
         if (validation(formData)) {
@@ -298,38 +398,106 @@ const TestSubjectPage = (props) => {
         setEditTimeTableUI(true)
 
     }
+    // console.log("sub list",props.subjectCategList);
+    // console.log("test data",props.testData);
+    // console.log("TimeTableData",props.TimeTableData);
+
     return (
         <Fragment>
             {editTimeTableUI === false ?
                 <div>
+                    <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+                            <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+                                {modal_sub}
+                            </DialogTitle>
+                                <DialogContent dividers>
+                                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                    <Grid container className={classes.fieldStyle}>
+                                                    <Grid item xs={12}>
+                                                        <DatePicker
+                                                        id="eventDate"
+                                                        label="Event Date"
+                                                        variant="dialog"
+                                                        minDate={new Date()}
+                                                        format="MM/dd/yyyy"
+                                                        value={eventDate}
+                                                        onChange={handleEventDate}
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton>
+                                                                <EventIcon />
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        className={classes.datePicker}
+                                                        />
+                                                    </Grid>
+                                                    </Grid>
+                                                    <Grid item xs={12}>
+                                                        <KeyboardTimePicker
+                                                        margin="normal"
+                                                        label="Start Time"
+                                                        value={start_time}
+                                                        onChange={handlestart_time}
+                                                        KeyboardButtonProps={{
+                                                            'aria-label': 'change time',
+                                                        }}
+                                                        />
+                                                        </Grid>
+                                                        <Grid item xs={12}>
+                                                        <KeyboardTimePicker
+                                                        margin="normal"
+                                                        label="End Time"
+                                                        value={end_time}
+                                                        onChange={handleend_time}
+                                                        KeyboardButtonProps={{
+                                                            'aria-label': 'change time',
+                                                        }}
+                                                        />
+                                                        </Grid>
+                                                </MuiPickersUtilsProvider>
+
+                                </DialogContent>
+                            <DialogActions>
+                        <Button autoFocus onClick={put_data} color="primary">
+                            Save
+                        </Button>
+                        </DialogActions>
+                    </Dialog>
+
                     <Grid container spacing={3} style={{ paddingLeft: '12px', paddingTop: '30px' }}>
 
                         <Grid item xs={12} style={{ textAlign: 'center', paddingTop: "0" }}>
                             <div style={{ float: 'left' }}>
                                 <ArrowBackIosIcon fontSize="small" style={{ float: 'left', cursor: "pointer", fontSize: '1.1rem' }} onClick={props.sublistBacktick}></ArrowBackIosIcon>
                             </div>
-                            <div style={{ float: 'right' }}>
+                            {/* <div style={{ float: 'right' }}>
                                 <ArrowForwardIosIcon style={{ float: 'right', fontSize: '1.1rem', display: hideforwardsubjectick, cursor: "pointer" }} onClick={forwardsubjecttick} fontSize="small" ></ArrowForwardIosIcon>
-                            </div>
-                            <Typography className={classes.headingtest}>Test List</Typography>
+                            </div> */}
+                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;{props.testData.name} Test List</Typography>
                         </Grid>
                     </Grid>
 
                     {props.subjectCategList.map((items, index) => {
                         return (
-                            <div style={{ display: '', paddingLeft: '50px', paddingRight: '50px' }}>
+                            <div style={{ display: '', paddingLeft: '5px', paddingRight: '5px' }}>
                                 <Grid item xs={12} style={{ paddingLeft: '12px' }}>
                                     <Typography className={classes.subcategory} style={{ marginTop: '25px', textAlign: 'center' }}>{items.categoryName}</Typography>
                                 </Grid>
+                                <Grid container spacing={3}>
                                 {items.subjectList.map((sub) => {
-                                    return <Grid container className={classes.tablestyle} lg={12} sm={12} xs={12} style={{ padding: '2%' }}>
+                                    return <Grid container className={classes.tablestyle} lg={6} md={12} sm={6} xs={12} style={{ padding: '2%' }}>
                                         <Grid lg={12} sm={12} xs={12}>
                                             <Typography display="" align="center" gutterBottom className={classes.paper} >
                                                 {/* {(sub.editable ?<span   style={{ float: 'right', marginRight: "10px", marginTop: '2px',cursor:"pointer" }} onClick={(e) => editTimeTableClick(e, sub.timeTable)}> <img src={EditLogo} alt="editLogo" /></span> :
                                                 <span   style={{ float: 'right', marginRight: "10px", marginTop: '2px',cursor:"pointer" }} onClick={(e) => editTimeTableClick(e, sub.timeTable)}> <img src={EditLogo} alt="editLogo" /></span>
                                                  )}  */}
                                                 <span className={classes.subjectname}>{sub.name}</span>
-                                                <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={(e) => editTimeTableClick(e, sub, items.subjectList)}> <img src={EditLogo} alt="editLogo" /></span>
+                                                {/* <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={(e) => editTimeTableClick(e, sub, items.subjectList)}> <img src={EditLogo} alt="editLogo" /></span> */}
+                                                <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={()=>handleClickOpen(sub.name)}> <img src={EditLogo} alt="editLogo" /></span>
+
 
                                             </Typography>
                                         </Grid>
@@ -346,24 +514,67 @@ const TestSubjectPage = (props) => {
                                                     <Typography className={classes.timetableheading}>End Time</Typography>
                                                 </Grid>
                                             </Grid>
-
+                                                   
                                             {
-                                                sub.timeTable.map((timeTable) => {
-                                                    return <Grid container lg={12} sm={12} xs={12} >
-                                                        <Grid item xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomLeftRadius: '5px' }}>
-                                                            <Typography style={{ background: '#FFFFFF', padding: '10px', borderBottomLeftRadius: "5px" }}>{timeTable.date}</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={4} className={classes.headingList1} style={{ borderLeft: '1px solid lightgrey' }}>
-                                                            <Typography style={{ background: '#FFFFFF', padding: '10px' }}>
-                                                                {timeTable.start_time}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomRightRadius: '5px' }}>
-                                                            <Typography style={{ background: '#FFFFFF', padding: '10px', borderBottomRightRadius: '5px' }}>{timeTable.end_time}</Typography>
-                                                        </Grid>
+                                                // sub.timeTable.map((timeTable) => {
+                                                //     return (
 
-                                                    </Grid>
-                                                })
+                                                    (Object.keys(sub.timeTable).length === 0)?
+                                                            <Grid container lg={12} sm={12} xs={12} >
+                                                                <Grid container spacing={0}>
+
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomLeftRadius: '5px' }}>
+                                                                {/* <Typography >1</Typography> */}
+
+                                                                    
+                                                            <Typography style={{ background: 'white', padding: '0px', borderBottomLeftRadius: "5px" }}>-</Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderLeft: '1px solid lightgrey' }}>
+                                    
+                                                                    <Typography style={{ background: 'white', padding: '0px' }}>
+                                                                        -
+                                                                    </Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomRightRadius: '5px' }}>
+                                                                
+                                                                    <Typography style={{  background: 'white', padding: '0px', borderBottomRightRadius: '5px' }}>-</Typography>
+                                                                    
+                                                                    </Grid>
+                                                                    </Grid>
+
+                                                            </Grid>
+                                                            
+                                                            :
+                                                            <Grid container lg={12} sm={12} xs={12} >
+                                                                <Grid container spacing={0}>
+
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomLeftRadius: '5px' }}>
+                                                                {/* <Typography >1</Typography> */}
+
+                                                                    
+                                                            <Typography style={{ background: 'white', padding: '0px', borderBottomLeftRadius: "5px" }}>{sub.timeTable[0].date}</Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderLeft: '1px solid lightgrey' }}>
+                                    
+                                                                    <Typography style={{ background: 'white', padding: '0px' }}>
+                                                                        {sub.timeTable[0].start_time}
+                                                                    </Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomRightRadius: '5px' }}>
+                                                                
+                                                                    <Typography style={{  background: 'white', padding: '0px', borderBottomRightRadius: '5px' }}>{sub.timeTable[0].end_time}</Typography>
+                                                                    
+                                                                    </Grid>
+                                                                    </Grid>
+
+                                                            </Grid>
+                                                            
+                                                //     )
+                                                // })
 
 
                                             }
@@ -371,6 +582,7 @@ const TestSubjectPage = (props) => {
                                     </Grid>
 
                                 })}
+                                </Grid>
                             </div>
                         )
 
@@ -394,7 +606,7 @@ const TestSubjectPage = (props) => {
                                 <ArrowBackIosIcon fontSize="small" onClick={timetableInputbacktik} style={{ float: 'left', fontSize: '1.1rem' }}></ArrowBackIosIcon>
                             </div>
 
-                            <Typography className={classes.headingtest}>Test List</Typography>
+                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;{props.testData.name} Test List</Typography>
                         </Grid>
                     </Grid>
                     <form className={classes.form} noValidate autoComplete="off" style={{ display: 'block' }} >

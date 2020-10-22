@@ -34,14 +34,14 @@ const useStyles = makeStyles((theme) => ({
     },
     grid: {
         display: "table",
-        height: "100vh",
+        height: "80vh",
         width: "100%",
         margin: "auto",
 
     },
     formControl: {
         margin: theme.spacing(1),
-        minWidth: "40%",
+        minWidth: "50%",
     },
 }));
 
