@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/styles';
 import PrintIcon from '../../../assets/images/report/printer.svg';
 import Avatar from "@material-ui/core/Avatar";
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
+import SchoolName from '../../../assets/images/report/School_Name.png';
 import Box from '@material-ui/core/Box';
 
 import ReportService from '../ReportService';
@@ -74,15 +75,31 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: "10%",
         maxWidth: "200px"
     },
+    studentDaysPrint: {
+        width: "100%",
+        marginLeft: '100px'
+    },
     daysName: {
         color: "#8E8E93",
         fontSize: "12px !important"
+    },
+    daysNamePrint: {
+        color: "#8E8E93",
+        fontSize: "12px !important",
+        padding: '3%'
     },
     daysNumber: {
         fontSize: "14px !important",
         color: "#1C1C1E",
         borderBottom: "1px solid #cdcdcd",
         maxWidth: "139px"
+    },
+    daysNumberPrint: {
+        fontSize: "14px !important",
+        color: "#1C1C1E",
+        borderBottom: "1px solid #cdcdcd",
+        maxWidth: "200px",
+        padding: '3%'
     },
     rootGrid: {
         flexFlow: "1",
@@ -184,6 +201,20 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#fff',
         boxShadow: 'none'
     },
+    printFooter: {
+        display: "flex",
+        justifyContent: "space-between",
+        padding: '0px 22px'
+    },
+    printHeader: {
+        display: "flex",
+        justifyContent: "center",
+        padding: '0px 22px'
+    },
+    externalIcon: {
+        height: 122,
+        width: undefined,
+    }
 }));
 
 const StudentDetails = (props) => {
@@ -202,8 +233,6 @@ const StudentDetails = (props) => {
     const goToSearch = () => {
         props.home();
     }
-
-    /* Fetch Student Attendance */
 
     useEffect(() => {
         let loading = true;
@@ -246,15 +275,14 @@ const StudentDetails = (props) => {
         }, 2000)
     };
 
-
     const onErrorImg = () => {
         setLoadImage(false)
     }
 
     const renderHeader = () => {
         return (
-            <>
-                <div className={`${classes.navigationBack} noprint`}>
+            <Box display="blobk" displayPrint="none">
+                <div className={`${classes.navigationBack}`}>
                     <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
                     <Typography>{testData.name}</Typography>
                     <div>
@@ -265,7 +293,7 @@ const StudentDetails = (props) => {
                     </div>
                 </div>
                 <div className={classes.studentPhoto}>
-                    <div className={`${classes.photo} noprint`}>
+                    <div className={`${classes.photo}`}>
                         {loadImage ? <img
                             src={searchData.thumbnail}
                             className={classes.userIcon}
@@ -278,7 +306,7 @@ const StudentDetails = (props) => {
                         <Typography className={classes.fontSize14}>{searchData.firstname} {searchData.lastname}</Typography>
                     </div>
                 </div>
-            </>
+            </Box>
         )
     }
 
@@ -290,7 +318,7 @@ const StudentDetails = (props) => {
         }
 
         return (
-            <>
+            <Box display="block" displayPrint="none">
                 <div className={classes.attendanceWrapper1}>
                     <div className={classes.attendance}>
                         <Typography>Attendance</Typography>
@@ -318,16 +346,75 @@ const StudentDetails = (props) => {
                         </div>
                     </div>
                 </div>
-            </>
+            </Box>
         )
     }
 
 
+    const PrintAttendance = () => {
+        const { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
+
+        if (teacherDetails && teacherDetails.length) {
+            teacherName = teacherDetails[0]
+        }
+
+        return (
+            <Box display="none" displayPrint="block">
+                <div className={classes.attendanceWrapper1}>
+                    <div className={classes.attendanceInfo}>
+                        <div className={classes.studentDaysPrint}>
+                            <Typography className={classes.daysNamePrint}>STUDENT NAME</Typography>
+                            <Typography className={classes.daysNumberPrint}>{searchData.firstname} {searchData.lastname}</Typography>
+                        </div>
+                        <div className={classes.studentDaysPrint}>
+                            <Typography className={classes.daysNamePrint}>TOTAL DAYS</Typography>
+                            <Typography className={classes.daysNumberPrint}>{totalDays}</Typography>
+                        </div>
+                    </div>
+                    <div className={classes.attendanceInfo}>
+                        <div className={classes.studentDaysPrint}>
+                            <Typography className={classes.daysNamePrint}>TEACHER</Typography>
+                            <Typography className={classes.daysNumberPrint}>{teacherName}</Typography>
+                        </div>
+                        <div className={classes.studentDaysPrint}>
+                            <Typography className={classes.daysNamePrint}>DAYS ATTENDTED</Typography>
+                            <Typography className={classes.daysNumberPrint}>{present}</Typography>
+                        </div>
+                    </div>
+                    <div className={classes.attendanceInfo}>
+                        <div className={classes.studentDaysPrint}>
+                            <Typography className={classes.daysNamePrint}>GRADE</Typography>
+                            <Typography className={classes.daysNumberPrint}>None</Typography>
+                        </div>
+                        <div className={classes.studentDaysPrint}>
+                            <Typography className={classes.daysNamePrint}>DAYS ABSENT</Typography>
+                            <Typography className={classes.daysNumberPrint}>{absent}</Typography>
+                        </div>
+                    </div>
+                </div>
+            </Box>
+        )
+    }
+
+
+    const PrintHeader = () => {
+        return (
+            <Box display="none" displayPrint="block">
+                <div className={classes.printHeader}>
+                    <img
+                        src={SchoolName}
+                        alt='Open Chat Full Screen'
+                        className={classes.externalIcon}
+                    />
+                </div>
+            </Box>
+        )
+    }
 
     const PrintFooter = () => {
         return (
-            <Box display="none" displayPrint="block" >
-                <div>
+            <Box display="none" displayPrint="block">
+                <div className={classes.printFooter}>
                     <Typography>
                         Parent Signature
                     </Typography>
@@ -341,6 +428,8 @@ const StudentDetails = (props) => {
 
     return (
         <div className={`${classes.container}  print-container`} ref={printRef}>
+            <PrintHeader />
+            <PrintAttendance />
             {renderHeader()}
             {renderAttendace()}
             <StudentSkills {...props} />

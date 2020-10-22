@@ -497,7 +497,7 @@ const StudentGrade = (props) => {
     }
 
     return (
-        <div className="noprint">
+        <div>
             <div className={classes.container}>
                 {editGrade && renderGradeEdit()}
                 {newGrade && renderNewGrade()}

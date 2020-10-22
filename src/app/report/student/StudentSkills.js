@@ -390,11 +390,19 @@ const StudentSkills = (props) => {
                     <Box>
                         <Button
                             variant='contained'
+                            disableElevation
+                            className={classes.cancelBtn}
+                            onClick={() => { cancelUpdate() }}
+                        >
+                            Cancel
+                    </Button>
+                        <Button
+                            variant='contained'
                             color='primary'
                             disableElevation
                             onClick={() => { cancelUpdate() }}
                         >
-                            Update
+                            Save
                     </Button>
                     </Box>
                 </div>
@@ -529,7 +537,7 @@ const StudentSkills = (props) => {
                                                                 {item.name}
                                                             </Typography>
                                                             <span >
-                                                                {searchData.user_classes &&
+                                                                {searchData.user_classes && !isPublish &&
                                                                     <img
                                                                         src={editIcon} className={classes.editIcon} onClick={() => setSkill(item)}
                                                                     />
@@ -596,7 +604,7 @@ const StudentSkills = (props) => {
                         <span>{remarkText}</span>
                     </Typography>
                     <span className={`${classes.iconRemark} noprint`}>
-                        {searchData.user_classes &&
+                        {searchData.user_classes && !isPublish &&
                             <img
                                 src={editIcon} className={classes.editIcon} onClick={() => setEditOption('remark')}
                             />
@@ -633,11 +641,19 @@ const StudentSkills = (props) => {
                     <Box>
                         <Button
                             variant='contained'
+                            disableElevation
+                            className={classes.cancelBtn}
+                            onClick={() => { cancelUpdate() }}
+                        >
+                            Cancel
+                    </Button>
+                        <Button
+                            variant='contained'
                             color='primary'
                             disableElevation
                             onClick={() => { cancelUpdate() }}
                         >
-                            Update
+                            Save
                     </Button>
                     </Box>
                 </div>
