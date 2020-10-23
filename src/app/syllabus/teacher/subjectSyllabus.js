@@ -56,7 +56,7 @@ const SubjectSyllabus = (props) => {
           <Typography variant="h6" gutterBottom>
             Chapter {row.chapter}
           </Typography>
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography variant="subtitle1" style={{   "white-space": "pre-wrap" }} gutterBottom>
             {row.mainContent}
           </Typography>
         </TableCell>

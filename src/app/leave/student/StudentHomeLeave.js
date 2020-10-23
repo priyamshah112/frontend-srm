@@ -146,6 +146,9 @@ emptyView: {
   paddingTop: "100px",
   fontSize: "20px",
 },
+leavereason:{
+  "white-space": "pre-wrap"
+}
 }));
 
 const StudentHomeLeave = (props) => {

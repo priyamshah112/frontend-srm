@@ -89,7 +89,7 @@ const EditChapter = (props) => {
   const updateChapter = async () => {
     setSubmitBtn("Submitting..");
     const response = await SyllabusService.updateChapter(token, params.eid, {
-      chapters: { term: termID, chapter: chapterID },
+      chapters: { term: parseInt(termID,10), chapter: parseInt(chapterID,10) },
       main_content: mainContent,
     });
     if (response.status === 200) {
@@ -107,7 +107,7 @@ const EditChapter = (props) => {
     const response = await SyllabusService.saveChapter(token, {
       subject_id: subject,
       class_id: classID,
-      chapters: { term: termID, chapter: chapterID },
+      chapters: { term: parseInt(termID,10), chapter: parseInt(chapterID,10) },
       main_content: mainContent,
     });
     if (response.status === 200) {
