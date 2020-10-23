@@ -219,6 +219,9 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "100px",
     fontSize: "20px",
   },
+  leavereason:{
+    "white-space": "pre-wrap"
+  }
 }));
 
 function TabPanel(props) {

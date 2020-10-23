@@ -160,6 +160,7 @@ const useStyles = makeStyles((theme) => ({
   },
   leavereason: {
     fontSize: "15px",
+    "white-space": "pre-wrap"
   },
   name: {
     transform: "translateY(17px)",

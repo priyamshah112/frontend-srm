@@ -45,6 +45,10 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "100px",
     fontSize: "20px",
   },
+  description:{
+    "white-space": "pre-wrap"
+  }
+  
 }));
 
 const ParentSyllabus = (props) => {
@@ -186,7 +190,7 @@ const ParentSyllabus = (props) => {
                       </Typography>
                     </TableCell>
                     <TableCell align="left" width="60%">
-                      <Typography variant="subtitle1" gutterBottom>
+                      <Typography variant="subtitle1" className={classes.description} gutterBottom>
                         {chapter.main_content}
                       </Typography>
                     </TableCell>
