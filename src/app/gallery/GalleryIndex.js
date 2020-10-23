@@ -230,7 +230,7 @@ const GalleryIndex = (props) => {
             <GridList
               cellHeight={200}
               spacing={2}
-              cols={matches ? 4 : 5}
+              cols={matches ? 3 : 4}
               className={classes.gridList}
             >
               {tileData.map((tile, index) => {
@@ -243,8 +243,10 @@ const GalleryIndex = (props) => {
                     <img
                       src={`${REACT_APP_BACKEND_IMAGE_URL}/${tile.img_path}/${tile.img_name}`}
                       alt={tile.img_name}
+                      resizeMode="contain"
                       className={classes.image}
-                      onClick={() => handleOpenLightbox(index)}
+                      onClick={() => handleOpenLightbox(index)
+                      }
                     />
                     <GridListTileBar
                       title={""}

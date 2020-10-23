@@ -664,7 +664,7 @@ const Layout = (props) => {
                     </ListItem>
                   );
                 }
-              } else if (item.name === "Payments") {
+              } else if (item.name === "Payments" || item.name === "Transport") {
                 if (
                   props.selectedRole === "parent" ||
                   props.selectedRole === "teacher"
@@ -836,7 +836,7 @@ const Layout = (props) => {
     <>
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <ChatIndex />
+        <ChatIndex {...props} />
       </div>
     </>
   );
