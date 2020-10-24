@@ -39,16 +39,22 @@ const useStyles = makeStyles((theme) => ({
     },
     gridContainer2: {
         display: 'flex',
-        margin: '10px 0px',
+        margin: '10px 5px',
         backgroundColor: '#fff',
         border: '1px solid #7B72AF',
         borderRadius: "2px",
-        display: '-webkit-box'
+        justifyContent: 'space-between'
     },
     emptyGrade: {
         display: 'flex',
         justifyContent: "space-between",
         margin: '20px 0px',
+        backgroundColor: '#fff'
+    },
+    emptyGradeMessage: {
+        display: 'flex',
+        justifyContent: "space-between",
+        margin: '8px',
         backgroundColor: '#fff'
     },
     itemGrade: {
@@ -103,7 +109,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '0px 5px',
         flexBasis: '5%',
         marginBottom: '5px'
-
     }
 }));
 
@@ -113,7 +118,6 @@ const StudentGrade = (props) => {
     const [gradeData, setGradeData] = useState([]);
     const [newGrade, setNewGrade] = useState(false);
     const [editGrade, setEditGrade] = useState(false);
-    const [showGrade, setShowGrade] = useState(true);
     const [errMessage, setError] = useState('');
     const [getError, setGetError] = useState(null);
     const [isLoading, setLoading] = useState(false);
@@ -138,7 +142,6 @@ const StudentGrade = (props) => {
                     if (response.status === 200) {
                         if (loading) {
                             setGradeData(response.data.data || []);
-                            setShowGrade(true);
                             setGetError(null);
                             setLoading(false);
                         }
@@ -458,11 +461,14 @@ const StudentGrade = (props) => {
                         </Grid> : renderEmptyGrade()
                 }
                 <div className={`${classes.gradeEdit} noprint`}>
-                    {searchData.user_classes &&
+                    {searchData.user_classes && editAccess() &&
                         <img
                             src={editIcon}
                             className={classes.editIcon}
-                            onClick={() => setEditGrade(true)} />
+                            onClick={() => {
+                                gradeData.length > 0 ? setEditGrade(true) : setNewGrade(true);
+                            }} />
+
                     }
                 </div>
             </div>
@@ -473,23 +479,17 @@ const StudentGrade = (props) => {
         if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
             return false;
         } else {
-            return true;
+
+            return !props.isPublish;
         }
     }
     const renderEmptyGrade = () => {
         return (
             <div>
 
-                {!isLoading && <div className={classes.emptyGrade}>
+                {!isLoading && <div className={classes.emptyGradeMessage}>
                     <Typography className={classes.itemGrade}>
                         <span>Grades not available. {getError}</span>
-                    </Typography>
-                    <Typography className={classes.itemGrade}>
-                        {editAccess() && <img
-                            src={editIcon}
-                            className={classes.editIcon}
-                            onClick={() => setNewGrade(true)} />
-                        }
                     </Typography>
                 </div>}
             </div>
