@@ -91,6 +91,8 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "400",
         lineHeight: "1.5",
         width:"100%",
+        textTransform: 'uppercase',
+
     },
     paper: {
         textAlign: '',
@@ -219,6 +221,10 @@ const TestSubjectPage = (props) => {
     const [eventDate, setEventDate] = useState(null);
     const [start_time, setstart_time] = useState(null);
     const [end_time, setend_time] = useState(null);
+    const [selected_sub, setselected_sub] = useState(null);
+    const [modify_sub, setmodify_sub] = useState(false);
+
+
 
 
     const handleEventDate = (date) => {
@@ -231,20 +237,274 @@ const TestSubjectPage = (props) => {
         setend_time(date);
     };
       
-    const handleClickOpen = (sub) => {
+    const handleClickOpen = (sub,modify) => {
+                if (modify){
+                                setmodify_sub(modify);
+                                // console.log(sub.timeTable[0].date);
+                                setEventDate(sub.timeTable[0].date);
+
+                                let d = new Date();
+                                let [hours, minutes, seconds] = sub.timeTable[0].start_time.split(':'); 
+                                d.setHours(+hours); 
+                                d.setMinutes(minutes); 
+                                d.setSeconds(seconds);
+                                console.log(d.toString());
+
+                            // console.log(sub.timeTable[0].start_time);
+                            setstart_time(d);
+                                let e = new Date(); 
+                                let [hours_1, minutes_1, seconds_1] = sub.timeTable[0].end_time.split(':'); 
+                                e.setHours(+hours_1); 
+                                e.setMinutes(minutes_1); 
+                                e.setSeconds(seconds_1);
+                                console.log(d.toString());
+                            // console.log(sub.timeTable[0].end_time);
+                            setend_time(e);
+                }
+      setmodal_sub(sub.name);
+      console.log("subbb",sub);
+      
+
+      setselected_sub(sub);
       setOpen(true);
-      setmodal_sub(sub);
+
     };
     const handleClose = () => {
       setOpen(false);
     };
-    const put_data = () => {
-        setOpen(false);
-        console.log(eventDate);
-        console.log(start_time);
-        console.log(end_time);
 
-      };
+    const publish_timetable = async () =>{
+
+        if (Array.isArray(props.TimeTableData) && props.TimeTableData.length) {
+            console.log("publish");
+            
+            var obj_post={
+                "class_id":props.testData.class_id,
+                "test_id":props.testData.id,
+                "status":"published",
+                "subject":[]
+            };
+                props.TimeTableData.forEach(ele => {
+                
+                    obj_post.subject.push({
+                            "subject_id": ele.subject_id,
+                            "subject_name": ele.subject_name,
+                            "timeData":
+                                [{
+                                    "date": ele.date,
+                                    "start_time": ele.start_time,
+                                    "end_time": ele.end_time
+                                }]
+                        });
+                        // data.status = ele.timeTable[0].status;
+                    });
+                const id=props.examTimeTable[0].id;
+                console.log(id);
+                const res = await TimetableService.put_subject(token,id,obj_post);
+                console.log(res);
+                console.log(res.data.data);
+    
+                    if (res.status === 200) {
+                        console.log("put success");
+                    }
+                    else {
+                        console.log('error post')
+                    }
+        props.double_sublistBacktick();
+            
+        }
+        else{
+            console.log("cannot be published");
+            alert("Please create aTime Table first");
+            
+        }
+    };
+    
+    
+    const check_put_post_data = async () => {
+        setOpen(false);
+
+        if (eventDate===null || start_time===null || end_time === null ){
+            alert("Please fill entire details");
+        }
+        else{
+            console.log(eventDate);
+            console.log(start_time);
+            console.log(end_time);
+            console.log(props.examTimeTable);
+            console.log(props.TimeTableData);
+
+            // if (Array.isArray(props.examTimeTable) && props.examTimeTable.length) {
+            if ((Array.isArray(props.examTimeTable) && props.examTimeTable.length)) {
+
+                console.log("put");
+                var obj_post={
+                    "class_id":props.testData.class_id,
+                    "test_id":props.testData.id,
+                    "status":"draft",
+                    "subject":[]
+                };
+                
+                if(modify_sub){
+
+                    if(Array.isArray(props.TimeTableData) && props.TimeTableData.length)
+                            {
+                                props.TimeTableData.forEach(ele => {
+                                    if (ele.subject_id === selected_sub.id){
+                                        if((eventDate instanceof Date))
+                                        {
+                                            obj_post.subject.push({
+                                                "subject_id": selected_sub.id,
+                                                "subject_name": selected_sub.name,
+                                                "timeData":
+                                                    [{
+                                                        "date":eventDate.toLocaleDateString(),
+                                                        "start_time":start_time.toLocaleTimeString(),
+                                                        "end_time":end_time.toLocaleTimeString()
+                                                    }]
+                                            });
+                                        }
+                                        else{
+                                            obj_post.subject.push({
+                                                "subject_id": selected_sub.id,
+                                                "subject_name": selected_sub.name,
+                                                "timeData":
+                                                    [{
+                                                        "date":eventDate,
+                                                        "start_time":start_time.toLocaleTimeString(),
+                                                        "end_time":end_time.toLocaleTimeString()
+                                                    }]
+                                            });
+                                        }
+                                           
+                                    }
+                                    else{
+                                        obj_post.subject.push({
+                                            "subject_id": ele.subject_id,
+                                            "subject_name": ele.subject_name,
+                                            "timeData":
+                                                [{
+                                                    "date": ele.date,
+                                                    "start_time": ele.start_time,
+                                                    "end_time": ele.end_time
+                                                }]
+                                        });
+                                    }
+                                    
+                                        // data.status = ele.timeTable[0].status;
+                                    });
+                        }
+                            const id=props.examTimeTable[0].id;
+                            console.log(id);
+                            const res = await TimetableService.put_subject(token,id,obj_post);
+                            console.log(res);
+                            console.log(res.data.data);
+                
+                                if (res.status === 200) {
+                                    console.log("put success");
+                                }
+                                else {
+                                    console.log('error post')
+                                }
+                }
+                else{
+                    if(Array.isArray(props.TimeTableData) && props.TimeTableData.length)
+                            {
+                                props.TimeTableData.forEach(ele => {
+                                
+                                    obj_post.subject.push({
+                                            "subject_id": ele.subject_id,
+                                            "subject_name": ele.subject_name,
+                                            "timeData":
+                                                [{
+                                                    "date": ele.date,
+                                                    "start_time": ele.start_time,
+                                                    "end_time": ele.end_time
+                                                }]
+                                        });
+                                        // data.status = ele.timeTable[0].status;
+                                    });
+                            }
+                                
+                                    obj_post.subject.push({
+                                        "subject_id": selected_sub.id,
+                                        "subject_name": selected_sub.name,
+                                        "timeData":
+                                            [{
+                                                "date":eventDate.toLocaleDateString(),
+                                                "start_time":start_time.toLocaleTimeString(),
+                                                "end_time":end_time.toLocaleTimeString()
+                                            }]
+                                    });
+                            console.log(obj_post);
+                            // {
+                            //     "subject_id":selected_sub.id,
+                            //     "subject_name":selected_sub.name,
+                            //     "timeData":
+                            //     [
+                            //         {
+                            //             "date":eventDate.toLocaleDateString(),
+                            //             "start_time":start_time.toLocaleTimeString(),
+                            //             "end_time":end_time.toLocaleTimeString()
+                            //         }
+                            //     ]
+                            // }
+                            const id=props.examTimeTable[0].id;
+                            console.log(id);
+                            const res = await TimetableService.put_subject(token,id,obj_post);
+                            console.log(res);
+                            console.log(res.data.data);
+                
+                                if (res.status === 200) {
+                                    console.log("put success");
+                                }
+                                else {
+                                    console.log('error post')
+                                }
+                }
+                            
+    
+            }else{
+    
+                console.log("empty-post");
+                var obj_post={
+                    "class_id":props.testData.class_id,
+                    "test_id":props.testData.id,
+                    "status":"draft",
+                    "subject":
+                            [{
+                                "subject_id":selected_sub.id,
+                                "subject_name":selected_sub.name,
+                                "timeData":
+                                [
+                                    {
+                                        "date":eventDate.toLocaleDateString(),
+                                        "start_time":start_time.toLocaleTimeString(),
+                                        "end_time":end_time.toLocaleTimeString()
+                                    }
+                                ]
+                            }]
+                };
+                console.log(obj_post);
+                // console.log(start_time.toLocaleTimeString());
+                // console.log(end_time.toLocaleTimeString());
+                // console.log(eventDate.toLocaleDateString());
+    
+                const res = await TimetableService.post_subject(token,obj_post);
+                console.log(res);
+                console.log(res.data.data);
+    
+                    if (res.status === true) {
+                        console.log("post success");
+                    }
+                    else {
+                        console.log('error post')
+                    }
+            }
+            props.double_sublistBacktick();
+        }
+        
+    }
 
 
     const fetchTestSublistWithTime = async (exam_time_tableID) => {
@@ -314,7 +574,7 @@ const TestSubjectPage = (props) => {
                         })
                     }
 
-                });
+                }); 
                 fetchTestSublistWithTime()
 
                 console.log("put data", data);
@@ -399,8 +659,10 @@ const TestSubjectPage = (props) => {
 
     }
     // console.log("sub list",props.subjectCategList);
-    // console.log("test data",props.testData);
+    console.log("test data",props.testData);
     // console.log("TimeTableData",props.TimeTableData);
+    // console.log("examTimeTable",props.examTimeTable);
+
 
     return (
         <Fragment>
@@ -416,7 +678,7 @@ const TestSubjectPage = (props) => {
                                                     <Grid item xs={12}>
                                                         <DatePicker
                                                         id="eventDate"
-                                                        label="Event Date"
+                                                        label="Exam Date"
                                                         variant="dialog"
                                                         minDate={new Date()}
                                                         format="MM/dd/yyyy"
@@ -461,7 +723,7 @@ const TestSubjectPage = (props) => {
 
                                 </DialogContent>
                             <DialogActions>
-                        <Button autoFocus onClick={put_data} color="primary">
+                        <Button autoFocus onClick={check_put_post_data} color="primary">
                             Save
                         </Button>
                         </DialogActions>
@@ -476,7 +738,7 @@ const TestSubjectPage = (props) => {
                             {/* <div style={{ float: 'right' }}>
                                 <ArrowForwardIosIcon style={{ float: 'right', fontSize: '1.1rem', display: hideforwardsubjectick, cursor: "pointer" }} onClick={forwardsubjecttick} fontSize="small" ></ArrowForwardIosIcon>
                             </div> */}
-                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;{props.testData.name} Test List</Typography>
+                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;-&nbsp;{props.testData.name}&nbsp;-&nbsp;Timetable</Typography>
                         </Grid>
                     </Grid>
 
@@ -496,7 +758,28 @@ const TestSubjectPage = (props) => {
                                                  )}  */}
                                                 <span className={classes.subjectname}>{sub.name}</span>
                                                 {/* <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={(e) => editTimeTableClick(e, sub, items.subjectList)}> <img src={EditLogo} alt="editLogo" /></span> */}
-                                                <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={()=>handleClickOpen(sub.name)}> <img src={EditLogo} alt="editLogo" /></span>
+                                                
+                                                {props.examTimeTable !==null?
+                                                (
+                                                    props.examTimeTable[0].status==='published'?
+                                                    (<span></span>)
+                                                    :
+                                                    ((Object.keys(sub.timeTable).length === 0)?
+                                                    <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={()=>handleClickOpen(sub,false)}> <img src={EditLogo} alt="editLogo" /></span>
+                                                    :
+                                                    <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={()=>handleClickOpen(sub,true)}> <img src={EditLogo} alt="editLogo" /></span>
+                                                    )
+
+                                                )
+                                                :
+                                                ((Object.keys(sub.timeTable).length === 0)?
+                                                    <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={()=>handleClickOpen(sub,false)}> <img src={EditLogo} alt="editLogo" /></span>
+                                                    :
+                                                    <span style={{ float: 'right', marginRight: "10px", marginTop: '2px', cursor: "pointer" }} onClick={()=>handleClickOpen(sub,true)}> <img src={EditLogo} alt="editLogo" /></span>
+                                                    )
+                                                }
+                                              
+                                                
 
 
                                             </Typography>
@@ -588,14 +871,53 @@ const TestSubjectPage = (props) => {
 
 
                     })}
-                    <Grid item xs={12} style={{ textAlign: 'right', paddingTop: "20px", marginBottom: '50px' }}>
+                    <br/>
+                    <br/>
+
+                                                {props.examTimeTable !==null?
+                                                (
+                                                    props.examTimeTable[0].status==='published'?
+                                                    (<span></span>)
+                                                    :
+                                                    (<Grid item xs={12} style={{ textAlign: 'right', paddingTop: "20px", marginBottom: '50px' }}>
+                                                    <Typography>
+                                                        <Button variant="contained" onClick={publish_timetable} style={{ background: '#7b72af', color: '#FFFFFF' }}>
+                                                            Publish Now
+                                                            </Button>
+                                                    </Typography>
+                                                </Grid>)
+
+                                                )
+                                                :
+                                                (<Grid item xs={12} style={{ textAlign: 'right', paddingTop: "20px", marginBottom: '50px' }}>
+                                                <Typography>
+                                                    <Button variant="contained" onClick={publish_timetable} style={{ background: '#7b72af', color: '#FFFFFF' }}>
+                                                        Publish Now
+                                                        </Button>
+                                                </Typography>
+                                            </Grid>)
+                                                }
+                                                {/* {props.examTimeTable[0].status==='published'?
+                                                    (<span></span>)
+                                                    :
+                                                    (
+                                                    <Grid item xs={12} style={{ textAlign: 'right', paddingTop: "20px", marginBottom: '50px' }}>
+                                                        <Typography>
+                                                            <Button variant="contained" onClick={publish_timetable} style={{ background: '#7b72af', color: '#FFFFFF' }}>
+                                                                Publish Now
+                                                                </Button>
+                                                        </Typography>
+                                                    </Grid>
+                                                    )
+                                                } */}
+                    {/* <Grid item xs={12} style={{ textAlign: 'right', paddingTop: "20px", marginBottom: '50px' }}>
 
                         <Typography>
                             <Button variant="contained" style={{ background: '#7b72af', color: '#FFFFFF' }}>
                                 Publish Now
                                 </Button>
                         </Typography>
-                    </Grid>
+                    </Grid> */}
 
                 </div> :
                 <Container>
@@ -606,7 +928,7 @@ const TestSubjectPage = (props) => {
                                 <ArrowBackIosIcon fontSize="small" onClick={timetableInputbacktik} style={{ float: 'left', fontSize: '1.1rem' }}></ArrowBackIosIcon>
                             </div>
 
-                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;{props.testData.name} Test List</Typography>
+                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;-&nbsp;{props.testData.name}&nbsp;-&nbsp;Timetable</Typography>
                         </Grid>
                     </Grid>
                     <form className={classes.form} noValidate autoComplete="off" style={{ display: 'block' }} >

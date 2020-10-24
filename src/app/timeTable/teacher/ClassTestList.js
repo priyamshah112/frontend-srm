@@ -51,9 +51,13 @@ const ClassTestList = (props) => {
     const [subPageUI, setSubPageUI] = useState(false);
     const [emptyTimeTable, setEmptyTimeTable] = useState("");
     const [TimeTableData, setTimeTableData] = useState(null);
+    const [examTimeTable, setexamTimeTable] = useState(null);
+
     const [forwardsublistT, setforwardsublistT] = useState("none")
     const [subjectCategList, setSubjectCategList] = useState([]);
-    const [testData,setTestData] = useState({})
+    const [testData,setTestData] = useState({});
+    const [selected_test,setselected_test] = useState({});
+
     const fetchClassTestList = async () => {
         const res = await TimetableService.getClassTestList(token, props.classID)
         if (res.status === 200) {
@@ -109,18 +113,27 @@ const ClassTestList = (props) => {
 
             let data = res.data.data.examTimeTable;
             if (Array.isArray(data) && data.length) {
-                let data1 = res.data.data.examTimeTable[0].timetable_data
+                let data1 = res.data.data.examTimeTable[0].timetable_data;
+                let data2 = res.data.data.examTimeTable;
+                console.log("data1",data1);
+                console.log("data2",data2);
+                setexamTimeTable(data2);
+
 
                 if (Array.isArray(data1) && data1.length) {
                     // console.log(data1)
-                    setTimeTableData(data1)
+                    setTimeTableData(data1);
+                    setexamTimeTable(data2);
+
                 }
                 else {
-                    setTimeTableData(null)
+                    setTimeTableData(null);
+                    // setexamTimeTable(null);
                 }
             }
             else {
                 setEmptyTimeTable('TimeTable is not avilabel ')
+                // setexamTimeTable(null);
             }
 
         }
@@ -136,10 +149,18 @@ const ClassTestList = (props) => {
         setTestData(testid)
         setTestID(testid.id)
         fetchTestSublistWithTime(testid)
+        setselected_test(testid);
         setSubPageUI(true)
     }
     const sublistBacktick = () => {
         setSubPageUI(false)
+    }
+    const double_sublistBacktick = () => {
+        // setSubPageUI(true);
+        setSubPageUI(false);
+        fetchTestSublistWithTime(selected_test)
+        setSubPageUI(true);
+
     }
     const forwardtestListbacktick = () => {
         setSubPageUI(true)
@@ -160,7 +181,7 @@ const ClassTestList = (props) => {
                                 </Link>
                             </div>
                             <div style={{ float: 'right', display: forwardsublistT }} onClick={forwardtestListbacktick}><ArrowForwardIosIcon fontSize="small" ></ArrowForwardIosIcon></div>
-                            <Typography className={classes.headingtest}>{props.classDetail} Test List</Typography>
+                            <Typography className={classes.headingtest}>{props.classDetail}&nbsp;-&nbsp;Timetable</Typography>
 
                         </Grid>
                     </Grid>
@@ -197,6 +218,8 @@ const ClassTestList = (props) => {
                         // ClassID={ClassID}
                         sublistBacktick={sublistBacktick}
                         TimeTableData={TimeTableData}
+                        double_sublistBacktick={double_sublistBacktick}
+                        examTimeTable={examTimeTable}
                         forwardsublistT={forwardsublistT}
                         subjectCategList={subjectCategList} />
                 </Container>
