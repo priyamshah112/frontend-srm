@@ -284,7 +284,7 @@ const Details = (props) => {
                         disableGutters
                         classes={{ root: classes.menuItemRoot }}
                         className={classes.menuItem}
-                        value={"delete"}
+                        value={"deleted"}
                       >
                         <div className={classes.borderBottomDiv}>Delete</div>
                       </MenuItem>

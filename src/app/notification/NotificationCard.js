@@ -226,7 +226,7 @@ const NotificationCard = (props) => {
                 disableGutters
                 classes={{ root: classes.menuItemRoot }}
                 className={classes.menuItem}
-                value={"delete"}
+                value={"deleted"}
               >
                 <div className={classes.borderBottomDiv}>
                   <Typography variant="body2">Delete</Typography>
