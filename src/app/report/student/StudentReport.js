@@ -206,14 +206,30 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "space-between",
         padding: '0px 22px'
     },
+    schoolNameLogo: {
+        display: "flex",
+        justifyContent: "center",
+        padding: '18px 22px'
+    },
     printHeader: {
         display: "flex",
         justifyContent: "center",
         padding: '0px 22px'
     },
-    externalIcon: {
-        height: 122,
+    reportLogo: {
+        height: 60,
         width: undefined,
+    },
+    schoolLogo: {
+        height: 34,
+        width: undefined,
+    },
+    schoolTitle: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: 'center',
+        padding: '0px 10px',
+        fontSize: '22px'
     }
 }));
 
@@ -403,8 +419,8 @@ const StudentDetails = (props) => {
                 <div className={classes.printHeader}>
                     <img
                         src={SchoolName}
-                        alt='Open Chat Full Screen'
-                        className={classes.externalIcon}
+                        alt='Report Card'
+                        className={classes.reportLogo}
                     />
                 </div>
             </Box>
@@ -426,9 +442,38 @@ const StudentDetails = (props) => {
         )
     }
 
+    const PrintSchoolLogo = () => {
+
+        let logo = ''
+        let name = ''
+
+        if (props.userInfo && props.userInfo.user_classes) {
+            if (props.userInfo.user_classes.school_data) {
+                logo =  props.userInfo.user_classes.school_data.logo
+                name =  props.userInfo.user_classes.school_data.name
+            }
+        }
+
+        return (
+            <Box display="none" displayPrint="block">
+                <div className={classes.schoolNameLogo}>
+                    <img
+                        src={logo}
+                        alt='School Logo'
+                        className={classes.schoolLogo}
+                    />
+                    <Typography className={classes.schoolTitle}>
+                        {name}
+                    </Typography>
+                </div>
+            </Box>
+        )
+    }
+
     return (
         <div className={`${classes.container}  print-container`} ref={printRef}>
             <PrintHeader />
+            <PrintSchoolLogo />
             <PrintAttendance />
             {renderHeader()}
             {renderAttendace()}
@@ -441,7 +486,8 @@ const StudentDetails = (props) => {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.auth.token
+        token: state.auth.token,
+        userInfo: state.auth.userInfo
     };
 };
 

@@ -150,7 +150,10 @@ const NotificationCard = (props) => {
         } else if (updatedStatus === "unread") {
           props.addNotificationCount();
           setStatus("unread");
-        } else {
+        }else if (updatedStatus === "deleted") {
+          props.handleRemoveNotifcation(props.notification.id);
+          setStatus("deleted");          
+          } else {
           props.subNotificationCount();
           props.handleRemoveNotifcation(props.notification.id);
         }
@@ -226,7 +229,7 @@ const NotificationCard = (props) => {
                 disableGutters
                 classes={{ root: classes.menuItemRoot }}
                 className={classes.menuItem}
-                value={"delete"}
+                value={"deleted"}
               >
                 <div className={classes.borderBottomDiv}>
                   <Typography variant="body2">Delete</Typography>

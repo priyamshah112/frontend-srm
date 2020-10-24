@@ -21,10 +21,10 @@ const TimeTable = (props) => {
   return (
     <div className={classes.container} >
 
-                 {selectedRole === "teacher" ?
+                 {selectedRole === "teacher" || selectedRole === "admin" ?
     
                      <TeacherTimeTable /> : ''}
-                 {selectedRole === "student" ?
+                 {selectedRole === "student" || selectedRole === "parent"?
     
                      <StudentTimeTable /> : ''}
     
