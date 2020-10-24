@@ -48,14 +48,17 @@ const useStyles = makeStyles((theme) => ({
         marginTop: "30px",
         marginBottom: "15px",
         textAlign: "left",
-        padding: "5px",
+        // padding: "5px",
+        textAlign:"center",
         borderRadius: "5px",
         paddingLeft: "12px",
-        float:"left",
+        float: "left",
         fonTize: "1rem",
         fontFamily: "Avenir Medium",
         fontWeight: "400",
         lineHeight: "1.5",
+        width:"100%",
+        textTransform: 'uppercase',
     },
 
     root: {
@@ -155,6 +158,12 @@ const TestSubjectPage = (props) => {
 
 
 
+    console.log(props.testID);
+    console.log(props.subCatgarray);
+    console.log(props.examTimeTable);
+    console.log(props.TimeTableData);
+
+
 
     return (
         <Fragment>
@@ -166,13 +175,13 @@ const TestSubjectPage = (props) => {
                                 <ArrowBackIosIcon  style={{ float: 'left' ,cursor:'pointer',fontSize:'1.2rem'}} onClick={props.sublistBacktick}></ArrowBackIosIcon>
                             </div>
 
-                            <Typography className={classes.headingtest} style={{ marginTop: '15px' }}>Test List</Typography>
+                            <Typography className={classes.headingtest} style={{ marginTop: '15px' }}>{props.testID.name}&nbsp;-&nbsp;Timetable</Typography>
                         </Grid>
                     </Grid>
                 </Grid>
                 {(examTimeTable.length ?
                     <div>
-                        {subjectCategList.map((items, index) => {
+                        {/* {subjectCategList.map((items, index) => {
                             return (
                                 <div >
                                     <Grid item xs={12} style={{ paddingLeft: '12px' }}>
@@ -225,6 +234,109 @@ const TestSubjectPage = (props) => {
 
 
                         })}
+                     */}
+                     {subjectCategList.map((items, index) => {
+                        return (
+                            <div style={{ display: '', paddingLeft: '5px', paddingRight: '5px' }}>
+                                <Grid item xs={12} style={{ paddingLeft: '12px' }}>
+                                    <Typography className={classes.subcategory} style={{ marginTop: '25px', textAlign: 'center' }}>{items.categoryName}</Typography>
+                                </Grid>
+                                <Grid container spacing={3}>
+                                {items.subjectList.map((sub) => {
+                                    return <Grid container className={classes.tablestyle} lg={6} md={12} sm={6} xs={12} style={{ padding: '2%' }}>
+                                        <Grid lg={12} sm={12} xs={12}>
+                                            <Typography display="" align="center" gutterBottom className={classes.paper} >
+                                                <span className={classes.subjectname}>{sub.name}</span>
+                                            </Typography>
+                                        </Grid>
+                                        <Grid items lg={12} sm={12} xs={12}>
+                                            <Grid container lg={12} sm={12} xs={12} >
+                                                <Grid item xs={4} className={classes.headingList} style={{}}>
+                                                    <Typography className={classes.timetableheading}>Exam Date</Typography>
+                                                </Grid>
+                                                <Grid item xs={4} className={classes.headingList} >
+                                                    <Typography className={classes.timetableheading}>Start Time</Typography>
+
+                                                </Grid>
+                                                <Grid item xs={4} className={classes.headingList} style={{}}>
+                                                    <Typography className={classes.timetableheading}>End Time</Typography>
+                                                </Grid>
+                                            </Grid>
+                                                   
+                                            {
+                                                // sub.timeTable.map((timeTable) => {
+                                                //     return (
+
+                                                    (Object.keys(sub.timeTable).length === 0)?
+                                                            <Grid container lg={12} sm={12} xs={12} >
+                                                                <Grid container spacing={0}>
+
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomLeftRadius: '5px' }}>
+                                                                {/* <Typography >1</Typography> */}
+
+                                                                    
+                                                            <Typography style={{ background: 'white', padding: '0px', borderBottomLeftRadius: "5px" }}>-</Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderLeft: '1px solid lightgrey' }}>
+                                    
+                                                                    <Typography style={{ background: 'white', padding: '0px' }}>
+                                                                        -
+                                                                    </Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomRightRadius: '5px' }}>
+                                                                
+                                                                    <Typography style={{  background: 'white', padding: '0px', borderBottomRightRadius: '5px' }}>-</Typography>
+                                                                    
+                                                                    </Grid>
+                                                                    </Grid>
+
+                                                            </Grid>
+                                                            
+                                                            :
+                                                            <Grid container lg={12} sm={12} xs={12} >
+                                                                <Grid container spacing={0}>
+
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomLeftRadius: '5px' }}>
+                                                                {/* <Typography >1</Typography> */}
+
+                                                                    
+                                                            <Typography style={{ background: 'white', padding: '0px', borderBottomLeftRadius: "5px" }}>{sub.timeTable[0].date}</Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderLeft: '1px solid lightgrey' }}>
+                                    
+                                                                    <Typography style={{ background: 'white', padding: '0px' }}>
+                                                                        {sub.timeTable[0].start_time}
+                                                                    </Typography>
+                                                                    
+                                                                </Grid>
+                                                                <Grid item lg={4} md={4} sm={4} xs={4} className={classes.headingList1} style={{ borderRight: '0', borderBottomRightRadius: '5px' }}>
+                                                                
+                                                                    <Typography style={{  background: 'white', padding: '0px', borderBottomRightRadius: '5px' }}>{sub.timeTable[0].end_time}</Typography>
+                                                                    
+                                                                    </Grid>
+                                                                    </Grid>
+
+                                                            </Grid>
+                                                            
+                                                //     )
+                                                // })
+
+
+                                            }
+                                        </Grid>
+                                    </Grid>
+
+                                })}
+                                </Grid>
+                            </div>
+                        )
+
+
+                    })}
+                    <br/>
                     </div>
                     :
                     <Typography className={classes.headingtest} style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>

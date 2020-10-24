@@ -57,6 +57,22 @@ class TimetableService {
             },
         })
     }
+    post_subject(token,obj) {
+        return axios.post(`${BACKEND_API_URL}/exam_time_tables`, obj ,{
+            headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    }
+    put_subject(token, exam_time_tableID,obj) {
+        return axios.put(`${BACKEND_API_URL}/exam_time_tables/${exam_time_tableID}`,obj, {
+            headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    }
 
     //  student TestList
 

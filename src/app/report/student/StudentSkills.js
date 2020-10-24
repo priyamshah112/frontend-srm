@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         flexDirection: "column",
         alignItems: "flex-end",
-        margin: "10px 0px 20px 0px"
+        margin: "10px 0px 30px 0px"
     },
     cancelBtn: {
         background: "#fff",
@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
     remarkNote: {
         display: 'flex',
         justifyContent: "space-between",
-        margin: '17px 14px',
+        margin: '36px 14px',
         backgroundColor: '#fff',
         alignItems: 'center'
     },
@@ -150,13 +150,14 @@ const StudentSkills = (props) => {
     const [editSkill, setEditSkill] = useState(false);
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
-    const [allSubject, setAllSubject] = useState(true);
+    const [allSubject, setAllSubject] = useState([]);
     const [updateStatus, setUpdateStatus] = useState(false);
     const [editRemark, setEditRemark] = useState(false);
     const [isPublish, setIsPublished] = useState(false);
     const [refObj, setRefObj] = useState({});
+    const [isEditGrade, setIsEditGrade] = useState({});
 
-    const { searchData , testData } = props;
+    const { searchData, testData } = props;
     const token = localStorage.getItem('srmToken');
 
 
@@ -414,7 +415,7 @@ const StudentSkills = (props) => {
         return (
             <div className={`${classes.publishCard} noprint`}>
                 {
-                    !isLoading && !editSkill && !editRemark &&
+                    !isLoading && !editSkill && !editRemark && !isEditGrade && editAccess() &&
                     <Box>
                         <Button
                             variant='contained'
@@ -628,8 +629,8 @@ const StudentSkills = (props) => {
                     variant="outlined"
                     fullWidth={true}
                     multiline
-                    rows={6}
-                    rowsMax={6}
+                    rows={8}
+                    rowsMax={8}
                     size="medium"
                     type="string"
                     defaultValue={remarkText}
@@ -661,6 +662,10 @@ const StudentSkills = (props) => {
         )
     }
     setSubjectArray = [];
+
+    const onGradeEdit = (flag) => {
+        setIsEditGrade(flag);
+    }
     return (
         <>
             <div className={classes.container}>
@@ -670,7 +675,7 @@ const StudentSkills = (props) => {
             {!showReport && renderEmptyReport()}
             {showReport && !editRemark && remarkNote()}
             {showReport && editRemark && inputRemark()}
-            {!isLoading && <StudentGrade {...props} />}
+            {!isLoading && <StudentGrade {...props} onGradeEdit={onGradeEdit} isPublish={isPublish}/>}
             {!isPublish && publishCard()}
             <BackdropLoader open={isLoading} />
         </>
