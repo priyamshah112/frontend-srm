@@ -150,7 +150,10 @@ const NotificationCard = (props) => {
         } else if (updatedStatus === "unread") {
           props.addNotificationCount();
           setStatus("unread");
-        } else {
+        }else if (updatedStatus === "deleted") {
+          props.handleRemoveNotifcation(props.notification.id);
+          setStatus("deleted");          
+          } else {
           props.subNotificationCount();
           props.handleRemoveNotifcation(props.notification.id);
         }

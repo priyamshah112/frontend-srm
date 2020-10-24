@@ -23,7 +23,7 @@ import EventIcon from "@material-ui/icons/Event";
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
-    KeyboardTimePicker,
+    TimePicker,
     DatePicker,
   } from "@material-ui/pickers";
 
@@ -312,7 +312,7 @@ const TestSubjectPage = (props) => {
         }
         else{
         if(end_time<start_time || (end_time.toLocaleTimeString())   == (start_time.toLocaleTimeString())){
-            alert("End Time cannot be selected value");
+            alert("End Time cannot be greater than Start Time");
             }
             else{
                 // console.log(eventDate);
@@ -515,7 +515,7 @@ const TestSubjectPage = (props) => {
                                                     </Grid>
                                                     </Grid>
                                                     <Grid item xs={12}>
-                                                        <KeyboardTimePicker
+                                                        <TimePicker
                                                         margin="normal"
                                                         label="Start Time"
                                                         value={start_time}
@@ -525,17 +525,34 @@ const TestSubjectPage = (props) => {
                                                         KeyboardButtonProps={{
                                                             'aria-label': 'change time',
                                                         }}
-                                                        
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton>
+                                                                <EventIcon />
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                            ),
+                                                        }}
                                                         />
                                                         </Grid>
                                                         <Grid item xs={12}>
-                                                        <KeyboardTimePicker
+                                                        <TimePicker
                                                         margin="normal"
                                                         label="End Time"
                                                         value={end_time}
                                                         onChange={handleend_time}
                                                         KeyboardButtonProps={{
                                                             'aria-label': 'change time',
+                                                        }}
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton>
+                                                                <EventIcon />
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                            ),
                                                         }}
                                                         />
                                                         </Grid>
