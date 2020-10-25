@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -7,6 +7,10 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import Badge from "@material-ui/core/Badge";
 import SingleChat from "./SingleChat";
+import { useParams } from "react-router-dom";
+import ChatService from "../chat/ChatService";
+import { connect } from "react-redux";
+import * as actions from '../../app/auth/store/actions';
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -47,82 +51,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ChatFullScreen() {
+function ChatFullScreen(props) {
   const classes = useStyles();
+  const [chat, setChat] = useState(null)
+  const { id } = useParams();
+  useEffect(()=>{
+    fetchChat()
+  }, [])
 
+  const fetchChat = async() => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      const response = await ChatService.fetchChat(
+        id,
+        token,
+      );
+      console.log('Scroll response', response);
+      if (response.status === 200) {
+        console.log('Chat', response);
+        const { data } = response
+        setChat(data.chat)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  if(chat == null){
+    return (<div></div>);
+  }
   return (
-    <SingleChat fullScreen={true} />
+    <SingleChat props={props} fullScreen={true} chat={chat} />
   );
 }
+const mapStateToProps = (state) => {
+  return {
+    userInfo: state.auth.userInfo,
+    token: state.auth.token,
+    isAuthenticated: state.auth.token !== null,
+    selectedRole: state.auth.selectedRole,
+    changeRole: state.auth.changeRole,
+    notificationCount: state.notification.notificationCount,
+  };
+};
 
-/* import React from "react";
-import Badge from "@material-ui/core/Badge";
-import Avatar from "@material-ui/core/Avatar";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+  };
+};
 
-const StyledBadge = withStyles((theme) => ({
-  badge: {
-    backgroundColor: "#44b700",
-    color: "#44b700",
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    "&::after": {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      borderRadius: "50%",
-      animation: "$ripple 1.2s infinite ease-in-out",
-      border: "1px solid currentColor",
-      content: '""',
-    },
-  },
-  "@keyframes ripple": {
-    "0%": {
-      transform: "scale(.8)",
-      opacity: 1,
-    },
-    "100%": {
-      transform: "scale(2.4)",
-      opacity: 0,
-    },
-  },
-}))(Badge);
-
-const SmallAvatar = withStyles((theme) => ({
-  root: {
-    width: 22,
-    height: 22,
-    border: `2px solid ${theme.palette.background.paper}`,
-  },
-}))(Avatar);
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-}));
-
-export default function Chat() {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.root}>
-      <StyledBadge
-        overlap="circle"
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        variant="dot"
-      >
-        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-      </StyledBadge>
-      Mani
-    </div>
-  );
-}
- */
+export default connect(mapStateToProps, mapDispatchToProps)(ChatFullScreen);

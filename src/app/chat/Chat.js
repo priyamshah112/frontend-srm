@@ -8,6 +8,8 @@ import Avatar from "@material-ui/core/Avatar";
 import Badge from "@material-ui/core/Badge";
 import { Typography } from "@material-ui/core";
 import ChatService from "./ChatService";
+import groupicon from '../../assets/images/chat/group.png';
+import moment from 'moment'
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -45,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.875rem",
     fontWeight: 300,
     marginBottom: "12px",
-    pointer: 'cursor'
+    cursor: 'pointer'
   },
   roleDetails: {
     position: 'absolute',
@@ -56,8 +58,21 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[400],
     fontSize: 14,
     marginBottom: 3,
-    fontWeight: 200
-  }
+    fontWeight: 200,
+    textTransform: 'capitalize'
+  },
+  avatarBackground:{
+    background: theme.palette.primary.main,
+  },
+  groupIconContainer: {
+    height: 35,
+    width: 35,
+    borderRadius: '50%',
+    padding:5,
+    justifyContent: 'center',
+    verticalAlign: 'middle',
+    background: theme.palette.primary.main,
+  },
 }));
 
 const list = [
@@ -87,10 +102,10 @@ const list = [
   }
 ]
 
-export default function Chat({ filter, selectContact, selectedRole }) {
+export default function Chat({ filter, selectContact, selectedRole, newGroup }) {
   const classes = useStyles();
-  const [Chats, setChats] = useState(list)
-  const [filteredChat, setFilteredChats] = useState(list)
+  const [Chats, setChats] = useState([])
+  const [filteredChat, setFilteredChats] = useState([])
 
   useEffect(()=>{
     if(filter == ''){
@@ -109,7 +124,12 @@ export default function Chat({ filter, selectContact, selectedRole }) {
     fetchChats()
   }, [])
 
-  const fetchChats = async () => {
+  useEffect(()=>{
+    if(newGroup)
+      fetchContacts()
+  }, [newGroup])
+
+  const fetchContacts = async () => {
     try {
       const token = localStorage.getItem('srmToken');
       // const selectedRole = props.selectedRole;
@@ -119,7 +139,30 @@ export default function Chat({ filter, selectContact, selectedRole }) {
       );
       console.log('Scroll response', response);
       if (response.status === 200) {
-        console.log('On Scroll', response);
+        console.log('Contacts', response);
+        const { data } = response
+        setChats(data.users)
+        setFilteredChats(data.users)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchChats = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      const response = await ChatService.fetchChats(
+        {selectedRole},
+        token,
+      );
+      console.log('Scroll response', response);
+      if (response.status === 200) {
+        console.log('Chats', response);
+        const { data } = response
+        setChats(data.chats)
+        setFilteredChats(data.chats)
       }
     } catch (error) {
       console.log(error);
@@ -129,6 +172,16 @@ export default function Chat({ filter, selectContact, selectedRole }) {
   return (
     <List className={classes.root}>
       {filteredChat.map(chat=>{
+        let name = chat.firstname + ' ' + chat.lastname
+        let img = chat.thumbnail
+        let avatar = {};
+        if(chat!=undefined){
+          if(chat.type == "group"){
+            name = chat.group.name;
+            img = groupicon
+            avatar = classes.avatarBackground
+          }
+        }
         return (
           <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
             <ListItemAvatar>
@@ -138,24 +191,26 @@ export default function Chat({ filter, selectContact, selectedRole }) {
                   vertical: "bottom",
                   horizontal: "right",
                 }}
-                variant={chat.status=="Online"?"dot": ''}
+                variant={chat.status}
               >
-                <Avatar alt={chat.name} src={chat.avatar} />
+                <Avatar alt={name} src={img} className={avatar} />
               </StyledBadge>
             </ListItemAvatar>
             <ListItemText
               style={{ width: '60%' }}
               secondaryTypographyProps={{ style: { width: '60%'} }}
-              primary={chat.name}
-              secondary={chat.message}
+              primary={name}
+              secondary={chat.messages[chat.messages.length - 1].message}
             />
             <div className={classes.roleDetails}>
               <Typography className={classes.date}>
-                {chat.date}
+                {moment(chat.messages[chat.messages.length - 1].created_at).fromNow()}
               </Typography>
-              <Typography className={classes.date}>
-                {chat.role}
-              </Typography>
+              {chat.type == "single" &&
+                <Typography className={classes.date}>
+                  {chat.roles[0].name}
+                </Typography>
+              }
             </div>
           </ListItem>
         )

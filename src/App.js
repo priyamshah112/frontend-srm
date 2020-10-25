@@ -131,7 +131,7 @@ function App(props) {
           <Route path="/support" exact component={Support} />
           <Route path="/create-support/:id" exact component={CreateSupport} />
           <Route path="/support/:id" exact component={SupportSection} />
-          <Route path="/chat" exact component={ChatFullScreen} />
+          <Route path="/chat/:id" exact component={ChatFullScreen} />
         </Switch>
       </Layout>
     </>
