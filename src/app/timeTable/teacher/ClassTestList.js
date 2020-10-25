@@ -10,6 +10,7 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Typography from '@material-ui/core/Typography';
 import TestSubjectPage from './testSubjectPage';
 import { Link } from "react-router-dom";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 
 
@@ -41,6 +42,16 @@ const useStyles = makeStyles((theme) => ({
             flexGrow: 1,
         },
     },
+    loder: {
+        display: 'flex',
+        '& > * + *': {
+            marginLeft: theme.spacing(2),
+        },
+        background: 'lightgrey',
+        height: '100%',
+
+
+    },
 }));
 const ClassTestList = (props) => {
     const classes = useStyles();
@@ -57,6 +68,8 @@ const ClassTestList = (props) => {
     const [subjectCategList, setSubjectCategList] = useState([]);
     const [testData,setTestData] = useState({});
     const [selected_test,setselected_test] = useState({});
+    const [isLoading, setLoading] = useState(true);
+
 
     const fetchClassTestList = async () => {
         const res = await TimetableService.getClassTestList(token, props.classID)
@@ -135,6 +148,7 @@ const ClassTestList = (props) => {
                 setEmptyTimeTable('TimeTable is not avilabel ')
                 // setexamTimeTable(null);
             }
+            setLoading(false);
 
         }
 
@@ -150,7 +164,8 @@ const ClassTestList = (props) => {
         setTestID(testid.id)
         fetchTestSublistWithTime(testid)
         setselected_test(testid);
-        setSubPageUI(true)
+        setSubPageUI(true);
+        
     }
     const sublistBacktick = () => {
         setSubPageUI(false)
@@ -208,8 +223,14 @@ const ClassTestList = (props) => {
                     </Grid>
 
 
-                </div> :
-
+                </div> 
+                :
+                (
+                    isLoading === true ?
+                <div className={classes.loder}>
+                    <CircularProgress color="primary" thickness={5} style={{ position: 'absolute', left: '50%', top: "50%", zIndex: "1" }} />
+                </div> 
+                :
                 <Container style={{ marginBottom: '50px', overflow: 'auto' }}>
                     <TestSubjectPage 
                         testID={testID}
@@ -223,6 +244,7 @@ const ClassTestList = (props) => {
                         forwardsublistT={forwardsublistT}
                         subjectCategList={subjectCategList} />
                 </Container>
+                )
             }
 
         </Fragment >
