@@ -264,7 +264,7 @@ const StudentDetails = (props) => {
 
     useEffect(() => {
         let loading = true;
-
+        setLoading(true);
         if (searchData && searchData.id) {
             async function getAttendence() {
                 try {
@@ -315,7 +315,7 @@ const StudentDetails = (props) => {
                     <Typography>{testData.name}</Typography>
                     <div>
                         <span className={classes.printIcon} onClick={loadingPrint}>
-                            <img src={PrintIcon} className={classes.downloadIcon} />
+                            {isPublish && <img src={PrintIcon} className={classes.downloadIcon} />}
                         </span>
 
                     </div>
@@ -517,7 +517,9 @@ const StudentDetails = (props) => {
                     <EmptyReport />
             }
             <PrintFooter />
-            <BackdropLoader open={isLoading} />
+            <Box display="block" displayPrint="none">
+                <BackdropLoader open={isLoading} />
+            </Box>
         </div>
     );
 }

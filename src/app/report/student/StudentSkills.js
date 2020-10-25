@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme) => ({
     fillGradeWrapper: {
         marginBottom: '30px',
     },
-    
+
     remarkNote: {
         display: 'flex',
         justifyContent: "space-between",
@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#fff',
         alignItems: 'center'
     },
-    
+
     noteText: {
         textAlign: 'left',
         padding: '10px 18px',
@@ -135,7 +135,6 @@ const useStyles = makeStyles((theme) => ({
 
 let setSubjectArray = [];
 let remarkText = 'Remark';
-let showReport = false;
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
@@ -160,30 +159,23 @@ const StudentSkills = (props) => {
 
         if (data.grades[0]) {
             remarkText = data.grades[0].remarks;
-            console.log("Publish Status=>", data.grades[0].status);
 
             if (data.grades[0].status == 'published') {
                 setIsPublished(true);
                 props.onCardPublish(true);
-            }else{
+            } else {
                 setIsPublished(false);
                 props.onCardPublish(false);
             }
 
             if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
                 if (data.grades[0].status == 'published') {
-                    showReport = true;
                     setIsPublished(true);
                 }
-            } else {
-                showReport = true;
             }
         } else if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
-            showReport = false;
             props.onCardPublish(false);
-            console.log("Publish Status=> No Grades");
         } else {
-            showReport = true;
             props.onCardPublish(false);
         }
     }
@@ -195,7 +187,6 @@ const StudentSkills = (props) => {
             return true;
         }
     }
-
 
     useEffect(() => {
         let loading = true;
@@ -212,8 +203,8 @@ const StudentSkills = (props) => {
                     }
                 } else {
                     setError('Error in fetching report card');
+                    console.log("Error in fetching report card");
                     setLoading(false);
-                    console.log("Publish Status=> No Grades");
                 }
             }
             getReportCard();
@@ -421,7 +412,7 @@ const StudentSkills = (props) => {
                 {
                     !isPublish && <div className={classes.publishCard}>
                         {
-                            !isLoading && !editSkill && !editRemark && !isEditGrade && editAccess() &&
+                            !isLoading && !editSkill && !isEditGrade && editAccess() &&
                             <Box>
                                 <Button
                                     variant='contained'
@@ -433,7 +424,7 @@ const StudentSkills = (props) => {
                                     }}
                                 >
                                     Publish Now
-                    </Button>
+                                </Button>
                             </Box>
                         }
                     </div>
@@ -512,17 +503,19 @@ const StudentSkills = (props) => {
     }
 
     const renderSkill = () => {
-        setTimeout(() => { setRefObj(obj) }, 1000)
+
+        const getRef = isLoading ? setTimeout(() => { setRefObj(obj) }, 1000) : '';
+
         return (
             <Box className={classes.rootGrid}>
                 {
-                    showReport && Object.entries(reportData.subjectDetails).map(([name, value], i) => {
+                    Object.entries(reportData.subjectDetails).map(([name, value], i) => {
                         return (
                             <div key={i}>
-                                {refObj[i] > 0 && <div className={classes.subjectTitle}>
-                                    <Typography>{name}</Typography>
+                                <div className={classes.subjectTitle}>
+                                    {refObj[i] > 0 && <Typography>{name}</Typography>}
                                 </div>
-                                }
+
                                 <Grid container spacing={3} ref={(e) => popupRef(e, i)}>
                                     {value.map((item, key) => {
                                         let isCardPublished = false;
@@ -591,70 +584,43 @@ const StudentSkills = (props) => {
     }
 
 
-    const showRemark = () => {
+    const ShowRemark = () => {
         return (
             <Fragment>
-                <div className={classes.remarkNote}>
-                    <Typography className={classes.noteText}>
-                        <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
-                        <span>{remarkText}</span>
-                    </Typography>
-                    <span className={`${classes.iconRemark} noprint`}>
-                        {searchData.user_classes && !isPublish &&
-                            <img
-                                src={editIcon} className={classes.editIcon} onClick={() => setEditOption('remark')}
+                {
+                    isPublish ?
+                        <div className={classes.remarkNote}>
+                            <Typography className={classes.noteText}>
+                                <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
+                                <span>{remarkText}</span>
+                            </Typography>
+                        </div>
+                        :
+                        <div className={classes.remark}>
+                            <div className={classes.remark}>
+                                <Typography>General Remark </Typography>
+                            </div>
+                            <TextField
+                                id="outlined-basic"
+                                label=""
+                                variant="outlined"
+                                fullWidth={true}
+                                multiline
+                                rows={8}
+                                rowsMax={8}
+                                size="medium"
+                                type="string"
+                                defaultValue={remarkText}
+                                placeholder={'Remark'}
+                                className={classes.bgWhite}
+                                onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
                             />
-                        }
-                    </span>
-                </div>
+                        </div>
+                }
             </Fragment>
         )
     }
 
-    const inputRemark = () => {
-        return (
-            <div className={classes.remark}>
-                <div className={classes.remark}>
-                    <Typography>General Remark </Typography>
-                </div>
-                <TextField
-                    id="outlined-basic"
-                    label=""
-                    variant="outlined"
-                    fullWidth={true}
-                    multiline
-                    rows={8}
-                    rowsMax={8}
-                    size="medium"
-                    type="string"
-                    defaultValue={remarkText}
-                    placeholder={'Remark'}
-                    className={classes.bgWhite}
-                    onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
-                />
-                <div className={classes.publish}>
-                    <Box>
-                        <Button
-                            variant='contained'
-                            disableElevation
-                            className={classes.cancelBtn}
-                            onClick={() => { cancelUpdate() }}
-                        >
-                            Cancel
-                    </Button>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            disableElevation
-                            onClick={() => { cancelUpdate() }}
-                        >
-                            Save
-                    </Button>
-                    </Box>
-                </div>
-            </div>
-        )
-    }
     setSubjectArray = [];
 
     const onGradeEdit = (flag) => {
@@ -666,19 +632,18 @@ const StudentSkills = (props) => {
                 {editSkill && renderEditSkill()}
                 {!editSkill && reportData.subjectDetails && renderSkill()}
             </div>
-            
-            {showReport && !editRemark && showRemark()}
-            {showReport && editRemark && inputRemark()}
-
             {!isLoading &&
-                <GradeLegend
-                    {...props}
-                    onGradeEdit={onGradeEdit}
-                    isPublish={isPublish}
-                />
+                <>
+                    <ShowRemark />
+                    <GradeLegend
+                        {...props}
+                        onGradeEdit={onGradeEdit}
+                        isPublish={isPublish}
+                    />
+                    <PublishButton />
+                </>
             }
-            {!isLoading && <PublishButton />}
-            <BackdropLoader open={isLoading} />
+            {/* <BackdropLoader open={isLoading} /> */}
         </Fragment>
     );
 }

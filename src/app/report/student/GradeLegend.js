@@ -210,6 +210,7 @@ const GradeLegend = (props) => {
 
         let loading = true;
         setLoading(true);
+        setEditGrade(false);
 
         async function getGrades() {
             try {
@@ -218,12 +219,10 @@ const GradeLegend = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setLoading(false);
-                        setEditGrade(false);
                     }
                 }
             } catch (error) {
                 console.log(error);
-                setEditGrade(false);
                 setLoading(false);
             }
         }
@@ -504,7 +503,7 @@ const GradeLegend = (props) => {
                 {newGrade && renderNewGrade()}
                 {!editGrade && !newGrade && renderGrade()}
             </div>
-            <BackdropLoader open={isLoading} />
+            {/* <BackdropLoader open={isLoading} /> */}
         </div>
     );
 }

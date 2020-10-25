@@ -153,8 +153,6 @@ const StudentTest = (props) => {
 
 
     const renderSubheader = () => {
-        console.log("selectedRole", props.selectedRole !== 'student');
-
         return (
             <Fragment>
                 {props.selectedRole !== 'student' ?
