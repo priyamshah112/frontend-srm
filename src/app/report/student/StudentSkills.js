@@ -117,13 +117,7 @@ const useStyles = makeStyles((theme) => ({
     fillGradeWrapper: {
         marginBottom: '30px',
     },
-    emptyCard: {
-        display: 'flex',
-        justifyContent: "space-between",
-        padding: "0px 10px",
-        margin: '0px 17px',
-        backgroundColor: '#fff'
-    },
+    
     remarkNote: {
         display: 'flex',
         justifyContent: "space-between",
@@ -131,11 +125,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#fff',
         alignItems: 'center'
     },
-    emptyMessage: {
-        textAlign: 'center',
-        padding: '10px 18px',
-        borderRadius: "1px"
-    },
+    
     noteText: {
         textAlign: 'left',
         padding: '10px 18px',
@@ -174,7 +164,12 @@ const StudentSkills = (props) => {
 
             if (data.grades[0].status == 'published') {
                 setIsPublished(true);
+                props.onCardPublish(true);
+            }else{
+                setIsPublished(false);
+                props.onCardPublish(false);
             }
+
             if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
                 if (data.grades[0].status == 'published') {
                     showReport = true;
@@ -185,9 +180,11 @@ const StudentSkills = (props) => {
             }
         } else if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
             showReport = false;
-
+            props.onCardPublish(false);
+            console.log("Publish Status=> No Grades");
         } else {
             showReport = true;
+            props.onCardPublish(false);
         }
     }
 
@@ -581,18 +578,6 @@ const StudentSkills = (props) => {
         )
     }
 
-    const renderEmptyReport = () => {
-        return (
-            <>
-                {!isLoading && <div className={classes.emptyCard}>
-                    <Typography className={classes.emptyMessage}>
-                        <span>Report card not available.</span>
-                    </Typography>
-                </div>
-                }
-            </>
-        )
-    }
 
     const setEditOption = (option) => {
         setAllSubject(setSubjectArray);
@@ -681,7 +666,6 @@ const StudentSkills = (props) => {
                 {editSkill && renderEditSkill()}
                 {!editSkill && reportData.subjectDetails && renderSkill()}
             </div>
-            {!showReport && renderEmptyReport()}
             
             {showReport && !editRemark && showRemark()}
             {showReport && editRemark && inputRemark()}
