@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { Typography } from '@material-ui/core';
@@ -153,9 +153,11 @@ const StudentTest = (props) => {
 
 
     const renderSubheader = () => {
+        console.log("selectedRole", props.selectedRole !== 'student');
+
         return (
-            <>
-                {searchData.user_classes ?
+            <Fragment>
+                {props.selectedRole !== 'student' ?
                     <div className={classes.navigationBack}>
                         <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
                         <Typography>{searchData.firstname} {searchData.lastname}</Typography>
@@ -165,7 +167,7 @@ const StudentTest = (props) => {
                         {userInfo.firstname && <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>}
                     </div>
                 }
-            </>
+            </Fragment>
         )
     }
 
@@ -176,8 +178,8 @@ const StudentTest = (props) => {
                     {testDate != null ?
                         testDate.map((obj, key) => {
                             return (
-                                <Grid item xs={12} lg={4} sm={6} md={6} xl={3}>
-                                    <Paper className={classes.paper} onClick={() => onTest(obj)} key={key} elevation={0}>
+                                <Grid item xs={12} lg={4} sm={6} md={6} xl={3} key={key}>
+                                    <Paper className={classes.paper} onClick={() => onTest(obj)} elevation={0}>
                                         <img src={medal} alt="medalavt" maxwidth='59px' maxheight="78px" />
                                         <Typography style={{ color: '#1C1C1E', font: 'normal normal medium 18px/25px Avenir', letterSpacing: "0px" }}> {obj.name}</Typography>
                                     </Paper>

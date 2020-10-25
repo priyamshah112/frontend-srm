@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -10,7 +10,7 @@ import ReportService from '../ReportService';
 import TextField from '@material-ui/core/TextField';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
-import StudentGrade from './StudentGrade';
+import GradeLegend from './GradeLegend';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -135,6 +135,11 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         padding: '10px 18px',
         borderRadius: "1px"
+    },
+    noteText: {
+        textAlign: 'left',
+        padding: '10px 18px',
+        borderRadius: "1px"
     }
 }));
 
@@ -165,6 +170,8 @@ const StudentSkills = (props) => {
 
         if (data.grades[0]) {
             remarkText = data.grades[0].remarks;
+            console.log("Publish Status=>", data.grades[0].status);
+
             if (data.grades[0].status == 'published') {
                 setIsPublished(true);
             }
@@ -178,6 +185,7 @@ const StudentSkills = (props) => {
             }
         } else if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
             showReport = false;
+
         } else {
             showReport = true;
         }
@@ -208,6 +216,7 @@ const StudentSkills = (props) => {
                 } else {
                     setError('Error in fetching report card');
                     setLoading(false);
+                    console.log("Publish Status=> No Grades");
                 }
             }
             getReportCard();
@@ -385,8 +394,6 @@ const StudentSkills = (props) => {
                         )
                     })
                 }
-                <Box>
-                </Box>
                 <div className={classes.publish}>
                     <Box>
                         <Button
@@ -411,33 +418,37 @@ const StudentSkills = (props) => {
         )
     }
 
-    const publishCard = () => {
+    const PublishButton = () => {
         return (
-            <div className={`${classes.publishCard} noprint`}>
+            <Box display="block" displayPrint="none">
                 {
-                    !isLoading && !editSkill && !editRemark && !isEditGrade && editAccess() &&
-                    <Box>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            disableElevation
-                            onClick={(event) => {
-                                onChangeSkills(event, {}, 0, 'publish');
-                                cancelUpdate();
-                            }}
-                        >
-                            Publish Now
+                    !isPublish && <div className={classes.publishCard}>
+                        {
+                            !isLoading && !editSkill && !editRemark && !isEditGrade && editAccess() &&
+                            <Box>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    disableElevation
+                                    onClick={(event) => {
+                                        onChangeSkills(event, {}, 0, 'publish');
+                                        cancelUpdate();
+                                    }}
+                                >
+                                    Publish Now
                     </Button>
-                    </Box>
+                            </Box>
+                        }
+                    </div>
                 }
-            </div>
+            </Box>
         )
     }
 
     const skillName = (skill) => {
         const skillArr = [];
         return (
-            <>
+            <Fragment>
                 {
                     skill.user_skill.map((list, key) => {
 
@@ -491,7 +502,7 @@ const StudentSkills = (props) => {
                         )}
                     </span>
                 }
-            </>
+            </Fragment>
         )
     }
 
@@ -502,7 +513,6 @@ const StudentSkills = (props) => {
             obj[i] = element.clientHeight;
         }
     }
-
 
     const renderSkill = () => {
         setTimeout(() => { setRefObj(obj) }, 1000)
@@ -596,11 +606,11 @@ const StudentSkills = (props) => {
     }
 
 
-    const remarkNote = () => {
+    const showRemark = () => {
         return (
-            <>
-                {!isLoading && <div className={classes.remarkNote}>
-                    <Typography className={classes.emptyMessage}>
+            <Fragment>
+                <div className={classes.remarkNote}>
+                    <Typography className={classes.noteText}>
                         <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
                         <span>{remarkText}</span>
                     </Typography>
@@ -612,8 +622,7 @@ const StudentSkills = (props) => {
                         }
                     </span>
                 </div>
-                }
-            </>
+            </Fragment>
         )
     }
 
@@ -667,18 +676,26 @@ const StudentSkills = (props) => {
         setIsEditGrade(flag);
     }
     return (
-        <>
+        <Fragment>
             <div className={classes.container}>
                 {editSkill && renderEditSkill()}
                 {!editSkill && reportData.subjectDetails && renderSkill()}
             </div>
             {!showReport && renderEmptyReport()}
-            {showReport && !editRemark && remarkNote()}
+            
+            {showReport && !editRemark && showRemark()}
             {showReport && editRemark && inputRemark()}
-            {!isLoading && <StudentGrade {...props} onGradeEdit={onGradeEdit} isPublish={isPublish}/>}
-            {!isPublish && publishCard()}
+
+            {!isLoading &&
+                <GradeLegend
+                    {...props}
+                    onGradeEdit={onGradeEdit}
+                    isPublish={isPublish}
+                />
+            }
+            {!isLoading && <PublishButton />}
             <BackdropLoader open={isLoading} />
-        </>
+        </Fragment>
     );
 }
 

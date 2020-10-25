@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,Fragment } from 'react';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Typography, Button } from '@material-ui/core';
@@ -164,7 +164,7 @@ const ReportUpload = (props) => {
 
     const renderHeader = () => {
         return (
-            <>
+            <Fragment>
                 <div className={classes.navigationBack}>
                     <Typography>Upload</Typography>
                 </div>
@@ -184,7 +184,7 @@ const ReportUpload = (props) => {
                         </Select>
                     </FormControl>
                 </Box>
-            </>
+            </Fragment>
         )
     }
     const renderFooter = () => {

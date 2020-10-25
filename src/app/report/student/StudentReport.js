@@ -309,7 +309,7 @@ const StudentDetails = (props) => {
                     </div>
                 </div>
                 <div className={classes.studentPhoto}>
-                    <div className={`${classes.photo}`}>
+                    <div className={classes.photo}>
                         {loadImage ? <img
                             src={searchData.thumbnail}
                             className={classes.userIcon}
