@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -10,7 +10,7 @@ import ReportService from '../ReportService';
 import TextField from '@material-ui/core/TextField';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
-import StudentGrade from './StudentGrade';
+import GradeLegend from './GradeLegend';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -117,13 +117,7 @@ const useStyles = makeStyles((theme) => ({
     fillGradeWrapper: {
         marginBottom: '30px',
     },
-    emptyCard: {
-        display: 'flex',
-        justifyContent: "space-between",
-        padding: "0px 10px",
-        margin: '0px 17px',
-        backgroundColor: '#fff'
-    },
+
     remarkNote: {
         display: 'flex',
         justifyContent: "space-between",
@@ -131,8 +125,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#fff',
         alignItems: 'center'
     },
-    emptyMessage: {
-        textAlign: 'center',
+
+    noteText: {
+        textAlign: 'left',
         padding: '10px 18px',
         borderRadius: "1px"
     }
@@ -140,7 +135,6 @@ const useStyles = makeStyles((theme) => ({
 
 let setSubjectArray = [];
 let remarkText = 'Remark';
-let showReport = false;
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
@@ -165,21 +159,24 @@ const StudentSkills = (props) => {
 
         if (data.grades[0]) {
             remarkText = data.grades[0].remarks;
+
             if (data.grades[0].status == 'published') {
                 setIsPublished(true);
+                props.onCardPublish(true);
+            } else {
+                setIsPublished(false);
+                props.onCardPublish(false);
             }
+
             if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
                 if (data.grades[0].status == 'published') {
-                    showReport = true;
                     setIsPublished(true);
                 }
-            } else {
-                showReport = true;
             }
         } else if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
-            showReport = false;
+            props.onCardPublish(false);
         } else {
-            showReport = true;
+            props.onCardPublish(false);
         }
     }
 
@@ -190,7 +187,6 @@ const StudentSkills = (props) => {
             return true;
         }
     }
-
 
     useEffect(() => {
         let loading = true;
@@ -207,6 +203,7 @@ const StudentSkills = (props) => {
                     }
                 } else {
                     setError('Error in fetching report card');
+                    console.log("Error in fetching report card");
                     setLoading(false);
                 }
             }
@@ -385,8 +382,6 @@ const StudentSkills = (props) => {
                         )
                     })
                 }
-                <Box>
-                </Box>
                 <div className={classes.publish}>
                     <Box>
                         <Button
@@ -411,33 +406,37 @@ const StudentSkills = (props) => {
         )
     }
 
-    const publishCard = () => {
+    const PublishButton = () => {
         return (
-            <div className={`${classes.publishCard} noprint`}>
+            <Box display="block" displayPrint="none">
                 {
-                    !isLoading && !editSkill && !editRemark && !isEditGrade && editAccess() &&
-                    <Box>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            disableElevation
-                            onClick={(event) => {
-                                onChangeSkills(event, {}, 0, 'publish');
-                                cancelUpdate();
-                            }}
-                        >
-                            Publish Now
-                    </Button>
-                    </Box>
+                    !isPublish && <div className={classes.publishCard}>
+                        {
+                            !isLoading && !editSkill && !isEditGrade && editAccess() &&
+                            <Box>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    disableElevation
+                                    onClick={(event) => {
+                                        onChangeSkills(event, {}, 0, 'publish');
+                                        cancelUpdate();
+                                    }}
+                                >
+                                    Publish Now
+                                </Button>
+                            </Box>
+                        }
+                    </div>
                 }
-            </div>
+            </Box>
         )
     }
 
     const skillName = (skill) => {
         const skillArr = [];
         return (
-            <>
+            <Fragment>
                 {
                     skill.user_skill.map((list, key) => {
 
@@ -491,7 +490,7 @@ const StudentSkills = (props) => {
                         )}
                     </span>
                 }
-            </>
+            </Fragment>
         )
     }
 
@@ -503,19 +502,20 @@ const StudentSkills = (props) => {
         }
     }
 
-
     const renderSkill = () => {
-        setTimeout(() => { setRefObj(obj) }, 1000)
+
+        const getRef = isLoading ? setTimeout(() => { setRefObj(obj) }, 1000) : '';
+
         return (
             <Box className={classes.rootGrid}>
                 {
-                    showReport && Object.entries(reportData.subjectDetails).map(([name, value], i) => {
+                    Object.entries(reportData.subjectDetails).map(([name, value], i) => {
                         return (
                             <div key={i}>
-                                {refObj[i] > 0 && <div className={classes.subjectTitle}>
-                                    <Typography>{name}</Typography>
+                                <div className={classes.subjectTitle}>
+                                    {refObj[i] > 0 && <Typography>{name}</Typography>}
                                 </div>
-                                }
+
                                 <Grid container spacing={3} ref={(e) => popupRef(e, i)}>
                                     {value.map((item, key) => {
                                         let isCardPublished = false;
@@ -571,18 +571,6 @@ const StudentSkills = (props) => {
         )
     }
 
-    const renderEmptyReport = () => {
-        return (
-            <>
-                {!isLoading && <div className={classes.emptyCard}>
-                    <Typography className={classes.emptyMessage}>
-                        <span>Report card not available.</span>
-                    </Typography>
-                </div>
-                }
-            </>
-        )
-    }
 
     const setEditOption = (option) => {
         setAllSubject(setSubjectArray);
@@ -596,89 +584,67 @@ const StudentSkills = (props) => {
     }
 
 
-    const remarkNote = () => {
+    const ShowRemark = () => {
         return (
-            <>
-                {!isLoading && <div className={classes.remarkNote}>
-                    <Typography className={classes.emptyMessage}>
-                        <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
-                        <span>{remarkText}</span>
-                    </Typography>
-                    <span className={`${classes.iconRemark} noprint`}>
-                        {searchData.user_classes && !isPublish &&
-                            <img
-                                src={editIcon} className={classes.editIcon} onClick={() => setEditOption('remark')}
+            <Fragment>
+                {
+                    isPublish ?
+                        <div className={classes.remarkNote}>
+                            <Typography className={classes.noteText}>
+                                <span style={{ color: 'gray' }}> Remark : &nbsp;</span>
+                                <span>{remarkText}</span>
+                            </Typography>
+                        </div>
+                        :
+                        <div className={classes.remark}>
+                            <div className={classes.remark}>
+                                <Typography>General Remark </Typography>
+                            </div>
+                            <TextField
+                                id="outlined-basic"
+                                label=""
+                                variant="outlined"
+                                fullWidth={true}
+                                multiline
+                                rows={8}
+                                rowsMax={8}
+                                size="medium"
+                                type="string"
+                                defaultValue={remarkText}
+                                placeholder={'Remark'}
+                                className={classes.bgWhite}
+                                onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
                             />
-                        }
-                    </span>
-                </div>
+                        </div>
                 }
-            </>
+            </Fragment>
         )
     }
 
-    const inputRemark = () => {
-        return (
-            <div className={classes.remark}>
-                <div className={classes.remark}>
-                    <Typography>General Remark </Typography>
-                </div>
-                <TextField
-                    id="outlined-basic"
-                    label=""
-                    variant="outlined"
-                    fullWidth={true}
-                    multiline
-                    rows={8}
-                    rowsMax={8}
-                    size="medium"
-                    type="string"
-                    defaultValue={remarkText}
-                    placeholder={'Remark'}
-                    className={classes.bgWhite}
-                    onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
-                />
-                <div className={classes.publish}>
-                    <Box>
-                        <Button
-                            variant='contained'
-                            disableElevation
-                            className={classes.cancelBtn}
-                            onClick={() => { cancelUpdate() }}
-                        >
-                            Cancel
-                    </Button>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            disableElevation
-                            onClick={() => { cancelUpdate() }}
-                        >
-                            Save
-                    </Button>
-                    </Box>
-                </div>
-            </div>
-        )
-    }
     setSubjectArray = [];
 
     const onGradeEdit = (flag) => {
         setIsEditGrade(flag);
     }
     return (
-        <>
+        <Fragment>
             <div className={classes.container}>
                 {editSkill && renderEditSkill()}
                 {!editSkill && reportData.subjectDetails && renderSkill()}
             </div>
-            {!showReport && renderEmptyReport()}
-            {showReport && !editRemark && remarkNote()}
-            {showReport && editRemark && inputRemark()}
-            {!isLoading && <StudentGrade {...props} onGradeEdit={onGradeEdit} isPublish={isPublish}/>}
-            {!isPublish && publishCard()}
-            <BackdropLoader open={isLoading} />
-        </>
+            {!isLoading &&
+                <>
+                    <ShowRemark />
+                    <GradeLegend
+                        {...props}
+                        onGradeEdit={onGradeEdit}
+                        isPublish={isPublish}
+                    />
+                    <PublishButton />
+                </>
+            }
+            {/* <BackdropLoader open={isLoading} /> */}
+        </Fragment>
     );
 }
 

@@ -1,6 +1,4 @@
-
- 
- @media print {
+@media print {
     .print-footer{
         display: flex;
         justify-content: space-between;

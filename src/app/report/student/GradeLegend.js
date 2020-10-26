@@ -39,9 +39,8 @@ const useStyles = makeStyles((theme) => ({
     },
     gridContainer2: {
         display: 'flex',
-        margin: '10px 5px',
+        margin: '5px 5px',
         backgroundColor: '#fff',
-        border: '1px solid #7B72AF',
         borderRadius: "2px",
         justifyContent: 'space-between'
     },
@@ -112,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const StudentGrade = (props) => {
+const GradeLegend = (props) => {
     const classes = useStyles(props);
 
     const [gradeData, setGradeData] = useState([]);
@@ -134,6 +133,8 @@ const StudentGrade = (props) => {
 
     useEffect(() => {
         let loading = true;
+        props.onGradeEdit(editGrade || newGrade);
+
         if (testData && testData.class_id) {
             async function getGrades() {
                 try {
@@ -209,6 +210,7 @@ const StudentGrade = (props) => {
 
         let loading = true;
         setLoading(true);
+        setEditGrade(false);
 
         async function getGrades() {
             try {
@@ -217,12 +219,10 @@ const StudentGrade = (props) => {
                 if (response.status === 200) {
                     if (loading) {
                         setLoading(false);
-                        setEditGrade(false);
                     }
                 }
             } catch (error) {
                 console.log(error);
-                setEditGrade(false);
                 setLoading(false);
             }
         }
@@ -503,7 +503,7 @@ const StudentGrade = (props) => {
                 {newGrade && renderNewGrade()}
                 {!editGrade && !newGrade && renderGrade()}
             </div>
-            <BackdropLoader open={isLoading} />
+            {/* <BackdropLoader open={isLoading} /> */}
         </div>
     );
 }
@@ -515,7 +515,7 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(StudentGrade);
+export default connect(mapStateToProps)(GradeLegend);
 
 var defaultGrades = [
     {

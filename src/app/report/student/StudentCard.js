@@ -25,7 +25,7 @@ const StudentCard = (props) => {
         }
     }
 
-    const renderPage = () => {
+    const RenderPage = () => {
         switch (view) {
             case 'search':
                 return (
@@ -54,9 +54,7 @@ const StudentCard = (props) => {
         }
     }
     return (
-        <>
-            {renderPage()}
-        </>
+        <RenderPage />
     );
 };
 

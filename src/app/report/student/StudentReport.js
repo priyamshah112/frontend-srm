@@ -230,6 +230,17 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: '0px 10px',
         fontSize: '22px'
+    },
+    emptyCard: {
+        display: 'flex',
+        justifyContent: 'center',
+        margin: '11px 0px',
+        backgroundColor: '#fff'
+    },
+    emptyMessage: {
+        textAlign: 'center',
+        padding: '10px 18px',
+        borderRadius: "1px"
     }
 }));
 
@@ -242,6 +253,7 @@ const StudentDetails = (props) => {
     const [attendanceData, setAttendanceData] = useState({});
     const [isLoading, setLoading] = useState(true);
     const [loadImage, setLoadImage] = useState(true);
+    const [isPublish, setIsPublished] = useState(true);
     const printRef = useRef(null);
 
     const { token, searchData, testData } = props;
@@ -252,7 +264,7 @@ const StudentDetails = (props) => {
 
     useEffect(() => {
         let loading = true;
-
+        setLoading(true);
         if (searchData && searchData.id) {
             async function getAttendence() {
                 try {
@@ -303,13 +315,13 @@ const StudentDetails = (props) => {
                     <Typography>{testData.name}</Typography>
                     <div>
                         <span className={classes.printIcon} onClick={loadingPrint}>
-                            <img src={PrintIcon} className={classes.downloadIcon} />
+                            {isPublish && <img src={PrintIcon} className={classes.downloadIcon} />}
                         </span>
 
                     </div>
                 </div>
                 <div className={classes.studentPhoto}>
-                    <div className={`${classes.photo}`}>
+                    <div className={classes.photo}>
                         {loadImage ? <img
                             src={searchData.thumbnail}
                             className={classes.userIcon}
@@ -449,8 +461,8 @@ const StudentDetails = (props) => {
 
         if (props.userInfo && props.userInfo.user_classes) {
             if (props.userInfo.user_classes.school_data) {
-                logo =  props.userInfo.user_classes.school_data.logo
-                name =  props.userInfo.user_classes.school_data.name
+                logo = props.userInfo.user_classes.school_data.logo
+                name = props.userInfo.user_classes.school_data.name
             }
         }
 
@@ -470,6 +482,28 @@ const StudentDetails = (props) => {
         )
     }
 
+    const onCardPublish = (flag = 'true') => {
+        setIsPublished(flag);
+    }
+
+    const editAccess = () => {
+        if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    const EmptyReport = () => {
+        return (
+            <div className={classes.emptyCard}>
+                <Typography className={classes.emptyMessage}>
+                    <span>Report card not available.</span>
+                </Typography>
+            </div>
+        )
+    }
+
     return (
         <div className={`${classes.container}  print-container`} ref={printRef}>
             <PrintHeader />
@@ -477,9 +511,15 @@ const StudentDetails = (props) => {
             <PrintAttendance />
             {renderHeader()}
             {renderAttendace()}
-            <StudentSkills {...props} />
+            {
+                (isPublish || editAccess()) ?
+                    <StudentSkills {...props} onCardPublish={onCardPublish} /> :
+                    <EmptyReport />
+            }
             <PrintFooter />
-            <BackdropLoader open={isLoading} />
+            <Box display="block" displayPrint="none">
+                <BackdropLoader open={isLoading} />
+            </Box>
         </div>
     );
 }
@@ -487,7 +527,8 @@ const StudentDetails = (props) => {
 const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
-        userInfo: state.auth.userInfo
+        userInfo: state.auth.userInfo,
+        selectedRole: state.auth.selectedRole,
     };
 };
 

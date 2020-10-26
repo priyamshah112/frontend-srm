@@ -1,12 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { Typography } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import ReportLogo from '../../../assets/images/report/ReportLogo.svg';
+import medal from '../../../assets/images/Medal.png'
 import ReportService from '../ReportService';
 import Grid from "@material-ui/core/Grid";
+import Paper from '@material-ui/core/Paper';
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +70,11 @@ const useStyles = makeStyles((theme) => ({
     },
     headerTitle: {
         textAlign: 'center'
+    },
+    paper: {
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        cursor: 'pointer'
     }
 }));
 
@@ -147,8 +154,8 @@ const StudentTest = (props) => {
 
     const renderSubheader = () => {
         return (
-            <>
-                {searchData.user_classes ?
+            <Fragment>
+                {props.selectedRole !== 'student' ?
                     <div className={classes.navigationBack}>
                         <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
                         <Typography>{searchData.firstname} {searchData.lastname}</Typography>
@@ -158,44 +165,25 @@ const StudentTest = (props) => {
                         {userInfo.firstname && <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>}
                     </div>
                 }
-            </>
+            </Fragment>
         )
     }
-
-    
 
     const renderGrid = () => {
         return (
             <div className={classes.gridRoot} >
-                <Grid container>
-                    {
+                <Grid container spacing={3}>
+                    {testDate != null ?
                         testDate.map((obj, key) => {
                             return (
-                                <Grid item xs={6} sm={3} key={key}>
-                                    <div className={classes.gridItem}>
-                                        <div className={classes.card} onClick={() => onTest(obj)} key={key}>
-                                            <div className={classes.flex1}>
-                                                <div className={classes.badgeWrapper}>
-                                                    <img
-                                                        src={ReportLogo}
-                                                        alt='student-logo'
-                                                        height={78}
-                                                        width={59}
-                                                        
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className={classes.flex2}>
-                                                <Typography className={classes.name}>
-                                                    {obj.name}
-                                                </Typography>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <Grid item xs={12} lg={4} sm={6} md={6} xl={3} key={key}>
+                                    <Paper className={classes.paper} onClick={() => onTest(obj)} elevation={0}>
+                                        <img src={medal} alt="medalavt" maxwidth='59px' maxheight="78px" />
+                                        <Typography style={{ color: '#1C1C1E', font: 'normal normal medium 18px/25px Avenir', letterSpacing: "0px" }}> {obj.name}</Typography>
+                                    </Paper>
                                 </Grid>
                             )
-                        })
-                    }
+                        }) : null}
                 </Grid>
             </div>
         )
