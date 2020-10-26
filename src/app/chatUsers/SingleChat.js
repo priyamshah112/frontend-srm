@@ -13,6 +13,9 @@ import smile from '../../assets/images/chat/smile.svg'
 import attach from '../../assets/images/chat/attach.svg'
 import closeIcon from '../../assets/images/chat/remove.svg'
 import Picker from 'emoji-picker-react';
+import Group from '../../assets/images/chat/group.png';
+import moment from 'moment'
+import ChatService from "../chat/ChatService";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -163,58 +166,25 @@ const useStyles = makeStyles((theme) => ({
     '&::-webkit-scrollbar': {
       display: 'none',
     },
-  }
+  },
+  groupIconContainer: {
+    height: 35,
+    width: 35,
+    borderRadius: '50%',
+    padding:5,
+    justifyContent: 'center',
+    verticalAlign: 'middle',
+    background: theme.palette.primary.main,
+  },
 }));
 
-const list = [{
-    sender: "Akshay Srinivas",
-    message: "Are you attending class today?",
-    status: true,
-    date: "27 Sept 2020",
-    time: "09:30AM"
-  },
-  {
-    sender: "Isha Roy",
-    message: "Need project details. Share with me?",
-    status: true,
-    date: "28 Sept 2020",
-    time: "09:32AM"
-  },
-  {
-    sender: 'Akshay Srinivas',
-    message: "Are you attending class today?",
-    status: false,
-    date: "28 Sept 2020",
-    time: '09:34AM'
-  },
-  {
-    sender: "Akshay Srinivas",
-    message: "Are you attending class today?",
-    status: true,
-    date: "27 Sept 2020",
-    time: "09:30AM"
-  },
-  {
-    sender: "Isha Roy",
-    message: "Need project details. Share with me?",
-    status: true,
-    date: "28 Sept 2020",
-    time: "09:32AM"
-  },
-  {
-    sender: 'Akshay Srinivas',
-    message: "Are you attending class today?",
-    status: false,
-    date: "28 Sept 2020",
-    time: '09:34AM'
-  },
-]
 
-export default function SingleChat({ fullScreen = false, closeEmoji }) {
+
+export default function SingleChat({ fullScreen = false, closeEmoji, chat, props }) {
   const classes = useStyles();
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const fileRef = useRef()
-  const [messages, setMessages] = useState(list)
+  const [messages, setMessages] = useState(chat.messages)
   const [ message, setMessage ] = useState('')
   const[emojiShow, showEmoji] = useState(false)
   const [attachments, setAttachments] = useState([])
@@ -259,6 +229,58 @@ export default function SingleChat({ fullScreen = false, closeEmoji }) {
     console.log(attachments)
     setAttachments([...attachments])
   }
+  let name = chat.firstname + ' ' + chat.lastname
+  let img = chat.thumbnail
+  let avatar = {};
+  let subheading = ""
+  let cls = {}
+  if(chat.type == "group"){
+    name = chat.group.name;
+    img = Group
+    avatar = classes.avatarBackground
+    subheading = "Group"
+    cls = classes.groupIconContainer
+  }
+
+  const onKeyDown = (event) => {
+    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      submitChat()
+    }
+  }
+
+  useEffect(()=>{
+    if(!closeEmoji){
+      scrollToBottom()
+    }
+  }, [messages])
+
+  const submitChat = async() =>{
+    let data = {
+      message: message
+    }
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      const response = await ChatService.submitChat(
+        data,
+        token,
+        chat.id
+      );
+      console.log('Scroll response', response);
+      if (response.status === 200) {
+        console.log('Chat', response);
+        const { data } = response
+        setMessage('')
+        setMessages(data.chat.messages)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <List className={rootClass.join(' ')}>
       {fullScreen &&
@@ -272,32 +294,39 @@ export default function SingleChat({ fullScreen = false, closeEmoji }) {
               }}
               variant="dot"
             >
-              <Avatar alt="Akshay Srinivas" src="/static/images/avatar/1.jpg" />
+              <Avatar alt={name} className={cls} src={img} />
             </StyledBadge>
           </ListItemAvatar>
           <ListItemText
-            primary="Kartik P."
-            secondary={"Parent"}
+            primary={name}
+            secondary={subheading}
           />
         </ListItem>
       }
       <div className={classes.chatList}>
         {messages.map((message)=>{
-          let showDate = message.date != date;
+          let showDate = message.created_at != date;
           if(showDate ){
-            date = message.date;
+            date = message.created_at;
+          }
+          let cls = {}
+          let senderName = message.sender.firstname + ' ' + message.sender.lastname
+          if(message.sender.id == props.userInfo.id){
+            cls = classes.owner
+            senderName = "Me"
           }
           return (<>
             { showDate &&
               <div className={classes.date}>
-                <span className={classes.dateTextContainer}><span className={classes.dateText}>{ message.date }</span></span>
+                <span className={classes.dateTextContainer}>
+                <span className={classes.dateText}>{ moment(message.created_at).fromNow() }</span></span>
               </div>
             }
-            <ListItem alignItems="flex-start" className={[classes.listItem, 
-              message.sender == "Akshay Srinivas"? classes.owner: {}].join(' ')}>
+            <ListItem alignItems="flex-start" className={[classes.listItem,
+              cls].join(' ')}>
               <ListItemText
                 classes={{primary: classes.primary}}
-                primary={message.sender}
+                primary={senderName}
                 secondary={message.message}
               />
               <div className={classes.right}>
@@ -334,7 +363,9 @@ export default function SingleChat({ fullScreen = false, closeEmoji }) {
                 value={message}
                 onChange={(event)=>setMessage(event.target.value)}
                 className={classes.inputBorder}
+                onSubmit={submitChat}
                 required={true}
+                onKeyDown={onKeyDown}
                 disableUnderline={true}
               />
               <Typography className={classes.emojiContainer}>

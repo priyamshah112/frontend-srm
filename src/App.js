@@ -137,6 +137,7 @@ function App(props) {
           <Route path="/report" exact component={ReportContainer} />
           <Route path="/report-card" exact component={StudentCard} />
           <Route path="/report-upload" exact component={ReportUpload} />
+          <Route path="/chat/:id" exact component={ChatFullScreen} />
         </Switch>
       </Layout>
     </>

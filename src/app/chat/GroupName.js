@@ -12,6 +12,7 @@ import plus from '../../assets/images/chat/ic_plus.svg'
 import RenderUsers from "./RenderGroupUser";
 import Group from '../../assets/images/chat/group.png';
 import tick from '../../assets/images/chat/tickIcon.svg';
+import ChatService from "./ChatService";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -174,11 +175,12 @@ const list = [
   }
 ]
 
-const GroupDetails = ({selectedUsers}) => {
+const GroupDetails = ({selectedUsers, close}) => {
   const classes = useStyles();
   const [members, setSelectedUsers] = useState([])
   const [groupInfo, showGroupInfo] = useState(false)
   const [groupName, setGroupName] = useState('')
+  const [loader, setLoader] = useState(false)
 
   useEffect(()=>{
     setSelectedUsers(selectedUsers)
@@ -190,6 +192,39 @@ const GroupDetails = ({selectedUsers}) => {
     users.splice(index, 1)
     setSelectedUsers([...users])
   }
+
+  const createGroup = async () => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      let groupMembers = [];
+      members.map(m=>{
+        groupMembers.push(m.id)
+      })
+      let data = {
+        name: groupName,
+        members: groupMembers
+      }
+      console.log(JSON.stringify(data))
+      setLoader(true)
+      const response = await ChatService.createGroup(
+        data,
+        token,
+      );
+      setLoader(false)
+      console.log('Scroll response', response);
+      
+      if (response.status === 200) {
+        console.log('Group', response);
+        // const { data } = response
+        // setChats(data.users)
+        // setFilteredChats(data.users)
+        close()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -214,10 +249,10 @@ const GroupDetails = ({selectedUsers}) => {
                     disableUnderline={true}
                 />
             </Grid>
-            <Typography className={[classes.inputBoxContainer]} style={{marginLeft: 0, marginTop: '5%', cursor: 'pointer',
+            <Typography onClick={createGroup} className={[classes.inputBoxContainer]} style={{marginLeft: 0, marginTop: '5%', cursor: 'pointer',
                 textAlign: 'right'}}>
                 <img src={tick} className={classes.nextIcon} />
-                <span className={classes.nextText}>{' '} Done</span>
+                <span className={classes.nextText}>{' '} {!loader?'Done':<i className="fa fa-spin fa-spinner"></i>}</span>
             </Typography>
           </ListItem>
         

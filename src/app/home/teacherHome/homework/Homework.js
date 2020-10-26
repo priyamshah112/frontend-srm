@@ -60,7 +60,7 @@ const useStyle = makeStyles((theme) => ({
     borderRadius: '10px',
     height: '100px',
     overflow: 'none',
-    width: '95%',
+    width: '100%',
     boxShadow: 'none',
     // overflow: 'none',
     overflowY: 'auto',
@@ -108,9 +108,13 @@ const useStyle = makeStyles((theme) => ({
   },
   homeworksView: {
     display: 'flex',
-    justifyContent: 'space-between',
     width: '100%'
-  }
+  },
+  AlignText:{
+    textAlign:"center",
+    marginTop:"2.5%"
+  },
+
 }));
 
 const Homework = (props) => {
@@ -185,10 +189,10 @@ const Homework = (props) => {
           {!loading && !homework.length ? (
             <Grid item sm={12} className={classes.homeworkCardGrid}>
               <Card
-                className={`${classes.homeworkCard}`}
+                className={ `${classes.homeworkCard} ${classes.AlignContent}`}
                 onClick={handleCreateHomework}>
-                <CardContent className={classes.cardContentStyle}>
-                  <Typography className={classes.cardTitle} variant='body1'>
+                <CardContent className={ `${classes.cardContentStyle} ${classes.AlignContent}`} >
+                  <Typography className={ `${classes.cardTitle} ${classes.AlignText}`}  variant='body1'>
                     Click here to create homework
                   </Typography>
                 </CardContent>
