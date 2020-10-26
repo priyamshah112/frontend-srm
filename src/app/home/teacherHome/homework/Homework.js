@@ -60,7 +60,7 @@ const useStyle = makeStyles((theme) => ({
     borderRadius: '10px',
     height: '100px',
     overflow: 'none',
-    width: '100%',
+
     boxShadow: 'none',
     // overflow: 'none',
     overflowY: 'auto',
@@ -104,11 +104,11 @@ const useStyle = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   homeworkCardView: {
-    maxWidth: '32.5%'
+    maxWidth: '29.5%'
   },
   homeworksView: {
     display: 'flex',
-    width: '100%'
+    width: '100%',
   },
   AlignText:{
     textAlign:"center",
@@ -125,7 +125,7 @@ const Homework = (props) => {
   const [loading, setLoading] = useState(true);
 
   const cardColors = ['#F7DDCC', '#F8E7C1', '#D4DbD8'];
-  const cardMargins = ['0 auto 0 0', '0 auto', '0 0 0 auto'];
+  const cardMargins = ['0 auto 0 0', '0 0 0 10%', '0 0 0 10%'];
 
   useEffect(() => {
     let isHomeworkLoading = true;
