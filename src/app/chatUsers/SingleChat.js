@@ -184,7 +184,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const classes = useStyles();
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const fileRef = useRef()
-  const [messages, setMessages] = useState(chat.messages)
+  const [messages, setMessages] = useState([])
   const [ message, setMessage ] = useState('')
   const[emojiShow, showEmoji] = useState(false)
   const [attachments, setAttachments] = useState([])
@@ -199,6 +199,14 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     }
     
   }, [closeEmoji])
+  useEffect(()=>{
+    if(chat.messages == undefined){
+      setMessages([])
+    }
+    else{
+      setMessages(chat.messages)
+    }
+  }, [chat])
   const scrollToBottom = () => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
   }
@@ -241,6 +249,14 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     subheading = "Group"
     cls = classes.groupIconContainer
   }
+  else if(chat.members!=undefined){
+    let rec = chat.members.filter(c=>{
+      return c.id != props.userInfo.id
+    })[0]
+    name = rec.firstname + ' ' + rec.lastname
+    subheading = rec.roles[0].name
+    img = rec.thumbnail
+  }
 
   const onKeyDown = (event) => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -264,17 +280,36 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     try {
       const token = localStorage.getItem('srmToken');
       // const selectedRole = props.selectedRole;
-      const response = await ChatService.submitChat(
-        data,
-        token,
-        chat.id
-      );
-      console.log('Scroll response', response);
-      if (response.status === 200) {
-        console.log('Chat', response);
-        const { data } = response
-        setMessage('')
-        setMessages(data.chat.messages)
+      if(chat.messages == undefined){
+        data.reciever = chat.id
+        const response = await ChatService.newChat(
+          data,
+          token
+        );
+        console.log('Scroll response', response);
+        if (response.status === 200) {
+          console.log('Chat', response);
+          const { data } = response
+          setMessage('')
+          setMessages(data.chat.messages)
+        }
+        else{
+          return;
+        }
+      }
+      else{
+        const response = await ChatService.submitChat(
+          data,
+          token,
+          chat.id
+        );
+        console.log('Scroll response', response);
+        if (response.status === 200) {
+          console.log('Chat', response);
+          const { data } = response
+          setMessage('')
+          setMessages(data.chat.messages)
+        }
       }
     } catch (error) {
       console.log(error);

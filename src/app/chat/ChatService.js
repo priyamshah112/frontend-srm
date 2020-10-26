@@ -51,6 +51,14 @@ class ChatService {
       },
     });
   }
+  newChat(param, token){
+    return axios.post(`${BACKEND_API_URL}/chat/newChat`, param, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 }
 
 export default new ChatService();

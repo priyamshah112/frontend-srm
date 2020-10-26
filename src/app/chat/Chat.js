@@ -102,7 +102,7 @@ const list = [
   }
 ]
 
-export default function Chat({ filter, selectContact, selectedRole, newGroup }) {
+export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo }) {
   const classes = useStyles();
   const [Chats, setChats] = useState([])
   const [filteredChat, setFilteredChats] = useState([])
@@ -141,8 +141,8 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup }) 
       if (response.status === 200) {
         console.log('Contacts', response);
         const { data } = response
-        setChats(data.users)
-        setFilteredChats(data.users)
+        setChats([...data.users])
+        setFilteredChats([...data.users])
       }
     } catch (error) {
       console.log(error);
@@ -161,8 +161,8 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup }) 
       if (response.status === 200) {
         console.log('Chats', response);
         const { data } = response
-        setChats(data.chats)
-        setFilteredChats(data.chats)
+        setChats([...data.chats, ...data.users])
+        setFilteredChats([...data.chats, ...data.users])
       }
     } catch (error) {
       console.log(error);
@@ -175,12 +175,27 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup }) 
         let name = chat.firstname + ' ' + chat.lastname
         let img = chat.thumbnail
         let avatar = {};
+        let message = '';
+        let date = chat.created_at;
         if(chat!=undefined){
           if(chat.type == "group"){
             name = chat.group.name;
             img = groupicon
             avatar = classes.avatarBackground
           }
+          else{
+            if(chat.members!=undefined){
+              let rec = chat.members.filter(c=>{
+                return c.id != userInfo.id
+              })[0]
+              name = rec.firstname + ' ' + rec.lastname
+              img = rec.thumbnail
+            }
+          }
+        }
+        if(chat.messages != undefined){
+          message = chat.messages[chat.messages.length - 1].message
+          date = chat.messages[chat.messages.length - 1].created_at;
         }
         return (
           <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
@@ -200,17 +215,17 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup }) 
               style={{ width: '60%' }}
               secondaryTypographyProps={{ style: { width: '60%'} }}
               primary={name}
-              secondary={chat.messages[chat.messages.length - 1].message}
+              secondary={message}
             />
             <div className={classes.roleDetails}>
               <Typography className={classes.date}>
-                {moment(chat.messages[chat.messages.length - 1].created_at).fromNow()}
+                {moment(date).fromNow()}
               </Typography>
-              {chat.type == "single" &&
+              {/* {chat.type == "single" &&
                 <Typography className={classes.date}>
                   {chat.roles[0].name}
                 </Typography>
-              }
+              } */}
             </div>
           </ListItem>
         )

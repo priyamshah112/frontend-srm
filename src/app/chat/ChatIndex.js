@@ -16,6 +16,7 @@ import GroupDetails from "./GroupName";
 import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
 import * as actions from '../../app/auth/store/actions';
+import ChatService from "./ChatService";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -199,9 +200,29 @@ const ChatIndex = (props) => {
     selectNewGroup(value)
   }
 
-  const selectChat = (chat) => {
-    setChat(chat)
-    props.selectChat(chat)
+  const selectChat = async(chat) => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      const response = await ChatService.fetchChat(
+        chat.id,
+        token,
+      );
+      console.log('Scroll response', response);
+      if (response.status === 200) {
+        console.log('Chat', response);
+        const { data } = response
+        setChat(data.chat)
+        props.selectChat(data.chat)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
+
+  const fetchChat = async() => {
+    
   }
 
   const closeGroup = () => {
@@ -311,7 +332,7 @@ const ChatIndex = (props) => {
               <img src={search} className={classes.smiley} />
             </Typography>
           </ListItem>
-          <Chat newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <Chat userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
           <ToastContainer />
         </div>
       </div>
