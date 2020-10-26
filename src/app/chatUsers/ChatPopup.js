@@ -2,12 +2,13 @@ import React, { useState } from 'react'
 import { makeStyles, withStyles } from '@material-ui/styles';
 import Chat from '../chat/Chat';
 import SingleChat from './SingleChat';
-import { Grid, Typography } from '@material-ui/core';
+import { Avatar, Grid, Typography } from '@material-ui/core';
 import ExternalLink from '../../assets/images/chat/external-link.png';
 import Group from '../../assets/images/chat/group.png';
 import Minimize from '../../assets/images/chat/minimize.svg';
 import Dots from '../../assets/images/chat/dots-menu.svg';
 import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -119,11 +120,21 @@ const useStyles = makeStyles((theme) => ({
       marginTop: 100
     }
 }))
-const ChatPopup = ({  }) => {
+const ChatPopup = ({ selectedChat, props }) => {
     const [minimize, setMinimize] = useState(true)
     const classes = useStyles();
     const history = useHistory();
     const chatHeader = () => {
+      let name = selectedChat.firstname + ' ' + selectedChat.lastname
+      let img = selectedChat.thumbnail
+      let avatar = {};
+      let subheading = ""
+      if(selectedChat.type == "group"){
+        name = selectedChat.group.name;
+        img = Group
+        avatar = classes.avatarBackground
+        subheading = "Group"
+      }
         return (
           <Typography className={classes.title} onClick={()=>setMinimize(!minimize)}>
             <Grid spacing={0} container>
@@ -132,19 +143,19 @@ const ChatPopup = ({  }) => {
                       src={ExternalLink}
                       alt='Open Chat Full Screen'
                       className={classes.externalIcon}
-                      onClick={()=>history.push("/chat")}
+                      onClick={()=>history.push("/chat/"+selectedChat.id)}
                   />
                 </Grid>
                 <Grid item xs={2} style={{ paddingTop: 5, maxWidth: '12%' }}>
                   <img
-                      src={Group}
-                      alt='Group'
+                      src={img}
+                      alt={name}
                       className={classes.externalIcon}
                   />
                 </Grid>
                 <Grid item xs={7} style={{ width: '59%', maxWidth: '59%', flexBasis: '59%' }}>
-                  <span className={classes.heading}>Class 10 Students</span><br />
-                  <span className={classes.subHeading}>Group</span>
+                  <span className={classes.heading}>{name}</span><br />
+                  <span className={classes.subHeading}>{subheading}</span>
                 </Grid>
                 <Grid item xs={2} style={{ paddingTop: 5, flexDirection: 'row', justifyContent: 'flex-end' }}>
                   <img
@@ -165,7 +176,7 @@ const ChatPopup = ({  }) => {
     return(
         <div className={[classes.panel, minimize?classes.inactivePanel: classes.activePanel].join(' ')}>
             {chatHeader()}
-            <SingleChat closeEmoji={minimize} />
+            <SingleChat props={props} closeEmoji={minimize} chat={selectedChat} />
         </div>
     )
 }

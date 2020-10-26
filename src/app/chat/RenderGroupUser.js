@@ -35,7 +35,8 @@ const StyledBadge = withStyles((theme) => ({
 const styles = {
   centerText:{
     textAlign: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    maxWidth: 75,
   }
 }
 
@@ -50,10 +51,10 @@ const RenderUsers = ({user, removeContact}) => {
         }}
         variant={user.status = "dot"}
       >
-        <Avatar alt={user.name} src={user.avatar} />
+        <Avatar alt={user.firstname} src={user.avatar} />
       </StyledBadge>
       <Typography style={styles.centerText}>
-        {user.name}
+        {user.firstname} {user.lastname}
       </Typography>
     </ListItemAvatar>
   )

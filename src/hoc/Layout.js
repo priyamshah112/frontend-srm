@@ -321,10 +321,11 @@ const Layout = (props) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarTitle, setSnackbarTitle] = useState("");
-  const [snackbarDescription, setSnackbarDescription] = useState("");
   const [snackbarId, setSnackBarId] = useState("");
   const [reportItem, setReportItem] = React.useState(true);
+  const [snackbarTitle, setSnackbarTitle] = useState('');
+  const [snackbarDescription, setSnackbarDescription] = useState('');
+  const [selectedChat, setSelectedChat] = useState(null)
 
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -836,7 +837,7 @@ const Layout = (props) => {
     <>
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <ChatIndex {...props} />
+        <ChatIndex selectChat={setSelectedChat} {...props} />
       </div>
     </>
   );
@@ -990,7 +991,9 @@ const Layout = (props) => {
         </Hidden>
       </nav>
       <main className={classes.mainContainer}>{props.children}</main>
-      <ChatPopup />
+      {selectedChat != null &&
+        <ChatPopup props={props} selectedChat={selectedChat} />
+      }
       {snackbarOpen ? (
         <Snackbar
           open={snackbarOpen}

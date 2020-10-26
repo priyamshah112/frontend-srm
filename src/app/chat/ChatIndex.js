@@ -14,7 +14,8 @@ import RenderUsers from "./RenderGroupUser";
 import Group from '../../assets/images/chat/group.png';
 import GroupDetails from "./GroupName";
 import { toast, ToastContainer } from "react-toastify";
-
+import { connect } from "react-redux";
+import * as actions from '../../app/auth/store/actions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -130,6 +131,18 @@ const useStyles = makeStyles((theme) => ({
   },
   groupUser:{
     flexDirection: 'row'
+  },
+  userContainer: {
+    display: "flex",
+    alignItems: "center",
+    maxWidth: 230,
+    flexDirection: 'row',
+    overflow: 'auto',
+    '-ms-overflow-style': 'none',  /* Internet Explorer 10+ */
+    scrollbarWidth: 'none' , /* Firefox */
+    '& ::-webkit-scrollbar': {
+      display: 'none'
+    }
   }
 }));
 
@@ -183,17 +196,24 @@ const ChatIndex = (props) => {
   }
 
   const setNewGroup = (value) => {
-    console.log("New Group", value)
     selectNewGroup(value)
   }
 
   const selectChat = (chat) => {
     setChat(chat)
+    props.selectChat(chat)
+  }
+
+  const closeGroup = () => {
+    showGroupInfo(false)
+    setNewGroup(false)
+    setSelectedUsers([])
+    setFilter('')
   }
 
   if(groupInfo){
     return (
-      <GroupDetails selectedUsers={selectedUsers} />
+      <GroupDetails close={closeGroup} selectedUsers={selectedUsers} />
     )
   }
 
@@ -229,9 +249,11 @@ const ChatIndex = (props) => {
         }
         {newGroup && 
           <div className={[classes.headingContainer, classes.groupUser, classes.borderBottom].join(' ')}>
-            {selectedUsers.map(user=>(
-              <RenderUsers user={user} removeContact={removeContactFromGroup} />
-            ))}
+            <div className={classes.userContainer}>
+              {selectedUsers.map(user=>(
+                <RenderUsers user={user} removeContact={removeContactFromGroup} />
+              ))}
+            </div>
             {selectedUsers.length == 0 &&
               <div onClick={()=>setNewGroup(false)} className={classes.closeBtn}>
                 <CloseRounded />
@@ -289,7 +311,7 @@ const ChatIndex = (props) => {
               <img src={search} className={classes.smiley} />
             </Typography>
           </ListItem>
-          <Chat selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <Chat newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
           <ToastContainer />
         </div>
       </div>
@@ -297,4 +319,21 @@ const ChatIndex = (props) => {
   );
 };
 
-export default ChatIndex;
+const mapStateToProps = (state) => {
+  return {
+    userInfo: state.auth.userInfo,
+    token: state.auth.token,
+    isAuthenticated: state.auth.token !== null,
+    selectedRole: state.auth.selectedRole,
+    changeRole: state.auth.changeRole,
+    notificationCount: state.notification.notificationCount,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatIndex);
