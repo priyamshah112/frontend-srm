@@ -155,28 +155,21 @@ const StudentSkills = (props) => {
     const token = localStorage.getItem('srmToken');
 
 
-    const reportVisibility = (data) => {
+    const toggleStatus = (flag) => {
+        setIsPublished(flag);
+        props.onCardPublish(flag);
+    }
 
+    const reportVisibility = (data) => {
         if (data.grades[0]) {
             remarkText = data.grades[0].remarks;
-
-            if (data.grades[0].status == 'published') {
-                setIsPublished(true);
-                props.onCardPublish(true);
+            if (data.grades[0].status == 'published' && data.grades[0].report_grade[0]) {
+                toggleStatus(true);
             } else {
-                setIsPublished(false);
-                props.onCardPublish(false);
+                toggleStatus(false);
             }
-
-            if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
-                if (data.grades[0].status == 'published') {
-                    setIsPublished(true);
-                }
-            }
-        } else if (props.selectedRole == 'student' || props.selectedRole == 'parent') {
-            props.onCardPublish(false);
         } else {
-            props.onCardPublish(false);
+            toggleStatus(false);
         }
     }
 
@@ -410,7 +403,7 @@ const StudentSkills = (props) => {
         return (
             <Box display="block" displayPrint="none">
                 {
-                    !isPublish && <div className={classes.publishCard}>
+                    !isPublish && (reportData.grades[0] && reportData.grades[0].report_grade[0]) && <div className={classes.publishCard}>
                         {
                             !isLoading && !editSkill && !isEditGrade && editAccess() &&
                             <Box>
@@ -582,7 +575,6 @@ const StudentSkills = (props) => {
             setEditRemark(false);
         }
     }
-
 
     const ShowRemark = () => {
         return (

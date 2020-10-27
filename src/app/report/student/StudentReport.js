@@ -339,10 +339,11 @@ const StudentDetails = (props) => {
     }
 
     const renderAttendace = () => {
-        const { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
+        let { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
 
         if (teacherDetails && teacherDetails.length) {
-            teacherName = teacherDetails[0]
+            const { firstname, lastname } = teacherDetails[0]
+            teacherName = firstname + ' ' + lastname;
         }
 
         return (
@@ -380,10 +381,11 @@ const StudentDetails = (props) => {
 
 
     const PrintAttendance = () => {
-        const { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
+        let { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
 
         if (teacherDetails && teacherDetails.length) {
-            teacherName = teacherDetails[0]
+            const { firstname, lastname } = teacherDetails[0]
+            teacherName = firstname + ' ' + lastname;
         }
 
         return (
