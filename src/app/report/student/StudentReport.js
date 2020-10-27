@@ -235,7 +235,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         margin: '11px 0px',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        margin: '10px'
     },
     emptyMessage: {
         textAlign: 'center',
@@ -339,14 +340,15 @@ const StudentDetails = (props) => {
     }
 
     const renderAttendace = () => {
-        const { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
+        let { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
 
         if (teacherDetails && teacherDetails.length) {
-            teacherName = teacherDetails[0]
+            const { firstname, lastname } = teacherDetails[0]
+            teacherName = firstname + ' ' + lastname;
         }
 
         return (
-            <Box display="block" displayPrint="none">
+            <Box display="block" displayPrint="none" style={{ padding: '0px 10px' }}>
                 <div className={classes.attendanceWrapper1}>
                     <div className={classes.attendance}>
                         <Typography>Attendance</Typography>
@@ -380,10 +382,11 @@ const StudentDetails = (props) => {
 
 
     const PrintAttendance = () => {
-        const { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
+        let { present = 0, absent = 0, totalDays = 0, teacherDetails, teacherName = "None" } = attendanceData;
 
         if (teacherDetails && teacherDetails.length) {
-            teacherName = teacherDetails[0]
+            const { firstname, lastname } = teacherDetails[0]
+            teacherName = firstname + ' ' + lastname;
         }
 
         return (
@@ -469,11 +472,11 @@ const StudentDetails = (props) => {
         return (
             <Box display="none" displayPrint="block">
                 <div className={classes.schoolNameLogo}>
-                    <img
+                    {logo && <img
                         src={logo}
                         alt='School Logo'
                         className={classes.schoolLogo}
-                    />
+                    />}
                     <Typography className={classes.schoolTitle}>
                         {name}
                     </Typography>
