@@ -235,7 +235,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         margin: '11px 0px',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        margin: '10px'
     },
     emptyMessage: {
         textAlign: 'center',
@@ -347,7 +348,7 @@ const StudentDetails = (props) => {
         }
 
         return (
-            <Box display="block" displayPrint="none">
+            <Box display="block" displayPrint="none" style={{ padding: '0px 10px' }}>
                 <div className={classes.attendanceWrapper1}>
                     <div className={classes.attendance}>
                         <Typography>Attendance</Typography>
@@ -471,11 +472,11 @@ const StudentDetails = (props) => {
         return (
             <Box display="none" displayPrint="block">
                 <div className={classes.schoolNameLogo}>
-                    <img
+                    {logo && <img
                         src={logo}
                         alt='School Logo'
                         className={classes.schoolLogo}
-                    />
+                    />}
                     <Typography className={classes.schoolTitle}>
                         {name}
                     </Typography>
