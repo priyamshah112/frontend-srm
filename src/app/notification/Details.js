@@ -195,17 +195,25 @@ const Details = (props) => {
       );
       if (response.status === 200) {
         if (updatedStatus === "read") {
-          props.subNotificationCount();
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           setStatus("read");
         } else if (updatedStatus === "unread") {
           props.addNotificationCount();
           setStatus("unread");
         }else if (updatedStatus === "deleted") {
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           props.handleRemoveNotifcation(props.notification.id);
           setStatus("deleted");          
       }  else {
-          props.subNotificationCount();
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           props.handleRemoveNotifcation(props.notification.id);
+          setStatus("archive");
         }
       }
     } catch (e) {

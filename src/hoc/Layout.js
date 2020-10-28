@@ -310,6 +310,10 @@ const useStyles = makeStyles((theme) => ({
     color: "#8E8E93",
     fontSize: "18px",
   },
+  Logo: {
+    width: "137px",
+    height: "40px",
+  }
 }));
 
 const Layout = (props) => {
@@ -326,7 +330,8 @@ const Layout = (props) => {
   const [snackbarTitle, setSnackbarTitle] = useState('');
   const [snackbarDescription, setSnackbarDescription] = useState('');
   const [selectedChat, setSelectedChat] = useState(null)
-
+  const schoolName = localStorage.getItem("schoolName");
+  const schoolLogo = localStorage.getItem("schoolLogo");
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const isMenuOpen = Boolean(anchorEl);
@@ -542,9 +547,9 @@ const Layout = (props) => {
       <MenuItem onClick={handleProfile} classes={{ root: classes.menuItem }}>
         Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
+      {/* <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
         Settings
-      </MenuItem>
+      </MenuItem> */}
       {props.isAuthenticated && props.userInfo.roles.length > 1 ? (
         <MenuItem
           onClick={handleChangeRole}
@@ -585,9 +590,9 @@ const Layout = (props) => {
       <MenuItem onClick={handleProfile} classes={{ root: classes.menuItem }}>
         Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
+      {/* <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
         Settings
-      </MenuItem>
+      </MenuItem> */}
       {props.isAuthenticated && props.userInfo.roles.length > 1 ? (
         <MenuItem
           onClick={handleChangeRole}
@@ -863,12 +868,12 @@ const Layout = (props) => {
                 />
               </IconButton>
               <Hidden smDown implementation="css">
-                <img src={Logo} alt="Logo" />
+                <img src={schoolLogo !== "null" ? schoolLogo : Logo} className={classes.Logo} alt="Logo" />
               </Hidden>
 
               <div className={classes.grow} />
               <Typography className={classes.title} variant="h6" noWrap>
-                {matchesSm ? "PSBB" : "PSBB Learning Leadership Academy"}
+                {matchesSm ? schoolName : schoolName}
               </Typography>
               <div className={classes.grow2} />
               <div className={classes.sectionDesktop}>

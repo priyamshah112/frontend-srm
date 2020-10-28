@@ -151,11 +151,17 @@ const NotificationCard = (props) => {
           props.addNotificationCount();
           setStatus("unread");
         }else if (updatedStatus === "deleted") {
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           props.handleRemoveNotifcation(props.notification.id);
           setStatus("deleted");          
           } else {
-          props.subNotificationCount();
-          props.handleRemoveNotifcation(props.notification.id);
+            if (props.notificationCount !== 0) {
+              props.subNotificationCount();
+            }
+            props.handleRemoveNotifcation(props.notification.id);
+            setStatus("archive");
         }
       }
     } catch (e) {
@@ -173,7 +179,9 @@ const NotificationCard = (props) => {
           token
         );
       }
-      props.subNotificationCount();
+      if (props.notificationCount !== 0) {
+        props.subNotificationCount();
+      }
       history.push(`/notifications/${props.notification.id}`);
     } catch (e) {
       console.log(e);

@@ -15,6 +15,8 @@ const initialState = {
   loading: false,
   redirectUrl: null,
   changeRole: false,
+  schoolName: null,
+  schoolLogo: null
 };
 
 const authStart = (state, action) => {

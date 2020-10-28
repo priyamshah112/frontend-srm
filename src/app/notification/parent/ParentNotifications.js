@@ -218,7 +218,18 @@ const ParentNotification = (props) => {
             value={filter}
             onChange={handleFilterChange}
             className={classes.selectFiler}
-          >
+            MenuProps={{
+              anchorOrigin: {
+                vertical: "bottom",
+                horizontal: "center",
+              },
+              transformOrigin: {
+                vertical: "top",
+                horizontal: "center",
+              },
+              getContentAnchorEl: null,
+            }}
+            >
             <MenuItem value={"All"}>All</MenuItem>
             <MenuItem value={"Archive"}>Archived</MenuItem>
             <MenuItem value={"Read"}>Read</MenuItem>

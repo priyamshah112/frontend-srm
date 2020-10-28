@@ -12,6 +12,7 @@ import { dateDiff } from "../../../shared/datediff";
 import remindersvg from "../../../assets/images/home/reminder.svg";
 import HomeService from "../HomeSerivce";
 import Reminder from "./Reminder";
+import BackIcon from "../../../assets/images/Back.svg";
 const useStyle = makeStyles((theme) => ({
   cardContainer: {
     overflowY: "auto",
@@ -117,6 +118,19 @@ const useStyle = makeStyles((theme) => ({
   DateAlign: {
     transform: "translate(-8px,15px)",
   },
+  mainHeader: {
+    width: "100%",
+    paddingTop: "15px",
+  },
+  mainHeadertext: {
+    width: "100%",
+    textAlign: "center",
+  },  
+  backImg: {
+    paddingLeft: "15px",
+    paddingTop: "5px",
+    cursor: "pointer",
+  },  
 }));
 
 const Details = (props) => {
@@ -254,6 +268,26 @@ const Details = (props) => {
             className={classes.cardContainer}
           >
             <Card className={classes.card}>
+              <div className={classes.mainHeader}>
+                <Grid container>
+                  <Grid item xs={1}>
+                    <img
+                      src={BackIcon}
+                      alt="Back"
+                      className={classes.backImg}
+                      onClick={() => {
+                        history.push("/news");
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={10}>
+                    <div className={classes.mainHeadertext}>
+                      <Typography variant="h6">Notification Details</Typography>
+                    </div>
+                  </Grid>
+                  <Grid item xs={1}></Grid>
+                </Grid>
+              </div>
               <CardHeader
                 className={classes.NewsHeader}
                 action={

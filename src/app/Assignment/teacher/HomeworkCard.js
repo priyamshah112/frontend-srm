@@ -133,9 +133,6 @@ const useStyle = makeStyles((theme) => ({
   cardContent: {
     padding: '20px 20px 12px !important',
   },
-  highlightedText: {
-    // fontFamily:theme.typography.fon,
-  },
   textAlignRight: {
     textAlign: 'right',
   },
@@ -205,13 +202,13 @@ const HomeworkCard = (props) => {
                   {title ? (
                     <Typography
                       variant='body1'
-                      className={classes.highlightedText}>
+                     >
                       {title}
                     </Typography>
                   ) : (
                     <Typography
                       variant='body1'
-                      className={classes.highlightedText}>
+                     >
                       N/A
                     </Typography>
                   )}
@@ -219,7 +216,7 @@ const HomeworkCard = (props) => {
               </Grid>
               <Grid item xs={4}>
                 <Typography
-                  className={`${classes.textAlignRight} ${classes.highlightedText}`}
+                  className={`${classes.textAlignRight}`}
                   variant='body2'>
                   Created at: {moment(created_date).format('DD MMM YY')}
                 </Typography>
