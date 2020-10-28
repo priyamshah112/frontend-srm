@@ -83,7 +83,7 @@ const Summary = (props) => {
                   <span>
                     {item.subject} -{" "}
                     <b>
-                      {item.percentage ? Number(item.percentage).toFixed(2) * 100 : 0}
+                      {item.percentage ? Number(item.percentage).toFixed(2) : 0}
                       %
                     </b>
                     ,{" "}
