@@ -72,6 +72,8 @@ export function* authUserSaga(action) {
 
       const expirationDate = yield new Date(response.data.expires_at);
       yield localStorage.setItem("srmToken", response.data.access_token);
+      yield localStorage.setItem("schoolName", response.data.school_details.name);      
+      yield localStorage.setItem("schoolLogo", response.data.school_details.logo);      
       yield localStorage.setItem(
         "srmUserInfo",
         JSON.stringify(response.data.user)
