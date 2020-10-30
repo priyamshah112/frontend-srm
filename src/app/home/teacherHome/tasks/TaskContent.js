@@ -341,7 +341,7 @@ const TaskContent = (props) => {
 
   return (
     <>
-      {showNoContent ? (
+      {(showNoContent && showNoContent1) ? (
         <Card className={`${classes.taskCard} ${classes.card}`}>
           <CardContent
             className={classes.clickCard}
