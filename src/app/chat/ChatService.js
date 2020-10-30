@@ -28,6 +28,7 @@ class ChatService {
     // return true;
   }
   fetchChats(params, token) {
+    console.log("Token", token)
     return axios.get(`${BACKEND_API_URL}/chats/get`, {
       headers: {
         "Content-Type": "application/json",

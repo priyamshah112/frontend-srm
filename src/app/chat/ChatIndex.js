@@ -17,6 +17,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
 import * as actions from '../../app/auth/store/actions';
 import ChatService from "./ChatService";
+import closeIcon from '../../assets/images/chat/remove.svg'
+import { onMessageListener } from "../../firebaseInit";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -171,6 +173,7 @@ const list = [
 const ChatIndex = (props) => {
   const classes = useStyles();
   const [filter, setFilter] = useState('')
+  const [showContact, setShowContact] = useState(false)
   const [selectedUsers, setSelectedUsers] = useState([])
   const [newGroup, selectNewGroup] = useState(false)
   const [chat, setChat] = useState({})
@@ -187,7 +190,15 @@ const ChatIndex = (props) => {
     setSelectedUsers([...users])
   }
 
-  
+  useEffect(()=>{
+    onMessage()
+  }, []);
+
+  const onMessage = async() => {
+    console.log("Message")
+    let message = await onMessageListener()
+    console.log(message)
+  }
 
   const removeContactFromGroup = (item) => {
     let users = selectedUsers;
@@ -202,18 +213,12 @@ const ChatIndex = (props) => {
 
   const selectChat = async(chat) => {
     try {
-      const token = localStorage.getItem('srmToken');
-      // const selectedRole = props.selectedRole;
-      const response = await ChatService.fetchChat(
-        chat.id,
-        token,
-      );
-      console.log('Scroll response', response);
-      if (response.status === 200) {
-        console.log('Chat', response);
-        const { data } = response
-        setChat(data.chat)
-        props.selectChat(data.chat)
+      if(chat.messages!=undefined){
+        fetchChat(chat)
+      }
+      else{
+        setChat(chat)
+        props.selectChat(chat)
       }
     } catch (error) {
       console.log(error);
@@ -221,8 +226,19 @@ const ChatIndex = (props) => {
     
   }
 
-  const fetchChat = async() => {
-    
+  const fetchChat = async(chat) => {
+    const token = localStorage.getItem('srmToken');
+    // const selectedRole = props.selectedRole;
+    const response = await ChatService.fetchChat(
+      chat.id,
+      token,
+    );
+    if (response.status === 200) {
+      console.log('Chat', response);
+      const { data } = response
+      setChat(data.chat)
+      props.selectChat(data.chat)
+    }
   }
 
   const closeGroup = () => {
@@ -308,10 +324,11 @@ const ChatIndex = (props) => {
                 onChange={(event)=>setFilter(event.target.value)}
                 className={classes.inputBorder}
                 required={true}
+                autoComplete={false}
                 disableUnderline={true}
               />
             <Typography className={classes.emojiContainer}>
-              <img src={search} className={classes.smiley} />
+              <img  src={search} className={classes.smiley} />
             </Typography>
           </ListItem>
         }
@@ -326,13 +343,15 @@ const ChatIndex = (props) => {
                 onChange={(event)=>setFilter(event.target.value)}
                 className={classes.inputBorder}
                 required={true}
+                autoComplete={false}
+                onFocus={()=>setShowContact(true)}
                 disableUnderline={true}
               />
             <Typography className={classes.emojiContainer}>
-              <img src={search} className={classes.smiley} />
+              <img onClick={()=>setShowContact(false)} src={showContact? closeIcon:search} className={classes.smiley} />
             </Typography>
           </ListItem>
-          <Chat userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <Chat showContact={showContact} userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
           <ToastContainer />
         </div>
       </div>

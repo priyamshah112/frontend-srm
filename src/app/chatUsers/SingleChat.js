@@ -199,14 +199,32 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     }
     
   }, [closeEmoji])
+  let timer = null
   useEffect(()=>{
+    if(timer != null){
+      clearInterval(timer)
+    }
     if(chat.messages == undefined){
       setMessages([])
     }
     else{
       setMessages(chat.messages)
+      // timer = setInterval(()=>fetchChat(chat), 1000)
     }
   }, [chat])
+  const fetchChat = async(chat) => {
+    const token = localStorage.getItem('srmToken');
+    // const selectedRole = props.selectedRole;
+    const response = await ChatService.fetchChat(
+      chat.id,
+      token,
+    );
+    if (response.status === 200) {
+      console.log('Chat', response);
+      const { data: {chat} } = response
+      setMessages(chat.messages)
+    }
+  }
   const scrollToBottom = () => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
   }
@@ -282,6 +300,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       // const selectedRole = props.selectedRole;
       if(chat.messages == undefined){
         data.reciever = chat.id
+        
         const response = await ChatService.newChat(
           data,
           token
@@ -400,6 +419,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 className={classes.inputBorder}
                 onSubmit={submitChat}
                 required={true}
+                autoComplete={false}
                 onKeyDown={onKeyDown}
                 disableUnderline={true}
               />

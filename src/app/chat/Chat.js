@@ -102,23 +102,52 @@ const list = [
   }
 ]
 
-export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo }) {
+export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo, showContact }) {
   const classes = useStyles();
   const [Chats, setChats] = useState([])
+  const [Users, setUsers] = useState([])
   const [filteredChat, setFilteredChats] = useState([])
+  const [offset, setOffset] = useState(100)
+  const [currentPage, setCurrentPage] = useState(0)
 
   useEffect(()=>{
     if(filter == ''){
       setFilteredChats([...Chats])
     }
     else{
-      let chat = Chats.filter(c=>{
-        return c.name.toLowerCase().includes(filter.toLowerCase());
-      })
-      
-      setFilteredChats([...chat])
+      if(Chats.length>0){
+        let chat = Chats.filter(c=>{
+          let name
+          let role
+          if(c.members != null){
+            if(c.group != null){
+              name = c.group.name
+            }
+            else{
+              return false;
+            }
+            role = ''
+          }
+          else{
+            name = c.firstname + ' ' + c.lastname
+            role = c.roles[0].name
+          }
+          return name.toLowerCase().includes(filter.toLowerCase()) 
+            || role.toLowerCase().includes(filter.toLowerCase());
+        })
+        setFilteredChats([...chat])
+      }
     }
   }, [filter])
+
+  useEffect(()=>{
+    if(showContact){
+      fetchContacts()
+    }
+    else{
+      fetchChats()
+    }
+  }, [showContact])
 
   useEffect(()=>{
     fetchChats()
@@ -130,24 +159,33 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
   }, [newGroup])
 
   const fetchContacts = async () => {
-    try {
-      const token = localStorage.getItem('srmToken');
-      // const selectedRole = props.selectedRole;
-      const response = await ChatService.fetchChatUsers(
-        {selectedRole},
-        token,
-      );
-      console.log('Scroll response', response);
-      if (response.status === 200) {
-        console.log('Contacts', response);
-        const { data } = response
-        setChats([...data.users])
-        setFilteredChats([...data.users])
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    setChats([...Chats, ...Users])
+    let chats = [...Chats, ...Users]
+    setFilteredChats(chats.slice(currentPage, offset))
+    
+    // try {
+    //   const token = localStorage.getItem('srmToken');
+    //   // const selectedRole = props.selectedRole;
+    //   const response = await ChatService.fetchChats(
+    //     {selectedRole},
+    //     token,
+    //   );
+    //   console.log('Scroll response', response);
+    //   if (response.status === 200) {
+    //     console.log('Contacts', response);
+    //     const { data } = response
+        
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
+
+  useEffect(() => {
+    window.onscroll = () => {
+      loadMoreItems()
+    }
+  }, []);
 
   const fetchChats = async () => {
     try {
@@ -161,76 +199,90 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
       if (response.status === 200) {
         console.log('Chats', response);
         const { data } = response
-        setChats([...data.chats, ...data.users])
-        setFilteredChats([...data.chats, ...data.users])
+        setChats([...data.chats])
+        setFilteredChats([...data.chats])
+        setUsers([...data.users])
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const loadMoreItems = (event) => {
+    console.log(event)
+    if (event.target.scrollTop === event.target.scrollHeight) {
+      //user is at the end of the list so load more items
+      let start = currentPage + 1 * offset;
+      setCurrentPage(currentPage + 1)
+      let chats = Chats.slice(start, offset)
+      setFilteredChats([...filteredChat, ...chats])
+    } 
+  }
+
   return (
-    <List className={classes.root}>
-      {filteredChat.map(chat=>{
-        let name = chat.firstname + ' ' + chat.lastname
-        let img = chat.thumbnail
-        let avatar = {};
-        let message = '';
-        let date = chat.created_at;
-        if(chat!=undefined){
-          if(chat.type == "group"){
-            name = chat.group.name;
-            img = groupicon
-            avatar = classes.avatarBackground
-          }
-          else{
-            if(chat.members!=undefined){
-              let rec = chat.members.filter(c=>{
-                return c.id != userInfo.id
-              })[0]
-              name = rec.firstname + ' ' + rec.lastname
-              img = rec.thumbnail
+    <div onScroll={(evt)=>loadMoreItems(evt)}>
+      <List className={classes.root}>
+        {filteredChat.map(chat=>{
+          let name = chat.firstname + ' ' + chat.lastname
+          let img = chat.thumbnail
+          let avatar = {};
+          let message = '';
+          let date = chat.created_at;
+          if(chat!=undefined){
+            if(chat.type == "group"){
+              name = chat.group.name;
+              img = groupicon
+              avatar = classes.avatarBackground
+            }
+            else{
+              if(chat.members!=undefined){
+                let rec = chat.members.filter(c=>{
+                  return c.id != userInfo.id
+                })[0]
+                name = rec.firstname + ' ' + rec.lastname
+                img = rec.thumbnail
+              }
             }
           }
-        }
-        if(chat.messages != undefined){
-          message = chat.messages[chat.messages.length - 1].message
-          date = chat.messages[chat.messages.length - 1].created_at;
-        }
-        return (
-          <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
-            <ListItemAvatar>
-              <StyledBadge
-                overlap="circle"
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                variant={chat.status}
-              >
-                <Avatar alt={name} src={img} className={avatar} />
-              </StyledBadge>
-            </ListItemAvatar>
-            <ListItemText
-              style={{ width: '60%' }}
-              secondaryTypographyProps={{ style: { width: '60%'} }}
-              primary={name}
-              secondary={message}
-            />
-            <div className={classes.roleDetails}>
-              <Typography className={classes.date}>
-                {moment(date).fromNow()}
-              </Typography>
-              {/* {chat.type == "single" &&
+          if(chat.messages != undefined){
+            message = chat.messages[chat.messages.length - 1].message
+            date = chat.messages[chat.messages.length - 1].created_at;
+          }
+          return (
+            <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
+              <ListItemAvatar>
+                <StyledBadge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  variant={chat.status}
+                >
+                  <Avatar alt={name} src={img} className={avatar} />
+                </StyledBadge>
+              </ListItemAvatar>
+              <ListItemText
+                style={{ width: '60%' }}
+                secondaryTypographyProps={{ style: { width: '60%'} }}
+                primary={name}
+                secondary={message}
+              />
+              <div className={classes.roleDetails}>
                 <Typography className={classes.date}>
-                  {chat.roles[0].name}
+                  {moment(date).fromNow()}
                 </Typography>
-              } */}
-            </div>
-          </ListItem>
-        )
-      })}
-    </List>
+                {/* {chat.type == "single" &&
+                  <Typography className={classes.date}>
+                    {chat.roles[0].name}
+                  </Typography>
+                } */}
+              </div>
+            </ListItem>
+          )
+        })}
+      </List>
+    </div>
   );
 }
 
