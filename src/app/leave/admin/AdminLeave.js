@@ -335,8 +335,24 @@ const TeacherLeave = (props) => {
                   <Grid item xs={5} className={classes.borderLeft}>
                     <Typography variant="h5" className={classes.leavereason}>
                       <div className={classes.uppertext}>
-                        <Moment format="DD">{leaves.start_date}</Moment>-
+                        <Moment format="D MMM YYYY">{leaves.start_date}</Moment>
+            &nbsp; &nbsp; -&nbsp; &nbsp;  
+
                         <Moment format="D MMM YYYY">{leaves.end_date}</Moment>
+                      </div>
+                      <div>
+                      {leaves.full_day 
+                      ? 
+                      (<span>Full day</span>)
+                      :
+                      (
+                        leaves.half_day_half==0?
+                        (<span>Half day - First Half</span>)
+                        :
+                        (<span>Half day - Second Half</span>)
+                      
+                      )
+                      }
                       </div>
                       <div>Reason - {leaves.reason}</div>
                     </Typography>
