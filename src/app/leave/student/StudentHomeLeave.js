@@ -63,9 +63,9 @@ img:{
 center:{
   paddingLeft:'12px',
 },
-uppertext:{
-  marginBottom:'4px',
-},
+// uppertext:{
+//   marginBottom:'4px',
+// },
 uppertext1:{
   marginBottom:'4px',
   color:'#d8d8da',

@@ -111,9 +111,9 @@ const useStyles = makeStyles((theme) => ({
   center: {
     paddingLeft: "12px",
   },
-  uppertext: {
-    marginBottom: "4px",
-  },
+  // uppertext: {
+  //   marginBottom: "4px",
+  // },
   newclass: {},
   borderLeft: {
     borderLeft: "2px solid #dedede",
