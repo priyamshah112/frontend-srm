@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,17 +31,32 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   select: {
-    width: "50%",
+    width: "25%",
   },
+  loading: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
+  },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
+  description:{
+    "white-space": "pre-wrap"
+  }
 }));
 
 const StudentSyllabus = (props) => {
   const [syllabus, setSyllabus] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const [subject, setSubject] = useState(1); //Choose Subject ID
+  const [subject, setSubject] = useState(""); //Choose Subject ID
   const [subjects, setSubjects] = useState(null); //subjects ARRAY
   const [classList, setClasses] = useState(null);
-  const [classID, setClass] = useState(1);
+  const [classID, setClass] = useState("");
   const token = localStorage.getItem("srmToken");
 
   const handleChange = (event) => {
@@ -48,10 +64,10 @@ const StudentSyllabus = (props) => {
     setLoading(true);
   };
 
-  const fetchClassSyllabus = async (subject_id) => {
-    const response = await SyllabusService.getSyllabusBySubject(
+  const fetchClassSyllabus = async (subject_id, class_id) => {
+    const response = await SyllabusService.getSyllabusByParams(
       token,
-
+      class_id,
       subject_id
     );
     if (response.status === 200) {
@@ -62,6 +78,22 @@ const StudentSyllabus = (props) => {
       }
 
       setLoading(false);
+    }
+  };
+
+  const fetchClasses = async () => {
+    const response = await SyllabusService.fetchClasses(token);
+    if (response.status === 200) {
+      if (response.data.status == "success") {
+        let tempClassList = {};
+        response.data.data.forEach((classDetails) => {
+          tempClassList[classDetails.id] = classDetails;
+        });
+        if (classID === "") {
+          setClass(response.data.data[0].id);
+        }
+        setClasses({ ...tempClassList });
+      }
     }
   };
 
@@ -77,15 +109,39 @@ const StudentSyllabus = (props) => {
   };
 
   useEffect(() => {
-    fetchClassSyllabus(subject);
-  }, [subjects, subject]);
+    let isMounted = true;
+    if (isMounted) {
+      if (classID !== "" && subject !== "") {
+        fetchClassSyllabus(subject,classID);
+      }
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [classID, subject]);
+
   useEffect(() => {
-    fetchSubjects();
+    if (classID !== "" && classList !== null) {
+      let tempSubjectList = {};
+      classList[classID].subject_lists.forEach((subject) => {
+        tempSubjectList[subject.subject_id] = subject;
+      });
+      if (subject === "") {
+        setSubject(classList[classID].subject_lists[0].subject_id);
+      }
+      setSubjects({ ...tempSubjectList });
+    }
+  }, [classID, classList]);
+
+  useEffect(() => {
+    if (classList == null) {
+      fetchClasses();
+    }
   }, []);
 
   const classes = useStyles();
   const table =
-    isLoading == false ? (
+    !isLoading && syllabus ? (
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="spanning table">
           <TableHead>
@@ -131,7 +187,7 @@ const StudentSyllabus = (props) => {
                       </Typography>
                     </TableCell>
                     <TableCell align="left" width="60%">
-                      <Typography variant="subtitle1" gutterBottom>
+                      <Typography variant="subtitle1" className={ classes.description } gutterBottom>
                         {chapter.main_content}
                       </Typography>
                     </TableCell>
@@ -151,13 +207,24 @@ const StudentSyllabus = (props) => {
           value={subject}
           onChange={handleChange}
           className={classes.select}
-          style={{ marginRight: "10%" }}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "center",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "center",
+            },
+            getContentAnchorEl: null,
+          }}
+          style={{ marginRight: "5%" }}
         >
           {subjects !== null
             ? Object.keys(subjects).map(function (key, index) {
                 return (
-                  <MenuItem key={index} value={subjects[key].id}>
-                    {subjects[key].name}
+                  <MenuItem key={index} value={subjects[key].subject_id}>
+                    {subjects[key].subject_data.name}
                   </MenuItem>
                 );
               })
@@ -168,6 +235,16 @@ const StudentSyllabus = (props) => {
         <br />
 
         {table}
+        {isLoading ? (
+          <div className={classes.loading}>
+            <CircularProgress color="primary" size={30} />
+          </div>
+        ) : null}
+        {!isLoading && !syllabus ? (
+          <div className={classes.emptyView}>
+            <Typography>You don't have any syllabus.</Typography>
+          </div>
+        ) : null}
       </div>
     </div>
   );

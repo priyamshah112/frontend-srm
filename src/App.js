@@ -16,10 +16,13 @@ import RoleSelection from "./app/auth/RoleSelection";
 import Home from "./app/home/Home";
 import Notification from "./app/notification/Notification";
 import NewsAnnouncement from "./app/newsAnnouncement/NewsAnnouncement";
+import Transport from "./app/Transport/Transport";
 import Assignment from "./app/Assignment/Assignment";
 import NewsDetails from "./app/home/studentHome/NewsDetails";
 import Announcements from "./app/home/studentHome/Announcements";
 import Gallery from "./app/gallery/GalleryIndex";
+import Payments from "./app/payments/Payments";
+import PaymentDetails from "./app/payments/PaymentDetails";
 import ImageUpload from "./app/gallery/ImageUpload";
 import Profile from "./app/profile/Profile";
 import Details from "./app/notification/Details";
@@ -39,8 +42,14 @@ import LeaveCreateContainer from "./app/leave/LeaveCreateContainer";
 import Attendance from "./app/Attendance/Attendance";
 import Syllabus from "./app/syllabus/Syllabus";
 import EditChapter from "./app/syllabus/teacher/editChapter";
-import { Chat } from 'react-chat-popup';
+import { Chat } from "react-chat-popup";
 import ChatFullScreen from "./app/chatUsers/ChatFullScreen";
+import ReportContainer from "./app/report/student/ReportContainer";
+import StudentCard from "./app/report/student/StudentCard";
+// import StudentCard from "./app/report/student/StudentReport";
+import ReportUpload from "./app/report/student/ReportUpload";
+import AttendanceUpload from "./app/Attendance/teacherAttendance/AttendanceUpload";
+import TimeTable from "./app/timeTable/timeTable";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -78,8 +87,8 @@ function App(props) {
           />
           <Route path="/assignment" exact component={Assignment} />
           <Route path="/create-homework/:id" exact component={Assignment} />
-
           <Route path="/attendance" exact component={Attendance} />
+          <Route path="/attendance/upload" exact component={AttendanceUpload} />
           <Route
             path="/events"
             exact
@@ -101,27 +110,19 @@ function App(props) {
           <Route
             path="/transport"
             exact
-            component={() => <Typography>Transport Home</Typography>}
+            component={Transport}
           />
-
           <Route path="/gallery" exact component={Gallery} />
           <Route path="/gallery/upload" exact component={ImageUpload} />
-
-          <Route
+          {/* <Route
             path="/curriculum"
             exact
             component={() => <Typography>Curriculum Home</Typography>}
           />
-          <Route
-            path="/payments"
-            exact
-            component={() => <Typography>Payments Home</Typography>}
-          />
-          <Route
-            path="/timetable"
-            exact
-            component={() => <Typography>Timetable Home</Typography>}
-          />
+           */}
+          <Route path="/payments" exact component={Payments} />
+          <Route path="/payments/:id" exact component={PaymentDetails} />
+          <Route path="/timetable" exact component={TimeTable} />
           <Route path="/leave/" exact component={Leave} />
           <Route path="/leave/create/" exact component={LeaveCreateContainer} />
           <Route path="/faq" exact component={Faq} />
@@ -129,8 +130,13 @@ function App(props) {
           <Route path="/faq/edit/:id" exact component={FaqEditor} />
           <Route path="/profile" exact component={Profile} />
           <Route path="/support" exact component={Support} />
-          <Route path="/create-support/:id" exact component={CreateSupport} />
+          <Route path="/support/create" exact component={CreateSupport} />
+          <Route path="/support/create/:id" exact component={CreateSupport} />
           <Route path="/support/:id" exact component={SupportSection} />
+          <Route path="/chat" exact component={ChatFullScreen} />
+          <Route path="/report" exact component={ReportContainer} />
+          <Route path="/report-card" exact component={StudentCard} />
+          <Route path="/report-upload" exact component={ReportUpload} />
           <Route path="/chat/:id" exact component={ChatFullScreen} />
         </Switch>
       </Layout>
@@ -146,7 +152,6 @@ function App(props) {
         <Route path="/otp" exact component={Otp} />
         <Route path="/changepwdotp" component={ChangePwdUser} />
         <Route path="/roleselection" component={RoleSelection} />
-
 
         <Route component={protectedRoutes} />
       </Switch>

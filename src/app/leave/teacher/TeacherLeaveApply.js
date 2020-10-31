@@ -23,10 +23,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import {
   MuiPickersUtilsProvider,
-  KeyboardDatePicker,
+  DatePicker,
 } from '@material-ui/pickers';
-
+import EventIcon from '@material-ui/icons/Event';
 import LeaveService from '../LeaveService';
+import { IconButton, InputAdornment, InputLabel } from '@material-ui/core';
 const height = 85;
 
 const useStyle = makeStyles((theme) => ({
@@ -55,7 +56,7 @@ const useStyle = makeStyles((theme) => ({
     color: 'red',
   },
   fieldStyle: {
-    width: '90%',
+    width: '97%',
     margin: 'auto',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
@@ -119,23 +120,6 @@ const useStyle = makeStyles((theme) => ({
     margin: 2,
   },
 
-  margin: {
-    marginTop: '30px',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: '10px',
-    },
-    '& .publishBtn': {
-      borderRadius: '3px',
-      width: '100%',
-      // opacity: '0.5',
-      marginBottom: '15px',
-    },
-    '& .publishLaterBtn': {
-      backgroundColor: `${theme.palette.common.white}`,
-      border: `1px solid ${theme.palette.common.adornment}`,
-      marginRight: '5px',
-    },
-  },
   form_txtarea: {
     marginBottom: '20px',
   },
@@ -147,6 +131,7 @@ const useStyle = makeStyles((theme) => ({
       'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
     lineHeight: '1.5',
+    outline: 'none'
   },
   form_row: {
     display: 'flex',
@@ -177,6 +162,41 @@ const useStyle = makeStyles((theme) => ({
   leavereason: {
     fontSize: '15px',
   },
+  tchClassRoot:{
+    marginLeft:"27px",
+    transform:'translateY(-10px)'
+  },
+  tchSelect:{
+    width:'150px'
+  },
+  sideMargins: {
+    marginLeft: '20px',
+  },
+  publishBtns: {
+    textAlign: 'right',
+    justifyContent: 'right',
+  },
+  margin: {
+    marginTop: '30px',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: '10px',
+    },
+    '& .publishBtn': {
+      borderRadius: '3px',
+      width: 'inherit',
+      margin: 0,
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
+        marginRight: 0,
+        width: '100%',
+      },
+    },
+    '& .publishLaterBtn': {
+
+      border: `1px solid ${theme.palette.common.adornment}`,
+      marginRight: '5px',
+    },
+  },
 }));
 
 const TeacherLeaveApply = (props) => {
@@ -195,6 +215,7 @@ const TeacherLeaveApply = (props) => {
   const [teacherval, Teacher] = React.useState('');
   const [allAdmin, setAdmin] = useState([]);
   const [halfday, sethalfday] = React.useState(false);
+  const [teachersValue, setTeachersValue] = useState('')
 
   useEffect(() => {
     let isLoading = true;
@@ -252,7 +273,7 @@ const TeacherLeaveApply = (props) => {
     type,
     slot,
     content,
-    teachervalue
+    teachersValue
   ) => {
     try {
       const response = await LeaveService.postLeave(
@@ -264,7 +285,7 @@ const TeacherLeaveApply = (props) => {
             half_day: slot == 'h_day' ? true : false,
             full_day: slot == 'f_day' ? true : false,
             half_day_half: type,
-            sanctioner_id: teachervalue,
+            sanctioner_id: teachersValue,
             reason: content,
           },
         },
@@ -279,6 +300,10 @@ const TeacherLeaveApply = (props) => {
     }
   };
 
+  const handleTeachersValue = (event) =>{
+    setTeachersValue(event.target.value)
+  }
+
   const submitForm = async (event) => {
     let type = '0';
     let slot = event.target.slot.value;
@@ -286,7 +311,7 @@ const TeacherLeaveApply = (props) => {
       type = event.target.type.value;
     }
     let content = event.target.content.value;
-    let teachervalue = event.target.teachers.value;
+    // let teachervalue = event.target.teachers.value;
     publishData(
       new Date().toISOString(),
       status,
@@ -294,7 +319,7 @@ const TeacherLeaveApply = (props) => {
       type,
       slot,
       content,
-      teachervalue
+      teachersValue
     );
     event.preventDefault();
   };
@@ -317,7 +342,7 @@ const TeacherLeaveApply = (props) => {
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container className={classes.fieldStyle}>
                   <Grid item xs={12} className={classes.topdate}>
-                    <KeyboardDatePicker
+                    <DatePicker
                       id='eventDate'
                       label='From Date'
                       variant='dialog'
@@ -329,6 +354,15 @@ const TeacherLeaveApply = (props) => {
                       KeyboardButtonProps={{
                         'aria-label': 'change date',
                       }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton>
+                              <EventIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                       className={classes.datePicker}
                     />
                   </Grid>
@@ -339,7 +373,7 @@ const TeacherLeaveApply = (props) => {
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container className={classes.fieldStyle}>
                   <Grid item xs={12}>
-                    <KeyboardDatePicker
+                    <DatePicker
                       minDate={new Date()}
                       variant='dialog'
                       format='yyyy/MM/dd'
@@ -350,6 +384,15 @@ const TeacherLeaveApply = (props) => {
                       onChange={handleDateChange}
                       KeyboardButtonProps={{
                         'aria-label': 'change date',
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <IconButton>
+                              <EventIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
                       }}
                       className={classes.datePicker}
                     />
@@ -395,36 +438,59 @@ const TeacherLeaveApply = (props) => {
                 {halfday == true && (
                   <Typography variant='h5' className={`${classes.selectadmin}`}>
                     <FormControl className={classes.formControl}>
-                      <NativeSelect
+                      <Select
                         defaultValue={0}
                         inputProps={{
                           name: 'type',
                           id: 'type',
                         }}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "center",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "center",
+                          },
+                          getContentAnchorEl: null,
+                        }}
                       >
-                        <option value={0}>First Half</option>
-                        <option value={1}>Second Half</option>
-                      </NativeSelect>
+                        <MenuItem  value={0}>First Half</MenuItem>
+                        <MenuItem  value={1}>Second Half</MenuItem>
+                      </Select>
                     </FormControl>
                   </Typography>
                 )}
 
-                <Typography variant='h5' className={`${classes.selectadmin}`}>
-                  <FormControl className={`${classes.titleText}`}>
-                    <NativeSelect
-                      inputProps={{
-                        name: 'teachers',
-                        id: 'teachers',
-                      }}
-                    >
+              <FormControl classes={{root: classes.tchClassRoot}}>
+                <InputLabel id="demo-simple-select-label">Admin's Name</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={teachersValue}
+                  className={classes.tchSelect}
+                  onChange={handleTeachersValue}
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "center",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "center",
+                    },
+                    getContentAnchorEl: null,
+                  }}
+                >
                       {allAdmin.map((admin) => (
-                        <option value={admin.user_id}>
+                        <MenuItem  value={admin.user_id}>
                           {admin.firstname}&nbsp;{admin.lastname}
-                        </option>
+                        </MenuItem >
                       ))}
-                    </NativeSelect>
-                  </FormControl>
-                </Typography>
+                </Select>
+              </FormControl>
+
               </div>
             </Grid>
           </Box>
@@ -446,9 +512,50 @@ const TeacherLeaveApply = (props) => {
               </div>
             </Grid>
           </Box>
-          <Box className={classes.margin}>
+          <Box className={`${classes.margin} ${classes.sideMargins}`}>
+            <Grid
+              container
+              className={classes.fieldStyle}
+              direction='row-reverse'>
+              <Grid item sm={6} xs={12} className={classes.publishBtns}>
+                <Button
+                  id='publishBtn'
+                  variant='contained'
+                  color='primary'
+                  // onClick={handleOpenPubLater}
+                  type='submit'
+                  className={`${
+                    classes.fieldStyle
+                  } ${'publishBtn'} ${'publishLaterBtn'}`}
+                  disableElevation>
+                  Submit
+                </Button>
+                <Button
+                  id='publishLaterBtn'
+                  variant='outlined'
+                  className={`${classes.fieldStyle} ${'publishBtn'}`}
+                  color='primary'
+                  // onClick={handlePublish}
+                  disableElevation
+                  onClick={(event) => {
+                    history.push('/leave');
+                  }}
+                  >
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid item sm={3} xs={12} className={classes.textAlignLeft}>
+                <br />
+                <br />
+              </Grid>
+              <br/>
+              <br/>
+              <br/>
+            </Grid>
+          </Box>
+          {/* <Box className={classes.margin}>
             <Grid container className={classes.fieldStyle}>
-              <Grid item xs={12}>
+              <Grid item xs={4}>
                 <Button
                   id='publishBtn'
                   variant='contained'
@@ -462,7 +569,7 @@ const TeacherLeaveApply = (props) => {
                 </Button>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={4}>
                 <Button
                   id='publishLaterBtn'
                   variant='contained'
@@ -478,7 +585,7 @@ const TeacherLeaveApply = (props) => {
                 </Button>
               </Grid>
             </Grid>
-          </Box>
+          </Box> */}
         </form>
       </div>
     </>

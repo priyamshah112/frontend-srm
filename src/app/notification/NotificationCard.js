@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     paddingLeft: "10px",
     paddingRight: "10px",
+    colour: "#1C1C1E",
   },
   borderBottomDiv: {
     width: "90%",
@@ -139,16 +140,28 @@ const NotificationCard = (props) => {
         updatedStatus,
         token
       );
+      console.log(response);
       if (response.status === 200) {
         if (updatedStatus === "read") {
-          props.subNotificationCount();
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           setStatus("read");
         } else if (updatedStatus === "unread") {
           props.addNotificationCount();
           setStatus("unread");
-        } else {
-          props.subNotificationCount();
+        }else if (updatedStatus === "deleted") {
+          if (props.notificationCount !== 0) {
+            props.subNotificationCount();
+          }
           props.handleRemoveNotifcation(props.notification.id);
+          setStatus("deleted");          
+          } else {
+            if (props.notificationCount !== 0) {
+              props.subNotificationCount();
+            }
+            props.handleRemoveNotifcation(props.notification.id);
+            setStatus("archive");
         }
       }
     } catch (e) {
@@ -165,6 +178,9 @@ const NotificationCard = (props) => {
           "read",
           token
         );
+      }
+      if (props.notificationCount !== 0) {
+        props.subNotificationCount();
       }
       history.push(`/notifications/${props.notification.id}`);
     } catch (e) {
@@ -212,16 +228,20 @@ const NotificationCard = (props) => {
                 className={`${classes.menuItem} ${classes.menuTopItemMargin} `}
                 value={"archive"}
               >
-                <div className={classes.borderBottomDiv}>Archive</div>
+                <div className={classes.borderBottomDiv}>
+                  <Typography variant="body2">Archive</Typography>
+                </div>
               </MenuItem>
               <MenuItem
                 onClick={handleClose}
                 disableGutters
                 classes={{ root: classes.menuItemRoot }}
                 className={classes.menuItem}
-                value={"delete"}
+                value={"deleted"}
               >
-                <div className={classes.borderBottomDiv}>Delete</div>
+                <div className={classes.borderBottomDiv}>
+                  <Typography variant="body2">Delete</Typography>
+                </div>
               </MenuItem>
               <MenuItem
                 onClick={handleClose}
@@ -230,7 +250,9 @@ const NotificationCard = (props) => {
                 className={classes.menuItem}
                 value={"read"}
               >
-                <div className={classes.borderBottomDiv}>Mark As Read</div>
+                <div className={classes.borderBottomDiv}>
+                  <Typography variant="body2">Mark As Read</Typography>
+                </div>
               </MenuItem>
               <MenuItem
                 onClick={handleClose}
@@ -240,7 +262,7 @@ const NotificationCard = (props) => {
                 value={"unread"}
               >
                 <div className={classes.borderBottomLastDiv}>
-                  Mark As Unread
+                  <Typography variant="body2"> Mark As Unread</Typography>
                 </div>
               </MenuItem>
             </Menu>
@@ -282,7 +304,7 @@ const NotificationCard = (props) => {
           </Grid>
         </Grid>
       </CardContent>
-      {props.notification.type === "payment" &&
+      {/* {props.notification.type === "payment" &&
       props.selectedRole === "parent" ? (
         <CardActions classes={{ root: classes.cardActions }}>
           <Button
@@ -296,7 +318,7 @@ const NotificationCard = (props) => {
         </CardActions>
       ) : (
         ""
-      )}
+      )} */}
     </Card>
   );
 };

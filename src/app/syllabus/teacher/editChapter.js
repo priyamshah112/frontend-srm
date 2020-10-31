@@ -7,6 +7,7 @@ import Select from "@material-ui/core/Select";
 import SubjectSyllabus from "./subjectSyllabus";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import FormControl from "@material-ui/core/FormControl";
 
 import { useParams, useLocation, useHistory } from "react-router-dom";
 
@@ -27,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     paddingTop: "8px",
     fontSize: "20px",
+  },
+  fieldStyle: {
+    width: "100%",
+    "& .MuiInputBase-root": {
+      color: "rgba(0, 0, 0, 0.54)",
+    },
   },
 }));
 
@@ -82,7 +89,7 @@ const EditChapter = (props) => {
   const updateChapter = async () => {
     setSubmitBtn("Submitting..");
     const response = await SyllabusService.updateChapter(token, params.eid, {
-      chapters: { term: termID, chapter: chapterID },
+      chapters: { term: parseInt(termID,10), chapter: parseInt(chapterID,10) },
       main_content: mainContent,
     });
     if (response.status === 200) {
@@ -100,7 +107,7 @@ const EditChapter = (props) => {
     const response = await SyllabusService.saveChapter(token, {
       subject_id: subject,
       class_id: classID,
-      chapters: { term: termID, chapter: chapterID },
+      chapters: { term: parseInt(termID,10), chapter: parseInt(chapterID,10) },
       main_content: mainContent,
     });
     if (response.status === 200) {
@@ -140,47 +147,51 @@ const EditChapter = (props) => {
   return (
     <div className={classes.container}>
       <div style={{ margin: 20, background: "#fff", padding: 20 }}>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select-term"
-          value={termID}
-          onChange={handleTermChange}
-          style={{ width: "100%" }}
-        >
-          {[...Array(11).keys()].map((chapter) => (
-            <MenuItem key={chapter + 1} value={chapter + 1}>
-              {`Term ${chapter + 1}`}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl className={classes.fieldStyle}>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select-term"
+            value={termID}
+            onChange={handleTermChange}
+            style={{ width: "100%" }}
+          >
+            {[...Array(11).keys()].map((chapter) => (
+              <MenuItem key={chapter + 1} value={chapter + 1}>
+                {`Term ${chapter + 1}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <br />
         <br />
-
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select-chapter"
-          value={chapterID}
-          onChange={handleChange}
-          style={{ width: "100%" }}
-        >
-          {[...Array(101).keys()].map((chapter) => (
-            <MenuItem key={chapter + 1} value={chapter + 1}>
-              {`Chapter ${chapter + 1}`}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl className={classes.fieldStyle}>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select-chapter"
+            value={chapterID}
+            onChange={handleChange}
+            style={{ width: "100%" }}
+          >
+            {[...Array(101).keys()].map((chapter) => (
+              <MenuItem key={chapter + 1} value={chapter + 1}>
+                {`Chapter ${chapter + 1}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <br />
         <br />
-
-        <TextField
-          id="outlined-multiline-static"
-          multiline
-          rows={4}
-          defaultValue={mainContent}
-          variant="outlined"
-          style={{ width: "100%" }}
-          onChange={handleMainContent}
-        />
+        <FormControl className={classes.fieldStyle}>
+          <TextField
+            id="outlined-multiline-static"
+            multiline
+            rows={4}
+            defaultValue={mainContent}
+            variant="outlined"
+            style={{ width: "100%" }}
+            onChange={handleMainContent}
+          />
+        </FormControl>
         <br />
         <br />
         <Button

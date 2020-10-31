@@ -48,7 +48,6 @@ const useStyle = makeStyles((theme) => ({
   },
   announcementText: {
     fontStyle: 'normal',
-    fontSize: '14px',
   },
   announcementImg: {
     justifyContent: 'center',
@@ -101,9 +100,7 @@ const useStyle = makeStyles((theme) => ({
     paddingTop: '5px',
     cursor: 'pointer',
   },
-  cardTitle: {
-    fontSize: '18px',
-  },
+  cardTitle: {},
   announcementImg: {
     justifyContent: 'center',
     textAlign: 'center',
@@ -144,8 +141,7 @@ const NewsCard = (props) => {
         direction='row'
         justify='center'
         alignContent='center'
-        className={classes.cardContainer}
-      >
+        className={classes.cardContainer}>
         <Card className={classes.card}>
           <CardHeader
             className={classes.NewsHeader}
@@ -164,8 +160,7 @@ const NewsCard = (props) => {
               <span
                 onClick={(event) => {
                   history.push(`/news/${id}`);
-                }}
-              >
+                }}>
                 {title ? (
                   <Typography variant='body1' className={classes.cardTitle}>
                     {title}
@@ -186,8 +181,7 @@ const NewsCard = (props) => {
               <Grid
                 container
                 direction='row'
-                className={`${classes.announcementImg} ${classes.contentMargin}`}
-              >
+                className={`${classes.announcementImg} ${classes.contentMargin}`}>
                 <img src={media_url} alt='Announcement'></img>
               </Grid>
             )}
@@ -202,8 +196,7 @@ const NewsCard = (props) => {
               <Grid item xs={9}>
                 <Typography
                   className={classes.createdDate}
-                  variant='body2'
-                >{`Created at: ${moment(created_at).format(
+                  variant='body2'>{`Created at: ${moment(created_at).format(
                   'DD MMM YYYY'
                 )}`}</Typography>
               </Grid>

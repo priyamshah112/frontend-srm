@@ -12,6 +12,8 @@ import { startNotificationCount } from "../../notification/store/action";
 import * as actionTypes from "./actionTypes";
 import AuthService from "../AuthService";
 import * as moment from "moment";
+import axiosService from "../../redux/api/axios-service";
+import { requestFirebaseNotificationPermission } from "../../../firebaseInit";
 const USE_API = process.env.REACT_APP_USE_API;
 
 export function* watchAuth() {
@@ -33,7 +35,6 @@ export function* authUserSaga(action) {
     username: action.userName,
     password: action.password,
   };
-  console.log(authData)
   try {
     let response = "";
     if (USE_API === "Y") {
@@ -41,8 +42,38 @@ export function* authUserSaga(action) {
     }
 
     if (response.status === 200) {
+      const deviceToken = yield requestFirebaseNotificationPermission();
+
+      if (response.data.user_device_tokens !== null && deviceToken) {
+        const checkDeviceToken = response.data.user_device_tokens.find(
+          (token) => token === deviceToken
+        );
+
+        if (!checkDeviceToken) {
+          const deviceTokenList = [
+            ...response.data.user_device_tokens,
+            deviceToken,
+          ];
+
+          const saveDeviceTokenResponse = yield AuthService.addDeviceToken(
+            response.data.access_token,
+            deviceTokenList,
+            response.data.user.id
+          );
+        }
+      } else if (deviceToken) {
+        const deviceTokenList = [deviceToken];
+        const saveDeviceTokenResponse = yield AuthService.addDeviceToken(
+          response.data.access_token,
+          deviceTokenList,
+          response.data.user.id
+        );
+      }
+
       const expirationDate = yield new Date(response.data.expires_at);
       yield localStorage.setItem("srmToken", response.data.access_token);
+      yield localStorage.setItem("schoolName", response.data.school_details.name);      
+      yield localStorage.setItem("schoolLogo", response.data.school_details.logo);      
       yield localStorage.setItem(
         "srmUserInfo",
         JSON.stringify(response.data.user)
@@ -52,7 +83,7 @@ export function* authUserSaga(action) {
         "srmSelectedRole",
         JSON.stringify(response.data.user.roles[0].name)
       );
-
+      axiosService.setAuthorizationToken(response.data.access_token);
       //Initiate AUTH_SUCCCESS action
       yield put(
         actions.authSuccess({
@@ -87,6 +118,7 @@ export function* authUserSaga(action) {
 /*If token already exists, use the token. If the user token expired, logout. */
 export function* authCheckStateSaga(action) {
   const token = yield localStorage.getItem("srmToken");
+  axiosService.setAuthorizationToken(token);
   if (!token) {
     yield put(actions.logout(action.isAuthenticated));
   } else {

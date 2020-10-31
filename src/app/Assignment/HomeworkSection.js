@@ -79,6 +79,7 @@ const HomeworkSection = (props) => {
   const selectedRole = props.selectedRole;
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [noHomeworkMsg, setNoHomeworkMsg] = useState(false);
 
   const [homeworks, setHomeworks] = useState([]);
 
@@ -98,6 +99,9 @@ const HomeworkSection = (props) => {
           ) {
             if (isHomeworkLoading) {
               setHomeworks([...homeworks, ...response.data.data.data]);
+              if (response.data.data.data.length === 0) {
+                setNoHomeworkMsg(true);
+              }
               setHasMore(false);
             }
           } else {
@@ -201,10 +205,19 @@ const HomeworkSection = (props) => {
             </>
           }
           scrollableTarget='scrollable'
-          scrollThreshold={0.2}
-        >
+          scrollThreshold={0.2}>
           {content}
         </InfiniteScroll>
+        {noHomeworkMsg ? (
+          <Typography
+            variant='body1'
+            color='primary'
+            style={{ textAlign: 'center' }}>
+            Click on new button to create homework
+          </Typography>
+        ) : (
+          ''
+        )}
         <br />
         <br />
         <br />

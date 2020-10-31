@@ -59,7 +59,7 @@ const SupportByMe = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const handleCreateNew = (event) => {
-    history.push('/create-support/5');
+    history.push('/support/create');
   };
 
   return (

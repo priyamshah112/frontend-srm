@@ -102,7 +102,7 @@ const list = [
   }
 ]
 
-export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo, showContact }) {
+export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo, showContact, refreshChat, setRefreshChat }) {
   const classes = useStyles();
   const [Chats, setChats] = useState([])
   const [Users, setUsers] = useState([])
@@ -139,6 +139,13 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
       }
     }
   }, [filter])
+
+  useEffect(()=>{
+    if(refreshChat){
+      fetchChats()
+      setRefreshChat(false)
+    }
+  }, [refreshChat])
 
   useEffect(()=>{
     if(showContact){
@@ -195,9 +202,9 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
         {selectedRole},
         token,
       );
-      console.log('Scroll response', response);
+      // console.log('Scroll response', response);
       if (response.status === 200) {
-        console.log('Chats', response);
+        // console.log('Chats', response);
         const { data } = response
         setChats([...data.chats])
         setFilteredChats([...data.chats])

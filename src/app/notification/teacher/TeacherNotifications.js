@@ -3,7 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import { makeStyles, AppBar, Tabs, Tab, Box } from "@material-ui/core";
 import { connect } from "react-redux";
 import TeacherNotificationsContainer from "./TeacherNotificationsContainer";
-import NotificationCard from "../NotificationCard";
+import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 import CreateNotification from "./CreateNotification";
 import AnnouncementService from "../../newsAnnouncement/AnnouncementService";
 
@@ -111,7 +111,7 @@ const TeacherNotifications = (props) => {
       );
       let initialClassState = {};
       classesResponse.data.data.forEach((className) => {
-        initialClassState[className.class_name] = className.id;
+        initialClassState[className.id] = className.class_name;
       });
 
       const categoryResponse = await AnnouncementService.fetchCategories(
@@ -122,7 +122,7 @@ const TeacherNotifications = (props) => {
       categoryResponse.data.data.forEach((categoryData) => {
         categoryList[categoryData.id] = categoryData.category_name;
       });
-      console.log(categoryList);
+
       setcategory({ ...categoryList });
       setClassState({ ...initialClassState });
     };
@@ -185,7 +185,7 @@ const TeacherNotifications = (props) => {
           <br />
         </Box>
       ) : (
-        ""
+        <BackdropLoader open={isClassLoading} />
       )}
     </div>
   );

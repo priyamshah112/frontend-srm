@@ -193,10 +193,7 @@ const CreateHomework = (props) => {
     ...props.classState,
     'Select All': false,
   });
-  const checkStateLength = [
-    ...Array(Object.keys(props.classState).length).keys(),
-  ];
-  const classStateNames = ['Select All', ...Object.keys(props.classState)];
+  const classStateNames = ['Select All', ...Object.values(props.classState)];
 
   const [chipData, setChipData] = useState([]);
   const selectAllObj = {
@@ -240,15 +237,11 @@ const CreateHomework = (props) => {
         );
         if (response.status === 200) {
           if (isFormLoading) {
-            let tempClassCheckState = {};
-            if (response.data.data.class_mapping) {
-              response.data.data.class_mapping.class.forEach((classId) => {
-                tempClassCheckState[`Class ${classId}`] = true;
-
-                setChipData((chipData) => [...chipData, `Class ${classId}`]);
-              });
-            }
-            setCheckState({ ...checkState, ...tempClassCheckState });
+            let tempClassCheckState = [];
+            response.data.data.class_mapping.class.forEach((classId) => {
+              tempClassCheckState.push(props.classState[classId]);
+            });
+            setClassState([...tempClassCheckState]);
             setDescription(
               response.data.data.main_content
                 ? response.data.data.main_content
@@ -279,12 +272,13 @@ const CreateHomework = (props) => {
     };
   }, []);
   const handleSelectClass = (event) => {
+    // console.log(event.target.value, classState);
     setClassState(event.target.value);
   };
 
-  const hanldeDeleteClass = (value) => {
-    setClassState(classState.filter((classname) => classname !== value));
-  };
+  // const hanldeDeleteClass = (value) => {
+  //   setClassState(classState.filter((classname) => classname !== value));
+  // };
 
   const saveDetails = async (isBack) => {
     try {
@@ -293,23 +287,41 @@ const CreateHomework = (props) => {
         (classname) => classname === 'Select All'
       );
       if (isSelectAll) {
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
-          classMapping.class.push(props.classState[classnames]);
+          // classMapping.class.push(props.classState[classnames]);
+          classMapping.class.push(
+            parseInt(
+              Object.keys(props.classState).find(
+                (classId) => props.classState[classId] === classnames
+              )
+            )
+          );
         });
       }
-      const response = await HomeworkService.saveHomework(
-        { id },
-        {
-          title,
+      let submissionData = {};
+      if (submissionDate) {
+        submissionData = {
+          title: title,
           main_content: description,
           submission_date: submissionDate.toISOString(),
           published_to: classMapping,
-        },
+        };
+      } else {
+        submissionData = {
+          title: title,
+          main_content: description,
+          published_to: classMapping,
+        };
+      }
+
+      // console.log('submissionData', submissionData);
+      const response = await HomeworkService.saveHomework(
+        { id },
+        submissionData,
         props.token
       );
-
       if (response.status === 200) {
         console.log('Saved');
       }
@@ -327,7 +339,7 @@ const CreateHomework = (props) => {
       saveDetails(false);
     }, 10000);
     return () => clearInterval(saveDataApi);
-  }, [title, description, submissionDate, checkState]);
+  }, [title, description, submissionDate, classState]);
 
   const handleChangeInput = (event) => {
     let name = event.target.name;
@@ -342,25 +354,33 @@ const CreateHomework = (props) => {
     setEventDate(date);
   };
 
-  const handleCheckbox = (event) => {
-    let name = event.target.name;
-    if (name === 'Select All') {
-      if (event.target.checked) {
-        setCheckState(selectAllObj);
-        setChipData(Object.keys(checkState));
-      } else {
-        setCheckState(disSelectAllObj);
-        setChipData([]);
-      }
-    } else {
-      setCheckState({ ...checkState, [name]: event.target.checked });
+  // const handleCheckbox = (event) => {
+  //   let name = event.target.name;
+  //   if (name === 'Select All') {
+  //     if (event.target.checked) {
+  //       setCheckState(selectAllObj);
+  //       setChipData(Object.keys(checkState));
+  //     } else {
+  //       setCheckState(disSelectAllObj);
+  //       setChipData([]);
+  //     }
+  //   } else {
+  //     setCheckState({ ...checkState, [name]: event.target.checked });
 
-      if (event.target.checked) {
-        setChipData([...chipData, name]);
-      } else {
-        setChipData(chipData.filter((e) => e !== name));
-      }
-    }
+  //     if (event.target.checked) {
+  //       setChipData([...chipData, name]);
+  //     } else {
+  //       setChipData(chipData.filter((e) => e !== name));
+  //     }
+  //   }
+  // };
+
+  // const handleSelectClass = (event) => {
+  //   setClassState(event.target.value);
+  // };
+
+  const hanldeDeleteClass = (value) => {
+    setClassState(classState.filter((classname) => classname !== value));
   };
 
   const handleDescription = (data) => {
@@ -389,14 +409,20 @@ const CreateHomework = (props) => {
         (classname) => classname === 'Select All'
       );
       if (isSelectAll) {
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
         classState.forEach((classnames) => {
-          classMapping.class.push(props.classState[classnames]);
+          // classMapping.class.push(props.classState[classnames]);
+          classMapping.class.push(
+            parseInt(
+              Object.keys(props.classState).find(
+                (classId) => props.classState[classId] === classnames
+              )
+            )
+          );
         });
       }
 
-      // console.log(classMapping, title, summary, eventDate, description);
       const response = await HomeworkService.publishHomework(
         { id },
         {
@@ -410,8 +436,8 @@ const CreateHomework = (props) => {
         props.token
       );
       if (response.status === 200) {
+        console.log('Published');
         history.replace('/assignment');
-        // console.log(response);
       }
     } catch (e) {
       console.log(e);
@@ -436,11 +462,11 @@ const CreateHomework = (props) => {
     publishData(laterEventDate.toISOString(), status);
   };
 
-  const handleClassChipDelete = (data) => {
-    const newChipData = chipData.filter((chip) => chip !== data);
-    setChipData([...newChipData]);
-    setCheckState({ ...checkState, [data]: false });
-  };
+  // const handleClassChipDelete = (data) => {
+  //   const newChipData = chipData.filter((chip) => chip !== data);
+  //   setChipData([...newChipData]);
+  //   setCheckState({ ...checkState, [data]: false });
+  // };
 
   const submitForm = async (event) => {
     event.preventDefault();
@@ -456,6 +482,8 @@ const CreateHomework = (props) => {
       setError('Check submission date');
     }
   };
+
+  // console.log('ClassState', props.classState, classStateNames);
   return (
     <>
       <div>
@@ -470,8 +498,7 @@ const CreateHomework = (props) => {
               />
               <Typography
                 variant='h5'
-                className={`${classes.themeColor} ${classes.titleText}`}
-              >
+                className={`${classes.themeColor} ${classes.titleText}`}>
                 Create Homework
               </Typography>
             </div>
@@ -633,8 +660,7 @@ const CreateHomework = (props) => {
                       ))}
                     </div>
                   );
-                }}
-              >
+                }}>
                 {classStateNames.map((classname) => (
                   <MenuItem key={classname} value={classname}>
                     {classname}
@@ -659,8 +685,7 @@ const CreateHomework = (props) => {
             <Grid
               container
               className={classes.fieldStyle}
-              direction='row-reverse'
-            >
+              direction='row-reverse'>
               <Grid item sm={6} xs={12} className={classes.publishBtns}>
                 <Button
                   id='publishLaterBtn'
@@ -669,8 +694,7 @@ const CreateHomework = (props) => {
                   className={`${
                     classes.fieldStyle
                   } ${'publishBtn'} ${'publishLaterBtn'}`}
-                  disableElevation
-                >
+                  disableElevation>
                   Publish Later
                 </Button>
                 <Button
@@ -680,8 +704,7 @@ const CreateHomework = (props) => {
                   color='primary'
                   // onClick={handlePublish}
                   type='submit'
-                  disableElevation
-                >
+                  disableElevation>
                   Publish Now
                 </Button>
               </Grid>

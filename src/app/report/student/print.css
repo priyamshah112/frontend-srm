@@ -1,0 +1,22 @@
+@media print {
+    .print-footer{
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 20px;
+     }
+    html, body {
+      height: initial !important;
+      -webkit-print-color-adjust: exact;
+    }
+    .print-container{
+        overflow-y: visible !important;
+    }
+    .noprint { 
+        visibility: hidden; 
+     } 
+     @page {
+        margin: 2pt 2pt;
+      }
+  }
+
+  

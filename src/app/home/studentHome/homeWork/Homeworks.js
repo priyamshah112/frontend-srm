@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import HomeworkCard from './HomeworkCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { makeStyles } from '@material-ui/styles';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Typography } from '@material-ui/core';
 import HomeSerivce from '../../HomeSerivce';
 
 const useStyles = makeStyles((theme) => ({
@@ -11,6 +11,12 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     textAlign: 'center',
     paddingTop: '8px',
+    fontSize: '20px',
+  },
+  emptyView: {
+    width: '100%',
+    textAlign: 'center',
+    paddingTop: '100px',
     fontSize: '20px',
   },
 }));
@@ -89,15 +95,13 @@ const Homework = (props) => {
       loader={
         <>
           <div className={classes.loading}>
-            {/* <Typography>Loading...</Typography> */}
             <CircularProgress color='primary' size={30} />
           </div>
           <br />
         </>
       }
       scrollableTarget='scrollable'
-      scrollThreshold={0.2}
-    >
+      scrollThreshold={0.2}>
       {homework.map((hw, index) => (
         <HomeworkCard
           key={index}
@@ -107,6 +111,16 @@ const Homework = (props) => {
           content={hw.main_content}
         />
       ))}
+      {isLoading ? (
+        <div className={classes.loading}>
+          <CircularProgress color='primary' size={30} />
+        </div>
+      ) : null}
+      {!isLoading && !homework.length ? (
+        <div className={classes.emptyView}>
+          <Typography>You don't have homework.</Typography>
+        </div>
+      ) : null}
     </InfiniteScroll>
   );
 };

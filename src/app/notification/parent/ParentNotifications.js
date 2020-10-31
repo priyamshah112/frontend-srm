@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formControl: {
-    width: "50%",
+    width: "30%",
     padding: "10px 0px  0px 27px",
   },
   cardBoxPadding: {
@@ -83,6 +83,12 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "8px",
     fontSize: "20px",
   },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
 }));
 
 const ParentNotification = (props) => {
@@ -93,6 +99,7 @@ const ParentNotification = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
   let content;
 
   useEffect(() => {
@@ -108,7 +115,7 @@ const ParentNotification = (props) => {
           currentPage,
           filter.toLowerCase()
         );
-
+        setLoading(false);
         if (response.status === 200) {
           if (isNotificationLoading) {
             if (
@@ -124,6 +131,7 @@ const ParentNotification = (props) => {
         }
       } catch (e) {
         console.log(e);
+        setLoading(false);
       }
     };
     fetchNotification();
@@ -210,7 +218,18 @@ const ParentNotification = (props) => {
             value={filter}
             onChange={handleFilterChange}
             className={classes.selectFiler}
-          >
+            MenuProps={{
+              anchorOrigin: {
+                vertical: "bottom",
+                horizontal: "center",
+              },
+              transformOrigin: {
+                vertical: "top",
+                horizontal: "center",
+              },
+              getContentAnchorEl: null,
+            }}
+            >
             <MenuItem value={"All"}>All</MenuItem>
             <MenuItem value={"Archive"}>Archived</MenuItem>
             <MenuItem value={"Read"}>Read</MenuItem>
@@ -235,6 +254,16 @@ const ParentNotification = (props) => {
           scrollableTarget="scrollable"
           scrollThreshold={0.2}
         >
+          {loading ? (
+            <div className={classes.loading}>
+              <CircularProgress color="primary" size={30} />
+            </div>
+          ) : null}
+          {!loading && !notifications.length ? (
+            <div className={classes.emptyView}>
+              <Typography>You don't have any notification.</Typography>
+            </div>
+          ) : null}
           {content}
         </InfiniteScroll>
       </Box>

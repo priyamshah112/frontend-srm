@@ -190,10 +190,6 @@ const ChatIndex = (props) => {
     setSelectedUsers([...users])
   }
 
-  useEffect(()=>{
-    onMessage()
-  }, []);
-
   const onMessage = async() => {
     console.log("Message")
     let message = await onMessageListener()
@@ -234,7 +230,7 @@ const ChatIndex = (props) => {
       token,
     );
     if (response.status === 200) {
-      console.log('Chat', response);
+      // console.log('Chat', response);
       const { data } = response
       setChat(data.chat)
       props.selectChat(data.chat)
@@ -351,7 +347,7 @@ const ChatIndex = (props) => {
               <img onClick={()=>setShowContact(false)} src={showContact? closeIcon:search} className={classes.smiley} />
             </Typography>
           </ListItem>
-          <Chat showContact={showContact} userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <Chat setRefreshChat={props.setRefreshChat} refreshChat={props.refreshChat} showContact={showContact} userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
           <ToastContainer />
         </div>
       </div>

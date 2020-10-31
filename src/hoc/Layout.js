@@ -1,56 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Redirect, Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Redirect, Link, useHistory } from "react-router-dom";
+import * as NotificationActions from "../app/notification/store/action";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import { makeStyles, useTheme } from "@material-ui/styles";
+import Typography from "@material-ui/core/Typography";
+import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
+import IconButton from "@material-ui/core/IconButton";
+import Badge from "@material-ui/core/Badge";
+import Avatar from "@material-ui/core/Avatar";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import CloseIcon from "@material-ui/icons/Close";
+import Button from "@material-ui/core/Button";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Hidden from "@material-ui/core/Hidden";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import ChevronRightSharpIcon from "@material-ui/icons/ChevronRightSharp";
+import Slide from "@material-ui/core/Slide";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Collapse from "@material-ui/core/Collapse";
 
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { makeStyles, useTheme } from '@material-ui/styles';
-import Typography from '@material-ui/core/Typography';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Avatar from '@material-ui/core/Avatar';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CloseIcon from '@material-ui/icons/Close';
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Hidden from '@material-ui/core/Hidden';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import ChevronRightSharpIcon from '@material-ui/icons/ChevronRightSharp';
-import Slide from '@material-ui/core/Slide';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import { onMessageListener } from "../firebaseInit";
 
-import { onMessageListener } from '../firebaseInit';
+import HomeIcon from "../assets/images/navigation/DesktopHome.svg";
+import NotificationIcon from "../assets/images/navigation/DesktopNotification.svg";
+import AssignmentIcon from "../assets/images/navigation/DesktopAssignment.svg";
+import EventsIcon from "../assets/images/navigation/DesktopEvents.svg";
+import NewsIcon from "../assets/images/navigation/DesktopNews.svg";
+import CurriculumIcon from "../assets/images/navigation/DesktopCurriculum.svg";
+import GalleryIcon from "../assets/images/navigation/DesktopGallery.svg";
+import TransportIcon from "../assets/images/navigation/DesktopTransport.svg";
+import PaymentIcon from "../assets/images/navigation/DesktopPayment.svg";
+import SyllabusIcon from "../assets/images/navigation/DesktopSyllabus.svg";
+import TimetableIcon from "../assets/images/navigation/DesktopTimetable.svg";
+import ReportIcon from "../assets/images/report/report_card.svg";
+import SupportIcon from "../assets/images/support/support.svg";
+import FAQIcon from "../assets/images/faq/faq.svg";
+import Logo from "../assets/images/Logo.png";
 
-import HomeIcon from '../assets/images/navigation/DesktopHome.svg';
-import NotificationIcon from '../assets/images/navigation/DesktopNotification.svg';
-import AssignmentIcon from '../assets/images/navigation/DesktopAssignment.svg';
-import EventsIcon from '../assets/images/navigation/DesktopEvents.svg';
-import NewsIcon from '../assets/images/navigation/DesktopNews.svg';
-import CurriculumIcon from '../assets/images/navigation/DesktopCurriculum.svg';
-import GalleryIcon from '../assets/images/navigation/DesktopGallery.svg';
-import TransportIcon from '../assets/images/navigation/DesktopTransport.svg';
-import PaymentIcon from '../assets/images/navigation/DesktopPayment.svg';
-import SyllabusIcon from '../assets/images/navigation/DesktopSyllabus.svg';
-import TimetableIcon from '../assets/images/navigation/DesktopTimetable.svg';
+import DesktopAttendanceIcon from "../assets/images/navigation/DesktopAttendance.svg";
+import HamburgerIcon from "../assets/images/navigation/Hamburger.svg";
+import DesktopMessageIcon from "../assets/images/navigation/DesktopMessage.svg";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
-import DesktopAttendanceIcon from '../assets/images/navigation/DesktopAttendance.svg';
-import HamburgerIcon from '../assets/images/navigation/Hamburger.svg';
-import DesktopMessageIcon from '../assets/images/navigation/DesktopMessage.svg';
-
-import Logout from '../app/auth/Logout';
-import RoleSelection from '../app/auth/RoleSelection';
-import * as actions from '../app/auth/store/actions';
-import ChatIndex from '../app/chat/ChatIndex';
-import ChatPopup from '../app/chatUsers/ChatPopup';
+import Logout from "../app/auth/Logout";
+import RoleSelection from "../app/auth/RoleSelection";
+import * as actions from "../app/auth/store/actions";
+import ChatIndex from "../app/chat/ChatIndex";
+import ChatPopup from "../app/chatUsers/ChatPopup";
+import ChatService from "../app/chat/ChatService";
 
 // default was 360
 const drawerWidth = 340;
@@ -70,7 +79,7 @@ function ElevationScroll(props) {
 }
 
 function snackTransision(props) {
-  return <Slide {...props} direction='left' />;
+  return <Slide {...props} direction="left" />;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -84,213 +93,228 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1.5,
   },
   title: {
-    display: 'block',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
+    display: "block",
+    [theme.breakpoints.up("sm")]: {
+      display: "block",
     },
     fontWeight: 900,
-    fontStyle: 'normal',
-    fontSize: '1.125rem',
+    fontStyle: "normal",
+    fontSize: "1.125rem",
   },
   sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'inline-flex',
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "inline-flex",
     },
   },
   sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
+    display: "flex",
+    [theme.breakpoints.up("md")]: {
+      display: "none",
     },
   },
   sectionItems: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   marginLeft20: {
-    marginLeft: '20px',
+    marginLeft: "20px",
   },
   marginLeft5: {
-    marginLeft: '5px',
+    marginLeft: "5px",
   },
   menuContainer: {
     backgroundColor: theme.palette.common.white,
-    color: 'white',
-    minWidth: '243px',
-    '&.MuiPaper-rounded': {
-      borderRadius: '0px 4px 0px 2px',
-      boxShadow: '0px 6px 6px #00000029',
+    color: "white",
+    minWidth: "243px",
+    "&.MuiPaper-rounded": {
+      borderRadius: "0px 4px 0px 2px",
+      boxShadow: "0px 6px 6px #00000029",
     },
-    [theme.breakpoints.down('md')]: {
-      minWidth: '150px',
+    [theme.breakpoints.down("md")]: {
+      minWidth: "150px",
     },
-    [theme.breakpoints.down('sm')]: {
-      minWidth: '150px',
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "150px",
     },
   },
   menuItem: {
     backgroundColor: theme.palette.common.white,
     color: theme.palette.common.blackRussian,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: theme.palette.common.quartz,
     },
-    margin: '5px',
-    borderRadius: '6px',
-    fontSize: '0.875rem',
+    margin: "5px",
+    borderRadius: "6px",
+    fontSize: "0.875rem",
     fontWeight: 300,
   },
   profileName: {
     fontWeight: 500,
-    fontSize: '0.625rem',
+    fontSize: "0.625rem",
     color: theme.palette.common.white,
   },
   profileButton: {
-    textTransform: 'none',
+    textTransform: "none",
   },
   drawer: {
     width: drawerWidth,
 
     flexShrink: 0,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 280,
       flexShrink: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
       flexShrink: 0,
     },
   },
   drawerPaper: {
     width: drawerWidth,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 280,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
   drawerContainer: {
-    overflow: 'auto',
+    overflow: "auto",
   },
   drawerRight: {
     width: drawerRightWidth,
     flexShrink: 0,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 0,
       flexShrink: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
   chat: {
     width: 500,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
   drawerRightPaper: {
     width: drawerRightWidth,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 0,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: 280,
     },
   },
-  
+
   drawerRightContainer: {
-    overflow: 'auto',
+    overflow: "auto",
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
   },
   listItemText: {
     fontWeight: 500,
-    fontSize: '1.125rem',
+    fontSize: "1.125rem",
     color: theme.palette.common.blackRussian,
-    [theme.breakpoints.down('md')]: {
-      fontSize: '1.00rem',
+    [theme.breakpoints.down("md")]: {
+      fontSize: "1.00rem",
     },
   },
   mainContainer: {
-    height: '100%',
+    height: "100%",
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px - ${drawerWidth}px )`,
     padding: 0,
-    position: 'fixed',
-    [theme.breakpoints.down('md')]: {
+    position: "fixed",
+    [theme.breakpoints.down("md")]: {
       marginLeft: 280,
       width: `calc(100% - ${280}px - ${280}px )`,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
-      width: '100%',
+      width: "100%",
     },
     backgroundColor: theme.palette.common.whiteSmoke,
   },
   menuButton: {
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
+    [theme.breakpoints.up("md")]: {
+      display: "none",
     },
   },
   listContainer: {
-    marginLeft: '13px',
-    marginRight: '12px',
-    marginTop: '20px',
+    marginLeft: "13px",
+    marginRight: "12px",
+    marginTop: "20px",
   },
   listItem: {
     backgroundColor: theme.palette.common.white,
     color: theme.palette.common.blackRussian,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: theme.palette.common.quartz,
     },
-    borderRadius: '6px',
-    fontSize: '0.875rem',
+    borderRadius: "6px",
+    fontSize: "0.875rem",
     fontWeight: 300,
   },
   listItemIcon: {
-    '&.MuiListItemIcon-root': {
-      minWidth: '45px',
+    "&.MuiListItemIcon-root": {
+      minWidth: "45px",
     },
   },
   avatar: {
-    width: '40px',
-    height: '40px',
+    width: "40px",
+    height: "40px",
   },
   mobileToolbar: {
     backgroundColor: theme.palette.common.deluge,
     ...theme.mixins.toolbar,
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    '& div': {
-      margin: '5px',
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    "& div": {
+      margin: "5px",
     },
   },
   menu: {
     zIndex: theme.zIndex.modal + 1,
   },
   listItemSelected: {
-    '&.Mui-selected': {
+    "&.Mui-selected": {
       backgroundColor: theme.palette.common.quartz,
     },
   },
   snackbar: {
-    '& .MuiSnackbarContent-root': {
-      backgroundColor: '#fff',
+    cursor: "pointer",
+    "& .MuiSnackbarContent-root": {
+      backgroundColor: "#fff",
       color: `${theme.palette.common.blackRussian}`,
-      borderRadius: '9px',
+      borderRadius: "9px",
     },
   },
   snackBarDescription: {
     color: `${theme.palette.common.lightFont}`,
   },
+  reportMenu: {
+    marginLeft: "45px",
+    color: "#8E8E93",
+    fontSize: "10px",
+    marginRight: "5px",
+  },
+  reportName: {
+    color: "#8E8E93",
+    fontSize: "18px",
+  },
+  Logo: {
+    width: "137px",
+    height: "40px",
+  }
 }));
 
 const Layout = (props) => {
@@ -302,27 +326,51 @@ const Layout = (props) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarId, setSnackBarId] = useState("");
+  const [reportItem, setReportItem] = React.useState(true);
   const [snackbarTitle, setSnackbarTitle] = useState('');
   const [snackbarDescription, setSnackbarDescription] = useState('');
+  const [snackbarClick, setSnackbarClick] = useState('');
   const [selectedChat, setSelectedChat] = useState(null)
-
-  const matchesSm = useMediaQuery(theme.breakpoints.down('sm'));
+  const schoolName = localStorage.getItem("schoolName");
+  const schoolLogo = localStorage.getItem("schoolLogo");
+  const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const [refreshChat, setRefreshChat] = useState(false)
 
   const isMenuOpen = Boolean(anchorEl);
+  // console.log("props.selectedRole", props.selectedRole);
 
   onMessageListener()
-    .then((payload) => {
-      console.log(payload);
+    .then(async(payload) => {
+      props.onNotificationReceive();
+      
+      let data = JSON.parse(payload.data.data);
+      // console.log(data)
+      setSnackBarId(data.entity_id);
       setSnackbarTitle(payload.notification.title);
       setSnackbarDescription(payload.notification.body);
+      setSnackbarClick(payload.notification.click_action);
       setSnackbarOpen(true);
+      if(data.type == "chat"){
+        const token = localStorage.getItem('srmToken');
+        const response = await ChatService.fetchChat(
+          data.entity_id,
+          token,
+        );
+        if (response.status === 200) {
+          console.log('Chat', response);
+          const { data } = response
+          setSelectedChat(data.chat)
+          setRefreshChat(true)
+        }
+      }
     })
     .catch((e) => {
       console.log(e);
     });
 
   const handleCloseSnack = (event, reason) => {
-    if (reason === 'clickaway') return;
+    if (reason === "clickaway") return;
 
     setSnackbarOpen(false);
   };
@@ -335,8 +383,13 @@ const Layout = (props) => {
   };
 
   const handleProfile = (event) => {
-    localStorage.setItem('srmCurrentRoute', '/profile');
-    history.push('/profile');
+    localStorage.setItem("srmCurrentRoute", "/profile");
+    history.push("/profile");
+  };
+
+  const handleReportMenu = () => {
+    setReportItem(!reportItem);
+    history.push("/report-card");
   };
 
   const handleOpenLogoutDialog = () => {
@@ -363,91 +416,109 @@ const Layout = (props) => {
 
   const listItems = [
     {
-      name: 'Home',
-      icon: <img src={HomeIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/home',
+      name: "Home",
+      icon: <img src={HomeIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/home",
       itemIndex: 0,
     },
     {
-      name: 'Notifications',
-      icon: <img src={NotificationIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/notifications',
+      name: "Notifications",
+      icon: <img src={NotificationIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/notifications",
       itemIndex: 1,
     },
     {
-      name: 'Assignment',
-      icon: <img src={AssignmentIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/assignment',
+      name: "Assignment",
+      icon: <img src={AssignmentIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/assignment",
       itemIndex: 2,
     },
     {
-      name: 'Attendance',
+      name: "Attendance",
       icon: (
-        <img src={DesktopAttendanceIcon} alt='Menu' width='24' height='24' />
+        <img src={DesktopAttendanceIcon} alt="Menu" width="24" height="24" />
       ),
-      linkTo: '/attendance',
+      linkTo: "/attendance",
       itemIndex: 3,
     },
 
     {
-      name: 'Events & Announcements',
-      icon: <img src={NewsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/news',
+      name: "Events & Announcements",
+      icon: <img src={NewsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/news",
       itemIndex: 4,
     },
     {
-      name: 'Syllabus',
-      icon: <img src={SyllabusIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/syllabus',
+      name: "Syllabus",
+      icon: <img src={SyllabusIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/syllabus",
       itemIndex: 5,
     },
     {
-      name: 'Transport',
-      icon: <img src={TransportIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/transport',
+      name: "Transport",
+      icon: <img src={TransportIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/transport",
       itemIndex: 6,
     },
     {
-      name: 'Gallery',
-      icon: <img src={GalleryIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/gallery',
+      name: "Gallery",
+      icon: <img src={GalleryIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/gallery",
       itemIndex: 7,
     },
+    // {
+    //   name: "Curriculum",
+    //   icon: <img src={CurriculumIcon} alt="Menu" width="24" height="24" />,
+    //   linkTo: "/curriculum",
+    //   itemIndex: 8,
+    // },
     {
-      name: 'Curriculum',
-      icon: <img src={CurriculumIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/curriculum',
-      itemIndex: 8,
-    },
-    {
-      name: 'Payments',
-      icon: <img src={PaymentIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/payments',
+      name: "Payments",
+      icon: <img src={PaymentIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/payments",
       itemIndex: 9,
     },
     {
-      name: 'Timetable',
-      icon: <img src={TimetableIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/timetable',
+      name: "TimeTable",
+      icon: <img src={TimetableIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/timetable",
       itemIndex: 10,
     },
     {
-      name: 'Leave',
-      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/leave',
+      name: "Leave",
+      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/leave",
       itemIndex: 11,
     },
     {
-      name: 'FAQ',
-      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/faq',
+      name: "FAQ",
+      icon: <img src={FAQIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/faq",
       itemIndex: 12,
     },
     {
-      name: 'Support',
-      icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
-      linkTo: '/support',
+      name: "Support",
+      icon: <img src={SupportIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/support",
       itemIndex: 13,
+    },
+    {
+      name: "Student Report Card",
+      icon: <img src={ReportIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/report",
+      itemIndex: 14,
+    },
+    {
+      name: "Student Reports",
+      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/report-card",
+      itemIndex: 15,
+    },
+    {
+      name: "Bulk Upload",
+      icon: <img src={EventsIcon} alt="Menu" width="24" height="24" />,
+      linkTo: "/report-upload",
+      itemIndex: 16,
     },
   ];
 
@@ -461,9 +532,9 @@ const Layout = (props) => {
           if (selectedItem !== route.itemIndex) {
             // console.log("use effect", selectedItem, route.itemIndex);
             setSelectedItem(route.itemIndex);
-            localStorage.setItem('srmCurrentRoute', route.linkTo);
+            localStorage.setItem("srmCurrentRoute", route.linkTo);
           } else if (selectedItem === 0 && route.itemIndex === 0) {
-            localStorage.setItem('srmCurrentRoute', route.linkTo);
+            localStorage.setItem("srmCurrentRoute", route.linkTo);
           }
           break;
         default:
@@ -473,7 +544,7 @@ const Layout = (props) => {
   }, [selectedItem, listItems]);
 
   useEffect(() => {
-    if (window.location.pathname.includes('/gallery/')) {
+    if (window.location.pathname.includes("/gallery/")) {
       if (selectedItem !== 7) {
         setSelectedItem(7);
       }
@@ -484,9 +555,9 @@ const Layout = (props) => {
     <Menu
       classes={{ paper: classes.menuContainer }}
       anchorEl={anchorEl}
-      id='desktopMenu'
+      id="desktopMenu"
       keepMounted
-      anchorReference='anchorPosition'
+      anchorReference="anchorPosition"
       anchorPosition={{ top: 65, left: 2000 }}
       open={isMenuOpen}
       onClose={handleMenuClose}
@@ -495,9 +566,9 @@ const Layout = (props) => {
       <MenuItem onClick={handleProfile} classes={{ root: classes.menuItem }}>
         Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
+      {/* <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
         Settings
-      </MenuItem>
+      </MenuItem> */}
       {props.isAuthenticated && props.userInfo.roles.length > 1 ? (
         <MenuItem
           onClick={handleChangeRole}
@@ -519,15 +590,15 @@ const Layout = (props) => {
     <Menu
       classes={{ paper: classes.menuContainer }}
       anchorEl={anchorEl}
-      id='mobileMenu'
+      id="mobileMenu"
       keepMounted
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
+        vertical: "top",
+        horizontal: "left",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
+        vertical: "top",
+        horizontal: "left",
       }}
       //PopoverClasses={{ root: classes.menu }}
       open={isMenuOpen}
@@ -538,9 +609,9 @@ const Layout = (props) => {
       <MenuItem onClick={handleProfile} classes={{ root: classes.menuItem }}>
         Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
+      {/* <MenuItem onClick={handleMenuClose} classes={{ root: classes.menuItem }}>
         Settings
-      </MenuItem>
+      </MenuItem> */}
       {props.isAuthenticated && props.userInfo.roles.length > 1 ? (
         <MenuItem
           onClick={handleChangeRole}
@@ -562,26 +633,26 @@ const Layout = (props) => {
     <>
       <Toolbar disableGutters>
         <div className={classes.mobileToolbar}>
-          <div style={{ width: '10px' }}></div>
+          <div style={{ width: "10px" }}></div>
           <div>
-            <Avatar src='/broken-image.jpg' className={classes.avatar} />
+            <Avatar src="/broken-image.jpg" className={classes.avatar} />
           </div>
           <div>
             <Typography noWrap className={classes.profileName}>
               Hi {props.userInfo.firstname} {props.userInfo.lastname}
             </Typography>
           </div>
-          <div style={{ width: '20px' }}></div>
+          <div style={{ width: "20px" }}></div>
           <div>
             <Button
-              size='small'
+              size="small"
               onClick={handleProfileMenuOpen}
               disableRipple
               className={classes.profileButton}
             >
               <ChevronRightSharpIcon
-                style={{ color: 'white' }}
-                fontSize='small'
+                style={{ color: "white" }}
+                fontSize="small"
               />
             </Button>
           </div>
@@ -592,10 +663,10 @@ const Layout = (props) => {
         <div>
           <List className={classes.listContainer}>
             {listItems.map((item, index) => {
-              if (item.name === 'Events & Announcements') {
+              if (item.name === "Events & Announcements") {
                 if (
-                  props.selectedRole === 'teacher' ||
-                  props.selectedRole === 'admin'
+                  props.selectedRole === "teacher" ||
+                  props.selectedRole === "admin"
                 ) {
                   return (
                     <ListItem
@@ -618,11 +689,37 @@ const Layout = (props) => {
                     </ListItem>
                   );
                 }
-              } else if (item.name === 'Leave') {
+              } else if (item.name === "Payments" || item.name === "Transport") {
                 if (
-                  props.selectedRole === 'teacher' ||
-                  props.selectedRole === 'admin' ||
-                  props.selectedRole === 'student'
+                  props.selectedRole === "parent" ||
+                  props.selectedRole === "teacher"
+                ) {
+                  return (
+                    <ListItem
+                      button
+                      key={item.name}
+                      component={Link}
+                      to={item.linkTo}
+                      className={classes.listItem}
+                      onClick={() => handleChange(item.itemIndex)}
+                      selected={selectedItem === item.itemIndex}
+                      classes={{ selected: classes.listItemSelected }}
+                    >
+                      <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.name}
+                        className={classes.listItemText}
+                      />
+                    </ListItem>
+                  );
+                }
+              } else if (item.name === "Leave") {
+                if (
+                  props.selectedRole === "teacher" ||
+                  props.selectedRole === "admin" ||
+                  props.selectedRole === "student"
                 ) {
                   return (
                     <ListItem
@@ -646,8 +743,91 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                item.name !== 'News & Announcements' &&
-                item.name !== 'Events'
+                (props.selectedRole === "admin" ||
+                  props.selectedRole === "teacher") &&
+                (item.name === "Student Report Card" ||
+                  item.name === "Student Reports" ||
+                  item.name === "Bulk Upload")
+              ) {
+                if (item.itemIndex === 14) {
+                  return (
+                    <ListItem
+                      button
+                      key={item.name}
+                      component={Link}
+                      to={item.linkTo}
+                      className={classes.listItem}
+                      onClick={() => {
+                        handleChange(item.itemIndex);
+                        handleReportMenu();
+                      }}
+                    >
+                      <ListItemIcon classes={{ root: classes.listItemIcon }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.name}
+                        className={classes.listItemText}
+                      />
+                      {reportItem ? (
+                        <ExpandLess style={{ fontSize: 20, color: "gray" }} />
+                      ) : (
+                        <ExpandMore />
+                      )}
+                    </ListItem>
+                  );
+                }
+                if (item.itemIndex === 15) {
+                  return (
+                    <Collapse in={reportItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={classes.listItem}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        button
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText
+                          primary={item.name}
+                          className={classes.reportName}
+                        />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+                if (item.itemIndex === 16) {
+                  return (
+                    <Collapse in={reportItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={classes.listItem}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        button
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText
+                          primary={item.name}
+                          className={classes.reportName}
+                        />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+              } else if (
+                item.name !== "News & Announcements" &&
+                item.name !== "Events" &&
+                item.name !== "Bulk Upload" &&
+                item.name !== "Student Report Card"
               ) {
                 return (
                   <ListItem
@@ -681,53 +861,52 @@ const Layout = (props) => {
     <>
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <ChatIndex selectChat={setSelectedChat} {...props} />
+        <ChatIndex setRefreshChat={setRefreshChat} refreshChat={refreshChat} selectChat={setSelectedChat} {...props} />
       </div>
-      
     </>
   );
   return (
     <>
-      {!props.isAuthenticated ? <Redirect to='/login' /> : ''}
-      
+      {!props.isAuthenticated ? <Redirect to="/login" /> : ""}
+
       <ElevationScroll>
         <div className={classes.grow}>
-          <AppBar position='fixed' className={classes.appBar}>
+          <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>
               <IconButton
-                color='inherit'
-                aria-label='open drawer'
-                edge='start'
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
                 onClick={handleDrawerToggle}
                 className={classes.menuButton}
               >
                 <img
                   src={HamburgerIcon}
-                  alt='Menu'
-                  style={{ color: 'white' }}
+                  alt="Menu"
+                  style={{ color: "white" }}
                 />
               </IconButton>
-              <Hidden smDown implementation='css'>
-                <Typography>LOGO</Typography>
+              <Hidden smDown implementation="css">
+                <img src={schoolLogo !== "null" ? schoolLogo : Logo} className={classes.Logo} alt="Logo" />
               </Hidden>
 
               <div className={classes.grow} />
-              <Typography className={classes.title} variant='h6' noWrap>
-                {matchesSm ? 'PSBB' : 'PSBB Learning Leadership Academy'}
+              <Typography className={classes.title} variant="h6" noWrap>
+                {matchesSm ? schoolName : schoolName}
               </Typography>
               <div className={classes.grow2} />
               <div className={classes.sectionDesktop}>
                 <IconButton
-                  aria-label='show 2 new notifications'
-                  color='inherit'
+                  aria-label="show 2 new notifications"
+                  color="inherit"
                 >
                   <Badge
                     badgeContent={props.notificationCount}
-                    color='secondary'
+                    color="secondary"
                   >
                     <NotificationsNoneIcon
                       onClick={(event) => {
-                        history.push('/notifications');
+                        history.push("/notifications");
                       }}
                     />
                   </Badge>
@@ -739,7 +918,7 @@ const Layout = (props) => {
                     src={
                       props.userInfo.thumbnail
                         ? props.userInfo.thumbnail
-                        : '/broken-image.jpg'
+                        : "/broken-image.jpg"
                     }
                     className={classes.avatar}
                   />
@@ -748,7 +927,7 @@ const Layout = (props) => {
                   className={`${classes.sectionItems} ${classes.marginLeft5}`}
                 >
                   <Button
-                    size='small'
+                    size="small"
                     onClick={handleProfileMenuOpen}
                     disableRipple
                     className={classes.profileButton}
@@ -757,44 +936,43 @@ const Layout = (props) => {
                       Hi {props.userInfo.firstname} {props.userInfo.lastname}
                     </Typography>
                     <ExpandMoreIcon
-                      style={{ color: 'white' }}
-                      fontSize='small'
+                      style={{ color: "white" }}
+                      fontSize="small"
                     />
                   </Button>
                 </div>
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
-                  aria-label='show 2 new notifications'
-                  color='inherit'
+                  aria-label="show 2 new notifications"
+                  color="inherit"
                 >
                   <Badge
                     badgeContent={props.notificationCount}
-                    color='secondary'
+                    color="secondary"
                   >
                     <NotificationsNoneIcon
                       onClick={(event) => {
-                        history.push('/notifications');
+                        history.push("/notifications");
                       }}
                     />
                   </Badge>
                 </IconButton>
-                <IconButton color='inherit'>
-                  <img src={DesktopMessageIcon} alt='Menu' />
+                <IconButton color="inherit">
+                  <img src={DesktopMessageIcon} alt="Menu" />
                 </IconButton>
               </div>
             </Toolbar>
           </AppBar>
           {matchesSm ? renderMobileMenu : renderMenu}
         </div>
-        
       </ElevationScroll>
       <div className={classes.toolbarMargin}></div>
 
       <nav className={classes.drawer}>
-        <Hidden smUp implementation='css'>
+        <Hidden smUp implementation="css">
           <Drawer
-            variant='temporary'
+            variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
             classes={{
@@ -807,12 +985,12 @@ const Layout = (props) => {
             {drawer}
           </Drawer>
         </Hidden>
-        <Hidden smDown implementation='css'>
+        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerPaper,
             }}
-            variant='permanent'
+            variant="permanent"
             open
             PaperProps={{ elevation: 3 }}
           >
@@ -822,18 +1000,17 @@ const Layout = (props) => {
       </nav>
 
       <nav className={classes.drawerRight}>
-        <Hidden smDown implementation='css'>
+        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerRightPaper,
             }}
-            variant='permanent'
+            variant="permanent"
             open
-            anchor='right'
+            anchor="right"
             PaperProps={{ elevation: 3 }}
           >
             {rightDrawer}
-            
           </Drawer>
         </Hidden>
       </nav>
@@ -844,7 +1021,8 @@ const Layout = (props) => {
       {snackbarOpen ? (
         <Snackbar
           open={snackbarOpen}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          onClick={() => history.push(snackbarClick)}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
           message={
             <>
               <Typography>{snackbarTitle}</Typography>
@@ -860,29 +1038,28 @@ const Layout = (props) => {
           action={
             <React.Fragment>
               <IconButton
-                size='small'
-                aria-label='close'
-                color='inherit'
+                size="small"
+                aria-label="close"
+                color="inherit"
                 onClick={handleCloseSnack}
               >
-                <CloseIcon fontSize='small' />
+                <CloseIcon fontSize="small" />
               </IconButton>
             </React.Fragment>
           }
         />
       ) : (
-        ''
+        ""
       )}
       {openLogoutDialog ? (
         <Logout open={openLogoutDialog} handleClose={handleCloseLogoutDialog} />
       ) : (
-        ''
+        ""
       )}
-      
+
       {props.changeRole ? (
         <RoleSelection open={true} handleClose={handleCloseLogoutDialog} />
       ) : null}
-      
     </>
   );
 };
@@ -900,6 +1077,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onNotificationReceive: () =>
+      dispatch(NotificationActions.addNotificationCount()),
     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
   };
 };

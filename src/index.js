@@ -16,6 +16,8 @@ import notificationReducer from "./app/notification/store/reducers";
 import { watchAuth } from "./app/auth/store/sagas";
 import { watchNotification } from "./app/notification/store/saga";
 import { rootSaga } from "./rootSaga";
+import AttendenceReducer from "./app/redux/reducers/attendence.reducer";
+import SupportReducer from "./app/redux/reducers/support.reducer";
 const composeEnhancers =
   (process.env.NODE_ENV === "development"
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -28,6 +30,8 @@ const rootReducer = combineReducers({
   auth: authReducer,
   notification: notificationReducer,
   router: connectRouter(history),
+  Attendence: AttendenceReducer,
+  Supports: SupportReducer,
 });
 
 /* Creating saga middleware */

@@ -23,6 +23,12 @@ const useStyles = makeStyles((theme) => ({
       padding: "16px",
     },
   },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
 }));
 
 const Announcements = (props) => {
@@ -31,6 +37,7 @@ const Announcements = (props) => {
   const [announcements, setAnnouncements] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   // const [isAnnouncementLoading, setIsAnnouncementLoading] = useState(true);
   useEffect(() => {
@@ -44,7 +51,7 @@ const Announcements = (props) => {
           { selectedRole, currentPage },
           token
         );
-
+        setLoading(false);
         if (response.status === 200) {
           if (
             response.data.data.current_page === response.data.data.last_page
@@ -62,6 +69,7 @@ const Announcements = (props) => {
         }
       } catch (e) {
         console.log(e);
+        setLoading(false)
       }
     };
     fetchData();
@@ -105,7 +113,6 @@ const Announcements = (props) => {
       loader={
         <>
           <div className={classes.loading}>
-            {/* <Typography>Loading...</Typography> */}
             <CircularProgress color="primary" size={30} />
           </div>
           <br />
@@ -115,6 +122,14 @@ const Announcements = (props) => {
       scrollThreshold={0.2}
     >
       {content}
+      {loading ? <div className={classes.loading}>
+            <CircularProgress color="primary" size={30} />
+          </div> : null}
+      {!loading && !announcements.length ? (
+        <div className={classes.emptyView}>
+          <Typography>You don't have any Announcement.</Typography>
+        </div>
+      ) : null}
     </InfiniteScroll>
   );
 };

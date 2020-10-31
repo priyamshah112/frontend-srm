@@ -1,334 +1,403 @@
-import React, { useEffect } from 'react';
-import Typography from '@material-ui/core/Typography';
-import FormControl from '@material-ui/core/FormControl';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-
-import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
-import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-
-import './Attendance.css';
+import React, { useEffect, useState } from "react";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
+import Grid from "@material-ui/core/Grid";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import "./Attendance.css";
+import AttendanceDot from "../components/attendanceDot";
+import TableTopHead from "../components/tableTopHeader";
+import AttendanceFilter from "./filters";
+import {
+  getAttendence,
+  updateAddendance,
+} from "../../redux/actions/attendence.action";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import {
+  weekStartDate,
+  getWeekDates,
+  getNextWeekStartDate,
+  getPreviousWeekStartDate,
+  currentMonth,
+  getMonth,
+  isFutureDate,
+  getWeekEndDate,
+} from "../../../shared/datediff";
+import { formatAttendanceData } from "../../../shared/filter";
+import AttendanceFooter from "../components/attendanceFooter";
+import moment from "moment";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        width: '100%',
-        backgroundColor: theme.palette.mainBackground,
-        height: '100%',
-        marign: '0',
-        padding: '0',
-        display: 'flex',
-        flexDirection: 'column',
+  container: {
+    width: "100%",
+    backgroundColor: theme.palette.mainBackground,
+    height: "100%",
+    marign: "0",
+    padding: "0",
+    display: "flex",
+    flexDirection: "column",
+  },
+  content: {
+    flexGrow: "1",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "0",
+    padding: "0 20px 20px 20px",
+  },
+  panel: {
+    flexGrow: "1",
+    overflow: "auto",
+    minHeight: "100%",
+    scrollbarWidth: "none",
+    "&::-webkit-scrollbar": {
+      display: "none",
     },
-    content: {
-        flexGrow: '1',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '0',
-        padding: '0 20px 20px 20px',
-    },
-    topButton: {
-        float: 'right',
-        padding: '0px 20px 0px 0px', 
-    },
-    panel: {
-        flexGrow: '1',
-        overflow: 'auto',
-        minHeight: '100%',
-        scrollbarWidth: 'none',
-        '&::-webkit-scrollbar': {
-            display: 'none',
-        },
-    },
-    marginTop: {
-        marginTop: '20px',
-    },
-    topPanelRow: {
-        marginTop: '20px',
-    },
-    middlePanelRow: {
-        marginTop: '20px',
-        backgroundColor: '#e6e6e6',
-        borderRadius: '10px',
-        display: 'block'
-    },
-    panelCol: {
-        width: '100%',
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    menuButton: {
-        margin: '5px',
-    },
-    table: {
-        minWidth: 700,
-      },
-    tableHeader: {
-        display: 'flex',
-        textAlign: 'center',
-        margin: '0px',
-        padding: '10px 20px',
-        fontSize: '20px',
-        backgroundColor: 'lightgrey',
-        height: '20px',
-        font: 'normal normal medium 16px/21px Avenir',
-        letterSpacing: '-0.26px',
-        color: '#000000',
-        opacity: '1',
-    },
-    tableHeadermid: {
-        width: '100%',
-    },
-    tableHeaderBtn: {
-        cursor: 'pointer',
-    },
-    tableTitle: {
-        backgroundColor: 'white !important',
-        color: 'var(--unnamed-color-1c1c1e)',
-        textAlign: 'center',
-        font: 'normal normal normal 14px/21px Avenir',
-        letterSpacing: '-0.22px',
-        color: '#1C1C1E !important',
-        opacity: '1',
-    },
-    tableNameColumn: {
-        textAlign: 'center',
-        font: 'normal normal normal 12px/16px Avenir',
-        letterSpacing: '0px',
-        color: '#808082',
-        opacity: '1'
-    },
-    tableNoColumn: {
-        textAlign: 'center',
-        font: 'normal normal normal 12px/16px Avenir',
-        letterSpacing: '0px',
-        color: '#808082',
-        opacity: '1'
-    },
+  },
+  marginTop: {
+    marginTop: "20px",
+  },
+  middlePanelRow: {
+    marginTop: "20px",
+    backgroundColor: "#e6e6e6",
+    borderRadius: "10px",
+    display: "block",
+  },
+  table: {
+    minWidth: 700,
+  },
+  tableTitle: {
+    backgroundColor: "white !important",
+    color: "var(--unnamed-color-1c1c1e)",
+    textAlign: "center",
+    font: "normal normal normal 14px/21px Avenir",
+    letterSpacing: "-0.22px",
+    color: "#1C1C1E !important",
+    opacity: "1",
+  },
+  tableNameColumn: {
+    textAlign: "center",
+    font: "normal normal normal 12px/16px Avenir",
+    letterSpacing: "0px",
+    color: "#808082",
+    opacity: "1",
+  },
+  tableNoColumn: {
+    textAlign: "center",
+    font: "normal normal normal 12px/16px Avenir",
+    letterSpacing: "0px",
+    color: "#808082",
+    opacity: "1",
+  },
+  emptyData: {
+    padding: "50px 20px",
+  },
+  loadingView: {
+    height: "150px",
+  },
+  loader: {
+    position: "absolute",
+    left: "30px",
+    right: "50px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "150px",
+  },
+  dot: {
+    cursor: "pointer",
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
-    head: {
+  head: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    },
-    body: {
+  },
+  body: {
     fontSize: 14,
-    },
+  },
 }))(TableCell);
-    
+
 const StyledTableRow = withStyles((theme) => ({
-    root: {
-    '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
+  root: {
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
     },
-    },
+  },
 }))(TableRow);
-    
-function createData(no, name, mon, tue, wed, thu, fri, sat, sun) {
-    return {no, name, mon, tue, wed, thu, fri, sat, sun };
-}
 
 const TeacherAttendanceContainer = (props) => {
-    
-    const [state, setState] = React.useState({
-        classNum: '',
-        name: 'hai',
-        study: '',
-        studyName: 'Social studies',
+  const [attendence, setAttendence] = useState([]);
+  const [class_id, setClassId] = useState("");
+  const [subject_id, setSubjectId] = useState("");
+  const [weekStart, setWeekStart] = useState(weekStartDate);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [error, setError] = useState("");
+  const [aError, setAError] = useState({});
+  const [updateLoading, setUpdateLoading] = useState(false);
 
-    });
+  const { loading } = props;
 
-    const classes = useStyles();
-    const selectedRole = props.selectedRole;
-    const handleClassChange = (event) => {
-        const name = event.target.name;
-        setState({
-            ...state,
-            [name]: event.target.value,
-        });
-    };
-    const handleStudyChange = (event) => {
-        console.log(event.target);
-        const studyName = event.target.name;
-        setState({
-          ...state,
-          [studyName]: event.target.value,
-        });
-    };
+  const classes = useStyles();
+  const from_date = moment(weekStart).format("YYYY-MM-DD");
+  const to_date = moment(getWeekEndDate(weekStart)).format("YYYY-MM-DD");
 
-    const handleClick = () => {
-        console.log("click");
+  useEffect(() => {
+    if (class_id && subject_id) {
+      fetchAttendence();
     }
+  }, [class_id, subject_id, weekStart]);
 
-    // 1=present, 0=absent, 2=holiday, 3=empty
-    const rows = [
-        createData('01', 'Samarth Atmakur', 1, 0, 2, 3, 1, 3, 3),
-        createData('02', 'Jishnu Karunakar', 1, 0, 2, 3, 1, 3, 3),
-        createData('03', 'Prathyusha Atmakur', 1, 0, 2, 3, 1, 3, 3),
-        createData('04', 'Leena Mahadevan', 1, 0, 2, 3, 1, 3, 3),
-        createData('05', 'Manohar Ramarao', 1, 0, 2, 3, 1, 3, 3),
-        createData('06', 'Vishwananath G', 1, 0, 2, 3, 1, 3, 3),
-        createData('07', 'Samarth Atmakur', 1, 0, 2, 3, 1, 3, 3),
-        createData('08', 'Jishnu Karunakar', 1, 0, 2, 3, 1, 3, 3),
-        createData('09', 'Prathyusha Atmakur', 1, 0, 2, 3, 1, 3, 3),
-        createData('10', 'Leena Mahadevan', 1, 0, 2, 3, 1, 3, 3),
-        createData('11', 'Manohar Ramarao', 1, 0, 2, 3, 1, 3, 3),
-        createData('12', 'Vishwananath G', 1, 0, 2, 3, 1, 3, 3),
-        createData('13', 'Samarth Atmakur', 1, 0, 2, 3, 1, 3, 3),
-        createData('14', 'Jishnu Karunakar', 1, 0, 2, 3, 1, 3, 3),
-        createData('15', 'Prathyusha Atmakur', 1, 0, 2, 3, 3, 3, 3),
-        createData('16', 'Leena Mahadevan', 1, 0, 2, 3, 1, 3, 3),
-        createData('17', 'Manohar Ramarao', 1, 0, 2, 3, 1, 3, 3),
-        createData('18', 'Vishwananath G', 1, 0, 2, 3, 1, 3, 3),
-        createData('19', 'Samarth Atmakur', 1, 0, 2, 3, 1, 3, 3),
-    ];
-
-    return (
-        <div className={classes.container}>
-            <Grid container className={classes.content}>
-                <Grid item sm={12} className={classes.panel}>
-                    <Grid container className={classes.topPanelRow}>
-                        <Grid
-                            item
-                            xs={12}
-                            className={classes.panelCol}
-                        >
-                            {/* for class select */}
-                            <FormControl className={classes.formControl}>
-                                <NativeSelect
-                                    value={state.classNum}
-                                    onChange={handleClassChange}
-                                    name="classNum"
-                                    className={classes.selectEmpty}
-                                    inputProps={{ 'aria-label': 'classNum' }}
-                                >
-                                    <option value="">None</option>
-                                    <option value={10}>Class 01</option>
-                                    <option value={20}>Class 02</option>
-                                    <option value={30}>Class 03</option>
-                                    <option value={40}>Class 04</option>
-                                    <option value={50}>Class 05</option>
-                                    <option value={60}>Class 06</option>
-                                    <option value={70}>Class 07</option>
-                                    <option value={80}>Class 08</option>
-                                </NativeSelect>
-                                <FormHelperText>Please select your class</FormHelperText>
-                            </FormControl>
-
-                            {/* for select social studies */}
-                            <FormControl className={classes.formControl}>
-                                <NativeSelect
-                                    value={state.study}
-                                    onChange={handleStudyChange}
-                                    name="study"
-                                    className={classes.selectEmpty}
-                                    inputProps={{ 'aria-label': 'study' }}
-                                >
-                                    <option value="">None</option>
-                                    <option value={10}>Html</option>
-                                    <option value={20}>PHP</option>
-                                    <option value={30}>Javascript</option>
-                                    <option value={40}>React.js</option>
-                                    <option value={50}>Node.js</option>
-                                    <option value={60}>CSS</option>
-                                </NativeSelect>
-                                <FormHelperText>Please select your study field</FormHelperText>
-                            </FormControl>
-                        
-                        
-                            <div className={classes.topButton}>
-                                <IconButton
-                                    color='inherit'
-                                    aria-label='open drawer'
-                                    edge='start'
-                                    onClick={handleClick}
-                                    className={classes.menuButton}
-                                >
-                                    <VerticalAlignTopIcon style={{ color: '#ababaf' }}/>
-                                </IconButton>
-                                <IconButton
-                                    color='inherit'
-                                    aria-label='open drawer'
-                                    edge='start'
-                                    onClick={handleClick}
-                                    className={classes.menuButton}
-                                >
-                                    <VerticalAlignBottomIcon style={{ color: '#ababaf' }}/>
-                                </IconButton>
-                            </div>
-                        </Grid>
-                    </Grid>
-
-                    <TableContainer component={Paper}>
-                        <div className={classes.tableHeader}>
-                            <Typography className={classes.tableHeaderBtn}>Preview</Typography>
-                            <Typography className={classes.tableHeadermid}>Weekly</Typography>
-                            <Typography className={classes.tableHeaderBtn}>Next</Typography>
-                        </div>
-                        <Table aria-label="customized table">
-                            <TableHead>
-                                <TableRow className="tableRowHeader">
-                                    <StyledTableCell className={classes.tableTitle}>Roll No</StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} align="center">Name</StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} align="center"><p>01</p><span>(M)</span></StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} align="center"><p>02</p><span>(T)</span></StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} align="center"><p>03</p><span>(W)</span></StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} align="center"><p>04</p><span>(T)</span></StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} align="center"><p>05</p><span>(F)</span></StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} style={{color: '#d1d1d6'}} align="center"><p>06</p><span>(S)</span></StyledTableCell>
-                                    <StyledTableCell className={classes.tableTitle} style={{color: '#d1d1d6'}} align="center"><p>07</p><span>(S)</span></StyledTableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row, rowIndex) => (
-                                    <StyledTableRow key={rowIndex} className="statusTable">
-                                        <StyledTableCell className={classes.tableNoColumn}>{row.no}</StyledTableCell>
-                                        <StyledTableCell component="th" scope="row" className={classes.tableNameColumn}>
-                                            {row.name}
-                                        </StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.mon == 0 ? 'absentStatus' : row.mon == 1 ? 'presentStatus' : row.mon == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.tue == 0 ? 'absentStatus' : row.tue == 1 ? 'presentStatus' : row.tue == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.wed == 0 ? 'absentStatus' : row.wed == 1 ? 'presentStatus' : row.wed == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.thu == 0 ? 'absentStatus' : row.thu == 1 ? 'presentStatus' : row.thu == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.fri == 0 ? 'absentStatus' : row.fri == 1 ? 'presentStatus' : row.fri == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.sat == 0 ? 'absentStatus' : row.sat == 1 ? 'presentStatus' : row.sat == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                        <StyledTableCell align="center"><FiberManualRecordIcon className={row.sun == 0 ? 'absentStatus' : row.sun == 1 ? 'presentStatus' : row.sun == 2 ? 'holidayStatus' : 'emptyStatus'}/></StyledTableCell>
-                                    </StyledTableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                        <div className="tableBottom">
-                            <div className="stateRow"><FiberManualRecordIcon className="presentStatus"/><p className="rollStatus">Present</p></div>
-                            <div className="stateRow"><FiberManualRecordIcon className="absentStatus"/><p className="rollStatus">Absent</p></div>
-                            <div className="stateRow"><FiberManualRecordIcon className="holidayStatus"/><p className="rollStatus">Holiday</p></div>
-                            
-                        </div>
-                    </TableContainer>
-                </Grid>
-            </Grid>
-        </div>
-    );
-};
-
-const mapStateToProps = (state) => {
-    return {
-      selectedRole: state.auth.selectedRole,
+  const fetchAttendence = () => {
+    const params = {
+      class_id,
+      subject_id,
+      current_role: props.selectedRole,
+      from_date,
+      to_date,
     };
+    props.getAttendence(params, onGet, onFail);
   };
 
-export default connect(mapStateToProps)(TeacherAttendanceContainer);
+  const onGet = (d = {}) => {
+    const { data = {} } = d;
+    const atData = formatAttendanceData(data);
+    setAttendence(atData);
+  };
+
+  const onFail = (err = {}) => {
+    setError(err.message);
+  };
+
+  const weekData = getWeekDates(weekStart);
+
+  const onPrevious = () => {
+    const startDate = getPreviousWeekStartDate(weekStart);
+
+    setWeekStart(startDate);
+    setSelectedMonth(getMonth(startDate));
+  };
+
+  const onNext = () => {
+    if (
+      moment(weekStart).format("YYYY-MM-DD") ===
+      moment(weekStartDate).format("YYYY-MM-DD")
+    )
+      return;
+    const startDate = getNextWeekStartDate(weekStart);
+    setWeekStart(startDate);
+    setSelectedMonth(getMonth(startDate));
+  };
+
+  const getAttendanceDates = (dates = []) => {
+    const weekDates = weekData.map((item) => item.date);
+    const newDates = weekDates.map((attendance_date) => {
+      return { attendance_date };
+    });
+
+    if (dates.length) {
+      dates.map((d) => {
+        const indexOf = weekDates.indexOf(d.attendance_date);
+        if (indexOf !== -1) {
+          newDates.splice(indexOf, 1, d);
+        }
+      });
+    }
+
+    return newDates;
+  };
+
+  const changeAttendanceStatus = (d = {}, rowIndex, dateIndex) => {
+    const path = `${rowIndex}${dateIndex}`;
+    setUpdateLoading(path);
+    setAError({ ...aError, [path]: false });
+    const attendanceStatus = {
+      present: "absent",
+      absent: "holiday",
+      holiday: "present",
+    };
+
+    const data = {
+      user_id: d.user_id,
+      class_id: d.class_id,
+      attendance_date: d.attendance_date,
+      subject_id,
+      status: attendanceStatus[d.status] || "absent",
+    };
+    props.updateAddendance(
+      data,
+      d.id,
+      (d) => onUpdateSuccess(d, rowIndex),
+      (e) => onUpdateFail(e, path)
+    );
+  };
+
+  const onUpdateSuccess = (d = {}, rowIndex) => {
+    const { data = {} } = d;
+    setUpdateLoading(false);
+    updateStatus(data, rowIndex);
+  };
+
+  const onUpdateFail = (e = {}, path) => {
+    setAError({ ...aError, [path]: "Update Error" });
+    setUpdateLoading(false);
+  };
+
+  const getIsLoading = (rI, dI) => {
+    if (updateLoading === false) return false;
+    return `${rI}${dI}` === updateLoading;
+  };
+
+  const getIsError = (rI, dI) => {
+    const ePath = `${rI}${dI}`;
+    return aError[ePath];
+  };
+
+  const updateStatus = (d = {}, rowIndex) => {
+    const aData = [...attendence];
+    const dates = aData[rowIndex].dates || [];
+    dates.map((date) => {
+      if (date.attendance_date === d.attendance_date) {
+        date.status = d.status;
+      }
+    });
+
+    aData[rowIndex].dates = dates;
+    setAttendence(aData);
+  };
+
+  const renderDots = (row = {}, rowIndex) => {
+    const { dates = [] } = row;
+    const datesData = getAttendanceDates(dates);
+    const userData = {
+      class_id: row.class_id,
+      roll_no: row.roll_no,
+      user_id: row.user_id,
+    };
+
+    return datesData.map((date, dateIndex) => {
+      const isFuture = isFutureDate(date.attendance_date);
+      const isLoading = getIsLoading(rowIndex, dateIndex);
+      const isError = getIsError(rowIndex, dateIndex);
+
+      return (
+        <AttendanceDot
+          loading={isLoading}
+          error={isError}
+          className={classes.dot}
+          onClick={() =>
+            changeAttendanceStatus(
+              { ...userData, ...date },
+              rowIndex,
+              dateIndex
+            )
+          }
+          status={isFuture ? "" : date.status}
+        />
+      );
+    });
+  };
+
+  const onChangeClass = (id) => {
+    setClassId(id);
+    setSubjectId("");
+  };
+
+  return (
+    <div className={classes.container}>
+      <Grid container className={classes.content}>
+        <Grid item sm={12} className={classes.panel}>
+          <AttendanceFilter
+            class_id={class_id}
+            setClassId={onChangeClass}
+            subject_id={subject_id}
+            setSubjectId={setSubjectId}
+            from_date={from_date}
+            to_date={to_date}
+          />
+
+          <TableContainer component={Paper}>
+            <TableTopHead onNext={onNext} onPrevious={onPrevious} />
+            <Table aria-label="customized table">
+              <TableHead>
+                <TableRow className="tableRowHeader">
+                  <StyledTableCell className={classes.tableTitle}>
+                    Roll No
+                  </StyledTableCell>
+                  <StyledTableCell
+                    className={classes.tableTitle}
+                    align="center"
+                  >
+                    Name | {selectedMonth}
+                  </StyledTableCell>
+                  {weekData.map((d) => (
+                    <StyledTableCell
+                      className={classes.tableTitle}
+                      align="center"
+                    >
+                      <p>{d.day.date_day}</p>
+                      <span>({d.day.day_sort})</span>
+                    </StyledTableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              {loading ? (
+                <div className={classes.loadingView}>
+                  <div className={classes.loader}>
+                    <CircularProgress center alignCenter />
+                  </div>
+                </div>
+              ) : (
+                <TableBody>
+                  {attendence.length ? (
+                    attendence.map((row, rowIndex) => (
+                      <StyledTableRow key={rowIndex} className="statusTable">
+                        <StyledTableCell className={classes.tableNoColumn}>
+                          {row.roll_no}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          component="th"
+                          scope="row"
+                          className={classes.tableNameColumn}
+                        >
+                          {`${row.firsname} ${row.lastname}`}
+                        </StyledTableCell>
+                        {renderDots(row, rowIndex)}
+                      </StyledTableRow>
+                    ))
+                  ) : (
+                    <div className={classes.loadingView}>
+                      <div className={classes.loader}>
+                        <Typography>Attendance Data Not Available</Typography>
+                      </div>
+                    </div>
+                  )}
+                </TableBody>
+              )}
+            </Table>
+            <AttendanceFooter />
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </div>
+  );
+};
+
+const mapStateToProps = ({ auth, Attendence }) => {
+  const { classesLoading, attendenceLoading, singleClassLoading } = Attendence;
+  return {
+    selectedRole: auth.selectedRole,
+    loading: attendenceLoading || classesLoading || singleClassLoading,
+  };
+};
+
+export default connect(mapStateToProps, {
+  getAttendence,
+  updateAddendance,
+})(TeacherAttendanceContainer);

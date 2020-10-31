@@ -181,7 +181,7 @@ const CreateAnnouncement = (props) => {
     "All Teachers",
     "All Parents",
     "Select All",
-    ...Object.keys(props.classState),
+    ...Object.values(props.classState),
   ];
 
   const categoryValues = [...Object.values(props.categories)];
@@ -200,17 +200,18 @@ const CreateAnnouncement = (props) => {
         );
         if (response.status === 200) {
           if (isFormLoading) {
+            console.log(response);
             let tempClassCheckState = [];
             if (response.data.data.class_mapping) {
               if (response.data.data.class_mapping.parents) {
-                console.log("parents");
+                // console.log("parents");
                 tempClassCheckState.push("All Parents");
               }
               if (response.data.data.class_mapping.teachers) {
                 tempClassCheckState.push("All Teachers");
               }
               response.data.data.class_mapping.class.forEach((classId) => {
-                tempClassCheckState.push(`Class ${classId}`);
+                tempClassCheckState.push(props.classState[classId]);
               });
             }
             setClassState([...tempClassCheckState]);
@@ -250,17 +251,23 @@ const CreateAnnouncement = (props) => {
       );
       if (isSelectAll) {
         classMapping["teachers"] = true;
-        classMapping["paresnts"] = true;
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping["parents"] = true;
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
-        console.log(classState);
+        // console.log(classState);
         classState.forEach((classnames) => {
           if (classnames === "All Parents") {
             classMapping["parents"] = true;
           } else if (classnames === "All Teachers") {
             classMapping["teachers"] = true;
           } else {
-            classMapping.class.push(props.classState[classnames]);
+            classMapping.class.push(
+              parseInt(
+                Object.keys(props.classState).find(
+                  (classId) => props.classState[classId] === classnames
+                )
+              )
+            );
           }
         });
       }
@@ -283,7 +290,7 @@ const CreateAnnouncement = (props) => {
       );
 
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
       }
     } catch (e) {
       console.log(e);
@@ -310,6 +317,7 @@ const CreateAnnouncement = (props) => {
     setEventDate(date);
   };
   const handleSelectClass = (event) => {
+    // console.log(event.target.value);
     setClassState(event.target.value);
   };
   const hanldeDeleteClass = (value) => {
@@ -378,21 +386,29 @@ const CreateAnnouncement = (props) => {
   const publishData = async (publisedDate, status, mediaURL) => {
     try {
       let classMapping = { class: [] };
+
       let isSelectAll = classState.find(
         (classname) => classname === "Select All"
       );
       if (isSelectAll) {
         classMapping["teachers"] = true;
-        classMapping["paresnts"] = true;
-        classMapping.class = [...Object.values(props.classState)];
+        classMapping["parents"] = true;
+        classMapping.class = [...Object.keys(props.classState)];
       } else {
+        // console.log(classState);
         classState.forEach((classnames) => {
           if (classnames === "All Parents") {
             classMapping["parents"] = true;
           } else if (classnames === "All Teachers") {
             classMapping["teachers"] = true;
           } else {
-            classMapping.class.push(props.classState[classnames]);
+            classMapping.class.push(
+              parseInt(
+                Object.keys(props.classState).find(
+                  (classId) => props.classState[classId] === classnames
+                )
+              )
+            );
           }
         });
       }
@@ -675,7 +691,7 @@ const CreateAnnouncement = (props) => {
               </Button>
             </Grid>
             <Grid item sm={4} xs={12} className={classes.textAlignLeft}>
-              <Button
+              {/* <Button
                 id="cancelBtn"
                 variant="contained"
                 onClick={() => {
@@ -687,7 +703,7 @@ const CreateAnnouncement = (props) => {
                 disableElevation
               >
                 Cancel
-              </Button>
+              </Button> */}
             </Grid>
             <br />
             <br />

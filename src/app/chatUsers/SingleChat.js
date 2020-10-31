@@ -17,6 +17,8 @@ import Group from '../../assets/images/chat/group.png';
 import moment from 'moment'
 import ChatService from "../chat/ChatService";
 
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
+
 const StyledBadge = withStyles((theme) => ({
   badge: {
     backgroundColor: "#44b700",
@@ -220,7 +222,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       token,
     );
     if (response.status === 200) {
-      console.log('Chat', response);
+      // console.log('Chat', response);
       const { data: {chat} } = response
       setMessages(chat.messages)
     }
@@ -241,7 +243,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   };
   let date = "";
   const fileSelectHandler = (event) => {
-    console.log(event.target.files)
+    // console.log(event.target.files)
     attachments.push(...event.target.files)
     event.target.value = null
     setAttachments([...attachments])
@@ -305,9 +307,9 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
           data,
           token
         );
-        console.log('Scroll response', response);
+        // console.log('Scroll response', response);
         if (response.status === 200) {
-          console.log('Chat', response);
+          // console.log('Chat', response);
           const { data } = response
           setMessage('')
           setMessages(data.chat.messages)
@@ -317,21 +319,74 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
         }
       }
       else{
+        let frmdata = new FormData();
+        frmdata.append("message", message);
+        attachments.forEach(a=>{
+          frmdata.append("attachment[]", a)
+        })
         const response = await ChatService.submitChat(
-          data,
+          frmdata,
           token,
           chat.id
         );
+        
         console.log('Scroll response', response);
         if (response.status === 200) {
           console.log('Chat', response);
           const { data } = response
           setMessage('')
+          setAttachments([])
           setMessages(data.chat.messages)
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
+    }
+  }
+
+  const checkValidURLImage = (a) => {
+
+    var b = ["jpeg","jpg","png","gif","raw"]; //format img
+
+    var c = a.split("."); // ["https://i", "imgur", "com/qMUWuXV", "jpg"]
+
+    console.log(b.includes(c[c.length-1]))
+    return b.includes(c[c.length-1])
+  }
+
+  const getAttachments = (message) => {
+
+  }
+
+  const chatMessage = (message) => {
+    if(message.attachment != null) {
+      return <div> {
+        JSON.parse(message.attachment).map(at=>{
+          console.log(at)
+          
+          if(checkValidURLImage(at)){
+            return <a style={{cursor: 'pointer'}} target="_blank" href={BACKEND_IMAGE_URL + "/" + at}>
+              <img src={BACKEND_IMAGE_URL + "/" + at} style={{height: 70, width: undefined, alignSelf: 'center'}} alt="" />
+            </a>
+          }
+          else{
+            return <a style={{cursor: 'pointer'}} target="_blank" href={BACKEND_IMAGE_URL + "/" + at}>
+              <ListItem alignItems="flex-start">
+                <Typography className={classes.attachmentText}>{at.split('/')[at.split('/').length - 1]}</Typography>
+              </ListItem>
+            </a>
+          }
+        })
+      }
+        <Typography>
+          {message.message}
+        </Typography>
+      </div>
+    }
+    else{
+      return <Typography>
+        {message.message}
+      </Typography>
     }
   }
 
@@ -359,9 +414,9 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       }
       <div className={classes.chatList}>
         {messages.map((message)=>{
-          let showDate = message.created_at != date;
+          let showDate = moment(message.created_at).fromNow() != date;
           if(showDate ){
-            date = message.created_at;
+            date = moment(message.created_at).fromNow();
           }
           let cls = {}
           let senderName = message.sender.firstname + ' ' + message.sender.lastname
@@ -373,15 +428,17 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
             { showDate &&
               <div className={classes.date}>
                 <span className={classes.dateTextContainer}>
-                <span className={classes.dateText}>{ moment(message.created_at).fromNow() }</span></span>
+                <span className={classes.dateText}>{ date }</span></span>
               </div>
             }
+            
             <ListItem alignItems="flex-start" className={[classes.listItem,
               cls].join(' ')}>
+                
               <ListItemText
                 classes={{primary: classes.primary}}
                 primary={senderName}
-                secondary={message.message}
+                secondary={chatMessage(message)}
               />
               <div className={classes.right}>
                 <Typography className={classes.time}>{message.time}</Typography>
@@ -425,7 +482,8 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
               />
               <Typography className={classes.emojiContainer}>
                 <img src={attach} className={classes.smiley} onClick={pickFile} />
-                <input multiple accept="image/x-png,image/gif,image/jpeg" 
+                <input multiple accept="image/x-png,image/gif,image/jpeg,application/pdf,application/msword,
+  application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
                   className={classes.fileInput} id='attachment' type="file" onChange={fileSelectHandler} ref={fileRef} />
               </Typography>
           </ListItem>

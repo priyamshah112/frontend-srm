@@ -74,6 +74,18 @@ const useStyles = makeStyles((theme) => ({
   lightBoxContainer: {
     zIndex: 1800,
   },
+  loading: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
+  },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
 }));
 
 const tileImageList = [
@@ -94,6 +106,7 @@ const GalleryIndex = (props) => {
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [tileData, setTileData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let changeImages = true;
@@ -103,7 +116,7 @@ const GalleryIndex = (props) => {
           props.token,
           currentPage
         );
-
+        setLoading(false);
         if (response.status === 200 && changeImages) {
           setTileData([...tileData, ...response.data.data.data]);
           if (
@@ -116,6 +129,7 @@ const GalleryIndex = (props) => {
         }
       } catch (e) {
         console.log(e);
+        setLoading(false);
       }
     };
     fetchImages();
@@ -205,7 +219,6 @@ const GalleryIndex = (props) => {
                     marginTop: "8px",
                   }}
                 >
-                  {/* <Typography>Loading...</Typography> */}
                   <CircularProgress color="primary" size={30} />
                 </div>
                 <br />
@@ -217,7 +230,7 @@ const GalleryIndex = (props) => {
             <GridList
               cellHeight={200}
               spacing={2}
-              cols={matches ? 2 : 3}
+              cols={matches ? 3 : 4}
               className={classes.gridList}
             >
               {tileData.map((tile, index) => {
@@ -230,8 +243,10 @@ const GalleryIndex = (props) => {
                     <img
                       src={`${REACT_APP_BACKEND_IMAGE_URL}/${tile.img_path}/${tile.img_name}`}
                       alt={tile.img_name}
+                      resizeMode="contain"
                       className={classes.image}
-                      onClick={() => handleOpenLightbox(index)}
+                      onClick={() => handleOpenLightbox(index)
+                      }
                     />
                     <GridListTileBar
                       title={""}
@@ -251,6 +266,16 @@ const GalleryIndex = (props) => {
                 );
               })}
             </GridList>
+            {loading ? (
+            <div className={classes.loading}>
+              <CircularProgress color="primary" size={30} />
+            </div>
+          ) : null}
+          {!loading && !tileData.length ? (
+            <div className={classes.emptyView}>
+              <Typography>You don't have any Image.</Typography>
+            </div>
+          ) : null}
           </InfiniteScroll>
           <br />
           <br /> <br /> <br />

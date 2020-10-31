@@ -125,10 +125,7 @@ const useStyle = makeStyles((theme) => ({
   cardContent: {
     padding: '20px 20px 12px !important',
   },
-  highlightedText: {
-    fontWeight: 500,
-    fontSize: '18px',
-  },
+
   textAlignRight: {
     textAlign: 'right',
   },
