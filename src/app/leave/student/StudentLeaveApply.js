@@ -29,8 +29,15 @@ import BackIcon from '../../../assets/images/Back.svg';
 
 import LeaveService from "../LeaveService";
 import { IconButton, InputAdornment, InputLabel } from "@material-ui/core";
-const height = 85
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
+
+
+const height = 85
+function Alert(props) {
+  return <MuiAlert elevation={6} variant='filled' {...props} />;
+}
 const useStyle = makeStyles((theme) => ({
   formStyle: {
     margin: "auto",
@@ -61,16 +68,17 @@ const useStyle = makeStyles((theme) => ({
     color: "red",
   },
   fieldStyle: {
-    width: "90%",
-    margin: "auto",
-    "& .MuiInput-underline:before": {
-      borderBottom: "2px solid #eaeaea",
+    width: '97%',
+    // float:"right",
+    margin: 'auto',
+    '& .MuiInput-underline:before': {
+      borderBottom: '2px solid #eaeaea',
     },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-      borderBottom: "2px solid #7B72AF",
-      transitionProperty: "border-bottom-color",
-      transitionDuration: "500ms",
-      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+      borderBottom: '2px solid #7B72AF',
+      transitionProperty: 'border-bottom-color',
+      transitionDuration: '500ms',
+      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
   inputBorder: {
@@ -130,11 +138,16 @@ const useStyle = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginTop: "10px",
     },
-    "& .publishBtn": {
-      borderRadius: "3px",
-      width: "100%",
-      // opacity: '0.5',
-      marginBottom: "15px",
+    '& .publishBtn': {
+      float:"right",
+      borderRadius: '3px',
+      width: 'inherit',
+      margin: 0,
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
+        marginRight: 0,
+        width: '100%',
+      },
     },
     "& .publishLaterBtn": {
       backgroundColor: `${theme.palette.common.white}`,
@@ -152,7 +165,7 @@ const useStyle = makeStyles((theme) => ({
     width: '100%',
     height: '100px',
     borderRadius: '5px',
-    fontFamily: 'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontFamily: 'Avenir Book,Avenir,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
     lineHeight: '1.5',
     outline: 'none'
@@ -212,6 +225,8 @@ const StudentLeave = (props) => {
   const [bool_half, setbool_half] = useState(false);
   const [halfdayhalf, sethalfdayhalf] = useState(0);
   const [halfday, sethalfday] = React.useState(false);
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [snackbarmsg, setSnackbarmsg] = useState('');
 
  
   const status = "active";
@@ -240,7 +255,7 @@ const StudentLeave = (props) => {
   }, []);
 
     const sethalfdayhalf_handeler=(event)=>{
-      console.log(event.target.value);
+      // console.log(event.target.value);
       sethalfdayhalf(event.target.value);
     };
   const HandleareaContent_handeler=(event)=>{
@@ -249,7 +264,8 @@ const StudentLeave = (props) => {
   };
   const handleEventDate = (date) => {
     if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()){
-      alert("Please  enter valid date");
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       setEventToDate(null);
       setEventDate(date);
       
@@ -263,6 +279,7 @@ const StudentLeave = (props) => {
       sethalfday(true);
       setbool_half(true);
       setbool_full(false);
+      sethalfdayhalf(0);
     } else {
       sethalfday(false);
       setbool_half(false);
@@ -277,7 +294,8 @@ const StudentLeave = (props) => {
       return false;
     }
     else if (date.getTime() <= eventDate.getTime()){
-      alert("Please enter valid date");
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       return false;
     } else  {
       setEventToDate(date);
@@ -320,54 +338,55 @@ const StudentLeave = (props) => {
   }
 
 const submitForm = async () => {
-  // alert("wait");
-  // console.log(event.target.type.value);
-  // let type= '0';
-  // let slot= event.target.slot.value;
-  // if(slot == 'h_day'){
-  //   type= event.target.type.value;
-  // }
-  // let content = event.target.content.value;
-
-  
-  // alert("wait");
-  if (eventDate==null || evenTotDate==null || reason_content=='' || teachersValue==''){
-    alert("The form is incomplete");
-  }
   if (bool_full){
     sethalfdayhalf(2)
   }
-  console.log("start_date",eventDate);
-  console.log("end_date",evenTotDate);
-  console.log("half_day",bool_half);
-  console.log("full_day",bool_full);
-  console.log("half_day_half",halfdayhalf);
-  console.log("sanctioner_id",teachersValue);
-  console.log("reason",reason_content);
+  if (eventDate==null || evenTotDate==null || reason_content=='' || teachersValue==''){
+    setSnackbarmsg("Form is incomplete");
+      setErrorSnackbarOpen(true);
+  }
+  else{
     const response = await LeaveService.postLeave(
-        { id },
-        {
-          "leavearr" : {
-            "start_date":eventDate,
-            "end_date":evenTotDate,
-            "half_day":bool_half,
-            "full_day":bool_full,
-            "half_day_half": halfdayhalf,
-            "sanctioner_id": teachersValue,
-            "reason": reason_content
-            }
-          },
-        props.token
-      );
+      { id },
+      {
+        "leavearr" : {
+          "start_date":eventDate,
+          "end_date":evenTotDate,
+          "half_day":bool_half,
+          "full_day":bool_full,
+          "half_day_half": halfdayhalf,
+          "sanctioner_id": teachersValue,
+          "reason": reason_content
+          }
+        },
+      props.token
+    );
 
-      if (response.status === 200) {
-        history.replace("/leave");
-      }
-
+    if (response.status === 200) {
+      history.replace("/leave");
+    }
+  }
+  
+  // console.log("start_date",eventDate);
+  // console.log("end_date",evenTotDate);
+  // console.log("half_day",bool_half);
+  // console.log("full_day",bool_full);
+  // console.log("half_day_half",halfdayhalf);
+  // console.log("sanctioner_id",teachersValue);
+  // console.log("reason",reason_content)
   // publishData(new Date().toISOString(), status, event,type,slot,content,teachersValue);
   // event.preventDefault();
 }
 
+
+
+const handleSnackbarClose = (event, reason) => {
+  if (reason === 'clickaway') {
+    return;
+  }
+  // setSuccessSnackbarOpen(false);
+  setErrorSnackbarOpen(false);
+};
 
 const handleChange = (event) => {
   setAge(event.target.value);
@@ -400,7 +419,17 @@ const handleChangeTeacher = (event) => {
               </Typography>
             </div>
           </Box>
-
+          
+          
+        <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity='error'>
+          {snackbarmsg}
+        </Alert>
+      </Snackbar>
         <div>
         
           <Box className={classes.margin} >
@@ -566,6 +595,8 @@ const handleChangeTeacher = (event) => {
               
             
             </Grid>
+            <br/>
+
           </Box>
         
         

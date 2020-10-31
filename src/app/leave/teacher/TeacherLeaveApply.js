@@ -27,8 +27,15 @@ import EventIcon from '@material-ui/icons/Event';
 import LeaveService from '../LeaveService';
 import { IconButton, InputAdornment, InputLabel } from '@material-ui/core';
 import BackIcon from '../../../assets/images/Back.svg';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
 
 const height = 85;
+function Alert(props) {
+  return <MuiAlert elevation={6} variant='filled' {...props} />;
+}
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
@@ -57,6 +64,7 @@ const useStyle = makeStyles((theme) => ({
   },
   fieldStyle: {
     width: '97%',
+    // float:"right",
     margin: 'auto',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
@@ -128,7 +136,7 @@ const useStyle = makeStyles((theme) => ({
     height: '100px',
     borderRadius: '5px',
     fontFamily:
-      'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+      'Avenir Book,Avenir,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
     lineHeight: '1.5',
     outline: 'none'
@@ -182,6 +190,7 @@ const useStyle = makeStyles((theme) => ({
       marginTop: '10px',
     },
     '& .publishBtn': {
+      float:"right",
       borderRadius: '3px',
       width: 'inherit',
       margin: 0,
@@ -218,6 +227,9 @@ const TeacherLeaveApply = (props) => {
   const [halfdayhalf, sethalfdayhalf] = useState(0);
   const [halfday, sethalfday] = React.useState(false);
   const [allAdmin, setAdmin] = useState([]);
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [snackbarmsg, setSnackbarmsg] = useState('');
+
 
   useEffect(() => {
     let isLoading = true;
@@ -240,7 +252,8 @@ const TeacherLeaveApply = (props) => {
 
   const handleEventDate = (date) => {
     if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()){
-      alert("Please  enter valid date");
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       setEventToDate(null);
       setEventDate(date);
       
@@ -251,7 +264,7 @@ const TeacherLeaveApply = (props) => {
 
 
   const sethalfdayhalf_handeler=(event)=>{
-    console.log(event.target.value);
+    // console.log(event.target.value);
     sethalfdayhalf(event.target.value);
   };
 const HandleareaContent_handeler=(event)=>{
@@ -264,7 +277,8 @@ const HandleareaContent_handeler=(event)=>{
       return false;
     }
     else if (date.getTime() <= eventDate.getTime()){
-      alert("Please enter valid date");
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       return false;
     } else  {
       setEventToDate(date);
@@ -279,12 +293,35 @@ const HandleareaContent_handeler=(event)=>{
   const submitForm = async () => {
     
     // alert("wait");
-    if (eventDate==null || evenTotDate==null || reason_content=='' || teachersValue==''){
-      alert("The form is incomplete");
-    }
     if (bool_full){
       sethalfdayhalf(2)
     }
+    if (eventDate==null || evenTotDate==null || reason_content=='' || teachersValue==''){
+      setSnackbarmsg("Form is incomplete");
+      setErrorSnackbarOpen(true);
+    }
+    else{
+      const response = await LeaveService.postLeave(
+        { id },
+        {
+          "leavearr" : {
+            "start_date":eventDate,
+            "end_date":evenTotDate,
+            "half_day":bool_half,
+            "full_day":bool_full,
+            "half_day_half": halfdayhalf,
+            "sanctioner_id": teachersValue,
+            "reason": reason_content
+            }
+          },
+        props.token
+      );
+
+      if (response.status === 200) {
+        history.replace("/leave");
+      }
+    }
+    
     // console.log("start_date",eventDate);
     // console.log("end_date",evenTotDate);
     // console.log("half_day",bool_half);
@@ -292,25 +329,7 @@ const HandleareaContent_handeler=(event)=>{
     // console.log("half_day_half",halfdayhalf);
     // console.log("sanctioner_id",teachersValue);
     // console.log("reason",reason_content);
-      const response = await LeaveService.postLeave(
-          { id },
-          {
-            "leavearr" : {
-              "start_date":eventDate,
-              "end_date":evenTotDate,
-              "half_day":bool_half,
-              "full_day":bool_full,
-              "half_day_half": halfdayhalf,
-              "sanctioner_id": teachersValue,
-              "reason": reason_content
-              }
-            },
-          props.token
-        );
-  
-        if (response.status === 200) {
-          history.replace("/leave");
-        }
+     
   
   }
   const handleDay = (event,value) => {
@@ -318,6 +337,7 @@ const HandleareaContent_handeler=(event)=>{
       sethalfday(true);
       setbool_half(true);
       setbool_full(false);
+      sethalfdayhalf(0);
     } else {
       sethalfday(false);
       setbool_half(false);
@@ -326,6 +346,13 @@ const HandleareaContent_handeler=(event)=>{
     
   };
 
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    // setSuccessSnackbarOpen(false);
+    setErrorSnackbarOpen(false);
+  };
 
   return (
     <>
@@ -350,6 +377,16 @@ const HandleareaContent_handeler=(event)=>{
         {/* <form className={classes.formStyle} onSubmit={submitForm}> */}
         <div>
         
+        <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity='error'>
+          {snackbarmsg}
+        </Alert>
+      </Snackbar>
+
         <Box className={classes.margin} >
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container className={classes.fieldStyle}>

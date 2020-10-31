@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
       width: 0,
     },
   },
+  book:{
+    fontFamily: "Avenir Book",
+  },
   tabBar: {
     backgroundColor: theme.palette.mainBackground,
     color: theme.palette.common.deluge,
@@ -88,6 +91,7 @@ const useStyles = makeStyles((theme) => ({
   },
   uppertext: {
     marginBottom: "4px",
+    fontFamily: "Avenir Medium",
   },
   newclass: {},
   borderLeft: {
@@ -151,12 +155,17 @@ const useStyles = makeStyles((theme) => ({
   },
   Approved: {
     color: "#40BD13",
-  },
-  Rejected: {
-    color: "#D92424",
+    paddingTop:"25px",
   },
   Cancelled: {
     color: "#3076A1",
+    paddingTop:"25px",
+
+  },
+  Rejected: {
+    color: "#D92424",
+    paddingTop:"25px",
+
   },
   leavereason: {
     fontSize: "15px",
@@ -164,6 +173,8 @@ const useStyles = makeStyles((theme) => ({
   },
   name: {
     transform: "translateY(17px)",
+    fontFamily: "Avenir Medium",
+
   },
   emptyView: {
     width: "100%",
@@ -243,17 +254,8 @@ const TeacherLeave = (props) => {
 
   const userInfo = JSON.parse(localStorage.getItem("srmUserInfo"));
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
 
-  const handleChangeIndex = (index) => {
-    setValue(index);
-  };
 
-  const handleScroll = () => {
-    console.log("scrolled");
-  };
 
   const CancelLeave = async (event) => {
     try {
@@ -340,7 +342,7 @@ const TeacherLeave = (props) => {
 
                         <Moment format="D MMM YYYY">{leaves.end_date}</Moment>
                       </div>
-                      <div>
+                      <div className={classes.book}>
                       {leaves.full_day 
                       ? 
                       (<span>Full day</span>)
@@ -354,7 +356,7 @@ const TeacherLeave = (props) => {
                       )
                       }
                       </div>
-                      <div>Reason - {leaves.reason}</div>
+                      <div className={classes.book}>Reason - {leaves.reason}</div>
                     </Typography>
                   </Grid>
                   <Grid item xs={2}>
@@ -400,7 +402,7 @@ const TeacherLeave = (props) => {
                       )}
 
                       {leaves.leave_status == "CANCELLED" ? (
-                        <div className={classes.Cancelled}>Canceled</div>
+                        <div className={classes.Cancelled}>Cancelled</div>
                       ) : (
                         ""
                       )}
