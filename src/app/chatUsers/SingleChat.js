@@ -16,6 +16,8 @@ import Picker from 'emoji-picker-react';
 import Group from '../../assets/images/chat/group.png';
 import moment from 'moment'
 import ChatService from "../chat/ChatService";
+var CryptoJS = require("crypto-js");
+
 
 const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 
@@ -295,7 +297,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
   const submitChat = async() =>{
     let data = {
-      message: message
+      message: getMessage()
     }
     try {
       const token = localStorage.getItem('srmToken');
@@ -320,10 +322,11 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       }
       else{
         let frmdata = new FormData();
-        frmdata.append("message", message);
+        frmdata.append("message", getMessage());
         attachments.forEach(a=>{
           frmdata.append("attachment[]", a)
         })
+
         const response = await ChatService.submitChat(
           frmdata,
           token,
@@ -354,16 +357,26 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     return b.includes(c[c.length-1])
   }
 
+  const getMessage = () => {
+    var msg = CryptoJS.AES.encrypt(message, "chat" + chat.id).toString();
+    console.log(msg)
+    return msg;
+  }
+
+  const getPlainMessage = (message) => {
+    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
+    var msg = bytes.toString(CryptoJS.enc.Utf8);
+    return msg
+  }
+
   const getAttachments = (message) => {
 
   }
 
   const chatMessage = (message) => {
-    if(message.attachment != null) {
+    if(message.attachment != "null") {
       return <div> {
         JSON.parse(message.attachment).map(at=>{
-          console.log(at)
-          
           if(checkValidURLImage(at)){
             return <a style={{cursor: 'pointer'}} target="_blank" href={BACKEND_IMAGE_URL + "/" + at}>
               <img src={BACKEND_IMAGE_URL + "/" + at} style={{height: 70, width: undefined, alignSelf: 'center'}} alt="" />
@@ -379,13 +392,13 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
         })
       }
         <Typography>
-          {message.message}
+          {getPlainMessage(message.message)}
         </Typography>
       </div>
     }
     else{
       return <Typography>
-        {message.message}
+        {getPlainMessage(message.message)}
       </Typography>
     }
   }

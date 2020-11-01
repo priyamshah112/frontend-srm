@@ -60,6 +60,7 @@ import * as actions from "../app/auth/store/actions";
 import ChatIndex from "../app/chat/ChatIndex";
 import ChatPopup from "../app/chatUsers/ChatPopup";
 import ChatService from "../app/chat/ChatService";
+var CryptoJS = require("crypto-js");
 
 // default was 360
 const drawerWidth = 340;
@@ -348,7 +349,7 @@ const Layout = (props) => {
       // console.log(data)
       setSnackBarId(data.entity_id);
       setSnackbarTitle(payload.notification.title);
-      setSnackbarDescription(payload.notification.body);
+      setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
       setSnackbarClick(payload.notification.click_action);
       setSnackbarOpen(true);
       if(data.type == "chat"){
@@ -358,7 +359,7 @@ const Layout = (props) => {
           token,
         );
         if (response.status === 200) {
-          console.log('Chat', response);
+          // console.log('Chat', response);
           const { data } = response
           setSelectedChat(data.chat)
           setRefreshChat(true)
@@ -368,6 +369,12 @@ const Layout = (props) => {
     .catch((e) => {
       console.log(e);
     });
+
+  const getPlainMessage = (message, chat) => {
+    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat);
+    var msg = bytes.toString(CryptoJS.enc.Utf8);
+    return msg
+  }
 
   const handleCloseSnack = (event, reason) => {
     if (reason === "clickaway") return;

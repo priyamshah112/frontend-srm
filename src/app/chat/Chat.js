@@ -10,6 +10,7 @@ import { Typography } from "@material-ui/core";
 import ChatService from "./ChatService";
 import groupicon from '../../assets/images/chat/group.png';
 import moment from 'moment'
+var CryptoJS = require("crypto-js");
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -226,6 +227,12 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
     } 
   }
 
+  const getPlainMessage = (message, chat) => {
+    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
+    var msg = bytes.toString(CryptoJS.enc.Utf8);
+    return msg
+  }
+
   return (
     <div onScroll={(evt)=>loadMoreItems(evt)}>
       <List className={classes.root}>
@@ -251,8 +258,8 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
               }
             }
           }
-          if(chat.messages != undefined){
-            message = chat.messages[chat.messages.length - 1].message
+          if(chat.messages != undefined && chat.messages.length>0){
+            message = getPlainMessage(chat.messages[chat.messages.length - 1].message, chat)
             date = chat.messages[chat.messages.length - 1].created_at;
           }
           return (
