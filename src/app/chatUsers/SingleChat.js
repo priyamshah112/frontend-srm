@@ -374,7 +374,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   }
 
   const chatMessage = (message) => {
-    if(message.attachment != "null") {
+    if(message.attachment != "null" && message.attachment != null) {
       return <div> {
         JSON.parse(message.attachment).map(at=>{
           if(checkValidURLImage(at)){
