@@ -92,8 +92,9 @@ const useStyles = makeStyles((theme) => ({
     width: "50px",
     height: "50px",
     borderRadius: "50%",
-    marginLeft: "auto",
+    margin: "auto",
     border: "1px solid",
+    transform:"translateY(10px)"
   },
   center: {
     paddingLeft: "12px",

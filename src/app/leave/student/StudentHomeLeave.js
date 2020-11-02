@@ -340,7 +340,7 @@ const StudentHomeLeave = (props) => {
             Rejected</div>:''}
 
             {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
-            Canceled</div>:''}
+            Cancelled</div>:''}
 
             {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
             Approved</div>:''}

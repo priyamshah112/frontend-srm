@@ -48,7 +48,6 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: 'left',
-    paddingLeft: '10px',
     cursor: 'pointer',
   },
   adornmentColor: {
@@ -488,7 +487,7 @@ const HandleareaContent_handeler=(event)=>{
             }
 
       <FormControl classes={{root: classes.tchClassRoot}}>
-              <InputLabel id="demo-simple-select-label">Teacher's Name</InputLabel>
+              <InputLabel id="demo-simple-select-label">Admin's Name</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
