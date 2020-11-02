@@ -94,6 +94,9 @@ const useStyles = makeStyles((theme) => ({
         height: 25,
         width: undefined,
     },
+    avatar:{
+      borderRadius: 25,
+    },
     col:{
         flexDirection: 'column'
     },
@@ -135,6 +138,14 @@ const ChatPopup = ({ selectedChat, props }) => {
         avatar = classes.avatarBackground
         subheading = "Group"
       }
+      else if(selectedChat.members!=undefined){
+          let rec = selectedChat.members.filter(c=>{
+            return c.id != props.userInfo.id
+          })[0]
+          name = rec.firstname + ' ' + rec.lastname
+          subheading = rec.roles[0].name
+          img = rec.thumbnail
+      }
         return (
           <Typography className={classes.title} onClick={()=>setMinimize(!minimize)}>
             <Grid spacing={0} container>
@@ -142,7 +153,7 @@ const ChatPopup = ({ selectedChat, props }) => {
                   <img
                       src={ExternalLink}
                       alt='Open Chat Full Screen'
-                      className={classes.externalIcon}
+                      className={[classes.externalIcon, classes.borderRadius].join(' ')}
                       onClick={()=>history.push("/chat/"+selectedChat.id)}
                   />
                 </Grid>
@@ -150,7 +161,7 @@ const ChatPopup = ({ selectedChat, props }) => {
                   <img
                       src={img}
                       alt={name}
-                      className={classes.externalIcon}
+                      className={[classes.externalIcon, classes.borderRadius].join(' ')}
                   />
                 </Grid>
                 <Grid item xs={7} style={{ width: '59%', maxWidth: '59%', flexBasis: '59%' }}>

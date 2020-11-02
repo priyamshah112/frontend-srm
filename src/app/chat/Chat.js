@@ -10,6 +10,7 @@ import { Typography } from "@material-ui/core";
 import ChatService from "./ChatService";
 import groupicon from '../../assets/images/chat/group.png';
 import moment from 'moment'
+var CryptoJS = require("crypto-js");
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -102,23 +103,59 @@ const list = [
   }
 ]
 
-export default function Chat({ filter, selectContact, selectedRole, newGroup }) {
+export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo, showContact, refreshChat, setRefreshChat }) {
   const classes = useStyles();
   const [Chats, setChats] = useState([])
+  const [Users, setUsers] = useState([])
   const [filteredChat, setFilteredChats] = useState([])
+  const [offset, setOffset] = useState(100)
+  const [currentPage, setCurrentPage] = useState(0)
 
   useEffect(()=>{
     if(filter == ''){
       setFilteredChats([...Chats])
     }
     else{
-      let chat = Chats.filter(c=>{
-        return c.name.toLowerCase().includes(filter.toLowerCase());
-      })
-      
-      setFilteredChats([...chat])
+      if(Chats.length>0){
+        let chat = Chats.filter(c=>{
+          let name
+          let role
+          if(c.members != null){
+            if(c.group != null){
+              name = c.group.name
+            }
+            else{
+              return false;
+            }
+            role = ''
+          }
+          else{
+            name = c.firstname + ' ' + c.lastname
+            role = c.roles[0].name
+          }
+          return name.toLowerCase().includes(filter.toLowerCase()) 
+            || role.toLowerCase().includes(filter.toLowerCase());
+        })
+        setFilteredChats([...chat])
+      }
     }
   }, [filter])
+
+  useEffect(()=>{
+    if(refreshChat){
+      fetchChats()
+      setRefreshChat(false)
+    }
+  }, [refreshChat])
+
+  useEffect(()=>{
+    if(showContact){
+      fetchContacts()
+    }
+    else{
+      fetchChats()
+    }
+  }, [showContact])
 
   useEffect(()=>{
     fetchChats()
@@ -130,24 +167,33 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup }) 
   }, [newGroup])
 
   const fetchContacts = async () => {
-    try {
-      const token = localStorage.getItem('srmToken');
-      // const selectedRole = props.selectedRole;
-      const response = await ChatService.fetchChatUsers(
-        token,
-        {selectedRole},
-      );
-      console.log('Scroll response', response);
-      if (response.status === 200) {
-        console.log('Contacts', response);
-        const { data } = response
-        setChats(data.users)
-        setFilteredChats(data.users)
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    setChats([...Chats, ...Users])
+    let chats = [...Chats, ...Users]
+    setFilteredChats(chats.slice(currentPage, offset))
+    
+    // try {
+    //   const token = localStorage.getItem('srmToken');
+    //   // const selectedRole = props.selectedRole;
+    //   const response = await ChatService.fetchChats(
+    //     {selectedRole},
+    //     token,
+    //   );
+    //   console.log('Scroll response', response);
+    //   if (response.status === 200) {
+    //     console.log('Contacts', response);
+    //     const { data } = response
+        
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
+
+  useEffect(() => {
+    window.onscroll = () => {
+      loadMoreItems()
+    }
+  }, []);
 
   const fetchChats = async () => {
     try {
@@ -157,65 +203,100 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup }) 
         {selectedRole},
         token,
       );
-      console.log('Scroll response', response);
+      // console.log('Scroll response', response);
       if (response.status === 200) {
-        console.log('Chats', response);
+        // console.log('Chats', response);
         const { data } = response
-        setChats(data.chats)
-        setFilteredChats(data.chats)
+        setChats([...data.chats])
+        setFilteredChats([...data.chats])
+        setUsers([...data.users])
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const loadMoreItems = (event) => {
+    console.log(event)
+    if (event.target.scrollTop === event.target.scrollHeight) {
+      //user is at the end of the list so load more items
+      let start = currentPage + 1 * offset;
+      setCurrentPage(currentPage + 1)
+      let chats = Chats.slice(start, offset)
+      setFilteredChats([...filteredChat, ...chats])
+    } 
+  }
+
+  const getPlainMessage = (message, chat) => {
+    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
+    var msg = bytes.toString(CryptoJS.enc.Utf8);
+    return msg
+  }
+
   return (
-    <List className={classes.root}>
-      {filteredChat.map(chat=>{
-        let name = chat.firstname + ' ' + chat.lastname
-        let img = chat.thumbnail
-        let avatar = {};
-        if(chat!=undefined){
-          if(chat.type == "group"){
-            name = chat.group.name;
-            img = groupicon
-            avatar = classes.avatarBackground
-          }
-        }
-        return (
-          <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
-            <ListItemAvatar>
-              <StyledBadge
-                overlap="circle"
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                variant={chat.status}
-              >
-                <Avatar alt={name} src={img} className={avatar} />
-              </StyledBadge>
-            </ListItemAvatar>
-            <ListItemText
-              style={{ width: '60%' }}
-              secondaryTypographyProps={{ style: { width: '60%'} }}
-              primary={name}
-              secondary={chat.messages[chat.messages.length - 1].message}
-            />
-            <div className={classes.roleDetails}>
-              <Typography className={classes.date}>
-                {moment(chat.messages[chat.messages.length - 1].created_at).fromNow()}
-              </Typography>
-              {chat.type == "single" &&
-                <Typography className={classes.date}>
-                  {chat.roles[0].name}
-                </Typography>
+    <div onScroll={(evt)=>loadMoreItems(evt)}>
+      <List className={classes.root}>
+        {filteredChat.map(chat=>{
+          let name = chat.firstname + ' ' + chat.lastname
+          let img = chat.thumbnail
+          let avatar = {};
+          let message = '';
+          let date = chat.created_at;
+          if(chat!=undefined){
+            if(chat.type == "group"){
+              name = chat.group.name;
+              img = groupicon
+              avatar = classes.avatarBackground
+            }
+            else{
+              if(chat.members!=undefined){
+                let rec = chat.members.filter(c=>{
+                  return c.id != userInfo.id
+                })[0]
+                name = rec.firstname + ' ' + rec.lastname
+                img = rec.thumbnail
               }
-            </div>
-          </ListItem>
-        )
-      })}
-    </List>
+            }
+          }
+          if(chat.messages != undefined && chat.messages.length>0){
+            message = getPlainMessage(chat.messages[chat.messages.length - 1].message, chat)
+            date = chat.messages[chat.messages.length - 1].created_at;
+          }
+          return (
+            <ListItem onClick={()=>selectContact(chat)} alignItems="flex-start" className={classes.listItem}>
+              <ListItemAvatar>
+                <StyledBadge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  variant={chat.status}
+                >
+                  <Avatar alt={name} src={img} className={avatar} />
+                </StyledBadge>
+              </ListItemAvatar>
+              <ListItemText
+                style={{ width: '60%' }}
+                secondaryTypographyProps={{ style: { width: '60%'} }}
+                primary={name}
+                secondary={message}
+              />
+              <div className={classes.roleDetails}>
+                <Typography className={classes.date}>
+                  {moment(date).fromNow()}
+                </Typography>
+                {/* {chat.type == "single" &&
+                  <Typography className={classes.date}>
+                    {chat.roles[0].name}
+                  </Typography>
+                } */}
+              </div>
+            </ListItem>
+          )
+        })}
+      </List>
+    </div>
   );
 }
 

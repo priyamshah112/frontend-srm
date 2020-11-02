@@ -58,13 +58,13 @@ function App(props) {
     onAutoSignup(props.isAuthenticated);
   }, [onAutoSignup, props.isAuthenticated]);
   if (props.isAuthenticated) {
-    // requestFirebaseNotificationPermission()
-    //   .then((firebaseToken) => {
-    //     console.log(firebaseToken);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
+    requestFirebaseNotificationPermission()
+      .then((firebaseToken) => {
+        console.log(firebaseToken);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 
   const protectedRoutes = () => (

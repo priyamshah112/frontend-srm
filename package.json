@@ -13,6 +13,7 @@
     "axios": "^0.19.2",
     "browser-image-compression": "^1.0.12",
     "connected-react-router": "^6.8.0",
+    "crypto-js": "^4.0.0",
     "date-fns": "^2.15.0",
     "emoji-picker-react": "^3.2.4",
     "firebase": "^7.24.0",
