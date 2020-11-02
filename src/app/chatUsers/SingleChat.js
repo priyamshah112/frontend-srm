@@ -16,6 +16,10 @@ import Picker from 'emoji-picker-react';
 import Group from '../../assets/images/chat/group.png';
 import moment from 'moment'
 import ChatService from "../chat/ChatService";
+var CryptoJS = require("crypto-js");
+
+
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -184,7 +188,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const classes = useStyles();
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const fileRef = useRef()
-  const [messages, setMessages] = useState(chat.messages)
+  const [messages, setMessages] = useState([])
   const [ message, setMessage ] = useState('')
   const[emojiShow, showEmoji] = useState(false)
   const [attachments, setAttachments] = useState([])
@@ -199,6 +203,32 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     }
     
   }, [closeEmoji])
+  let timer = null
+  useEffect(()=>{
+    if(timer != null){
+      clearInterval(timer)
+    }
+    if(chat.messages == undefined){
+      setMessages([])
+    }
+    else{
+      setMessages(chat.messages)
+      // timer = setInterval(()=>fetchChat(chat), 1000)
+    }
+  }, [chat])
+  const fetchChat = async(chat) => {
+    const token = localStorage.getItem('srmToken');
+    // const selectedRole = props.selectedRole;
+    const response = await ChatService.fetchChat(
+      chat.id,
+      token,
+    );
+    if (response.status === 200) {
+      // console.log('Chat', response);
+      const { data: {chat} } = response
+      setMessages(chat.messages)
+    }
+  }
   const scrollToBottom = () => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
   }
@@ -215,7 +245,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   };
   let date = "";
   const fileSelectHandler = (event) => {
-    console.log(event.target.files)
+    // console.log(event.target.files)
     attachments.push(...event.target.files)
     event.target.value = null
     setAttachments([...attachments])
@@ -241,6 +271,14 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     subheading = "Group"
     cls = classes.groupIconContainer
   }
+  else if(chat.members!=undefined){
+    let rec = chat.members.filter(c=>{
+      return c.id != props.userInfo.id
+    })[0]
+    name = rec.firstname + ' ' + rec.lastname
+    subheading = rec.roles[0].name
+    img = rec.thumbnail
+  }
 
   const onKeyDown = (event) => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -259,25 +297,109 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
   const submitChat = async() =>{
     let data = {
-      message: message
+      message: getMessage()
     }
     try {
       const token = localStorage.getItem('srmToken');
       // const selectedRole = props.selectedRole;
-      const response = await ChatService.submitChat(
-        data,
-        token,
-        chat.id
-      );
-      console.log('Scroll response', response);
-      if (response.status === 200) {
-        console.log('Chat', response);
-        const { data } = response
-        setMessage('')
-        setMessages(data.chat.messages)
+      if(chat.messages == undefined){
+        data.reciever = chat.id
+        
+        const response = await ChatService.newChat(
+          data,
+          token
+        );
+        // console.log('Scroll response', response);
+        if (response.status === 200) {
+          // console.log('Chat', response);
+          const { data } = response
+          setMessage('')
+          setMessages(data.chat.messages)
+        }
+        else{
+          return;
+        }
+      }
+      else{
+        let frmdata = new FormData();
+        frmdata.append("message", getMessage());
+        attachments.forEach(a=>{
+          frmdata.append("attachment[]", a)
+        })
+
+        const response = await ChatService.submitChat(
+          frmdata,
+          token,
+          chat.id
+        );
+        
+        console.log('Scroll response', response);
+        if (response.status === 200) {
+          console.log('Chat', response);
+          const { data } = response
+          setMessage('')
+          setAttachments([])
+          setMessages(data.chat.messages)
+        }
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
+    }
+  }
+
+  const checkValidURLImage = (a) => {
+
+    var b = ["jpeg","jpg","png","gif","raw"]; //format img
+
+    var c = a.split("."); // ["https://i", "imgur", "com/qMUWuXV", "jpg"]
+
+    console.log(b.includes(c[c.length-1]))
+    return b.includes(c[c.length-1])
+  }
+
+  const getMessage = () => {
+    var msg = CryptoJS.AES.encrypt(message, "chat" + chat.id).toString();
+    console.log(msg)
+    return msg;
+  }
+
+  const getPlainMessage = (message) => {
+    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
+    var msg = bytes.toString(CryptoJS.enc.Utf8);
+    return msg
+  }
+
+  const getAttachments = (message) => {
+
+  }
+
+  const chatMessage = (message) => {
+    if(message.attachment != "null" && message.attachment != null) {
+      return <div> {
+        JSON.parse(message.attachment).map(at=>{
+          if(checkValidURLImage(at)){
+            return <a style={{cursor: 'pointer'}} target="_blank" href={BACKEND_IMAGE_URL + "/" + at}>
+              <img src={BACKEND_IMAGE_URL + "/" + at} style={{height: 70, width: undefined, alignSelf: 'center'}} alt="" />
+            </a>
+          }
+          else{
+            return <a style={{cursor: 'pointer'}} target="_blank" href={BACKEND_IMAGE_URL + "/" + at}>
+              <ListItem alignItems="flex-start">
+                <Typography className={classes.attachmentText}>{at.split('/')[at.split('/').length - 1]}</Typography>
+              </ListItem>
+            </a>
+          }
+        })
+      }
+        <Typography>
+          {getPlainMessage(message.message)}
+        </Typography>
+      </div>
+    }
+    else{
+      return <Typography>
+        {getPlainMessage(message.message)}
+      </Typography>
     }
   }
 
@@ -305,9 +427,9 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       }
       <div className={classes.chatList}>
         {messages.map((message)=>{
-          let showDate = message.created_at != date;
+          let showDate = moment(message.created_at).fromNow() != date;
           if(showDate ){
-            date = message.created_at;
+            date = moment(message.created_at).fromNow();
           }
           let cls = {}
           let senderName = message.sender.firstname + ' ' + message.sender.lastname
@@ -319,15 +441,17 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
             { showDate &&
               <div className={classes.date}>
                 <span className={classes.dateTextContainer}>
-                <span className={classes.dateText}>{ moment(message.created_at).fromNow() }</span></span>
+                <span className={classes.dateText}>{ date }</span></span>
               </div>
             }
+            
             <ListItem alignItems="flex-start" className={[classes.listItem,
               cls].join(' ')}>
+                
               <ListItemText
                 classes={{primary: classes.primary}}
                 primary={senderName}
-                secondary={message.message}
+                secondary={chatMessage(message)}
               />
               <div className={classes.right}>
                 <Typography className={classes.time}>{message.time}</Typography>
@@ -365,12 +489,14 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 className={classes.inputBorder}
                 onSubmit={submitChat}
                 required={true}
+                autoComplete={false}
                 onKeyDown={onKeyDown}
                 disableUnderline={true}
               />
               <Typography className={classes.emojiContainer}>
                 <img src={attach} className={classes.smiley} onClick={pickFile} />
-                <input multiple accept="image/x-png,image/gif,image/jpeg" 
+                <input multiple accept="image/x-png,image/gif,image/jpeg,application/pdf,application/msword,
+  application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
                   className={classes.fileInput} id='attachment' type="file" onChange={fileSelectHandler} ref={fileRef} />
               </Typography>
           </ListItem>

@@ -59,6 +59,8 @@ import RoleSelection from "../app/auth/RoleSelection";
 import * as actions from "../app/auth/store/actions";
 import ChatIndex from "../app/chat/ChatIndex";
 import ChatPopup from "../app/chatUsers/ChatPopup";
+import ChatService from "../app/chat/ChatService";
+var CryptoJS = require("crypto-js");
 
 // default was 360
 const drawerWidth = 340;
@@ -329,26 +331,50 @@ const Layout = (props) => {
   const [reportItem, setReportItem] = React.useState(true);
   const [snackbarTitle, setSnackbarTitle] = useState('');
   const [snackbarDescription, setSnackbarDescription] = useState('');
+  const [snackbarClick, setSnackbarClick] = useState('');
   const [selectedChat, setSelectedChat] = useState(null)
   const schoolName = localStorage.getItem("schoolName");
   const schoolLogo = localStorage.getItem("schoolLogo");
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const [refreshChat, setRefreshChat] = useState(false)
 
   const isMenuOpen = Boolean(anchorEl);
-  console.log("props.selectedRole", props.selectedRole);
+  // console.log("props.selectedRole", props.selectedRole);
 
   onMessageListener()
-    .then((payload) => {
+    .then(async(payload) => {
       props.onNotificationReceive();
-
-      setSnackBarId(JSON.parse(payload.data.data).entity_id);
+      
+      let data = JSON.parse(payload.data.data);
+      // console.log(data)
+      setSnackBarId(data.entity_id);
       setSnackbarTitle(payload.notification.title);
-      setSnackbarDescription(payload.notification.body);
+      setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
+      setSnackbarClick(payload.notification.click_action);
       setSnackbarOpen(true);
+      if(data.type == "chat"){
+        const token = localStorage.getItem('srmToken');
+        const response = await ChatService.fetchChat(
+          data.entity_id,
+          token,
+        );
+        if (response.status === 200) {
+          // console.log('Chat', response);
+          const { data } = response
+          setSelectedChat(data.chat)
+          setRefreshChat(true)
+        }
+      }
     })
     .catch((e) => {
       console.log(e);
     });
+
+  const getPlainMessage = (message, chat) => {
+    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat);
+    var msg = bytes.toString(CryptoJS.enc.Utf8);
+    return msg
+  }
 
   const handleCloseSnack = (event, reason) => {
     if (reason === "clickaway") return;
@@ -842,7 +868,7 @@ const Layout = (props) => {
     <>
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <ChatIndex selectChat={setSelectedChat} {...props} />
+        <ChatIndex setRefreshChat={setRefreshChat} refreshChat={refreshChat} selectChat={setSelectedChat} {...props} />
       </div>
     </>
   );
@@ -1002,7 +1028,7 @@ const Layout = (props) => {
       {snackbarOpen ? (
         <Snackbar
           open={snackbarOpen}
-          onClick={() => history.push(`/notifications/${snackbarId}`)}
+          onClick={() => history.push(snackbarClick)}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           message={
             <>

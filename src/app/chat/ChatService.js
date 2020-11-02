@@ -2,6 +2,8 @@ import axios from "axios";
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
+
+
 class ChatService {
   createGroup(params, token) {
     return axios.post(
@@ -28,6 +30,7 @@ class ChatService {
     // return true;
   }
   fetchChats(params, token) {
+    console.log("Token", token)
     return axios.get(`${BACKEND_API_URL}/chats/get`, {
       headers: {
         "Content-Type": "application/json",
@@ -45,6 +48,14 @@ class ChatService {
   }
   submitChat(param, token, id){
     return axios.post(`${BACKEND_API_URL}/chats/get/`+id, param, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  newChat(param, token){
+    return axios.post(`${BACKEND_API_URL}/chat/newChat`, param, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
