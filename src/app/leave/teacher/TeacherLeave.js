@@ -20,19 +20,6 @@ import { red, green } from "@material-ui/core/colors";
 import CheckIcon from "@material-ui/icons/Check";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 
-function ElevationScroll(props) {
-  const { children } = props;
-
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-  });
-
-  return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0,
-  });
-}
-
 const useStyles = makeStyles((theme) => ({
   container: {
     width: "100%",
@@ -105,8 +92,9 @@ const useStyles = makeStyles((theme) => ({
     width: "50px",
     height: "50px",
     borderRadius: "50%",
-    marginLeft: "auto",
+    margin: "auto",
     border: "1px solid",
+    transform:"translateY(10px)"
   },
   center: {
     paddingLeft: "12px",
@@ -168,43 +156,82 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid red",
     width: "18px",
     height: "18px",
-    marginRight: "70px"
+    marginRight: "30px"
+  },
+  createButtonIconCircle1: {
+    cursor: "pointer",
+    backgroundColor: "#fff",
+    borderRadius: "100%",
+    display: "inline-block",
+    border: "1px solid red",
+    width: "18px",
+    height: "18px",
+    marginRight: "7px"
   },
   createButtonIconCircleOk: {
     backgroundColor: "#fff",
     borderRadius: "50%",
     display: "inline-block",
     border: "1px solid green",
-    width: "16px",
-    height: "16px",
+    width: "18px",
+    height: "18px",
     marginLeft: "5px",
     cursor: "pointer",
     // transform:'translateY(10px)'
   },
   Approved: {
     color: "#40BD13",
+    paddingTop:"25px",
   },
   actionBtns: {},
   Cancelled: {
     color: "#3076A1",
+    paddingTop:"25px",
+
   },
   Rejected: {
     color: "#D92424",
+    paddingTop:"25px",
+
+  },
+  Approved1: {
+    color: "#40BD13",
+    padding:"2px",
+    transform: "translateY(-3px)",
+    textAlign: "center",
+
+  },
+  Cancelled1: {
+    color: "#3076A1",
+    transform: "translateY(-3px)",
+    padding:"2px",
+    textAlign: "center",
+
+  },
+  Rejected1: {
+    color: "#D92424",
+    transform: "translateY(-3px)",
+    padding:"2px",
+    textAlign: "center",
   },
 
+  book:{
+    fontFamily: "Avenir Book",
+  },
   name: {
     transform: "translateY(10px)",
     textAlign: "left",
     paddingLeft: "15px",
-    fontFamily: "Avenir Book",
+    fontFamily: "Avenir Medium",
     fontSize: "1rem",
+    // fontWeight: "500",
   },
   name1: {
     transform: "translateY(17px)",
     textAlign: "left",
     paddingLeft: "15px",
-    fontFamily: "Avenir Book",
-    fontWeight: "400",
+    fontFamily: "Avenir Medium",
+    // fontWeight: "500",
   },
   stat: {
     textAlign: "right",
@@ -212,9 +239,21 @@ const useStyles = makeStyles((theme) => ({
     paddingTop:'25px',
 
   },
+  stat2: {
+    textAlign: "right",
+    transform: "translateY(10px)",
+    paddingTop:'15px',
+    textAlign: "center",
+
+  },
   stat1: {
     textAlign: "right",
     transform: "translateY(-25px)",
+  },
+  stat11: {
+    textAlign: "center",
+    transform: "translateY(3px)",
+
   },
   emptyView: {
     width: "100%",
@@ -424,14 +463,6 @@ const TeacherLeave = (props) => {
     setValue(newValue);
   };
 
-  const handleChangeIndex = (index) => {
-    setValue(index);
-  };
-
-  const handleScroll = () => {
-    console.log("scrolled");
-  };
-
   const CancelLeave = async (event) => {
     try {
       const token = localStorage.getItem("srmToken");
@@ -488,6 +519,7 @@ const TeacherLeave = (props) => {
       console.log(e);
     }
   };
+
 
   return (
     <div className={classes.container} ref={tabref} id="scrollable">
@@ -627,7 +659,7 @@ const TeacherLeave = (props) => {
                                     {leaves.end_date}
                                   </Moment>
                                 </div>
-                                <div>
+                                <div className={classes.book}>
                                   {leaves.full_day 
                                   ? 
                                   (<span>Full day</span>)
@@ -641,11 +673,12 @@ const TeacherLeave = (props) => {
                                   )
                                   }
                                   </div>
-                                <div>Reason - {leaves.reason}</div>
+                            <div className={classes.book}>
+                              Reason - {leaves.reason}</div>
                               </Typography>
                             </Grid>
 
-                            <Grid item xs={2} className={classes.stat}>
+                            <Grid item xs={2} className={classes.stat2}>
                               <Typography
                                 variant="body1"
                                 className={classes.leavereason}
@@ -653,7 +686,7 @@ const TeacherLeave = (props) => {
                                 {leaves.leave_status == "PENDING" ? (
                                   <CloseIcon
                                     color="action"
-                                    className={classes.createButtonIconCircle}
+                                    className={classes.createButtonIconCircle1}
                                     style={{  color: red[500]  }}
                                     onClick={(e) => {  CancelLeave(leaves.leave_code);  }}
                                     value={leaves.leave_code}
@@ -663,13 +696,13 @@ const TeacherLeave = (props) => {
                                 )}
 
                                 {leaves.leave_status == "PENDING" ? (
-                                  <div className={classes.stat1}>Pending</div>
+                                  <div className={classes.stat11}>Pending</div>
                                 ) : (
                                   ""
                                 )}
 
                                 {leaves.leave_status == "REJECTED" ? (
-                                  <div className={classes.Rejected}>
+                                  <div className={classes.Rejected1}>
                                     Rejected
                                   </div>
                                 ) : (
@@ -677,15 +710,15 @@ const TeacherLeave = (props) => {
                                 )}
 
                                 {leaves.leave_status == "CANCELLED" ? (
-                                  <div className={classes.Cancelled}>
-                                    Canceled
+                                  <div className={classes.Cancelled1}>
+                                    Cancelled 
                                   </div>
                                 ) : (
                                   ""
                                 )}
 
                                 {leaves.leave_status == "APPROVED" ? (
-                                  <div className={classes.Approved}>
+                                  <div className={classes.Approved1}>
                                     Approved
                                   </div>
                                 ) : (
@@ -741,7 +774,7 @@ const TeacherLeave = (props) => {
                   {allLeavesStud.map((leaves) => (
                     <Paper className={classes.paper}>
                       <div className={classes.rowflex}>
-                        <Grid item xs={5}>
+                        <Grid item xs={12} lg={5} md={5} sm={6}>
                           <div className={classes.rowflex}>
                             <Grid item xs={2}>
                               <img
@@ -755,24 +788,24 @@ const TeacherLeave = (props) => {
                                 {leaves.users.firstname}&nbsp;
                                 {leaves.users.lastname}{" "}
                               </div>
-                              {/* <div className={classes.name1}>
-                                {`${leaves.user_classes.classes_data}` ===
+                              <div className={classes.name1}>
+                                {`${leaves.users.user_classes.classes_data}` ===
                                 "null" ? (
                                   <div></div>
                                 ) : (
                                   <div>
                                     {
-                                      leaves.user_classes.classes_data
+                                      leaves.users.user_classes.classes_data
                                         .class_name
                                     }
                                   </div>
                                 )}
-                              </div> */}
+                              </div>
                             </Grid>
                           </div>
                         </Grid>
 
-                        <Grid item xs={5} className={classes.borderLeft}>
+                        <Grid item xs={12} lg={5} md={5} sm={6} className={classes.borderLeft}>
                           <Typography
                             variant="body1"
                             className={classes.leavereason}
@@ -783,7 +816,7 @@ const TeacherLeave = (props) => {
                                 {leaves.end_date}
                               </Moment>
                             </div>
-                            <div>
+                            <div className={classes.book}>
                                 {leaves.full_day 
                                 ? 
                                 (<span>Full day</span>)
@@ -797,10 +830,10 @@ const TeacherLeave = (props) => {
                                 )
                                 }
                                 </div>
-                            <div>Reason - {leaves.reason}</div>
+                            <div className={classes.book}>Reason - {leaves.reason}</div>
                           </Typography>
                         </Grid>
-                        <Grid item xs={2}>
+                        <Grid item xs={12} lg={2} md={2} sm={12}>
                           <Typography
                             variant="body1"
                             className={classes.leavereason}
@@ -846,7 +879,7 @@ const TeacherLeave = (props) => {
                             )}
 
                             {leaves.leave_status == "CANCELLED" ? (
-                              <div className={classes.Cancelled}>Canceled</div>
+                              <div className={classes.Cancelled}>Cancelled </div>
                             ) : (
                               ""
                             )}

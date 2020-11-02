@@ -68,7 +68,7 @@ center:{
 // },
 uppertext1:{
   marginBottom:'4px',
-  color:'#d8d8da',
+  // color:'#d8d8da',
 },
 newclass:{
   paddingLeft:'10px',
@@ -84,19 +84,24 @@ create:{
   paddingRight: '21px',
   paddingTop: '8px'
 },
+book:{
+  fontFamily: "Avenir Book",
+},
 root: {
   '& > span': {
     margin: theme.spacing(2),
   },
 },
 headerText:{marginTop:'10px',
+fontFamily: "Avenir Medium",
 marginLeft:'10px',
 marginRight:'10px',
 },
 createHeader:{
   display: 'flex',
   float: 'right',
-  transform:'translateY(12px)'
+  transform:'translateY(12px)', 
+  cursor:"pointer",
 },
 createButtonIcon: {
   paddingRight: '5px',
@@ -119,6 +124,7 @@ align:{
 },
 aligncenter:{
   paddingTop:'27px',
+  // fontFamily: "Avenir Book",
 },
 status:{
   display: 'inline-block',
@@ -215,10 +221,6 @@ const StudentHomeLeave = (props) => {
   };
 
   const userInfo = JSON.parse(localStorage.getItem("srmUserInfo"));
-  const routeChange = ()=> {
-    history.replace("/leave/create");
-    
-  }
 
   const CancelLeave =async (event) => {
     try {    
@@ -237,7 +239,7 @@ const StudentHomeLeave = (props) => {
         console.log(e);
       }
   };
-console.log(allLeaves);
+// console.log(allLeaves);
   return (
     <>
 
@@ -300,7 +302,7 @@ console.log(allLeaves);
             </Moment>
 
             </div>
-        <div>
+        <div className={classes.book}>
           {leaves.full_day 
           ? 
           (<span>Full day</span>)
@@ -314,7 +316,7 @@ console.log(allLeaves);
           )
           }
           </div>
-        <div>Reason - {leaves.reason}</div>
+        <div className={classes.book}>Reason - {leaves.reason}</div>
         </Typography>
         </Grid>
       
@@ -338,7 +340,7 @@ console.log(allLeaves);
             Rejected</div>:''}
 
             {leaves.leave_status == 'CANCELLED'?<div className={classes.Cancelled}>
-            Canceled</div>:''}
+            Cancelled</div>:''}
 
             {leaves.leave_status == 'APPROVED'?<div className={classes.Approved}>
             Approved</div>:''}
