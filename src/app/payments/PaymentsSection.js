@@ -25,6 +25,12 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "8px",
     fontSize: "20px",
   },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },  
 }));
 const PaymentSection = (props) => {
   const classes = useStyles();
@@ -132,7 +138,12 @@ const PaymentSection = (props) => {
           scrollableTarget="scrollable"
           scrollThreshold={0.2}
         >
-          {content}
+            {!payments.length ? (
+            <div className={classes.emptyView}>
+              <Typography>Don't have any Payments.</Typography>
+            </div>
+          ) : content}
+          
         </InfiniteScroll>
       </Box>
       <br />
