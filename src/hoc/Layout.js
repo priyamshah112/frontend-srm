@@ -424,6 +424,7 @@ const Layout = (props) => {
     // props.onChangeRoleStart();
     setisOpen_child(state);
     handleMenuClose();
+    // window.location.reload();
   };
 
   const handleChange = (newValue) => {
@@ -544,7 +545,7 @@ const Layout = (props) => {
     // console.log(a);
     localStorage.setItem("srmSelected_Child",a);
     localStorage.setItem("srmSelected_Child_token",child.access_token);
-
+    window.location.reload();
   }
   /*
    Use effect to stay on the correct menu item during refresh.
@@ -602,7 +603,7 @@ const Layout = (props) => {
         </MenuItem>
       ) : null}
       {
-        (props.isAuthenticated && props.selectedRole==='parent') ?
+        (props.isAuthenticated && props.selectedRole==='parent' && srmChild_dict.length>1) ?
         (
           <MenuItem
           onClick={() => handleChangeRole_child(true)}
@@ -657,6 +658,19 @@ const Layout = (props) => {
           Change Role (currently {props.selectedRole})
         </MenuItem>
       ) : null}
+      {
+        (props.isAuthenticated && props.selectedRole==='parent' && srmChild_dict.length>1) ?
+        (
+          <MenuItem
+          onClick={() => handleChangeRole_child(true)}
+          classes={{ root: classes.menuItem }}
+        >
+          Change Child (currently {srmChild_dict[parseInt(srmSelected_Child)].userDetails.firstname})
+        </MenuItem>
+        )
+        :
+        (<span></span>)
+      }
       <MenuItem
         onClick={handleOpenLogoutDialog}
         classes={{ root: classes.menuItem }}

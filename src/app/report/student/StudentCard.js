@@ -6,7 +6,7 @@ import StudentReport from './StudentReport';
 
 const StudentCard = (props) => {
 
-    const defaultView = props.selectedRole === 'student' ? 'test' : 'search'
+    const defaultView = props.selectedRole === 'student' || 'parent' ? 'test' : 'search'
     const [view, setView] = useState(defaultView);
     const [searchValue, setSearchValue] = useState(props.userInfo);
     const [testValue, setTestValue] = useState({});

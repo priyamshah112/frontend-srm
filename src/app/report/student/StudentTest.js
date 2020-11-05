@@ -88,7 +88,23 @@ const StudentTest = (props) => {
     const [testDate, setTestData] = useState([]);
     const [errMessage, setError] = useState('');
     const [isLoading, setLoading] = useState(true);
-    const { searchData, userInfo } = props;
+
+    // const { searchData, userInfo } = props;
+  var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+    var string1 = "parent";
+    if (String(role)===String(string1)){    
+        const srmChild_dict = JSON.parse(localStorage.getItem("srmChild_dict"));
+        const srmSelected_Child = localStorage.getItem("srmSelected_Child");
+        console.log(srmChild_dict[parseInt(srmSelected_Child)]);
+        var searchData = srmChild_dict[parseInt(srmSelected_Child)].userDetails;
+        var userInfo = props.userInfo;
+    }
+    else{
+    var {searchData, userInfo } = props;
+
+    }
+
+
 
     const goToSearch = () => {
         props.home();
@@ -149,18 +165,46 @@ const StudentTest = (props) => {
             }
             getStudentReportCard();
         }
+        if (props.selectedRole === 'parent') {
+            async function getStudentReportCard() {
+                try {
+                    const token_child = localStorage.getItem('srmSelected_Child_token');
+                    // console.log("child token");
+                    const response = await ReportService.fetchStudentTest(token_child);
+
+                    if (response.status === 200) {
+                        if (loading) {
+                            setTestData(response.data.data.data || []);
+                            // console.log(testDate);
+                            setLoading(false);
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                    setError('Error in student test');
+                    setLoading(false);
+                }
+            }
+            getStudentReportCard();
+        }
     }, []);
 
 
     const renderSubheader = () => {
         return (
             <Fragment>
-                {props.selectedRole !== 'student' ?
+                {props.selectedRole !== 'student' || props.selectedRole !== 'parent'?
                     <div className={classes.navigationBack}>
-                        <ArrowBack className={classes.headerIcon} onClick={goToSearch} />
+                        {
+                            props.selectedRole === 'parent' || props.selectedRole === 'student'  ?
+                            (<div  className={classes.headerIcon}></div>)
+                            :
+                        (<ArrowBack className={classes.headerIcon} onClick={goToSearch} />)
+                        }
                         <Typography>{searchData.firstname} {searchData.lastname}</Typography>
                         <div>&nbsp;</div>
-                    </div> :
+                    </div> 
+                    :
                     <div className={classes.headerTitle}>
                         {userInfo.firstname && <Typography>{userInfo.firstname} {userInfo.lastname}</Typography>}
                     </div>

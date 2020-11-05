@@ -78,6 +78,7 @@ class HomeService {
   }
   fetchHomework(token, selectedRole) {
     console.log(selectedRole);
+    console.log(typeof selectedRole);
     return axios.get(`${BACKEND_API_URL}/homework`, {
       params: {
         current_role: selectedRole,
