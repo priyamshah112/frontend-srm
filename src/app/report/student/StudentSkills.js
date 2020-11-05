@@ -151,9 +151,21 @@ const StudentSkills = (props) => {
     const [refObj, setRefObj] = useState({});
     const [isEditGrade, setIsEditGrade] = useState({});
 
-    const { searchData, testData } = props;
-    const token = localStorage.getItem('srmToken');
+    // const { searchData, testData } = props;
+  var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+    var string1 = "parent";
+    if (String(role)===String(string1)){    
+        var token = localStorage.getItem('srmSelected_Child_token');
+        var testData = props.testData;
+        const srmChild_dict = JSON.parse(localStorage.getItem("srmChild_dict"));
+        const srmSelected_Child = localStorage.getItem("srmSelected_Child");
+        console.log(srmChild_dict[parseInt(srmSelected_Child)]);
+        var searchData = srmChild_dict[parseInt(srmSelected_Child)].userDetails;
+    }
+    else{
+    var { token, searchData, testData } = props;
 
+    }
 
     const toggleStatus = (flag) => {
         setIsPublished(flag);

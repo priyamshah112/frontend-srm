@@ -100,7 +100,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 const TestSubjectPage = (props) => {
     const classes = useStyles();
-    const token = localStorage.getItem("srmToken");
+    var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        var string1 = "parent";
+        if (String(role)===String(string1)){
+          var token =localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var token = localStorage.getItem('srmToken');
+        }
     const [formData, setFormData] = useState({
         date: '',
         start_time: '',

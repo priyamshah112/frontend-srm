@@ -57,7 +57,13 @@ const StudentSyllabus = (props) => {
   const [subjects, setSubjects] = useState(null); //subjects ARRAY
   const [classList, setClasses] = useState(null);
   const [classID, setClass] = useState("");
-  const token = localStorage.getItem("srmToken");
+  var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+  var string1 = "parent";
+    if (String(role)===String(string1)){
+    var token = localStorage.getItem('srmSelected_Child_token');
+  }else{
+    var token = localStorage.getItem('srmToken');
+  }
 
   const handleChange = (event) => {
     setSubject(event.target.value);

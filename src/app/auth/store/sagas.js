@@ -98,7 +98,7 @@ export function* authUserSaga(action) {
               JSON.stringify(response.data.studentDetails)
             );
             yield localStorage.setItem("srmSelected_Child",0);
-            yield localStorage.setItem("srmSelected_Child_token",JSON.stringify(response.data.studentDetails[0].access_token));
+            yield localStorage.setItem("srmSelected_Child_token",response.data.studentDetails[0].access_token);
       }
 
       axiosService.setAuthorizationToken(response.data.access_token);

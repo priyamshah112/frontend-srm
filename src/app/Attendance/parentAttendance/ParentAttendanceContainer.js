@@ -166,6 +166,7 @@ const ParentAttendanceContainer = (props) => {
     const from_date = moment(fDate).format("YYYY-MM-DD");
     const to_date = moment(eDate).format("YYYY-MM-DD");
     setLoading(true);
+    console.log({ get_by, from_date, to_date });
     props.getAttendence(
       { get_by, from_date, to_date },
       (d) => onGet(d, get_by),

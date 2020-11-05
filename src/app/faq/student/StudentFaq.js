@@ -64,7 +64,14 @@ const StudentFaq = (props) => {
     let isLoading = true;
     const fetchFaq = async () => {
       try {
-        const token = localStorage.getItem('srmToken');
+
+        var role = localStorage.getItem('srmSelectedRole');
+        var string1 = String("parent");
+        if (String(role)===String(string1)){
+          var token = localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var token = localStorage.getItem('srmToken');
+        }
         const response = await FaqService.fetchAllFaqs(token);
         setLoading(false)
         if (isLoading) {
@@ -92,7 +99,12 @@ const StudentFaq = (props) => {
 
   const fetchMoreFaqs = async () => {
     try {
-      const token = localStorage.getItem('srmToken');
+        var role = localStorage.getItem('srmSelectedRole');
+        if (role === "parent"){
+          var token = localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var token = localStorage.getItem('srmToken');
+        }
       const response = await FaqService.fetchMoreFaqs(token, nextUrl);
       setFaq([...allFaqs, ...response.data.data.data]);
       let next_page_url = response.data.data.next_page_url;
