@@ -219,6 +219,7 @@ const PaymentDetails = (props) => {
                 {
                   ...response,
                   id: payment.id,
+                  notification_id: payment.notification_id,
                 }
               );
 
