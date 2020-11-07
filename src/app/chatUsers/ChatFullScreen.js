@@ -57,7 +57,15 @@ function ChatFullScreen(props) {
   const { id } = useParams();
   useEffect(()=>{
     fetchChat()
+    
   }, [])
+
+  useEffect(()=>{
+    // console.log(props)
+    fetchChat()
+  }, [props])
+
+
 
   const fetchChat = async() => {
     try {
@@ -67,9 +75,9 @@ function ChatFullScreen(props) {
         id,
         token,
       );
-      console.log('Scroll response', response);
+      // console.log('Scroll response', response);
       if (response.status === 200) {
-        console.log('Chat', response);
+        // console.log('Chat', response);
         const { data } = response
         setChat(data.chat)
       }
@@ -92,6 +100,7 @@ const mapStateToProps = (state) => {
     selectedRole: state.auth.selectedRole,
     changeRole: state.auth.changeRole,
     notificationCount: state.notification.notificationCount,
+    chat: state.Chat.chat
   };
 };
 

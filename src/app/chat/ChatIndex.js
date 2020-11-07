@@ -190,12 +190,6 @@ const ChatIndex = (props) => {
     setSelectedUsers([...users])
   }
 
-  const onMessage = async() => {
-    console.log("Message")
-    let message = await onMessageListener()
-    console.log(message)
-  }
-
   const removeContactFromGroup = (item) => {
     let users = selectedUsers;
     let index = users.indexOf(item)

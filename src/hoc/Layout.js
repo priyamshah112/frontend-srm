@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Redirect, Link, useHistory } from "react-router-dom";
 import * as NotificationActions from "../app/notification/store/action";
+import * as ChatActions from "../app/chatUsers/store/action";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
@@ -343,7 +344,7 @@ const Layout = (props) => {
 
   onMessageListener()
     .then(async(payload) => {
-      props.onNotificationReceive();
+      
       
       let data = JSON.parse(payload.data.data);
       // console.log(data)
@@ -363,7 +364,11 @@ const Layout = (props) => {
           const { data } = response
           setSelectedChat(data.chat)
           setRefreshChat(true)
+          props.onUpdateChat(data.chat)
         }
+      }
+      else{
+        props.onNotificationReceive();
       }
     })
     .catch((e) => {
@@ -377,9 +382,11 @@ const Layout = (props) => {
   }
 
   const handleCloseSnack = (event, reason) => {
+    console.log("Reason", reason);
     if (reason === "clickaway") return;
 
     setSnackbarOpen(false);
+    return;
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -1028,15 +1035,15 @@ const Layout = (props) => {
       {snackbarOpen ? (
         <Snackbar
           open={snackbarOpen}
-          onClick={() => history.push(snackbarClick)}
+          // onClick={() => history.push(snackbarClick)}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           message={
-            <>
+            <div onClick={() => history.push(snackbarClick)}>
               <Typography>{snackbarTitle}</Typography>
               <Typography className={classes.snackBarDescription}>
                 {snackbarDescription}
               </Typography>
-            </>
+            </div>
           }
           // autoHideDuration={5000}
           onClose={handleCloseSnack}
@@ -1087,6 +1094,7 @@ const mapDispatchToProps = (dispatch) => {
     onNotificationReceive: () =>
       dispatch(NotificationActions.addNotificationCount()),
     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+    onUpdateChat: (chat) => dispatch(ChatActions.setChat(chat))
   };
 };
 
