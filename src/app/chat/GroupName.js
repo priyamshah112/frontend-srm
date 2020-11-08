@@ -203,7 +203,8 @@ const GroupDetails = ({selectedUsers, close}) => {
       })
       let data = {
         name: groupName,
-        members: groupMembers
+        members: groupMembers,
+        message: ''
       }
       console.log(JSON.stringify(data))
       setLoader(true)
