@@ -150,26 +150,40 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
 
   useEffect(()=>{
     if(showContact){
+      setChats([])
+      setFilteredChats([])
       fetchContacts()
     }
     else{
+      setChats([])
+      setFilteredChats([])
       fetchChats()
     }
   }, [showContact])
 
-  useEffect(()=>{
-    fetchChats()
-  }, [])
+  // useEffect(()=>{
+  //   fetchChats()
+  // }, [])
 
   useEffect(()=>{
-    if(newGroup)
+    if(newGroup){
+      setChats([])
+      setFilteredChats([])
       fetchContacts()
+    }
   }, [newGroup])
 
   const fetchContacts = async () => {
-    setChats([...Chats, ...Users])
-    let chats = [...Chats, ...Users]
-    setFilteredChats(chats.slice(currentPage, offset))
+    if(newGroup){
+      setChats([...Users])
+      let chats = [...Users]
+      setFilteredChats(chats.slice(currentPage, offset))
+    }
+    else{
+      setChats([...Chats, ...Users])
+      let chats = [...Chats, ...Users]
+      setFilteredChats(chats.slice(currentPage, offset))
+    }
     
     // try {
     //   const token = localStorage.getItem('srmToken');
@@ -189,11 +203,11 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
     // }
   };
 
-  useEffect(() => {
-    window.onscroll = () => {
-      loadMoreItems()
-    }
-  }, []);
+  // useEffect(() => {
+  //   window.onscroll = () => {
+  //     loadMoreItems()
+  //   }
+  // }, []);
 
   const fetchChats = async () => {
     try {

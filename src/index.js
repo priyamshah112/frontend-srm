@@ -13,6 +13,7 @@ import { createBrowserHistory } from "history";
 import App from "./App";
 import authReducer from "./app/auth/store/reducer";
 import notificationReducer from "./app/notification/store/reducers";
+import chatReducer from "./app/chatUsers/store/reducers";
 import { watchAuth } from "./app/auth/store/sagas";
 import { watchNotification } from "./app/notification/store/saga";
 import { rootSaga } from "./rootSaga";
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   router: connectRouter(history),
   Attendence: AttendenceReducer,
   Supports: SupportReducer,
+  Chat: chatReducer
 });
 
 /* Creating saga middleware */

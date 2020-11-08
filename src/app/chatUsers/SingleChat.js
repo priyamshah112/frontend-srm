@@ -16,6 +16,18 @@ import Picker from 'emoji-picker-react';
 import Group from '../../assets/images/chat/group.png';
 import moment from 'moment'
 import ChatService from "../chat/ChatService";
+import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
+import ChatGroupCard from "./ChatGroupCard";
+import Select from "@material-ui/core/Select";
+import FormControl from "@material-ui/core/FormControl";
+import MenuItem from "@material-ui/core/MenuItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Menu from "@material-ui/core/Menu";
+import {
+  IconButton,
+  Grid,
+  Button,
+} from "@material-ui/core";
 var CryptoJS = require("crypto-js");
 
 
@@ -180,6 +192,48 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: 'middle',
     background: theme.palette.primary.main,
   },
+  menuItem: {
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    colour: "#1C1C1E",
+  },
+  borderBottomDiv: {
+    width: "90%",
+    height: "30px",
+    margin: "auto",
+    marginTop: "5px",
+    borderBottom: "1px solid #D1D1D6",
+  },
+  borderBottomLastDiv: {
+    width: "90%",
+    height: "30px",
+    margin: "auto",
+    marginTop: "5px",
+  },
+  menuTopItemMargin: {
+    marginTop: "5px",
+  },
+  menuItemRoot: {
+    padding: 0,
+  },
+  menuContainer: {
+    backgroundColor: theme.palette.common.darkGray,
+    color: "black",
+    minWidth: "150px",
+    "&.MuiPaper-rounded": {
+      boxShadow: "0px 6px 6px #00000029",
+    },
+    [theme.breakpoints.down("md")]: {
+      minWidth: "150px",
+    },
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "150px",
+    },
+  },
+  menuList: {
+    width: "100% !important",
+    padding: 0,
+  },
 }));
 
 
@@ -193,6 +247,8 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const[emojiShow, showEmoji] = useState(false)
   const [attachments, setAttachments] = useState([])
   const [showAttachments, setShowAttachments] = useState(true)
+  const [filter, setFilter] = useState("All");
+  const [anchorEl, setAnchorEl] = useState(null);
   let messagesEnd = createRef()
   let rootClass = [classes.root];
   useEffect(()=>{
@@ -236,7 +292,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     rootClass.push(classes.fullScreen);
   }
   const onEmojiClick = (event, emojiObject) => {
-    console.log(emojiObject)
+    // console.log(emojiObject)
     showEmoji(false)
     let m = message;
     m += emojiObject.emoji;
@@ -256,7 +312,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const removeAttachment = (item) => {
     let index = attachments.indexOf(item)
     attachments.splice(index, 1)
-    console.log(attachments)
+    // console.log(attachments)
     setAttachments([...attachments])
   }
   let name = chat.firstname + ' ' + chat.lastname
@@ -333,9 +389,9 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
           chat.id
         );
         
-        console.log('Scroll response', response);
+        // console.log('Scroll response', response);
         if (response.status === 200) {
-          console.log('Chat', response);
+          // console.log('Chat', response);
           const { data } = response
           setMessage('')
           setAttachments([])
@@ -353,13 +409,13 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
     var c = a.split("."); // ["https://i", "imgur", "com/qMUWuXV", "jpg"]
 
-    console.log(b.includes(c[c.length-1]))
+    // console.log(b.includes(c[c.length-1]))
     return b.includes(c[c.length-1])
   }
 
   const getMessage = () => {
     var msg = CryptoJS.AES.encrypt(message, "chat" + chat.id).toString();
-    console.log(msg)
+    // console.log(msg)
     return msg;
   }
 
@@ -369,9 +425,15 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     return msg
   }
 
-  const getAttachments = (message) => {
-
-  }
+  const handleFilterChange = async (event) => {
+    if (event.target.value !== filter) {
+      try {
+        
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
 
   const chatMessage = (message) => {
     if(message.attachment != "null" && message.attachment != null) {
@@ -402,28 +464,107 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       </Typography>
     }
   }
+  let content = ""
+  if (props.created_by) {
+    content = <ChatGroupCard
+        key={chat.id}
+        chat={chat}
+      />
+  }
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = async (event) => {
+    const updatedStatus = event.currentTarget.getAttribute("value");
+    setAnchorEl(null);
+
+    try {
+      const token = localStorage.getItem("srmToken");
+      
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <List className={rootClass.join(' ')}>
       {fullScreen &&
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <StyledBadge
-              overlap="circle"
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              variant="dot"
-            >
-              <Avatar alt={name} className={cls} src={img} />
-            </StyledBadge>
-          </ListItemAvatar>
-          <ListItemText
-            primary={name}
-            secondary={subheading}
-          />
-        </ListItem>
+        <>
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <StyledBadge
+                overlap="circle"
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                variant="dot"
+              >
+                <Avatar alt={name} className={cls} src={img} />
+              </StyledBadge>
+            </ListItemAvatar>
+            <ListItemText
+              primary={name}
+              secondary={subheading}
+            />
+            <div style={{float: 'right', flexDirection: 'flex-end'}}>
+              <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                classes={{ root: classes.iconButtonRoot }}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                anchorEl={anchorEl}
+                classes={{ paper: classes.menuContainer, list: classes.menuList }}
+                elevation={0}
+                // getContentAnchorEl={null} uncomment this to remove warning
+
+                keepMounted
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem
+                  onClick={handleClose}
+                  classes={{ root: classes.menuItemRoot }}
+                  disableGutters
+                  className={`${classes.menuItem} ${classes.menuTopItemMargin} `}
+                  value={"Add"}
+                >
+                  <div className={classes.borderBottomDiv}>
+                    <Typography variant="body2">Add Member</Typography>
+                  </div>
+                </MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  disableGutters
+                  classes={{ root: classes.menuItemRoot }}
+                  className={classes.menuItem}
+                  value={"Delete"}
+                >
+                  <div className={classes.borderBottomDiv}>
+                    <Typography variant="body2">Delete Member</Typography>
+                  </div>
+                </MenuItem>
+              </Menu>
+            </div>
+          </ListItem>
+         
+        </>
       }
       <div className={classes.chatList}>
         {messages.map((message)=>{
