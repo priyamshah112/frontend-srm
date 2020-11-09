@@ -482,7 +482,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
     try {
       const token = localStorage.getItem("srmToken");
-      
+      console.log(updatedStatus)
     } catch (e) {
       console.log(e);
     }
@@ -558,6 +558,17 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 >
                   <div className={classes.borderBottomDiv}>
                     <Typography variant="body2">Delete Member</Typography>
+                  </div>
+                </MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  disableGutters
+                  classes={{ root: classes.menuItemRoot }}
+                  className={classes.menuItem}
+                  value={"GroupIcon"}
+                >
+                  <div className={classes.borderBottomDiv}>
+                    <Typography variant="body2">Change Group Icon</Typography>
                   </div>
                 </MenuItem>
               </Menu>
