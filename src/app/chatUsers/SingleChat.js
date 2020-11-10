@@ -272,7 +272,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       // timer = setInterval(()=>fetchChat(chat), 1000)
     }
   }, [chat])
-  const fetchChat = async(chat) => {
+  const markRead = async(chat) => {
     const token = localStorage.getItem('srmToken');
     // const selectedRole = props.selectedRole;
     const response = await ChatService.fetchChat(
@@ -287,6 +287,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   }
   const scrollToBottom = () => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
+
   }
   if(fullScreen){
     rootClass.push(classes.fullScreen);
