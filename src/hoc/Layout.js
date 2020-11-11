@@ -348,10 +348,15 @@ const Layout = (props) => {
       
       let data = JSON.parse(payload.data.data);
       // console.log(data)
+      if(data.type == "silent"){
+        setRefreshChat(true)
+        props.onUpdateChat(data.chat)
+        return;
+      }
       setSnackBarId(data.entity_id);
       setSnackbarTitle(payload.notification.title);
       setSnackbarClick(payload.notification.click_action);
-      if(data.type == "chat"){
+      if(data.type == "chat" ){
         setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
         const token = localStorage.getItem('srmToken');
         const response = await ChatService.fetchChat(

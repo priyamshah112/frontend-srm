@@ -62,6 +62,14 @@ class ChatService {
       },
     });
   }
+  markRead(token, id){
+    return axios.get(`${BACKEND_API_URL}/chat/read/`+id, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 }
 
 export default new ChatService();

@@ -269,25 +269,28 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     }
     else{
       setMessages(chat.messages)
+      console.log(chat.messages)
       // timer = setInterval(()=>fetchChat(chat), 1000)
     }
   }, [chat])
-  const markRead = async(chat) => {
-    const token = localStorage.getItem('srmToken');
-    // const selectedRole = props.selectedRole;
-    const response = await ChatService.fetchChat(
-      chat.id,
-      token,
-    );
-    if (response.status === 200) {
-      // console.log('Chat', response);
-      const { data: {chat} } = response
-      setMessages(chat.messages)
-    }
-  }
-  const scrollToBottom = () => {
+  const scrollToBottom = async() => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
 
+      const response = await ChatService.markRead(
+        token,
+        chat.id
+      );
+      
+      // console.log('Scroll response', response);
+      if (response.status === 200) {
+        // console.log('Chat', response);
+      }
+    } catch (error) {
+      console.log(error.response);
+    }
   }
   if(fullScreen){
     rootClass.push(classes.fullScreen);
@@ -483,7 +486,6 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
     try {
       const token = localStorage.getItem("srmToken");
-      console.log(updatedStatus)
     } catch (e) {
       console.log(e);
     }
@@ -590,6 +592,11 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
             cls = classes.owner
             senderName = "Me"
           }
+          let allread = false;
+          let readers = message.recievers.filter(r=>{
+            return r.readAt == null
+          })
+          allread = readers.length > 0
           return (<>
             { showDate &&
               <div className={classes.date}>
@@ -597,6 +604,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 <span className={classes.dateText}>{ date }</span></span>
               </div>
             }
+            
             
             <ListItem alignItems="flex-start" className={[classes.listItem,
               cls].join(' ')}>
@@ -608,7 +616,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
               />
               <div className={classes.right}>
                 <Typography className={classes.time}>{message.time}</Typography>
-                <img src={message.status? doubleTick: tick} className={classes.tick} />
+                <img src={allread? doubleTick: tick} className={classes.tick} />
               </div>
             </ListItem>
           </>)
