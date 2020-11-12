@@ -35,6 +35,10 @@ export const weekDays = {
 export const getMonth = (date) => moment(date).format("YYYY-MM");
 
 export const currentMonth = getMonth(moment());
+var monthNames = [ "JAN", "FEB", "MAR", "APR", "MAY", "JUNE","JULY", "AUG", "SEP", "OCT", "NOV", "DEC" ];
+export const currentMonth_formatted = () => monthNames[getMonth(moment()).split('-')[1]-1]+"'"+getMonth(moment()).split('-')[0].slice(2,4);
+
+  
 
 export const getWeekDay = (dateString) => {
   const dayNumber = moment(dateString).isoWeekday();

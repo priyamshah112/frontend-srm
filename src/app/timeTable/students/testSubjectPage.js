@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "400",
         lineHeight: "1.5",
     },
+    headingtest_1:{
+        fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: "1.5",
+        paddingLeft:"25px",
+    },
     subjectname:{
         fontSize: "1rem",
     fontFamily: "Avenir Medium",
@@ -345,7 +352,7 @@ const TestSubjectPage = (props) => {
                     <br/>
                     </div>
                     :
-                    <Typography className={classes.headingtest} style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
+                    <Typography className={classes.headingtest_1} style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
 
 
 

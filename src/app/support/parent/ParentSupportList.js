@@ -16,9 +16,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "20px",
   },
   emptyList: {
-    fontSize: "14px",
-    color: "#1C1C1E",
-    fontFamily: "Avenir",
+    fonTize: "1rem",
+    fontFamily: "Avenir Medium",
+    fontWeight: "400",
+    lineHeight: "1.5",
+    paddingLeft:"25px",
+
+    // fontSize: "14px",
+    // color: "#1C1C1E",
+    // fontFamily: "Avenir",
     display: "flex",
     flex: 1,
     height: "500px",

@@ -24,6 +24,7 @@ import {
   getNextWeekStartDate,
   getPreviousWeekStartDate,
   currentMonth,
+  currentMonth_formatted,
   getMonth,
   isFutureDate,
   getWeekEndDate,
@@ -133,17 +134,19 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const TeacherAttendanceContainer = (props) => {
+  var monthNames = [ "JAN", "FEB", "MAR", "APR", "MAY", "JUNE","JULY", "AUG", "SEP", "OCT", "NOV", "DEC" ];
   const [attendence, setAttendence] = useState([]);
   const [class_id, setClassId] = useState("");
   const [subject_id, setSubjectId] = useState("");
   const [weekStart, setWeekStart] = useState(weekStartDate);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [error, setError] = useState("");
+  const header_date=currentMonth.split('-');
+  const [headerdate, setheaderdate] = useState(currentMonth_formatted);
   const [aError, setAError] = useState({});
   const [updateLoading, setUpdateLoading] = useState(false);
-
+  const [nextpage, setnextpage] = useState(false);
   const { loading } = props;
-
   const classes = useStyles();
   const from_date = moment(weekStart).format("YYYY-MM-DD");
   const to_date = moment(getWeekEndDate(weekStart)).format("YYYY-MM-DD");
@@ -154,6 +157,13 @@ const TeacherAttendanceContainer = (props) => {
     }
   }, [class_id, subject_id, weekStart]);
 
+  const change_header_date= (month) =>{
+    const header_date_1=month.split('-');
+    console.log(header_date_1);
+    const final_header_date=monthNames[header_date_1[1]-1]+"'"+header_date_1[0].slice(2,4);
+    console.log(final_header_date);
+    setheaderdate(final_header_date);
+  };
   const fetchAttendence = () => {
     const params = {
       class_id,
@@ -178,21 +188,34 @@ const TeacherAttendanceContainer = (props) => {
   const weekData = getWeekDates(weekStart);
 
   const onPrevious = () => {
+    // window.location.reload();
     const startDate = getPreviousWeekStartDate(weekStart);
-
     setWeekStart(startDate);
     setSelectedMonth(getMonth(startDate));
+    change_header_date(getMonth(startDate));
+    setnextpage(true);
   };
 
   const onNext = () => {
     if (
       moment(weekStart).format("YYYY-MM-DD") ===
       moment(weekStartDate).format("YYYY-MM-DD")
-    )
-      return;
+    ){
+    setnextpage(false);
+    return;
+    }
     const startDate = getNextWeekStartDate(weekStart);
     setWeekStart(startDate);
     setSelectedMonth(getMonth(startDate));
+    change_header_date(getMonth(startDate));
+
+    if (
+      moment(startDate).format("YYYY-MM-DD") ===
+      moment(weekStartDate).format("YYYY-MM-DD")
+    ){
+    setnextpage(false);
+    // return;
+    }
   };
 
   const getAttendanceDates = (dates = []) => {
@@ -323,7 +346,7 @@ const TeacherAttendanceContainer = (props) => {
           />
 
           <TableContainer component={Paper}>
-            <TableTopHead onNext={onNext} onPrevious={onPrevious} />
+            <TableTopHead onNext={onNext} onPrevious={onPrevious} isnext={nextpage} selectedMonth={headerdate}/>
             <Table aria-label="customized table">
               <TableHead>
                 <TableRow className="tableRowHeader">
@@ -334,7 +357,7 @@ const TeacherAttendanceContainer = (props) => {
                     className={classes.tableTitle}
                     align="center"
                   >
-                    Name | {selectedMonth}
+                    Name  
                   </StyledTableCell>
                   {weekData.map((d) => (
                     <StyledTableCell

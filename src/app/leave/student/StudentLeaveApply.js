@@ -55,6 +55,8 @@ const useStyle = makeStyles((theme) => ({
   titleText: {
     textAlign: 'center',
     margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
   },
   adornmentColor: {
     color: "rgba(0, 0, 0, 0.54)",
@@ -70,6 +72,8 @@ const useStyle = makeStyles((theme) => ({
   fieldStyle: {
     width: '97%',
     // float:"right",
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
     margin: 'auto',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
