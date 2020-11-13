@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formControl: {
-    width: "30%",
+    width: "110px",
+    // whiteSpace: 'nowrap',
     padding: "10px 0px  0px 27px",
   },
   cardBoxPadding: {
@@ -172,6 +173,7 @@ const TeacherNotificationsContainer = (props) => {
     }
   };
   const handleFilterChange = async (event) => {
+    console.log('changed');
     if (event.target.value !== filter) {
       try {
         setCurrentPage(1);

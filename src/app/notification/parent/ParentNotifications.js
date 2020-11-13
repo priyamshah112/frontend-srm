@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formControl: {
-    width: "30%",
+    width: "10%",
+    whiteSpace: 'nowrap',
     padding: "10px 0px  0px 27px",
   },
   cardBoxPadding: {

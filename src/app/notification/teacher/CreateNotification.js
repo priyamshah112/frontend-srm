@@ -69,6 +69,8 @@ const useStyle = makeStyles((theme) => ({
   fieldStyle: {
     width: "100%",
     margin: "auto",
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
     "& .MuiInput-underline:before": {
       borderBottom: "2px solid #eaeaea",
     },
@@ -161,6 +163,11 @@ const useStyle = makeStyles((theme) => ({
   },
   optionBody: {
     color: "rgba(0, 0, 0, 0.54)",
+  },
+  titleText:{
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
+    // color: '#1C1C1E',    
   },
 }));
 

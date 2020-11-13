@@ -63,6 +63,8 @@ const useStyle = makeStyles((theme) => ({
   },
   fieldStyle: {
     width: '97%',
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
     // float:"right",
     margin: 'auto',
     '& .MuiInput-underline:before': {
@@ -208,6 +210,8 @@ const useStyle = makeStyles((theme) => ({
   titleText: {
     textAlign: 'center',
     margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
   },
 }));
 

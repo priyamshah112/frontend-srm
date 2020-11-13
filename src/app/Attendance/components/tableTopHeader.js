@@ -22,10 +22,15 @@ const useStyles = makeStyles((theme) => ({
   tableHeaderBtn: {
     cursor: "pointer",
   },
+  tableHeaderBtn_dis: {
+    // cursor: "pointer",
+    color:'grey'
+  },
 }));
 
 const TableTopHead = (props) => {
   const classes = useStyles();
+
   return (
     <div className={classes.tableHeader}>
       <Typography onClick={props.onPrevious} className={classes.tableHeaderBtn}>
@@ -34,11 +39,19 @@ const TableTopHead = (props) => {
       {props.renderFilter ? (
         props.renderFilter
       ) : (
-        <Typography className={classes.tableHeadermid}>Weekly</Typography>
+      <Typography className={classes.tableHeadermid}>Weekly  {props.selectedMonth}</Typography>
       )}
-      <Typography onClick={props.onNext} className={classes.tableHeaderBtn}>
-        Next
-      </Typography>
+      {
+        props.isnext?
+        (<Typography onClick={props.onNext} className={classes.tableHeaderBtn}>
+          Next
+        </Typography>)
+        :
+        (<Typography className={classes.tableHeaderBtn_dis}>
+          Next
+        </Typography>)
+      }
+      
     </div>
   );
 };
