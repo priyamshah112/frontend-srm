@@ -140,28 +140,33 @@ const NotificationCard = (props) => {
         updatedStatus,
         token
       );
-      console.log(response);
+
       if (response.status === 200) {
-        if (updatedStatus === "read") {
+
+        if (updatedStatus === "read" && status !== "read") {
           if (props.notificationCount !== 0) {
             props.subNotificationCount();
           }
           setStatus("read");
-        } else if (updatedStatus === "unread") {
+        } else if (updatedStatus === "unread" && status !== "unread") {
           props.addNotificationCount();
           setStatus("unread");
-        }else if (updatedStatus === "deleted") {
+        }else if (updatedStatus === "deleted" && status !== "deleted") {
           if (props.notificationCount !== 0) {
             props.subNotificationCount();
           }
           props.handleRemoveNotifcation(props.notification.id);
           setStatus("deleted");          
-          } else {
+          }
+          else if (updatedStatus === "archive" && status !== "archive") {
             if (props.notificationCount !== 0) {
               props.subNotificationCount();
             }
             props.handleRemoveNotifcation(props.notification.id);
-            setStatus("archive");
+            setStatus("archive");        
+            }          
+          else {
+            console.log()
         }
       }
     } catch (e) {

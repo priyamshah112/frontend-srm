@@ -39,7 +39,7 @@ const TableTopHead = (props) => {
       {props.renderFilter ? (
         props.renderFilter
       ) : (
-      <Typography className={classes.tableHeadermid}>Weekly {props.selectedMonth}</Typography>
+      <Typography className={classes.tableHeadermid}>Weekly  {props.selectedMonth}</Typography>
       )}
       {
         props.isnext?

@@ -194,26 +194,32 @@ const Details = (props) => {
         token
       );
       if (response.status === 200) {
-        if (updatedStatus === "read") {
+        console.log("priyam")
+        console.log(status)
+        if (updatedStatus === "read" && status !== "read") {
           if (props.notificationCount !== 0) {
             props.subNotificationCount();
           }
           setStatus("read");
-        } else if (updatedStatus === "unread") {
+        } else if (updatedStatus === "unread" && status !== "unread") {
           props.addNotificationCount();
           setStatus("unread");
-        }else if (updatedStatus === "deleted") {
+        }else if (updatedStatus === "deleted" && status !== "deleted") {
           if (props.notificationCount !== 0) {
             props.subNotificationCount();
           }
           props.handleRemoveNotifcation(props.notification.id);
           setStatus("deleted");          
-      }  else {
-          if (props.notificationCount !== 0) {
-            props.subNotificationCount();
-          }
-          props.handleRemoveNotifcation(props.notification.id);
-          setStatus("archive");
+      }  
+      else if (updatedStatus === "archive" && status !== "archive") {
+        if (props.notificationCount !== 0) {
+          props.subNotificationCount();
+        }
+        props.handleRemoveNotifcation(props.notification.id);
+        setStatus("archive");        
+        }          
+      else {
+        console.log()
         }
       }
     } catch (e) {
