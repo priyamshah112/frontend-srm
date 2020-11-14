@@ -134,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 let setSubjectArray = [];
-let remarkText = 'Remark';
+// let remarkText = 'Remark';
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
@@ -143,6 +143,7 @@ const StudentSkills = (props) => {
     const [skillData, setSkillData] = useState({});
     const [editSkill, setEditSkill] = useState(false);
     const [errMessage, setError] = useState('');
+    const [remarkText, setremarkText] = useState('remark');
     const [isLoading, setLoading] = useState(true);
     const [allSubject, setAllSubject] = useState([]);
     const [updateStatus, setUpdateStatus] = useState(false);
@@ -173,9 +174,12 @@ const StudentSkills = (props) => {
     }
 
     const reportVisibility = (data) => {
+        console.log(data);
         if (data.grades[0]) {
-            remarkText = data.grades[0].remarks;
-            if (data.grades[0].status == 'published' && data.grades[0].report_grade[0]) {
+            if(data.grades[0].remarks !== ""){
+                setremarkText(data.grades[0].remarks);
+            }
+            if (data.grades[0].status == 'published') {
                 toggleStatus(true);
             } else {
                 toggleStatus(false);
@@ -318,13 +322,11 @@ const StudentSkills = (props) => {
                 "skill": skill
             },
         )
-        if (name === 'remark') {
-            remarkText = input.target.value;
-        }
-
         if (name === 'publish') {
             saveStatus = 'published';
         }
+        
+       
         const restSubject = allSubject.filter((sub) => {
             return (sub.subject_name != skillData.name && sub.subject_id)
         });
@@ -333,9 +335,17 @@ const StudentSkills = (props) => {
         const test = {
             "student_id": searchData.id,
             "test_id": testData.id,
-            "remarks": remarkText || '',
+            // "remarks": remarkText || '.',
             "status": saveStatus
         }
+        if (name === 'remark') {
+            setremarkText(input.target.value);
+            test['remarks']=input.target.value;
+        }
+        else{
+            test['remarks']= remarkText || '.';
+        }
+
 
         if (reportData.grades[0]) {
             updateSkillCall({
@@ -415,9 +425,11 @@ const StudentSkills = (props) => {
         return (
             <Box display="block" displayPrint="none">
                 {
-                    !isPublish && (reportData.grades[0] && reportData.grades[0].report_grade[0]) && <div className={classes.publishCard}>
-                        {
-                            !isLoading && !editSkill && !isEditGrade && editAccess() &&
+                    !isPublish && editAccess() ?
+                    (
+                    //  && (reportData.grades[0] && reportData.grades[0].report_grade[0]) && <div className={classes.publishCard}>
+                        // {/* {
+                            // !isLoading && !editSkill && !isEditGrade && editAccess() && */}
                             <Box>
                                 <Button
                                     variant='contained'
@@ -430,9 +442,11 @@ const StudentSkills = (props) => {
                                 >
                                     Publish Now
                                 </Button>
-                            </Box>
-                        }
-                    </div>
+                            </Box>)
+                            :(null)
+                            
+                        // {/* } */}
+                    // </div>
                 }
             </Box>
         )
@@ -617,7 +631,10 @@ const StudentSkills = (props) => {
                                 defaultValue={remarkText}
                                 placeholder={'Remark'}
                                 className={classes.bgWhite}
-                                onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+                                // onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+                                onBlur={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+                                // onfocusout={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+
                             />
                         </div>
                 }
