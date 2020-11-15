@@ -423,7 +423,7 @@ const StudentSkills = (props) => {
 
     const PublishButton = () => {
         return (
-            <Box display="block" displayPrint="none">
+            <Box display="block" displayPrint="none" style={{ float : "right" }}>
                 {
                     !isPublish && editAccess() ?
                     (
@@ -624,8 +624,8 @@ const StudentSkills = (props) => {
                                 variant="outlined"
                                 fullWidth={true}
                                 multiline
-                                rows={8}
-                                rowsMax={8}
+                                rows={7}
+                                rowsMax={7}
                                 size="medium"
                                 type="string"
                                 defaultValue={remarkText}
@@ -662,6 +662,13 @@ const StudentSkills = (props) => {
                         isPublish={isPublish}
                     />
                     <PublishButton />
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
                 </>
             }
             {/* <BackdropLoader open={isLoading} /> */}
