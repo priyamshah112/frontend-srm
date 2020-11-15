@@ -28,6 +28,7 @@ import {
   Grid,
   Button,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 var CryptoJS = require("crypto-js");
 
 
@@ -250,6 +251,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const [filter, setFilter] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
   let messagesEnd = createRef()
+  const history = useHistory();
   let rootClass = [classes.root];
   useEffect(()=>{
     showEmoji(false)
@@ -486,6 +488,10 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
     try {
       const token = localStorage.getItem("srmToken");
+      switch(updatedStatus){
+        case 'Add': props.setChatGroup(chat); history.push("/updateGroup"); break;
+        case 'Delete': props.setChatGroup(chat); history.push("/updateGroup"); break;
+      }
     } catch (e) {
       console.log(e);
     }

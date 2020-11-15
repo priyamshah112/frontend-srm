@@ -7,3 +7,11 @@ export const setChat = (chat) => {
     chat: chat
   };
 };
+
+export const setGroup = (group) => {
+  // console.log("Action", chat)
+  return {
+    type: actionTypes.SET_GROUP,
+    group: group
+  };
+};
