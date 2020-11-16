@@ -102,7 +102,7 @@ const list = [
     role: 'Student'
   }
 ]
-
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 export default function Chat({ filter, updateGroup=false, selectContact, selectedRole, newGroup, userInfo, showContact, refreshChat, setRefreshChat }) {
   const classes = useStyles();
   const [Chats, setChats] = useState([])
@@ -292,7 +292,8 @@ export default function Chat({ filter, updateGroup=false, selectContact, selecte
           if(chat!=undefined){
             if(chat.type == "group"){
               name = chat.group.name;
-              img = groupicon
+              let groupimg = encodeURI(chat.group.image)
+              img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: groupicon
               avatar = classes.avatarBackground
             }
             else{

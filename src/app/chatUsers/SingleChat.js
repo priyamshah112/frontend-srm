@@ -271,7 +271,6 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     }
     else{
       setMessages(chat.messages)
-      console.log(chat.messages)
       // timer = setInterval(()=>fetchChat(chat), 1000)
     }
   }, [chat])
@@ -328,7 +327,8 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   let cls = {}
   if(chat.type == "group"){
     name = chat.group.name;
-    img = Group
+    let groupimg = encodeURI(chat.group.image)
+    img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: Group
     avatar = classes.avatarBackground
     subheading = "Group"
     cls = classes.groupIconContainer
@@ -491,6 +491,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       switch(updatedStatus){
         case 'Add': props.setChatGroup(chat); history.push("/updateGroup"); break;
         case 'Delete': props.setChatGroup(chat); history.push("/updateGroup"); break;
+        default: props.setChatGroup(chat); history.push("/updateGroup"); break;
       }
     } catch (e) {
       console.log(e);
@@ -511,7 +512,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 }}
                 variant="dot"
               >
-                <Avatar alt={name} className={cls} src={img} />
+                <Avatar alt={name} src={img} />
               </StyledBadge>
             </ListItemAvatar>
             <ListItemText

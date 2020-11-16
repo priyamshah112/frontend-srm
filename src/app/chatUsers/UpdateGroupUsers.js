@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
 import UserIcon from "../../assets/images/chat/User.svg";
 
 import Chat from "../chat/Chat";
-import { Badge, Grid, Input, ListItem } from "@material-ui/core";
+import { Avatar, Badge, Grid, Input, ListItem } from "@material-ui/core";
 import { ArrowForward, BluetoothSearching, CloseRounded } from "@material-ui/icons";
 import search from '../../assets/images/chat/ic_search.svg'
 import plus from '../../assets/images/chat/ic_plus.svg'
@@ -20,7 +20,29 @@ import ChatService from "../chat/ChatService";
 import closeIcon from '../../assets/images/chat/remove.svg'
 import { onMessageListener } from "../../firebaseInit";
 import { useHistory } from "react-router-dom";
+import { withStyles } from "@material-ui/styles";
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    backgroundColor: theme.palette.primary.main,
+    // backgroundColor: theme.palette.grey[400],
+    color: theme.palette.grey[200],
+    padding: 10,
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 3,
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      fontSize: 20,
+      content: '"\u002B"',
+    },
+    borderRadius: '50%'
+  },
+}))(Badge);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -241,10 +263,10 @@ const useStyles = makeStyles((theme) => ({
     height: 35,
     width: 35,
     borderRadius: '50%',
-    padding:5,
     justifyContent: 'center',
     verticalAlign: 'middle',
     background: theme.palette.primary.main,
+    cursor: 'pointer',
   },
   groupIcon:{
     height: 29,
@@ -258,6 +280,10 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: 'middle',
     marginLeft: 10,
     marginTop: '1%'
+  },
+  fileInput:{
+    opacity: 0,
+    position: 'absolute'
   },
 }));
 
@@ -292,7 +318,10 @@ const UpdateGroup = (props) => {
   const [groupInfo, showGroupInfo] = useState(false)
   const [groupName, setGroupName] = useState('')
   const history = useHistory();
-
+  const [groupImage, setGroupImage] = useState(null)
+  const [displayImage, setDisplayImage] = useState(null)
+  const fileRef = useRef()
+ 
   useEffect(()=>{
     console.log(props.group)
     let group = props.group;
@@ -306,6 +335,23 @@ const UpdateGroup = (props) => {
       setGroupName(group.group.name)
     }
   }, [props.group])
+
+  const fileSelectHandler = (event) => {
+    // console.log(event.target.files)
+    console.log(event.target.files[0])
+    let file = event.target.files[0]
+    setGroupImage(event.target.files[0])
+    var reader = new FileReader();
+    var url = reader.readAsDataURL(file);
+    reader.onloadend = function (e) {
+      setDisplayImage(reader.result)
+    };
+    console.log(url) // Would see a path?
+    event.target.value = null
+  }
+  const pickFile = () => {
+    fileRef.current.click()
+  }
 
   const addContactToGroup = (item) => {
     let users = selectedUsers;
@@ -352,21 +398,22 @@ const UpdateGroup = (props) => {
       selectedUsers.map(m=>{
         groupMembers.push(m.id)
       })
-      let data = {
-        name: groupName,
-        members: groupMembers,
-        chatid: props.group.id,
-        groupid: props.group.group.id
-      }
-      console.log(JSON.stringify(data))
+      // console.log(groupMembers)
+      let data = new FormData()
+      data.append("name", groupName)
+      data.append("members", JSON.stringify(groupMembers))
+      data.append('chatid', props.group.id)
+      data.append('groupid', props.group.group.id)
+      data.append('displayImage', groupImage)
+      // console.log(data)
       const response = await ChatService.updateGroup(
         data,
         token,
       );
-      console.log('Scroll response', response);
+      // console.log('Scroll response', response);
       
       if (response.status === 200) {
-        console.log('Chat', response);
+        // console.log('Chat', response);
         toast.success("Group Updated");
         history.push('chat/' + props.group.id)
         // const { data } = response
@@ -374,21 +421,49 @@ const UpdateGroup = (props) => {
         // setFilteredChats(data.users)
       }
     } catch (error) {
-      console.log(error);
+      // Error
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        // console.log(error.response.data);
+        // console.log(error.response.status);
+        // console.log(error.response.headers);
+      } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the 
+          // browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+      } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+      }
+      console.log(error.config);
     }
   }
 
+  if(props.group == undefined){
+    return <div></div>
+  }
+  let groupimg = encodeURI(props.group.group.image)
   return (
     <>
       <div className={classes.root}>
         <ListItem className={classes.inputContainer} alignItems="flex-start">
-          <div className={classes.groupIconContainer}>
-              <img
-                  src={Group}
-                  alt='Group'
-                  className={classes.groupIcon}
-              />
-          </div>
+          <StyledBadge
+            overlap="circle"
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            onClick={pickFile}
+            className={classes.groupIconContainer}
+            variant={props.group.group.status = "dot"}
+          >
+            <Avatar alt={props.group.group.name} src={displayImage!=null? displayImage: groupimg!=null? `${BACKEND_IMAGE_URL}/${groupimg}`: Group} />
+          </StyledBadge>
+          <input accept="image/x-png,image/gif,image/jpeg" 
+            className={classes.fileInput} id='groupImage' type="file" onChange={fileSelectHandler} ref={fileRef} />
           <Grid className={classes.inputBoxContainer}>
               <Input
                   id='groupName'
