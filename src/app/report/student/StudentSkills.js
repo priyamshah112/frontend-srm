@@ -200,9 +200,15 @@ const StudentSkills = (props) => {
     useEffect(() => {
         let loading = true;
         setLoading(true);
-        if (searchData.id && testData.id) {
+        if ((searchData.user_id || searchData.id) && testData.id) {
             async function getReportCard() {
-                const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
+                if (String(role)==="student" || String(role)==="parent"){
+                        
+                    var response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
+                }   
+                else{
+                    var response = await ReportService.fetchReportCard(token, searchData.user_id, testData.id);
+                }             
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
@@ -333,7 +339,7 @@ const StudentSkills = (props) => {
 
         const totalSubject = [...restSubject, ...subject];
         const test = {
-            "student_id": searchData.id,
+            "student_id": searchData.user_id,
             "test_id": testData.id,
             // "remarks": remarkText || '.',
             "status": saveStatus

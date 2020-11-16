@@ -97,7 +97,7 @@ const StudentTest = (props) => {
         const srmSelected_Child = localStorage.getItem("srmSelected_Child");
         console.log(srmChild_dict[parseInt(srmSelected_Child)]);
         var searchData = srmChild_dict[parseInt(srmSelected_Child)].userDetails;
-        var userInfo = props.userInfo;
+        var userInfo = srmChild_dict[parseInt(srmSelected_Child)].userDetails;
     }
     else{
     var {searchData, userInfo } = props;
@@ -120,7 +120,8 @@ const StudentTest = (props) => {
     useEffect(() => {
         if (searchData && searchData.user_classes) {
             let loading = true;
-            const { school_id, class_id, id } = searchData.user_classes;
+            const id = searchData.user_id;
+            const { school_id, class_id } = searchData.user_classes;
             async function getStudentReportCard() {
                 try {
                     const response = await ReportService.fetchStudentList(props.token, school_id, class_id, id);
