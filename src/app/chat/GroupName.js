@@ -213,10 +213,10 @@ const GroupDetails = ({selectedUsers, close}) => {
         token,
       );
       setLoader(false)
-      console.log('Scroll response', response);
+      // console.log('Scroll response', response);
       
       if (response.status === 200) {
-        console.log('Group', response);
+        // console.log('Group', response);
         // const { data } = response
         // setChats(data.users)
         // setFilteredChats(data.users)

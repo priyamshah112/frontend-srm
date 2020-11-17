@@ -17,6 +17,18 @@ class ChatService {
       }
     );
   }
+  updateGroup(params, token) {
+    return axios.post(
+      `${BACKEND_API_URL}/chat/group/update`,
+      params,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  }
   fetchChatUsers(params, token) {
     return axios.post(`${BACKEND_API_URL}/chat/users`, {params: {
         selectedRole: params.selectedRole
@@ -56,6 +68,14 @@ class ChatService {
   }
   newChat(param, token){
     return axios.post(`${BACKEND_API_URL}/chat/newChat`, param, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  markRead(token, id){
+    return axios.get(`${BACKEND_API_URL}/chat/read/`+id, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

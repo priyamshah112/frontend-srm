@@ -50,6 +50,7 @@ import StudentCard from "./app/report/student/StudentCard";
 import ReportUpload from "./app/report/student/ReportUpload";
 import AttendanceUpload from "./app/Attendance/teacherAttendance/AttendanceUpload";
 import TimeTable from "./app/timeTable/timeTable";
+import UpdateGroupUsers from "./app/chatUsers/UpdateGroupUsers";
 
 function App(props) {
   const { onAutoSignup } = props;
@@ -138,6 +139,7 @@ function App(props) {
           <Route path="/report-card" exact component={StudentCard} />
           <Route path="/report-upload" exact component={ReportUpload} />
           <Route path="/chat/:id" exact component={ChatFullScreen} />
+          <Route path="/updategroup" exact component={UpdateGroupUsers} />
         </Switch>
       </Layout>
     </>
