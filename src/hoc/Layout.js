@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
   },
   grow: {
-    flexGrow: 2,
+    flexGrow: 1.7,
   },
   grow2: {
     flexGrow: 1.5,
