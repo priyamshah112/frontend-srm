@@ -282,10 +282,16 @@ const StudentDetails = (props) => {
     useEffect(() => {
         let loading = true;
         setLoading(true);
-        if (searchData && searchData.id) {
+        if (searchData && (searchData.user_id || searchData.id)) {
             async function getAttendence() {
                 try {
-                    const response = await ReportService.studentAttendance(token, searchData.id);
+                    if (String(role)==="student" || String(role)==="parent"){
+                        
+                        var response = await ReportService.studentAttendance(token, searchData.id);
+                    }
+                    else{
+                        var response = await ReportService.studentAttendance(token, searchData.user_id);
+                    }
 
                     if (response.status === 200) {
                         if (loading) {

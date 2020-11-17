@@ -10,6 +10,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import imageCompression from "browser-image-compression";
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme) => ({
   snackBar: {
@@ -25,6 +27,50 @@ const useStyles = makeStyles((theme) => ({
   previewChip: {
     minWidth: 160,
     maxWidth: 210,
+  },
+  sideMargins: {
+    marginLeft: "20px",
+    marginRight: "20px",
+  },
+  publishBtns: {
+    textAlign: "right",
+    justifyContent: "right",
+  },
+  fieldStyle: {
+    width: "100%",
+    margin: "auto",
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
+    "& .MuiInput-underline:before": {
+      borderBottom: "2px solid #eaeaea",
+    },
+    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+      borderBottom: "2px solid #7B72AF",
+      transitionProperty: "border-bottom-color",
+      transitionDuration: "500ms",
+      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+  },
+  margin: {
+    marginTop: "30px",
+    [theme.breakpoints.down("xs")]: {
+      marginTop: "10px",
+    },
+    "& .publishBtn": {
+      borderRadius: "3px",
+      width: "inherit",
+      margin: 0,
+      [theme.breakpoints.down("xs")]: {
+        marginTop: "10px",
+        marginRight: 0,
+        width: "100%",
+      },
+    },
+    "& .publishLaterBtn": {
+      backgroundColor: `${theme.palette.common.white}`,
+      border: `1px solid ${theme.palette.common.adornment}`,
+      marginRight: "5px",
+    },
   },
 }));
 
@@ -106,7 +152,7 @@ const ImageUpload = (props) => {
             dropzoneText="Drag and drop a file (max 10 MB each) here or click"
           />
         </div>
-        <div style={{ height: "40px" }}></div>
+        {/* <div style={{ height: "40px" }}></div>
         <div>
           <Button
             variant="contained"
@@ -117,8 +163,8 @@ const ImageUpload = (props) => {
           >
             Upload
           </Button>
-        </div>
-        <div style={{ height: "20px" }}></div>
+        </div> */}
+        {/* <div style={{ height: "20px" }}></div>
         <div>
           <Button
             variant="outlined"
@@ -128,8 +174,44 @@ const ImageUpload = (props) => {
           >
             Cancel
           </Button>
-        </div>
-        <Backdrop open={isUploading} className={classes.backdrop}>
+        </div> */}
+        <Box className={`${classes.margin} ${classes.sideMargins}`}>
+          <Grid
+            container
+            className={classes.fieldStyle}
+            direction="row-reverse"
+          >
+            <Grid item sm={8} xs={12} className={classes.publishBtns}>
+              <Button
+                id="publishLaterBtn"
+                variant="contained"
+                onClick={handleCancel}
+                className={`${
+                  classes.fieldStyle
+                } ${"publishBtn"} ${"publishLaterBtn"}`}
+              >
+                Cancle
+              </Button>
+              <Button
+                id="publishBtn"
+                variant="contained"
+                className={`${classes.fieldStyle} ${"publishBtn"}`}
+                color="primary"
+                onClick={handleUpload}
+                disabled={fileList.length === 0}
+              >
+                Upload
+              </Button>
+              </Grid>
+            <Grid item sm={4} xs={12} className={classes.textAlignLeft}>
+            </Grid>
+            <br />
+            <br />
+            <br />
+          </Grid>
+        </Box>
+              
+          <Backdrop open={isUploading} className={classes.backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>

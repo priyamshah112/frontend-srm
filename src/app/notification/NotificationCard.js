@@ -168,6 +168,8 @@ const NotificationCard = (props) => {
           else {
             console.log()
         }
+        // code here
+        props.changestatus_handeler('',true)
       }
     } catch (e) {
       console.log(e);
