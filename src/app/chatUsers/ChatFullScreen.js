@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import ChatService from "../chat/ChatService";
 import { connect } from "react-redux";
 import * as actions from '../../app/auth/store/actions';
+import * as chatactions from '../../app/chatUsers/store/action';
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -107,6 +108,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+    setChatGroup: (group) => dispatch(chatactions.setGroup(group))
   };
 };
 

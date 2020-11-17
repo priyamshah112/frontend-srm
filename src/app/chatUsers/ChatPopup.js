@@ -9,7 +9,7 @@ import Minimize from '../../assets/images/chat/minimize.svg';
 import Dots from '../../assets/images/chat/dots-menu.svg';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 const useStyles = makeStyles((theme) => ({
     container: {
       width: '100%',
@@ -134,7 +134,8 @@ const ChatPopup = ({ selectedChat, props }) => {
       let subheading = ""
       if(selectedChat.type == "group"){
         name = selectedChat.group.name;
-        img = Group
+        let groupimg = encodeURI(selectedChat.group.image)
+        img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: Group
         avatar = classes.avatarBackground
         subheading = "Group"
       }
@@ -158,13 +159,15 @@ const ChatPopup = ({ selectedChat, props }) => {
                   />
                 </Grid>
                 <Grid item xs={2} style={{ paddingTop: 5, maxWidth: '12%' }}>
-                  <img
+                  <Avatar alt={name} src={img} />
+                
+                  {/* <img
                       src={img}
                       alt={name}
                       className={[classes.externalIcon, classes.borderRadius].join(' ')}
-                  />
+                  /> */}
                 </Grid>
-                <Grid item xs={7} style={{ width: '59%', maxWidth: '59%', flexBasis: '59%' }}>
+                <Grid item xs={7} style={{ marginLeft: 5, width: '59%', maxWidth: '59%', flexBasis: '59%' }}>
                   <span className={classes.heading}>{name}</span><br />
                   <span className={classes.subHeading}>{subheading}</span>
                 </Grid>
