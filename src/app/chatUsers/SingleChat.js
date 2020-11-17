@@ -28,6 +28,7 @@ import {
   Grid,
   Button,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 var CryptoJS = require("crypto-js");
 
 
@@ -250,6 +251,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const [filter, setFilter] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
   let messagesEnd = createRef()
+  const history = useHistory();
   let rootClass = [classes.root];
   useEffect(()=>{
     showEmoji(false)
@@ -272,21 +274,24 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       // timer = setInterval(()=>fetchChat(chat), 1000)
     }
   }, [chat])
-  const fetchChat = async(chat) => {
-    const token = localStorage.getItem('srmToken');
-    // const selectedRole = props.selectedRole;
-    const response = await ChatService.fetchChat(
-      chat.id,
-      token,
-    );
-    if (response.status === 200) {
-      // console.log('Chat', response);
-      const { data: {chat} } = response
-      setMessages(chat.messages)
-    }
-  }
-  const scrollToBottom = () => {
+  const scrollToBottom = async() => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+
+      const response = await ChatService.markRead(
+        token,
+        chat.id
+      );
+      
+      // console.log('Scroll response', response);
+      if (response.status === 200) {
+        // console.log('Chat', response);
+      }
+    } catch (error) {
+      console.log(error.response);
+    }
   }
   if(fullScreen){
     rootClass.push(classes.fullScreen);
@@ -322,7 +327,8 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   let cls = {}
   if(chat.type == "group"){
     name = chat.group.name;
-    img = Group
+    let groupimg = encodeURI(chat.group.image)
+    img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: Group
     avatar = classes.avatarBackground
     subheading = "Group"
     cls = classes.groupIconContainer
@@ -482,7 +488,11 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
     try {
       const token = localStorage.getItem("srmToken");
-      
+      switch(updatedStatus){
+        case 'Add': props.setChatGroup(chat); history.push("/updateGroup"); break;
+        case 'Delete': props.setChatGroup(chat); history.push("/updateGroup"); break;
+        default: props.setChatGroup(chat); history.push("/updateGroup"); break;
+      }
     } catch (e) {
       console.log(e);
     }
@@ -502,7 +512,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 }}
                 variant="dot"
               >
-                <Avatar alt={name} className={cls} src={img} />
+                <Avatar alt={name} src={img} />
               </StyledBadge>
             </ListItemAvatar>
             <ListItemText
@@ -560,6 +570,17 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                     <Typography variant="body2">Delete Member</Typography>
                   </div>
                 </MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  disableGutters
+                  classes={{ root: classes.menuItemRoot }}
+                  className={classes.menuItem}
+                  value={"GroupIcon"}
+                >
+                  <div className={classes.borderBottomDiv}>
+                    <Typography variant="body2">Change Group Icon</Typography>
+                  </div>
+                </MenuItem>
               </Menu>
             </div>
           </ListItem>
@@ -578,6 +599,11 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
             cls = classes.owner
             senderName = "Me"
           }
+          let allread = false;
+          let readers = message.recievers.filter(r=>{
+            return r.readAt == null
+          })
+          allread = readers.length > 0
           return (<>
             { showDate &&
               <div className={classes.date}>
@@ -585,6 +611,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 <span className={classes.dateText}>{ date }</span></span>
               </div>
             }
+            
             
             <ListItem alignItems="flex-start" className={[classes.listItem,
               cls].join(' ')}>
@@ -596,7 +623,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
               />
               <div className={classes.right}>
                 <Typography className={classes.time}>{message.time}</Typography>
-                <img src={message.status? doubleTick: tick} className={classes.tick} />
+                <img src={allread? doubleTick: tick} className={classes.tick} />
               </div>
             </ListItem>
           </>)

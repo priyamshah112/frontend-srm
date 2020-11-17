@@ -352,12 +352,16 @@ const Layout = (props) => {
       
       let data = JSON.parse(payload.data.data);
       // console.log(data)
+      if(data.type == "silent"){
+        setRefreshChat(true)
+        props.onUpdateChat(data.chat)
+        return;
+      }
       setSnackBarId(data.entity_id);
       setSnackbarTitle(payload.notification.title);
-      setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
       setSnackbarClick(payload.notification.click_action);
-      setSnackbarOpen(true);
-      if(data.type == "chat"){
+      if(data.type == "chat" ){
+        setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
         const token = localStorage.getItem('srmToken');
         const response = await ChatService.fetchChat(
           data.entity_id,
@@ -372,8 +376,10 @@ const Layout = (props) => {
         }
       }
       else{
+        setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
         props.onNotificationReceive();
       }
+      setSnackbarOpen(true);
     })
     .catch((e) => {
       console.log(e);
