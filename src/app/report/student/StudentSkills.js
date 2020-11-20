@@ -134,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 let setSubjectArray = [];
-let remarkText = 'Remark';
+// let remarkText = 'Remark';
 
 const StudentSkills = (props) => {
     const classes = useStyles(props);
@@ -143,6 +143,7 @@ const StudentSkills = (props) => {
     const [skillData, setSkillData] = useState({});
     const [editSkill, setEditSkill] = useState(false);
     const [errMessage, setError] = useState('');
+    const [remarkText, setremarkText] = useState('remark');
     const [isLoading, setLoading] = useState(true);
     const [allSubject, setAllSubject] = useState([]);
     const [updateStatus, setUpdateStatus] = useState(false);
@@ -151,9 +152,21 @@ const StudentSkills = (props) => {
     const [refObj, setRefObj] = useState({});
     const [isEditGrade, setIsEditGrade] = useState({});
 
-    const { searchData, testData } = props;
-    const token = localStorage.getItem('srmToken');
+    // const { searchData, testData } = props;
+  var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+    var string1 = "parent";
+    if (String(role)===String(string1)){    
+        var token = localStorage.getItem('srmSelected_Child_token');
+        var testData = props.testData;
+        const srmChild_dict = JSON.parse(localStorage.getItem("srmChild_dict"));
+        const srmSelected_Child = localStorage.getItem("srmSelected_Child");
+        console.log(srmChild_dict[parseInt(srmSelected_Child)]);
+        var searchData = srmChild_dict[parseInt(srmSelected_Child)].userDetails;
+    }
+    else{
+    var { token, searchData, testData } = props;
 
+    }
 
     const toggleStatus = (flag) => {
         setIsPublished(flag);
@@ -161,9 +174,12 @@ const StudentSkills = (props) => {
     }
 
     const reportVisibility = (data) => {
+        console.log(data);
         if (data.grades[0]) {
-            remarkText = data.grades[0].remarks;
-            if (data.grades[0].status == 'published' && data.grades[0].report_grade[0]) {
+            if(data.grades[0].remarks !== ""){
+                setremarkText(data.grades[0].remarks);
+            }
+            if (data.grades[0].status == 'published') {
                 toggleStatus(true);
             } else {
                 toggleStatus(false);
@@ -184,9 +200,15 @@ const StudentSkills = (props) => {
     useEffect(() => {
         let loading = true;
         setLoading(true);
-        if (searchData.id && testData.id) {
+        if ((searchData.user_id || searchData.id) && testData.id) {
             async function getReportCard() {
-                const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
+                if (String(role)==="student" || String(role)==="parent"){
+                        
+                    var response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
+                }   
+                else{
+                    var response = await ReportService.fetchReportCard(token, searchData.user_id, testData.id);
+                }             
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
@@ -306,24 +328,30 @@ const StudentSkills = (props) => {
                 "skill": skill
             },
         )
-        if (name === 'remark') {
-            remarkText = input.target.value;
-        }
-
         if (name === 'publish') {
             saveStatus = 'published';
         }
+        
+       
         const restSubject = allSubject.filter((sub) => {
             return (sub.subject_name != skillData.name && sub.subject_id)
         });
 
         const totalSubject = [...restSubject, ...subject];
         const test = {
-            "student_id": searchData.id,
+            "student_id": searchData.user_id,
             "test_id": testData.id,
-            "remarks": remarkText || '',
+            // "remarks": remarkText || '.',
             "status": saveStatus
         }
+        if (name === 'remark') {
+            setremarkText(input.target.value);
+            test['remarks']=input.target.value;
+        }
+        else{
+            test['remarks']= remarkText || '.';
+        }
+
 
         if (reportData.grades[0]) {
             updateSkillCall({
@@ -401,11 +429,13 @@ const StudentSkills = (props) => {
 
     const PublishButton = () => {
         return (
-            <Box display="block" displayPrint="none">
+            <Box display="block" displayPrint="none" style={{ float : "right" }}>
                 {
-                    !isPublish && (reportData.grades[0] && reportData.grades[0].report_grade[0]) && <div className={classes.publishCard}>
-                        {
-                            !isLoading && !editSkill && !isEditGrade && editAccess() &&
+                    !isPublish && editAccess() ?
+                    (
+                    //  && (reportData.grades[0] && reportData.grades[0].report_grade[0]) && <div className={classes.publishCard}>
+                        // {/* {
+                            // !isLoading && !editSkill && !isEditGrade && editAccess() && */}
                             <Box>
                                 <Button
                                     variant='contained'
@@ -418,9 +448,11 @@ const StudentSkills = (props) => {
                                 >
                                     Publish Now
                                 </Button>
-                            </Box>
-                        }
-                    </div>
+                            </Box>)
+                            :(null)
+                            
+                        // {/* } */}
+                    // </div>
                 }
             </Box>
         )
@@ -598,14 +630,17 @@ const StudentSkills = (props) => {
                                 variant="outlined"
                                 fullWidth={true}
                                 multiline
-                                rows={8}
-                                rowsMax={8}
+                                rows={7}
+                                rowsMax={7}
                                 size="medium"
                                 type="string"
                                 defaultValue={remarkText}
                                 placeholder={'Remark'}
                                 className={classes.bgWhite}
-                                onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+                                // onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+                                onBlur={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+                                // onfocusout={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
+
                             />
                         </div>
                 }
@@ -633,6 +668,13 @@ const StudentSkills = (props) => {
                         isPublish={isPublish}
                     />
                     <PublishButton />
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
                 </>
             }
             {/* <BackdropLoader open={isLoading} /> */}

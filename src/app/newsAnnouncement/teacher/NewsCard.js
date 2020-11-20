@@ -90,6 +90,8 @@ const useStyle = makeStyles((theme) => ({
   },
   createdDate: {
     padding: '5px 0 5px 0',
+    color: '#AEAEB2',
+    fontSize: '0.85rem',
   },
   editBtnGrid: {
     textAlign: 'right',

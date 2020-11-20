@@ -154,7 +154,23 @@ const EditChapter = (props) => {
             value={termID}
             onChange={handleTermChange}
             style={{ width: "100%" }}
-          >
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: '300px',
+                },
+              },
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'center',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+              getContentAnchorEl: null,
+            }}
+            >
             {[...Array(11).keys()].map((chapter) => (
               <MenuItem key={chapter + 1} value={chapter + 1}>
                 {`Term ${chapter + 1}`}
@@ -171,7 +187,23 @@ const EditChapter = (props) => {
             value={chapterID}
             onChange={handleChange}
             style={{ width: "100%" }}
-          >
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: '300px',
+                },
+              },
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'center',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+              getContentAnchorEl: null,
+            }}
+            >
             {[...Array(101).keys()].map((chapter) => (
               <MenuItem key={chapter + 1} value={chapter + 1}>
                 {`Chapter ${chapter + 1}`}

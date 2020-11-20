@@ -35,11 +35,28 @@ const Homework = (props) => {
     let isHomeworkLoading = true;
     const fetchHomework = async () => {
       try {
-        const token = localStorage.getItem('srmToken');
-        const response = await HomeSerivce.fetchHomework(
-          token,
-          props.selectedRole
-        );
+        var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        var string1 = String("parent");
+        if (String(role)===String(string1)){
+        console.log("true");
+          var token_child = localStorage.getItem('srmSelected_Child_token');  
+          var response = await HomeSerivce.fetchHomework(
+            token_child,
+            props.selectedRole
+          );
+        }else{
+        console.log("false");
+          var token = localStorage.getItem('srmToken');
+          var response = await HomeSerivce.fetchHomework(
+            token,
+            props.selectedRole
+          );
+        }
+        // var token = localStorage.getItem('srmToken');
+        // const response = await HomeSerivce.fetchHomework(
+        //   token,
+        //   props.selectedRole
+        // );
         if (isHomeworkLoading) {
           console.log(response.data.data.data);
           setHomework(response.data.data.data);
@@ -65,7 +82,16 @@ const Homework = (props) => {
 
   const fetchHomeworkOnScroll = () => {
     const fetchMoreHomework = async () => {
-      const token = localStorage.getItem('srmToken');
+      var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        // console.log(role);
+        var string1 = "parent";
+        if (String(role)===String(string1)){
+        // console.log("this is child token ");
+          var token_child = localStorage.getItem('srmSelected_Child_token');
+        }else{
+        // console.log("this is parent token");
+          var token = localStorage.getItem('srmToken');
+        }
       if (hasMore) {
         const response = await HomeSerivce.fetchMoreHomework(
           token,

@@ -21,11 +21,14 @@ const Syllabus = (props) => {
 
   return (
     <div className={classes.container}>
-      {selectedRole === "parent" ? (
-        <ParentSyllabus />
-      ) : selectedRole === "student" ? (
+      {selectedRole === "parent" || selectedRole === "student" ? (
         <StudentSyllabus />
-      ) : (
+      ) 
+      // :  ? (
+      //   < />
+      // )
+       :
+       (
         <ClassSyllabus />
       )}
     </div>

@@ -18,8 +18,6 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import {
   MuiPickersUtilsProvider,
@@ -28,7 +26,16 @@ import {
 import EventIcon from '@material-ui/icons/Event';
 import LeaveService from '../LeaveService';
 import { IconButton, InputAdornment, InputLabel } from '@material-ui/core';
+import BackIcon from '../../../assets/images/Back.svg';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+
 const height = 85;
+function Alert(props) {
+  return <MuiAlert elevation={6} variant='filled' {...props} />;
+}
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
@@ -41,7 +48,6 @@ const useStyle = makeStyles((theme) => ({
   },
   backImg: {
     float: 'left',
-    paddingLeft: '10px',
     cursor: 'pointer',
   },
   adornmentColor: {
@@ -57,6 +63,9 @@ const useStyle = makeStyles((theme) => ({
   },
   fieldStyle: {
     width: '97%',
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
+    // float:"right",
     margin: 'auto',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
@@ -128,7 +137,7 @@ const useStyle = makeStyles((theme) => ({
     height: '100px',
     borderRadius: '5px',
     fontFamily:
-      'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+      'Avenir Book,Avenir,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
     lineHeight: '1.5',
     outline: 'none'
@@ -182,6 +191,7 @@ const useStyle = makeStyles((theme) => ({
       marginTop: '10px',
     },
     '& .publishBtn': {
+      float:"right",
       borderRadius: '3px',
       width: 'inherit',
       margin: 0,
@@ -197,6 +207,12 @@ const useStyle = makeStyles((theme) => ({
       marginRight: '5px',
     },
   },
+  titleText: {
+    textAlign: 'center',
+    margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
+  },
 }));
 
 const TeacherLeaveApply = (props) => {
@@ -204,18 +220,19 @@ const TeacherLeaveApply = (props) => {
   const { id } = useParams();
   const classes = useStyle();
 
-  const [openPubLater, setOpenPubLater] = useState(false);
+  
   const [eventDate, setEventDate] = useState(null);
   const [evenTotDate, setEventToDate] = useState(null);
-
-  const status = 'active';
-  const [age, setAge] = React.useState('');
-  const [reason, HandleareaContent] = React.useState('');
-  const [teachevalue, Teacherdata] = React.useState('');
-  const [teacherval, Teacher] = React.useState('');
-  const [allAdmin, setAdmin] = useState([]);
+  const [reason_content, HandleareaContent] = React.useState('');
+  const [teachersValue, setTeachersValue] = useState('');
+  const [bool_full, setbool_full] = useState(true);
+  const [bool_half, setbool_half] = useState(false);
+  const [halfdayhalf, sethalfdayhalf] = useState(0);
   const [halfday, sethalfday] = React.useState(false);
-  const [teachersValue, setTeachersValue] = useState('')
+  const [allAdmin, setAdmin] = useState([]);
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [snackbarmsg, setSnackbarmsg] = useState('');
+
 
   useEffect(() => {
     let isLoading = true;
@@ -237,356 +254,309 @@ const TeacherLeaveApply = (props) => {
   }, []);
 
   const handleEventDate = (date) => {
-    if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()) {
-      // toast("Wow so easy !");
+    if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()){
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       setEventToDate(null);
       setEventDate(date);
-    } else {
+      
+    } else  {
       setEventDate(date);
     }
   };
 
+
+  const sethalfdayhalf_handeler=(event)=>{
+    // console.log(event.target.value);
+    sethalfdayhalf(event.target.value);
+  };
+const HandleareaContent_handeler=(event)=>{
+  // console.log(event.target.value);
+  HandleareaContent(event.target.value);
+};
   const handleDateChange = (date) => {
-    if (eventDate == null) {
-      // toast("Wow so easy !");
+    if(eventDate  == null){
+      alert("Please Select any Date");
       return false;
-    } else if (date.getTime() <= eventDate.getTime()) {
-      // toast("Wow so easy !");
+    }
+    else if (date.getTime() <= eventDate.getTime()){
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       return false;
-    } else {
+    } else  {
       setEventToDate(date);
     }
-  };
-
-  const handleHalfDay = (event, value) => {
-    if (value == 'h_day') {
-      sethalfday(true);
-    } else {
-      sethalfday(false);
-    }
-  };
-
-  const publishData = async (
-    publisedDate,
-    status = '',
-    data,
-    type,
-    slot,
-    content,
-    teachersValue
-  ) => {
-    try {
-      const response = await LeaveService.postLeave(
-        { id },
-        {
-          leavearr: {
-            start_date: data.target.eventDate.value,
-            end_date: data.target.enddate.value,
-            half_day: slot == 'h_day' ? true : false,
-            full_day: slot == 'f_day' ? true : false,
-            half_day_half: type,
-            sanctioner_id: teachersValue,
-            reason: content,
-          },
-        },
-        props.token
-      );
-
-      if (response.status === 200) {
-        history.replace('/leave');
-      }
-    } catch (e) {
-      console.log(e);
-    }
+  
   };
 
   const handleTeachersValue = (event) =>{
     setTeachersValue(event.target.value)
   }
 
-  const submitForm = async (event) => {
-    let type = '0';
-    let slot = event.target.slot.value;
-    if (slot == 'h_day') {
-      type = event.target.type.value;
+  const submitForm = async () => {
+    
+    // alert("wait");
+    if (bool_full){
+      sethalfdayhalf(2)
     }
-    let content = event.target.content.value;
-    // let teachervalue = event.target.teachers.value;
-    publishData(
-      new Date().toISOString(),
-      status,
-      event,
-      type,
-      slot,
-      content,
-      teachersValue
-    );
-    event.preventDefault();
+    if (eventDate==null || evenTotDate==null || reason_content=='' || teachersValue==''){
+      setSnackbarmsg("Form is incomplete");
+      setErrorSnackbarOpen(true);
+    }
+    else{
+      const response = await LeaveService.postLeave(
+        { id },
+        {
+          "leavearr" : {
+            "start_date":eventDate,
+            "end_date":evenTotDate,
+            "half_day":bool_half,
+            "full_day":bool_full,
+            "half_day_half": halfdayhalf,
+            "sanctioner_id": teachersValue,
+            "reason": reason_content
+            }
+          },
+        props.token
+      );
+
+      if (response.status === 200) {
+        history.replace("/leave");
+      }
+    }
+    
+    // console.log("start_date",eventDate);
+    // console.log("end_date",evenTotDate);
+    // console.log("half_day",bool_half);
+    // console.log("full_day",bool_full);
+    // console.log("half_day_half",halfdayhalf);
+    // console.log("sanctioner_id",teachersValue);
+    // console.log("reason",reason_content);
+     
+  
+  }
+  const handleDay = (event,value) => {
+    if(value=='h_day'){
+      sethalfday(true);
+      setbool_half(true);
+      setbool_full(false);
+      sethalfdayhalf(0);
+    } else {
+      sethalfday(false);
+      setbool_half(false);
+      setbool_full(true);
+    }
+    
   };
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-
-  const handleChangeTeacher = (event) => {
-    Teacherdata(event.target.value);
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    // setSuccessSnackbarOpen(false);
+    setErrorSnackbarOpen(false);
   };
 
   return (
     <>
-      <div>
-        <ToastContainer />
-        <form className={classes.formStyle} onSubmit={submitForm}>
-          <div>
-            <Box className={classes.margin}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid container className={classes.fieldStyle}>
-                  <Grid item xs={12} className={classes.topdate}>
-                    <DatePicker
-                      id='eventDate'
-                      label='From Date'
-                      variant='dialog'
-                      minDate={new Date()}
-                      format='yyyy/MM/dd'
-                      value={eventDate}
-                      onChange={handleEventDate}
-                      disablePast='true'
-                      KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                      }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position='end'>
-                            <IconButton>
-                              <EventIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                      className={classes.datePicker}
-                    />
-                  </Grid>
-                </Grid>
-              </MuiPickersUtilsProvider>
-            </Box>
-            <Box className={classes.margin}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid container className={classes.fieldStyle}>
-                  <Grid item xs={12}>
-                    <DatePicker
-                      minDate={new Date()}
-                      variant='dialog'
-                      format='yyyy/MM/dd'
-                      id='enddate'
-                      label='End Date'
-                      disablePast='true'
-                      value={evenTotDate}
-                      onChange={handleDateChange}
-                      KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                      }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position='end'>
-                            <IconButton>
-                              <EventIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                      className={classes.datePicker}
-                    />
-                  </Grid>
-                </Grid>
-              </MuiPickersUtilsProvider>
-            </Box>
-          </div>
+      <div className={classes.formStyle}>
+      <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
+            <div>
+              <img
+                src={BackIcon}
+                alt='Back'
+                className={classes.backImg}
+                onClick={(event) => {
+                  history.push('/leave');
+                }}
+              />
+              <Typography
+                variant='h5'
+                className={`${classes.themeColor} ${classes.titleText}`}>
+                Create leave
+              </Typography>
+            </div>
+          </Box>
+        {/* <form className={classes.formStyle} onSubmit={submitForm}> */}
+        <div>
+        
+        <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity='error'>
+          {snackbarmsg}
+        </Alert>
+      </Snackbar>
 
-          <Box className={classes.margin}>
-            <Grid className={classes.fieldStyle}>
-              <div className={classes.form_row}>
-                <Typography variant='h5' className={`${classes.titleText}`}>
-                  <FormControl component='fieldset'>
-                    <RadioGroup
-                      row
-                      aria-label='position'
-                      name='slot'
-                      defaultValue='top'
-                    >
-                      <FormControlLabel
-                        value='f_day'
-                        onClick={(e) => {
-                          handleHalfDay(e, 'f_day');
-                        }}
-                        control={<Radio color='primary' />}
-                        label='Full day'
-                        checked={!halfday}
-                      />
-                      <FormControlLabel
-                        value='h_day'
-                        onClick={(e) => {
-                          handleHalfDay(e, 'h_day');
-                        }}
-                        control={<Radio color='primary' />}
-                        label='Half Day'
-                        checked={halfday}
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Typography>
-
-                {halfday == true && (
-                  <Typography variant='h5' className={`${classes.selectadmin}`}>
-                    <FormControl className={classes.formControl}>
-                      <Select
-                        defaultValue={0}
-                        inputProps={{
-                          name: 'type',
-                          id: 'type',
-                        }}
-                        MenuProps={{
-                          anchorOrigin: {
-                            vertical: "bottom",
-                            horizontal: "center",
-                          },
-                          transformOrigin: {
-                            vertical: "top",
-                            horizontal: "center",
-                          },
-                          getContentAnchorEl: null,
-                        }}
-                      >
-                        <MenuItem  value={0}>First Half</MenuItem>
-                        <MenuItem  value={1}>Second Half</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Typography>
-                )}
-
-              <FormControl classes={{root: classes.tchClassRoot}}>
-                <InputLabel id="demo-simple-select-label">Admin's Name</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={teachersValue}
-                  className={classes.tchSelect}
-                  onChange={handleTeachersValue}
-                  MenuProps={{
-                    anchorOrigin: {
-                      vertical: "bottom",
-                      horizontal: "center",
-                    },
-                    transformOrigin: {
-                      vertical: "top",
-                      horizontal: "center",
-                    },
-                    getContentAnchorEl: null,
+        <Box className={classes.margin} >
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container className={classes.fieldStyle}>
+              <Grid item xs={12} className={classes.topdate} >
+              
+                <DatePicker
+                  id="eventDate"
+                  label="From Date"
+                  variant='dialog'
+                  minDate={new Date()}
+                  format="yyyy/MM/dd"
+                  value={eventDate}
+                  onChange={handleEventDate}
+                  disablePast="true"
+                  KeyboardButtonProps={{
+                    "aria-label": "change date",
                   }}
-                >
-                      {allAdmin.map((admin) => (
-                        <MenuItem  value={admin.user_id}>
-                          {admin.firstname}&nbsp;{admin.lastname}
-                        </MenuItem >
-                      ))}
-                </Select>
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton>
+                          <EventIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  className={classes.datePicker}
+                />
+              </Grid>
+            </Grid>
+          </MuiPickersUtilsProvider>
+        </Box>
+        <Box className={classes.margin}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container className={classes.fieldStyle}>
+              <Grid item xs={12}>
+                <DatePicker
+                   minDate={new Date()}
+                   variant="dialog"
+                   format="yyyy/MM/dd"
+                   id="enddate"
+                   label="End Date"
+                   disablePast="true"
+                   value={evenTotDate}
+                   onChange={handleDateChange}
+                   KeyboardButtonProps = {{
+                     'aria-label': 'change date',
+                   }}
+                   InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton>
+                          <EventIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                   className={classes.datePicker}
+                 />
+                 
+              </Grid>
+            </Grid>
+            
+          </MuiPickersUtilsProvider>
+        </Box>
+      </div>
+
+        <Box className={classes.margin}>
+          <Grid className={classes.fieldStyle}>
+            
+            <div className={classes.form_row}>
+            <Typography variant="h5" className={`${classes.slotd}`}
+            >
+              <FormControl component="fieldset" >
+                <RadioGroup row aria-label="position" name="slot" defaultValue="top" >
+                  <FormControlLabel value="f_day" onClick={(e) => {   handleDay(e,'f_day')}} control={<Radio color="primary" />} label="Full day" checked={bool_full}/>
+                  <FormControlLabel value="h_day" onClick={(e) => {   handleDay(e,'h_day')}}  control={<Radio color="primary" />} label="Half Day" checked={bool_half}/>
+                </RadioGroup>
               </FormControl>
 
-              </div>
-            </Grid>
-          </Box>
+            </Typography>
 
-          <Box className={classes.margin}>
-            <Grid className={classes.fieldStyle}>
-              <div className={classes.form_txtarea}>
-                <Typography variant='h5' className={`${classes.titleText}`}>
-                  <TextareaAutosize
-                    className={classes.textarea}
-                    rowsMax={4}
-                    aria-label='maximum height'
-                    placeholder='Reason*'
-                    style={{ height }}
-                    onChange={HandleareaContent}
-                    name='content'
-                  />
-                </Typography>
-              </div>
-            </Grid>
-          </Box>
-          <Box className={`${classes.margin} ${classes.sideMargins}`}>
-            <Grid
-              container
-              className={classes.fieldStyle}
-              direction='row-reverse'>
-              <Grid item sm={6} xs={12} className={classes.publishBtns}>
-                <Button
-                  id='publishBtn'
-                  variant='contained'
-                  color='primary'
-                  // onClick={handleOpenPubLater}
-                  type='submit'
-                  className={`${
-                    classes.fieldStyle
-                  } ${'publishBtn'} ${'publishLaterBtn'}`}
-                  disableElevation>
-                  Submit
-                </Button>
-                <Button
-                  id='publishLaterBtn'
-                  variant='outlined'
-                  className={`${classes.fieldStyle} ${'publishBtn'}`}
-                  color='primary'
-                  // onClick={handlePublish}
-                  disableElevation
-                  onClick={(event) => {
-                    history.push('/leave');
-                  }}
-                  >
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item sm={3} xs={12} className={classes.textAlignLeft}>
-                <br />
-                <br />
-              </Grid>
-              <br/>
-              <br/>
-              <br/>
-            </Grid>
-          </Box>
-          {/* <Box className={classes.margin}>
-            <Grid container className={classes.fieldStyle}>
-              <Grid item xs={4}>
-                <Button
-                  id='publishBtn'
-                  variant='contained'
-                  className={`${classes.fieldStyle} ${'publishBtn'}`}
-                  color='primary'
-                  // onClick={handlePublish}
-                  type='submit'
-                  disableElevation
-                >
-                  SUBMIT
-                </Button>
-              </Grid>
+            {halfday == true &&
+            <Typography variant="h5"              >
+              <Select
+                defaultValue={0}
+                value={halfdayhalf}
+                onChange={sethalfdayhalf_handeler}
+                inputProps={{
+                  name: 'type',
+                  id: 'type',
+                }}
 
-              <Grid item xs={4}>
-                <Button
-                  id='publishLaterBtn'
-                  variant='contained'
-                  className={`${
-                    classes.fieldStyle
-                  } ${'publishBtn'} ${'publishLaterBtn'}`}
-                  disableElevation
-                  onClick={(event) => {
-                    history.push('/leave');
-                  }}
-                >
-                  CANCEL
-                </Button>
-              </Grid>
+              >
+                <MenuItem  value={0}>First Half</MenuItem >
+                <MenuItem  value={1}>Second Half</MenuItem >
+              </Select>
+              </Typography>
+            }
+
+      <FormControl classes={{root: classes.tchClassRoot}}>
+              <InputLabel id="demo-simple-select-label">Admin's Name</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={teachersValue}
+                className={classes.tchSelect}
+                onChange={handleTeachersValue}
+                // inputProps={{
+                //   name: 'teachers',
+                //   id: 'teachers',
+                // }}
+
+              >
+              {allAdmin.map((teacher) => (
+                <MenuItem value={teacher.user_id}>{teacher.firstname}&nbsp;{teacher.lastname}</MenuItem>
+              ))}
+              </Select>
+            </FormControl>
+            </div>
+            
+          </Grid>
+        </Box>
+        
+
+        <Box className={classes.margin}>
+          <Grid className={classes.fieldStyle}>
+            <div className={classes.form_txtarea}>
+            <Typography className={`${classes.titleText}`}
+            >
+              <TextareaAutosize
+                className={classes.textarea}
+                rowsMax={4}
+                aria-label="maximum height"
+                placeholder="Reason*"
+                style={{ height }}
+                onChange={HandleareaContent_handeler}
+                name="content"
+              />
+              </Typography>
+           </div>
+          </Grid>
+        </Box>
+        <Box className={classes.margin}>
+          <Grid container className={classes.fieldStyle}>
+          <Grid item xs={12}>
+
+              <Button
+                id="publishBtn"
+                variant="contained"
+                className={`${classes.fieldStyle} ${"publishBtn"}`}
+                color="primary"
+                onClick={submitForm}
+                type="submit"
+                disableElevation
+              >
+                SUBMIT
+              </Button>
+              
             </Grid>
-          </Box> */}
-        </form>
+            
+          
+          </Grid>
+        </Box>
+      
+          
+          <br/>
       </div>
     </>
   );

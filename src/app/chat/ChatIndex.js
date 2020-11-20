@@ -37,11 +37,11 @@ const useStyles = makeStyles((theme) => ({
     width: '100%'
   },
   headingText: {
-    fontWeight: 900,
-    fontSize: "0.875rem",
+    fontWeight: 400,
+    fontSize: "1rem",
     fontStyle: "normal",
     color: theme.palette.common.bastille,
-    width: '70%',
+    width: '55%',
   },
   conversationContainer: {
     marginTop: "10px",
@@ -82,16 +82,13 @@ const useStyles = makeStyles((theme) => ({
   //   backgroundColor: '#7B72AF'
   // },
   addTaskIcon: {
-    float: 'right',
     cursor: 'pointer',
     bottom: 0,
-   
+
   },
   newGroup:{
-    width: '30%',
     verticalAlign: 'middle',
     justifyContent: 'center',
-    textAlign: 'right',
     color: theme.palette.primary.main,
   },
   borderBottom:{
@@ -147,6 +144,10 @@ const useStyles = makeStyles((theme) => ({
     '& ::-webkit-scrollbar': {
       display: 'none'
     }
+  },
+  newGrpPosition: {
+    overflow:"auto",
+    textAlign:"right"
   }
 }));
 
@@ -265,15 +266,19 @@ const ChatIndex = (props) => {
             </div>
             <Typography className={classes.headingText}>
               {' '} Chats
-              <AddCircleRoundedIcon
-                color='primary'
-                className={classes.addTaskIcon}
-                onClick={()=>setNewGroup(true)}
-              />
+
             </Typography>
-            <Typography className={[classes.headingText, classes.newGroup].join(' ')}>
-              <span onClick={()=>setNewGroup(true)} style={{cursor: 'pointer'}}>New Group</span>
-            </Typography>
+            <AddCircleRoundedIcon
+                  color='primary'
+                  className={classes.addTaskIcon}
+                  onClick={()=>setNewGroup(true)}
+                />
+            <div className={classes.newGrpPosition}>
+
+              <Typography className={[classes.newGroup].join(' ')}>
+                <span onClick={()=>setNewGroup(true)} style={{cursor: 'pointer'}}>New Group</span>
+              </Typography>
+            </div>
           </div>
         }
         {newGroup && 

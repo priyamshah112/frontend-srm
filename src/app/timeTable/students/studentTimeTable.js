@@ -37,7 +37,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 const StudentTimeTable = (props) => {
     const classes = useStyles();
-    const token = localStorage.getItem("srmToken");
+    var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        var string1 = "parent";
+        if (String(role)===String(string1)){
+          var token = localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var token = localStorage.getItem('srmToken');
+        }
     const [ClassTestList, SetClassTestList] = useState(null);
     const [testID, setTestID] = useState();
     const [ClassID, setClassID] = useState(props.classID);

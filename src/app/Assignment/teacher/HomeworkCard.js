@@ -135,6 +135,8 @@ const useStyle = makeStyles((theme) => ({
   },
   textAlignRight: {
     textAlign: 'right',
+    color: '#AEAEB2',
+    fontSize: '0.85rem',
   },
   imgGrid: {
     position: 'relative',
@@ -161,7 +163,7 @@ const HomeworkCard = (props) => {
     title,
     main_content,
     submission_date,
-    created_date,
+    created_at,
   } = props.homework;
 
   const handleEditHomework = () => {
@@ -218,7 +220,7 @@ const HomeworkCard = (props) => {
                 <Typography
                   className={`${classes.textAlignRight}`}
                   variant='body2'>
-                  Created at: {moment(created_date).format('DD MMM YY')}
+                  Created at: {moment(created_at).format('DD MMM YY')}
                 </Typography>
               </Grid>
             </Grid>

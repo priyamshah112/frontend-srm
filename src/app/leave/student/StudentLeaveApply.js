@@ -18,8 +18,6 @@ import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import {
   MuiPickersUtilsProvider,
@@ -27,11 +25,19 @@ import {
   DatePicker,
 } from '@material-ui/pickers';
 import EventIcon from '@material-ui/icons/Event';
+import BackIcon from '../../../assets/images/Back.svg';
 
 import LeaveService from "../LeaveService";
 import { IconButton, InputAdornment, InputLabel } from "@material-ui/core";
-const height = 85
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
+
+
+const height = 85
+function Alert(props) {
+  return <MuiAlert elevation={6} variant='filled' {...props} />;
+}
 const useStyle = makeStyles((theme) => ({
   formStyle: {
     margin: "auto",
@@ -42,9 +48,15 @@ const useStyle = makeStyles((theme) => ({
     borderRadius: "5px",
   },
   backImg: {
-    float: "left",
-    paddingLeft: "10px",
-    cursor: "pointer",
+    float: 'left',
+    transform: 'translate(0px, 7px)',
+    cursor: 'pointer',
+  },
+  titleText: {
+    textAlign: 'center',
+    margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
   },
   adornmentColor: {
     color: "rgba(0, 0, 0, 0.54)",
@@ -58,16 +70,19 @@ const useStyle = makeStyles((theme) => ({
     color: "red",
   },
   fieldStyle: {
-    width: "90%",
-    margin: "auto",
-    "& .MuiInput-underline:before": {
-      borderBottom: "2px solid #eaeaea",
+    width: '97%',
+    // float:"right",
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
+    margin: 'auto',
+    '& .MuiInput-underline:before': {
+      borderBottom: '2px solid #eaeaea',
     },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-      borderBottom: "2px solid #7B72AF",
-      transitionProperty: "border-bottom-color",
-      transitionDuration: "500ms",
-      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+      borderBottom: '2px solid #7B72AF',
+      transitionProperty: 'border-bottom-color',
+      transitionDuration: '500ms',
+      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
   inputBorder: {
@@ -127,11 +142,16 @@ const useStyle = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginTop: "10px",
     },
-    "& .publishBtn": {
-      borderRadius: "3px",
-      width: "100%",
-      // opacity: '0.5',
-      marginBottom: "15px",
+    '& .publishBtn': {
+      float:"right",
+      borderRadius: '3px',
+      width: 'inherit',
+      margin: 0,
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
+        marginRight: 0,
+        width: '100%',
+      },
     },
     "& .publishLaterBtn": {
       backgroundColor: `${theme.palette.common.white}`,
@@ -149,7 +169,7 @@ const useStyle = makeStyles((theme) => ({
     width: '100%',
     height: '100px',
     borderRadius: '5px',
-    fontFamily: 'Avenir,Avenir Book,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontFamily: 'Avenir Book,Avenir,Avenir Black Oblique,Roboto,"Helvetica Neue",Arial,sans-serif',
     fontWeight: '400',
     lineHeight: '1.5',
     outline: 'none'
@@ -189,7 +209,11 @@ const useStyle = makeStyles((theme) => ({
   slotd:{
     width:'220px',
     textAlign: "left",
-  }
+  },
+  sideMargins: {
+    marginLeft: '20px',
+    marginRight: '20px',
+  },
 }));
 
 const StudentLeave = (props) => {
@@ -197,18 +221,23 @@ const StudentLeave = (props) => {
   const { id } = useParams();
   const classes = useStyle();
 
-  const [openPubLater, setOpenPubLater] = useState(false);
   const [eventDate, setEventDate] = useState(null);
   const [evenTotDate, setEventToDate] = useState(null);
+  const [reason_content, HandleareaContent] = React.useState('');
+  const [teachersValue, setTeachersValue] = useState('');
+  const [bool_full, setbool_full] = useState(true);
+  const [bool_half, setbool_half] = useState(false);
+  const [halfdayhalf, sethalfdayhalf] = useState(0);
+  const [halfday, sethalfday] = React.useState(false);
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [snackbarmsg, setSnackbarmsg] = useState('');
+
  
   const status = "active";
   const [age, setAge] = React.useState('');
-  const [reason, HandleareaContent] = React.useState('');
   const [teachevalue, Teacherdata] = React.useState('');
   const [teacherval, Teacher] = React.useState('');
   const [allTeacher,setTeacher] = useState([]);
-  const [halfday, sethalfday] = React.useState(false);
-  const [teachersValue, setTeachersValue] = useState('')
 
   useEffect(() => {
     let isLoading = true;
@@ -229,10 +258,18 @@ const StudentLeave = (props) => {
     };
   }, []);
 
-
+    const sethalfdayhalf_handeler=(event)=>{
+      // console.log(event.target.value);
+      sethalfdayhalf(event.target.value);
+    };
+  const HandleareaContent_handeler=(event)=>{
+    // console.log(event.target.value);
+    HandleareaContent(event.target.value);
+  };
   const handleEventDate = (date) => {
     if (evenTotDate != null && evenTotDate.getTime() <= date.getTime()){
-      toast("Please  enter valid date");
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       setEventToDate(null);
       setEventDate(date);
       
@@ -241,22 +278,28 @@ const StudentLeave = (props) => {
     }
   };
 
-  const handleHalfDay = (event,value) => {
+  const handleDay = (event,value) => {
     if(value=='h_day'){
       sethalfday(true);
+      setbool_half(true);
+      setbool_full(false);
+      sethalfdayhalf(0);
     } else {
       sethalfday(false);
+      setbool_half(false);
+      setbool_full(true);
     }
     
   };
 
   const handleDateChange = (date) => {
     if(eventDate  == null){
-      toast("Please Select any Date");
+      alert("Please Select any Date");
       return false;
     }
     else if (date.getTime() <= eventDate.getTime()){
-      toast("Please enter valid date");
+      setSnackbarmsg("From Date can't be greater than End Date");
+      setErrorSnackbarOpen(true);
       return false;
     } else  {
       setEventToDate(date);
@@ -268,25 +311,26 @@ const StudentLeave = (props) => {
   const publishData = async (publisedDate, status='', data,type,slot,content,teachersValue) => {
     try {    
       
-    const response = await LeaveService.postLeave(
-        { id },
-        {
-          "leavearr" : {
-            "start_date": data.target.eventDate.value,
-            "end_date": data.target.enddate.value,
-            "half_day": slot=='h_day'?true:false,
-            "full_day": slot=='f_day'?true:false,
-            "half_day_half": type,
-            "sanctioner_id": teachersValue,
-            "reason": content
-            }
-          },
-        props.token
-      );
+      
+    // const response = await LeaveService.postLeave(
+    //     { id },
+    //     {
+    //       "leavearr" : {
+    //         "start_date": data.target.eventDate.value,
+    //         "end_date": data.target.enddate.value,
+    //         "half_day": slot=='h_day'?true:false,
+    //         "full_day": slot=='f_day'?true:false,
+    //         "half_day_half": type,
+    //         "sanctioner_id": teachersValue,
+    //         "reason": content
+    //         }
+    //       },
+    //     props.token
+    //   );
 
-      if (response.status === 200) {
-        history.replace("/leave");
-      }
+      // if (response.status === 200) {
+      //   history.replace("/leave");
+      // }
     } catch (e) {
       console.log(e);
     }
@@ -297,17 +341,57 @@ const StudentLeave = (props) => {
     setTeachersValue(event.target.value)
   }
 
-const submitForm = async (event) => {
-  
-  let type= '0';
-  let slot= event.target.slot.value;
-  if(slot == 'h_day'){
-    type= event.target.type.value;
+const submitForm = async () => {
+  if (bool_full){
+    sethalfdayhalf(2)
   }
-  let content = event.target.content.value;
-  publishData(new Date().toISOString(), status, event,type,slot,content,teachersValue);
-  event.preventDefault();
+  if (eventDate==null || evenTotDate==null || reason_content=='' || teachersValue==''){
+    setSnackbarmsg("Form is incomplete");
+      setErrorSnackbarOpen(true);
+  }
+  else{
+    const response = await LeaveService.postLeave(
+      { id },
+      {
+        "leavearr" : {
+          "start_date":eventDate,
+          "end_date":evenTotDate,
+          "half_day":bool_half,
+          "full_day":bool_full,
+          "half_day_half": halfdayhalf,
+          "sanctioner_id": teachersValue,
+          "reason": reason_content
+          }
+        },
+      props.token
+    );
+
+    if (response.status === 200) {
+      history.replace("/leave");
+    }
+  }
+  
+  // console.log("start_date",eventDate);
+  // console.log("end_date",evenTotDate);
+  // console.log("half_day",bool_half);
+  // console.log("full_day",bool_full);
+  // console.log("half_day_half",halfdayhalf);
+  // console.log("sanctioner_id",teachersValue);
+  // console.log("reason",reason_content)
+  // publishData(new Date().toISOString(), status, event,type,slot,content,teachersValue);
+  // event.preventDefault();
 }
+
+
+
+const handleSnackbarClose = (event, reason) => {
+  if (reason === 'clickaway') {
+    return;
+  }
+  // setSuccessSnackbarOpen(false);
+  setErrorSnackbarOpen(false);
+};
+
 const handleChange = (event) => {
   setAge(event.target.value);
 };
@@ -318,11 +402,40 @@ const handleChangeTeacher = (event) => {
 
   return (
     <>
-      <div>
+      <div  className={classes.formStyle}>
       
-        <form className={classes.formStyle} onSubmit={submitForm}>
+        {/* <form className={classes.formStyle} onSubmit={submitForm}> */}
+
+        <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
+            <div>
+              <img
+                src={BackIcon}
+                alt='Back'
+                className={classes.backImg}
+                onClick={(event) => {
+                  history.push('/leave');
+                }}
+              />
+              <Typography
+                variant='h5'
+                className={`${classes.themeColor} ${classes.titleText}`}>
+                Create leave
+              </Typography>
+            </div>
+          </Box>
+          
+          
+        <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity='error'>
+          {snackbarmsg}
+        </Alert>
+      </Snackbar>
         <div>
-        <ToastContainer />
+        
           <Box className={classes.margin} >
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
@@ -398,8 +511,8 @@ const handleChangeTeacher = (event) => {
               >
                 <FormControl component="fieldset" >
                   <RadioGroup row aria-label="position" name="slot" defaultValue="top" >
-                    <FormControlLabel value="f_day" onClick={(e) => {   handleHalfDay(e,'f_day')}} control={<Radio color="primary" />} label="Full day" checked={!halfday}/>
-                    <FormControlLabel value="h_day" onClick={(e) => {   handleHalfDay(e,'h_day')}}  control={<Radio color="primary" />} label="Half Day" checked={halfday}/>
+                    <FormControlLabel value="f_day" onClick={(e) => {   handleDay(e,'f_day')}} control={<Radio color="primary" />} label="Full day" checked={bool_full}/>
+                    <FormControlLabel value="h_day" onClick={(e) => {   handleDay(e,'h_day')}}  control={<Radio color="primary" />} label="Half Day" checked={bool_half}/>
                   </RadioGroup>
                 </FormControl>
 
@@ -409,6 +522,8 @@ const handleChangeTeacher = (event) => {
               <Typography variant="h5"              >
                 <Select
                   defaultValue={0}
+                  value={halfdayhalf}
+                  onChange={sethalfdayhalf_handeler}
                   inputProps={{
                     name: 'type',
                     id: 'type',
@@ -457,7 +572,7 @@ const handleChangeTeacher = (event) => {
                   aria-label="maximum height"
                   placeholder="Reason*"
                   style={{ height }}
-                  onChange={HandleareaContent}
+                  onChange={HandleareaContent_handeler}
                   name="content"
                 />
                 </Typography>
@@ -473,7 +588,7 @@ const handleChangeTeacher = (event) => {
                   variant="contained"
                   className={`${classes.fieldStyle} ${"publishBtn"}`}
                   color="primary"
-                  // onClick={handlePublish}
+                  onClick={submitForm}
                   type="submit"
                   disableElevation
                 >
@@ -482,25 +597,14 @@ const handleChangeTeacher = (event) => {
                 
               </Grid>
               
-              <Grid item xs={12}>
-                <Button
-                  id="publishLaterBtn"
-                  variant="contained"
-                  className={`${
-                    classes.fieldStyle
-                  } ${"publishBtn"} ${"publishLaterBtn"}`}
-                  disableElevation
-                  onClick={(event) => {
-                    history.push('/leave');
-                  }}
-                >
-                  CANCEL
-                </Button>
-                
-              </Grid>
+            
             </Grid>
+            <br/>
+
           </Box>
-        </form>
+        
+        
+        {/* </form> */}
       </div>
      
     </>

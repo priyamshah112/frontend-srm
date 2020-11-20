@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formControl: {
-    width: "30%",
+    width: "110px",
+    // whiteSpace: 'nowrap',
     padding: "10px 0px  0px 27px",
   },
   cardBoxPadding: {
@@ -171,7 +172,11 @@ const TeacherNotificationsContainer = (props) => {
       console.log(e);
     }
   };
-  const handleFilterChange = async (event) => {
+  const handleFilterChange = async (event,changestatus) => {
+    console.log('changed');
+    if(!changestatus){
+
+    
     if (event.target.value !== filter) {
       try {
         setCurrentPage(1);
@@ -185,6 +190,36 @@ const TeacherNotificationsContainer = (props) => {
           selectedRole,
           1,
           event.target.value.toLowerCase()
+        );
+        if (response.status === 200) {
+          if (
+            response.data.data.last_page === response.data.data.current_page
+          ) {
+            setHasMore(false);
+            setNotifications([...response.data.data.data]);
+          } else {
+            setCurrentPage(currentPage + 1);
+            setNotifications([...response.data.data.data]);
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+    else{
+      try {
+        setCurrentPage(1);
+        setFilter(filter);
+
+        const token = localStorage.getItem("srmToken");
+        const selectedRole = localStorage.getItem("srmSelectedRole");
+        const response = await NotificationService.fetchNotification(
+          token,
+          false,
+          selectedRole,
+          1,
+          filter.toLowerCase()
         );
         if (response.status === 200) {
           if (
@@ -221,6 +256,8 @@ const TeacherNotificationsContainer = (props) => {
   } else {
     content = notifications.map((notification) => (
       <NotificationCard
+        changestatus_handeler={handleFilterChange}
+        currentfilter={filter}
         key={notification.id}
         notification={notification}
         handleRemoveNotifcation={handleRemoveNotifcation}
@@ -253,7 +290,7 @@ const TeacherNotificationsContainer = (props) => {
               labelId="Filter"
               id="demo-simple-select"
               value={filter}
-              onChange={(event) => handleFilterChange(event)}
+              onChange={(event) => handleFilterChange(event,false)}
               className={classes.selectFiler}
               MenuProps={{
                 anchorOrigin: {

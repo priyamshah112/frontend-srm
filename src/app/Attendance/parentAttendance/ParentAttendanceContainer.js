@@ -150,6 +150,7 @@ const ParentAttendanceContainer = (props) => {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [classId, setClassId] = useState("");
   const [subjectIdName, setSubjectIdName] = useState({});
+  const [nextpage, setnextpage] = useState(false);
 
   useEffect(() => {
     if (!filter) return;
@@ -166,6 +167,7 @@ const ParentAttendanceContainer = (props) => {
     const from_date = moment(fDate).format("YYYY-MM-DD");
     const to_date = moment(eDate).format("YYYY-MM-DD");
     setLoading(true);
+    console.log({ get_by, from_date, to_date });
     props.getAttendence(
       { get_by, from_date, to_date },
       (d) => onGet(d, get_by),
@@ -267,6 +269,7 @@ const ParentAttendanceContainer = (props) => {
   };
 
   const onPrevious = () => {
+    setnextpage(true);
     if (loading) return;
     if (filter === "month") {
       const startDate = getPreviousMonthStartDate(monthStart);
@@ -291,6 +294,13 @@ const ParentAttendanceContainer = (props) => {
       const startDate = getNextMonthStartDate(monthStart);
       setMonthStart(startDate);
       setSelectedMonth(getMonth(startDate));
+      if (
+        moment(startDate).format("YYYY-MM-DD") ===
+        moment(monthStartDate).format("YYYY-MM-DD")
+      ){
+      setnextpage(false);
+      // return;
+      }
     } else {
       if (
         moment(weekStart).format("YYYY-MM-DD") ===
@@ -300,6 +310,13 @@ const ParentAttendanceContainer = (props) => {
       const startDate = getNextWeekStartDate(weekStart);
       setWeekStart(startDate);
       setSelectedMonth(getMonth(startDate));
+      if (
+        moment(startDate).format("YYYY-MM-DD") ===
+        moment(weekStartDate).format("YYYY-MM-DD")
+      ){
+      setnextpage(false);
+      // return;
+      }
     }
   };
 
@@ -331,6 +348,7 @@ const ParentAttendanceContainer = (props) => {
               </div>
               <TableContainer className={classes.mainContent} component={Paper}>
                 <TableTopHead
+                isnext={nextpage}
                   renderFilter={renderFilter()}
                   onNext={onNext}
                   onPrevious={onPrevious}

@@ -34,11 +34,23 @@ const AxiosService = function () {
   function addHeaders(userConfig) {
     const { params, headers, timeout, ...restConfigs } = userConfig;
     let globalHeaders = {};
-
     if (Authorization) {
+      var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        var string1 = "parent";
+        if (String(role)===String(string1)){
+          var Authorization = localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var Authorization = localStorage.getItem('srmToken');
+        }
       globalHeaders.Authorization = `Bearer ${Authorization}`;
     } else {
-      const token = localStorage.getItem('srmToken');
+      var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        var string1 = "parent";
+        if (String(role)===String(string1)){
+          var token = localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var token = localStorage.getItem('srmToken');
+        }
       globalHeaders.Authorization = `Bearer ${token}`;
     }
 
@@ -70,6 +82,7 @@ const AxiosService = function () {
   }
 
   function get(endPoint, userConfig = {}) {
+    console.log(addHeaders(userConfig));
     return axios.get(endPoint, addHeaders(userConfig));
   }
 

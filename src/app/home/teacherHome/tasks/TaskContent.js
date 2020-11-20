@@ -78,6 +78,11 @@ const useStyle = makeStyles((theme) => ({
   },
   clickContent: {
     // paddingTop: '35%',
+    fonTize: "1rem",
+    fontFamily: "Avenir Medium",
+    fontWeight: "400",
+    color: '#1C1C1E',
+
   },
   cardTitle: {
     fontWeight: 500,
@@ -127,6 +132,10 @@ const useStyle = makeStyles((theme) => ({
   },
   doneTask: {
     marginRight: 0,
+  },
+  loading:{
+    paddingLeft:"50%",
+    paddingTop:"140px",
   },
 }));
 
@@ -341,7 +350,7 @@ const TaskContent = (props) => {
 
   return (
     <>
-      {showNoContent ? (
+      {(showNoContent && showNoContent1) ? (
         <Card className={`${classes.taskCard} ${classes.card}`}>
           <CardContent
             className={classes.clickCard}

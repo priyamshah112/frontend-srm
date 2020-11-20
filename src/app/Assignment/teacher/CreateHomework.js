@@ -68,10 +68,14 @@ const useStyle = makeStyles((theme) => ({
   titleText: {
     textAlign: 'center',
     margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
   },
   fieldStyle: {
     width: '100%',
     margin: 'auto',
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
     '& .MuiInput-underline:before': {
       borderBottom: '2px solid #eaeaea',
     },

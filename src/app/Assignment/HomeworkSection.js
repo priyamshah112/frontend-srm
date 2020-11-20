@@ -39,6 +39,12 @@ const useStyles = makeStyles((theme) => ({
       padding: '16px',
     },
   },
+  style:{
+    fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        color: '#1C1C1E',
+  },
   addNew: {
     color: theme.palette.common.deluge,
     float: 'right',
@@ -212,6 +218,7 @@ const HomeworkSection = (props) => {
           <Typography
             variant='body1'
             color='primary'
+            className={classes.style}
             style={{ textAlign: 'center' }}>
             Click on new button to create homework
           </Typography>

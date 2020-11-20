@@ -83,6 +83,24 @@ export function* authUserSaga(action) {
         "srmSelectedRole",
         JSON.stringify(response.data.user.roles[0].name)
       );
+      // parent child code
+      var all_roles=response.data.user.roles;
+      var isParent=false;
+      // console.log(all_roles);
+      for (var i = 0; i < all_roles.length; i++) {
+        if(all_roles[i].name==="parent"){
+          isParent=true;
+        }
+      }
+      if(isParent){
+            yield localStorage.setItem(
+              "srmChild_dict",
+              JSON.stringify(response.data.studentDetails)
+            );
+            yield localStorage.setItem("srmSelected_Child",0);
+            yield localStorage.setItem("srmSelected_Child_token",response.data.studentDetails[0].access_token);
+      }
+
       axiosService.setAuthorizationToken(response.data.access_token);
       //Initiate AUTH_SUCCCESS action
       yield put(

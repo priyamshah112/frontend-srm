@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "400",
         lineHeight: "1.5",
     },
+    headingtest_1:{
+        fonTize: "1rem",
+        fontFamily: "Avenir Medium",
+        fontWeight: "400",
+        lineHeight: "1.5",
+        paddingLeft:"25px",
+    },
     subjectname:{
         fontSize: "1rem",
     fontFamily: "Avenir Medium",
@@ -100,7 +107,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 const TestSubjectPage = (props) => {
     const classes = useStyles();
-    const token = localStorage.getItem("srmToken");
+    var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+        var string1 = "parent";
+        if (String(role)===String(string1)){
+          var token =localStorage.getItem('srmSelected_Child_token');
+        }else{
+          var token = localStorage.getItem('srmToken');
+        }
     const [formData, setFormData] = useState({
         date: '',
         start_time: '',
@@ -339,7 +352,7 @@ const TestSubjectPage = (props) => {
                     <br/>
                     </div>
                     :
-                    <Typography className={classes.headingtest} style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
+                    <Typography className={classes.headingtest_1} style={{ marginTop: "70px", textAlign: 'center' }}>No TimeTable Created Yet!</Typography>
 
 
 

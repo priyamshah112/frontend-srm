@@ -60,8 +60,15 @@ const useStyle = makeStyles((theme) => ({
   errorColor: {
     color: "red",
   },
+  titleText:{
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
+    // color: '#1C1C1E',    
+  },
   fieldStyle: {
     width: "90%",
+    fontFamily: 'Avenir Book',
+    fontSize:' 1rem',
     margin: "auto",
     "& .MuiInput-underline:before": {
       borderBottom: "2px solid #eaeaea",

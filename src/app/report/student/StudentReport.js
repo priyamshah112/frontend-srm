@@ -257,7 +257,23 @@ const StudentDetails = (props) => {
     const [isPublish, setIsPublished] = useState(true);
     const printRef = useRef(null);
 
-    const { token, searchData, testData } = props;
+    // var role = localStorage.getItem('srmSelectedRole');
+  var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
+    var string1 = "parent";
+    if (String(role)===String(string1)){
+        var token = localStorage.getItem('srmSelected_Child_token');
+        var testData = props.testData;
+        const srmChild_dict = JSON.parse(localStorage.getItem("srmChild_dict"));
+        const srmSelected_Child = localStorage.getItem("srmSelected_Child");
+        var searchData = srmChild_dict[parseInt(srmSelected_Child)].userDetails;
+    }
+    else{
+    var { token, searchData, testData } = props;
+
+    }
+
+    // const { token, searchData, testData } = props;
+    // console.log(token, searchData, testData);
 
     const goToSearch = () => {
         props.home();
@@ -266,10 +282,16 @@ const StudentDetails = (props) => {
     useEffect(() => {
         let loading = true;
         setLoading(true);
-        if (searchData && searchData.id) {
+        if (searchData && (searchData.user_id || searchData.id)) {
             async function getAttendence() {
                 try {
-                    const response = await ReportService.studentAttendance(token, searchData.id);
+                    if (String(role)==="student" || String(role)==="parent"){
+                        
+                        var response = await ReportService.studentAttendance(token, searchData.id);
+                    }
+                    else{
+                        var response = await ReportService.studentAttendance(token, searchData.user_id);
+                    }
 
                     if (response.status === 200) {
                         if (loading) {

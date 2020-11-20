@@ -56,6 +56,7 @@ import DesktopMessageIcon from "../assets/images/navigation/DesktopMessage.svg";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
 import Logout from "../app/auth/Logout";
+import ChildSelection from "../app/auth/ChildSelection";
 import RoleSelection from "../app/auth/RoleSelection";
 import * as actions from "../app/auth/store/actions";
 import ChatIndex from "../app/chat/ChatIndex";
@@ -89,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
   },
   grow: {
-    flexGrow: 2,
+    flexGrow: 1.7,
   },
   grow2: {
     flexGrow: 1.5,
@@ -330,6 +331,7 @@ const Layout = (props) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarId, setSnackBarId] = useState("");
   const [reportItem, setReportItem] = React.useState(true);
+  const [isOpen_child, setisOpen_child] = React.useState(false);
   const [snackbarTitle, setSnackbarTitle] = useState('');
   const [snackbarDescription, setSnackbarDescription] = useState('');
   const [snackbarClick, setSnackbarClick] = useState('');
@@ -337,8 +339,10 @@ const Layout = (props) => {
   const schoolName = localStorage.getItem("schoolName");
   const schoolLogo = localStorage.getItem("schoolLogo");
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
-  const [refreshChat, setRefreshChat] = useState(false)
-
+  const [refreshChat, setRefreshChat] = useState(false);
+  const srmChild_dict = JSON.parse(localStorage.getItem("srmChild_dict"));
+  const srmSelected_Child_token = localStorage.getItem("srmSelected_Child_token");
+  const srmSelected_Child = localStorage.getItem("srmSelected_Child");
   const isMenuOpen = Boolean(anchorEl);
   // console.log("props.selectedRole", props.selectedRole);
 
@@ -430,6 +434,12 @@ const Layout = (props) => {
   const handleChangeRole = () => {
     props.onChangeRoleStart();
     handleMenuClose();
+  };
+  const handleChangeRole_child = (state) => {
+    // props.onChangeRoleStart();
+    setisOpen_child(state);
+    handleMenuClose();
+    // window.location.reload();
   };
 
   const handleChange = (newValue) => {
@@ -543,7 +553,15 @@ const Layout = (props) => {
       itemIndex: 16,
     },
   ];
-
+  const change_selected_child=(child)=>{
+    // console.log(child.userDetails.firstname);
+    setisOpen_child(false);
+    var a = srmChild_dict.indexOf(child);
+    // console.log(a);
+    localStorage.setItem("srmSelected_Child",a);
+    localStorage.setItem("srmSelected_Child_token",child.access_token);
+    window.location.reload();
+  }
   /*
    Use effect to stay on the correct menu item during refresh.
   */
@@ -606,6 +624,19 @@ const Layout = (props) => {
           Change Role (currently {props.selectedRole})
         </MenuItem>
       ) : null}
+      {
+        (props.isAuthenticated && props.selectedRole==='parent' && srmChild_dict.length>1) ?
+        (
+          <MenuItem
+          onClick={() => handleChangeRole_child(true)}
+          classes={{ root: classes.menuItem }}
+        >
+          Change Child (currently {srmChild_dict[parseInt(srmSelected_Child)].userDetails.firstname})
+        </MenuItem>
+        )
+        :
+        (<span></span>)
+      }
       <MenuItem
         onClick={handleOpenLogoutDialog}
         classes={{ root: classes.menuItem }}
@@ -649,6 +680,19 @@ const Layout = (props) => {
           Change Role (currently {props.selectedRole})
         </MenuItem>
       ) : null}
+      {
+        (props.isAuthenticated && props.selectedRole==='parent' && srmChild_dict.length>1) ?
+        (
+          <MenuItem
+          onClick={() => handleChangeRole_child(true)}
+          classes={{ root: classes.menuItem }}
+        >
+          Change Child (currently {srmChild_dict[parseInt(srmSelected_Child)].userDetails.firstname})
+        </MenuItem>
+        )
+        :
+        (<span></span>)
+      }
       <MenuItem
         onClick={handleOpenLogoutDialog}
         classes={{ root: classes.menuItem }}
@@ -1088,6 +1132,9 @@ const Layout = (props) => {
 
       {props.changeRole ? (
         <RoleSelection open={true} handleClose={handleCloseLogoutDialog} />
+      ) : null}
+      {isOpen_child ? (
+        <ChildSelection open={true} handleClose={handleChangeRole_child} data={srmChild_dict} change_child={change_selected_child} />
       ) : null}
     </>
   );
