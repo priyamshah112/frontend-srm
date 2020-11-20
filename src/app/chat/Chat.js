@@ -277,6 +277,10 @@ export default function Chat({ filter, updateGroup=false, selectContact, selecte
   const getPlainMessage = (message, chat) => {
     var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
     var msg = bytes.toString(CryptoJS.enc.Utf8);
+    if(msg == ''){
+      bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.messages[0].recievers[0].reciever.id);
+      msg = bytes.toString(CryptoJS.enc.Utf8);
+    }
     return msg
   }
 
