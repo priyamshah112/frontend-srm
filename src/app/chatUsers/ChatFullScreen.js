@@ -33,7 +33,6 @@ const StyledBadge = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-
     backgroundColor: theme.palette.background.paper,
   },
   inline: {

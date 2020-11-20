@@ -349,8 +349,10 @@ const Layout = (props) => {
       let data = JSON.parse(payload.data.data);
       // console.log(data)
       if(data.type == "silent"){
-        setRefreshChat(true)
-        props.onUpdateChat(data.chat)
+        if(data.chat != undefined){
+          setRefreshChat(true)
+          props.onUpdateChat(data.chat)
+        }
         return;
       }
       setSnackBarId(data.entity_id);
@@ -570,6 +572,13 @@ const Layout = (props) => {
       }
     }
   }, [window.location.pathname]);
+  useEffect(()=>{
+    
+    if(props.chat.id != undefined){
+      setSelectedChat(props.chat)
+      setRefreshChat(true)
+    }
+  }, [props.chat])
 
   const renderMenu = (
     <Menu
@@ -1092,6 +1101,7 @@ const mapStateToProps = (state) => {
     selectedRole: state.auth.selectedRole,
     changeRole: state.auth.changeRole,
     notificationCount: state.notification.notificationCount,
+    chat: state.Chat.chat
   };
 };
 

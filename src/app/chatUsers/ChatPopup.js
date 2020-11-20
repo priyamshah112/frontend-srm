@@ -127,6 +127,7 @@ const ChatPopup = ({ selectedChat, props }) => {
     const [minimize, setMinimize] = useState(true)
     const classes = useStyles();
     const history = useHistory();
+    
     const chatHeader = () => {
       let name = selectedChat.firstname + ' ' + selectedChat.lastname
       let img = selectedChat.thumbnail
@@ -155,7 +156,7 @@ const ChatPopup = ({ selectedChat, props }) => {
                       src={ExternalLink}
                       alt='Open Chat Full Screen'
                       className={[classes.externalIcon, classes.borderRadius].join(' ')}
-                      onClick={()=>history.push("/chat/"+selectedChat.id)}
+                      onClick={selectedChat.messages!=null?()=>history.push("/chat/"+selectedChat.id): null}
                   />
                 </Grid>
                 <Grid item xs={2} style={{ paddingTop: 5, maxWidth: '12%' }}>
@@ -190,9 +191,28 @@ const ChatPopup = ({ selectedChat, props }) => {
     return(
         <div className={[classes.panel, minimize?classes.inactivePanel: classes.activePanel].join(' ')}>
             {chatHeader()}
-            <SingleChat props={props} closeEmoji={minimize} chat={selectedChat} />
+            <SingleChat props={props} closeEmoji={minimize} />
         </div>
     )
 }
+
+// const mapStateToProps = (state) => {
+//   return {
+//     userInfo: state.auth.userInfo,
+//     token: state.auth.token,
+//     isAuthenticated: state.auth.token !== null,
+//     selectedRole: state.auth.selectedRole,
+//     changeRole: state.auth.changeRole,
+//     notificationCount: state.notification.notificationCount,
+//     chat: state.Chat.chat
+//   };
+// };
+
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+//     setChat: (chat) => dispatch(ChatActions.setChat(chat))
+//   };
+// };
 
 export default ChatPopup;
