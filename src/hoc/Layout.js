@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
   },
   grow: {
-    flexGrow: 2,
+    flexGrow: 1.7,
   },
   grow2: {
     flexGrow: 1.5,
@@ -352,12 +352,18 @@ const Layout = (props) => {
       
       let data = JSON.parse(payload.data.data);
       // console.log(data)
+      if(data.type == "silent"){
+        if(data.chat != undefined){
+          setRefreshChat(true)
+          props.onUpdateChat(data.chat)
+        }
+        return;
+      }
       setSnackBarId(data.entity_id);
       setSnackbarTitle(payload.notification.title);
-      setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
       setSnackbarClick(payload.notification.click_action);
-      setSnackbarOpen(true);
-      if(data.type == "chat"){
+      if(data.type == "chat" ){
+        setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
         const token = localStorage.getItem('srmToken');
         const response = await ChatService.fetchChat(
           data.entity_id,
@@ -372,8 +378,10 @@ const Layout = (props) => {
         }
       }
       else{
+        setSnackbarDescription(getPlainMessage(payload.notification.body, data.entity_id));
         props.onNotificationReceive();
       }
+      setSnackbarOpen(true);
     })
     .catch((e) => {
       console.log(e);
@@ -582,6 +590,13 @@ const Layout = (props) => {
       }
     }
   }, [window.location.pathname]);
+  useEffect(()=>{
+    
+    if(props.chat.id != undefined){
+      setSelectedChat(props.chat)
+      setRefreshChat(true)
+    }
+  }, [props.chat])
 
   const renderMenu = (
     <Menu
@@ -1133,6 +1148,7 @@ const mapStateToProps = (state) => {
     selectedRole: state.auth.selectedRole,
     changeRole: state.auth.changeRole,
     notificationCount: state.notification.notificationCount,
+    chat: state.Chat.chat
   };
 };
 

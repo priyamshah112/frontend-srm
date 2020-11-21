@@ -23,11 +23,15 @@ import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
+import * as actions from "../../app/auth/store/actions";
+import * as ChatActions from "../../app/chatUsers/store/action";
 import {
   IconButton,
   Grid,
   Button,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
 var CryptoJS = require("crypto-js");
 
 
@@ -238,7 +242,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function SingleChat({ fullScreen = false, closeEmoji, chat, props }) {
+function SingleChat({ fullScreen = false, closeEmoji, props }) {
   const classes = useStyles();
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const fileRef = useRef()
@@ -249,7 +253,9 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   const [showAttachments, setShowAttachments] = useState(true)
   const [filter, setFilter] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [chat, setChat] = useState({})
   let messagesEnd = createRef()
+  const history = useHistory();
   let rootClass = [classes.root];
   useEffect(()=>{
     showEmoji(false)
@@ -259,6 +265,13 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     }
     
   }, [closeEmoji])
+  useEffect(()=>{
+    if(props.chat!=null){
+      if(props.chat.id != null){
+        setChat(props.chat)
+      }
+    }
+  }, [props])
   let timer = null
   useEffect(()=>{
     if(timer != null){
@@ -272,21 +285,27 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       // timer = setInterval(()=>fetchChat(chat), 1000)
     }
   }, [chat])
-  const fetchChat = async(chat) => {
-    const token = localStorage.getItem('srmToken');
-    // const selectedRole = props.selectedRole;
-    const response = await ChatService.fetchChat(
-      chat.id,
-      token,
-    );
-    if (response.status === 200) {
-      // console.log('Chat', response);
-      const { data: {chat} } = response
-      setMessages(chat.messages)
-    }
-  }
-  const scrollToBottom = () => {
+  const scrollToBottom = async() => {
     messagesEnd.current.scrollIntoView({ behavior: "smooth" });
+    if(chat.messages == undefined){
+      return;
+    }
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+
+      const response = await ChatService.markRead(
+        token,
+        chat.id
+      );
+      
+      // console.log('Scroll response', response);
+      if (response.status === 200) {
+        // console.log('Chat', response);
+      }
+    } catch (error) {
+      console.log(error.response);
+    }
   }
   if(fullScreen){
     rootClass.push(classes.fullScreen);
@@ -322,7 +341,8 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
   let cls = {}
   if(chat.type == "group"){
     name = chat.group.name;
-    img = Group
+    let groupimg = encodeURI(chat.group.image)
+    img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: Group
     avatar = classes.avatarBackground
     subheading = "Group"
     cls = classes.groupIconContainer
@@ -360,17 +380,20 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
       // const selectedRole = props.selectedRole;
       if(chat.messages == undefined){
         data.reciever = chat.id
-        
+        // console.log(data)
         const response = await ChatService.newChat(
           data,
           token
         );
         // console.log('Scroll response', response);
         if (response.status === 200) {
-          // console.log('Chat', response);
+          console.log('Chat', response);
           const { data } = response
           setMessage('')
           setMessages(data.chat.messages)
+          // data.chat.members = JSON.parse(data.chat.members)
+          props.onUpdateChat(data.chat)
+          setChat(data.chat)
         }
         else{
           return;
@@ -419,9 +442,20 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
     return msg;
   }
 
-  const getPlainMessage = (message) => {
-    var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
-    var msg = bytes.toString(CryptoJS.enc.Utf8);
+  const getPlainMessage = (message, msgobj) => {
+    var msg = '';
+    try{
+      var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
+      msg = bytes.toString(CryptoJS.enc.Utf8);
+      if(msg == ''){
+        bytes  = CryptoJS.AES.decrypt(message, "chat" + msgobj.recievers[0].reciever.id);
+        msg = bytes.toString(CryptoJS.enc.Utf8);
+      }
+    }
+    catch(e){
+      console.log("Encrypt Error", e)
+    }
+    
     return msg
   }
 
@@ -454,13 +488,13 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
         })
       }
         <Typography>
-          {getPlainMessage(message.message)}
+          {getPlainMessage(message.message,message)}
         </Typography>
       </div>
     }
     else{
       return <Typography>
-        {getPlainMessage(message.message)}
+        {getPlainMessage(message.message, message)}
       </Typography>
     }
   }
@@ -482,7 +516,11 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
 
     try {
       const token = localStorage.getItem("srmToken");
-      
+      switch(updatedStatus){
+        case 'Add': props.setChatGroup(chat); history.push("/updateGroup"); break;
+        case 'Delete': props.setChatGroup(chat); history.push("/updateGroup"); break;
+        default: props.setChatGroup(chat); history.push("/updateGroup"); break;
+      }
     } catch (e) {
       console.log(e);
     }
@@ -502,66 +540,80 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 }}
                 variant="dot"
               >
-                <Avatar alt={name} className={cls} src={img} />
+                <Avatar alt={name} src={img} />
               </StyledBadge>
             </ListItemAvatar>
             <ListItemText
               primary={name}
               secondary={subheading}
             />
-            <div style={{float: 'right', flexDirection: 'flex-end'}}>
-              <IconButton
-                aria-label="more"
-                aria-controls="long-menu"
-                aria-haspopup="true"
-                onClick={handleClick}
-                classes={{ root: classes.iconButtonRoot }}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="long-menu"
-                anchorEl={anchorEl}
-                classes={{ paper: classes.menuContainer, list: classes.menuList }}
-                elevation={0}
-                // getContentAnchorEl={null} uncomment this to remove warning
+            {chat.group!=null &&
+              <div style={{float: 'right', flexDirection: 'flex-end'}}>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                  classes={{ root: classes.iconButtonRoot }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="long-menu"
+                  anchorEl={anchorEl}
+                  classes={{ paper: classes.menuContainer, list: classes.menuList }}
+                  elevation={0}
+                  // getContentAnchorEl={null} uncomment this to remove warning
 
-                keepMounted
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem
-                  onClick={handleClose}
-                  classes={{ root: classes.menuItemRoot }}
-                  disableGutters
-                  className={`${classes.menuItem} ${classes.menuTopItemMargin} `}
-                  value={"Add"}
+                  keepMounted
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
                 >
-                  <div className={classes.borderBottomDiv}>
-                    <Typography variant="body2">Add Member</Typography>
-                  </div>
-                </MenuItem>
-                <MenuItem
-                  onClick={handleClose}
-                  disableGutters
-                  classes={{ root: classes.menuItemRoot }}
-                  className={classes.menuItem}
-                  value={"Delete"}
-                >
-                  <div className={classes.borderBottomDiv}>
-                    <Typography variant="body2">Delete Member</Typography>
-                  </div>
-                </MenuItem>
-              </Menu>
-            </div>
+                  <MenuItem
+                    onClick={handleClose}
+                    classes={{ root: classes.menuItemRoot }}
+                    disableGutters
+                    className={`${classes.menuItem} ${classes.menuTopItemMargin} `}
+                    value={"Add"}
+                  >
+                    <div className={classes.borderBottomDiv}>
+                      <Typography variant="body2">Add Member</Typography>
+                    </div>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleClose}
+                    disableGutters
+                    classes={{ root: classes.menuItemRoot }}
+                    className={classes.menuItem}
+                    value={"Delete"}
+                  >
+                    <div className={classes.borderBottomDiv}>
+                      <Typography variant="body2">Delete Member</Typography>
+                    </div>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleClose}
+                    disableGutters
+                    classes={{ root: classes.menuItemRoot }}
+                    className={classes.menuItem}
+                    value={"GroupIcon"}
+                  >
+                    <div className={classes.borderBottomDiv}>
+                      <Typography variant="body2">Change Group Icon</Typography>
+                    </div>
+                  </MenuItem>
+                </Menu>
+              </div>
+            }
+            
           </ListItem>
          
         </>
@@ -578,6 +630,12 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
             cls = classes.owner
             senderName = "Me"
           }
+          let allread = false;
+          let readers = message.recievers.filter(r=>{
+            return r.readAt == null
+          })
+          allread = readers.length > 0
+          
           return (<>
             { showDate &&
               <div className={classes.date}>
@@ -585,6 +643,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
                 <span className={classes.dateText}>{ date }</span></span>
               </div>
             }
+            
             
             <ListItem alignItems="flex-start" className={[classes.listItem,
               cls].join(' ')}>
@@ -596,7 +655,7 @@ export default function SingleChat({ fullScreen = false, closeEmoji, chat, props
               />
               <div className={classes.right}>
                 <Typography className={classes.time}>{message.time}</Typography>
-                <img src={message.status? doubleTick: tick} className={classes.tick} />
+                <img src={allread? doubleTick: tick} className={classes.tick} />
               </div>
             </ListItem>
           </>)
@@ -723,3 +782,5 @@ export default function Chat() {
   );
 }
  */
+
+export default SingleChat

@@ -19,6 +19,7 @@ import * as actions from '../../app/auth/store/actions';
 import ChatService from "./ChatService";
 import closeIcon from '../../assets/images/chat/remove.svg'
 import { onMessageListener } from "../../firebaseInit";
+import * as ChatActions from "../../app/chatUsers/store/action";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -209,7 +210,8 @@ const ChatIndex = (props) => {
       }
       else{
         setChat(chat)
-        props.selectChat(chat)
+        console.log(chat)
+        props.setChat(chat)
       }
     } catch (error) {
       console.log(error);
@@ -228,7 +230,7 @@ const ChatIndex = (props) => {
       // console.log('Chat', response);
       const { data } = response
       setChat(data.chat)
-      props.selectChat(data.chat)
+      props.setChat(data.chat)
     }
   }
 
@@ -346,7 +348,7 @@ const ChatIndex = (props) => {
               <img onClick={()=>setShowContact(false)} src={showContact? closeIcon:search} className={classes.smiley} />
             </Typography>
           </ListItem>
-          <Chat setRefreshChat={props.setRefreshChat} refreshChat={props.refreshChat} showContact={showContact} userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
+          <Chat props={props} setRefreshChat={props.setRefreshChat} refreshChat={props.refreshChat} showContact={showContact} userInfo={props.userInfo} newGroup={newGroup} selectedRole={props.selectedRole} selectContact={newGroup? addContactToGroup: selectChat} filter={filter} />
           <ToastContainer />
         </div>
       </div>
@@ -362,12 +364,14 @@ const mapStateToProps = (state) => {
     selectedRole: state.auth.selectedRole,
     changeRole: state.auth.changeRole,
     notificationCount: state.notification.notificationCount,
+    chat: state.Chat.chat
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+    setChat: (chat) => dispatch(ChatActions.setChat(chat))
   };
 };
 

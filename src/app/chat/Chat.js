@@ -102,8 +102,8 @@ const list = [
     role: 'Student'
   }
 ]
-
-export default function Chat({ filter, selectContact, selectedRole, newGroup, userInfo, showContact, refreshChat, setRefreshChat }) {
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
+export default function Chat({ filter, updateGroup=false, selectContact, selectedRole, newGroup, userInfo, showContact, refreshChat, setRefreshChat }) {
   const classes = useStyles();
   const [Chats, setChats] = useState([])
   const [Users, setUsers] = useState([])
@@ -112,7 +112,10 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
   const [currentPage, setCurrentPage] = useState(0)
 
   useEffect(()=>{
-    if(filter == ''){
+    if(updateGroup){
+      setFilteredChats([...Users])
+    }
+    else if(filter == ''){
       setFilteredChats([...Chats])
     }
     else{
@@ -173,8 +176,38 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
     }
   }, [newGroup])
 
+  useEffect(()=>{
+    if(updateGroup){
+      showContacts()
+    }
+  }, [updateGroup])
+
+  const showContacts = async() => {
+    try {
+      const token = localStorage.getItem('srmToken');
+      // const selectedRole = props.selectedRole;
+      const response = await ChatService.fetchChats(
+        {selectedRole},
+        token,
+      );
+      // console.log('Scroll response', response);
+      if (response.status === 200) {
+        // console.log('Chats', response);
+        const { data } = response
+        let chats = data.users
+        setFilteredChats(chats.slice(currentPage, offset))
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const fetchContacts = async () => {
     if(newGroup){
+      if(Users.length == 0){
+        await fetchChats()
+      }
+      console.log(Users)
       setChats([...Users])
       let chats = [...Users]
       setFilteredChats(chats.slice(currentPage, offset))
@@ -244,6 +277,10 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
   const getPlainMessage = (message, chat) => {
     var bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.id);
     var msg = bytes.toString(CryptoJS.enc.Utf8);
+    if(msg == ''){
+      bytes  = CryptoJS.AES.decrypt(message, "chat" + chat.messages[0].recievers[0].reciever.id);
+      msg = bytes.toString(CryptoJS.enc.Utf8);
+    }
     return msg
   }
 
@@ -259,7 +296,8 @@ export default function Chat({ filter, selectContact, selectedRole, newGroup, us
           if(chat!=undefined){
             if(chat.type == "group"){
               name = chat.group.name;
-              img = groupicon
+              let groupimg = encodeURI(chat.group.image)
+              img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: groupicon
               avatar = classes.avatarBackground
             }
             else{

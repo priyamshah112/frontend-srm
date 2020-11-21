@@ -9,7 +9,7 @@ import Minimize from '../../assets/images/chat/minimize.svg';
 import Dots from '../../assets/images/chat/dots-menu.svg';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
 const useStyles = makeStyles((theme) => ({
     container: {
       width: '100%',
@@ -127,6 +127,7 @@ const ChatPopup = ({ selectedChat, props }) => {
     const [minimize, setMinimize] = useState(true)
     const classes = useStyles();
     const history = useHistory();
+    
     const chatHeader = () => {
       let name = selectedChat.firstname + ' ' + selectedChat.lastname
       let img = selectedChat.thumbnail
@@ -134,7 +135,8 @@ const ChatPopup = ({ selectedChat, props }) => {
       let subheading = ""
       if(selectedChat.type == "group"){
         name = selectedChat.group.name;
-        img = Group
+        let groupimg = encodeURI(selectedChat.group.image)
+        img = groupimg? BACKEND_IMAGE_URL + "/" + groupimg: Group
         avatar = classes.avatarBackground
         subheading = "Group"
       }
@@ -154,17 +156,19 @@ const ChatPopup = ({ selectedChat, props }) => {
                       src={ExternalLink}
                       alt='Open Chat Full Screen'
                       className={[classes.externalIcon, classes.borderRadius].join(' ')}
-                      onClick={()=>history.push("/chat/"+selectedChat.id)}
+                      onClick={selectedChat.messages!=null?()=>history.push("/chat/"+selectedChat.id): null}
                   />
                 </Grid>
                 <Grid item xs={2} style={{ paddingTop: 5, maxWidth: '12%' }}>
-                  <img
+                  <Avatar alt={name} src={img} />
+                
+                  {/* <img
                       src={img}
                       alt={name}
                       className={[classes.externalIcon, classes.borderRadius].join(' ')}
-                  />
+                  /> */}
                 </Grid>
-                <Grid item xs={7} style={{ width: '59%', maxWidth: '59%', flexBasis: '59%' }}>
+                <Grid item xs={7} style={{ marginLeft: 5, width: '59%', maxWidth: '59%', flexBasis: '59%' }}>
                   <span className={classes.heading}>{name}</span><br />
                   <span className={classes.subHeading}>{subheading}</span>
                 </Grid>
@@ -187,9 +191,28 @@ const ChatPopup = ({ selectedChat, props }) => {
     return(
         <div className={[classes.panel, minimize?classes.inactivePanel: classes.activePanel].join(' ')}>
             {chatHeader()}
-            <SingleChat props={props} closeEmoji={minimize} chat={selectedChat} />
+            <SingleChat props={props} closeEmoji={minimize} />
         </div>
     )
 }
+
+// const mapStateToProps = (state) => {
+//   return {
+//     userInfo: state.auth.userInfo,
+//     token: state.auth.token,
+//     isAuthenticated: state.auth.token !== null,
+//     selectedRole: state.auth.selectedRole,
+//     changeRole: state.auth.changeRole,
+//     notificationCount: state.notification.notificationCount,
+//     chat: state.Chat.chat
+//   };
+// };
+
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onChangeRoleStart: () => dispatch(actions.authInitiateRoleSelection()),
+//     setChat: (chat) => dispatch(ChatActions.setChat(chat))
+//   };
+// };
 
 export default ChatPopup;
