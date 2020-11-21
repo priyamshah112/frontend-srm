@@ -174,7 +174,7 @@ const StudentSkills = (props) => {
     }
 
     const reportVisibility = (data) => {
-        console.log(data);
+        // console.log(data);
         if (data.grades[0]) {
             if(data.grades[0].remarks !== ""){
                 setremarkText(data.grades[0].remarks);
@@ -200,6 +200,7 @@ const StudentSkills = (props) => {
     useEffect(() => {
         let loading = true;
         setLoading(true);
+        console.log("student error",testData);
         if (searchData.id && testData.id) {
             async function getReportCard() {
                 const response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
@@ -326,10 +327,11 @@ const StudentSkills = (props) => {
             saveStatus = 'published';
         }
         
-       
+       console.log(allSubject);
         const restSubject = allSubject.filter((sub) => {
-            return (sub.subject_name != skillData.name && sub.subject_id)
+            return (sub.subject_name != (skillData.name && sub.subject_id))
         });
+        console.log(restSubject);
 
         const totalSubject = [...restSubject, ...subject];
         const test = {
@@ -346,6 +348,8 @@ const StudentSkills = (props) => {
             test['remarks']= remarkText || '.';
         }
 
+        console.log(test);
+        console.log(totalSubject);
 
         if (reportData.grades[0]) {
             updateSkillCall({
