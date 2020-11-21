@@ -72,10 +72,12 @@ const ClassTestList = (props) => {
 
 
     const fetchClassTestList = async () => {
+        setLoading(true);
         const res = await TimetableService.getClassTestList(token, props.classID)
         if (res.status === 200) {
             const data = res.data.data.data;
             SetClassTestList(data);
+            setLoading(false);
         }
     }
     const formateSubjectCategory = (data) => {
@@ -226,9 +228,9 @@ const ClassTestList = (props) => {
                 </div> 
                 :
                 (
-                    isLoading === true ?
+                    isLoading ?
                 <div className={classes.loder}>
-                    <CircularProgress color="primary" thickness={5} style={{ position: 'absolute', left: '50%', top: "50%", zIndex: "1" }} />
+                    <CircularProgress color="primary" thickness={5} />
                 </div> 
                 :
                 <Container style={{ marginBottom: '50px', overflow: 'auto' }}>

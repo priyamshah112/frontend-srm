@@ -201,19 +201,32 @@ const StudentSkills = (props) => {
         let loading = true;
         setLoading(true);
         if ((searchData.user_id || searchData.id) && testData.id) {
+            var response={};
             async function getReportCard() {
                 if (String(role)==="student" || String(role)==="parent"){
-                        
-                    var response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
+                     response = await ReportService.fetchReportCard(token, searchData.id, testData.id);
                 }   
                 else{
-                    var response = await ReportService.fetchReportCard(token, searchData.user_id, testData.id);
+                     response = await ReportService.fetchReportCard(token, searchData.user_id, testData.id);
                 }             
                 if (response.status === 200) {
                     if (loading) {
                         setReportData(response.data.data);
                         reportVisibility(response.data.data);
                         setLoading(false);
+                                // functional post bug
+                                if ( ! (Array.isArray(response.data.data.grades) && response.data.data.grades.length)) {
+                                    const test = {
+                                        "student_id": searchData.user_id,
+                                        "test_id": testData.id,
+                                        "remarks": 'remark',
+                                        "status":  "draft",
+                                    }
+                                    addSkillCall({
+                                        "subject": [],
+                                        ...test
+                                    });
+                                }
 
                     }
                 } else {
@@ -223,6 +236,8 @@ const StudentSkills = (props) => {
                 }
             }
             getReportCard();
+            
+            
         } else {
             setLoading(false);
         }
@@ -277,6 +292,7 @@ const StudentSkills = (props) => {
 
                 if (response.status === 200) {
                     if (loading) {
+                        setUpdateStatus((pre) => !pre);
                     }
                 }
             } catch (error) {
@@ -290,10 +306,11 @@ const StudentSkills = (props) => {
     }
 
     const onChangeSkills = (input, obj, key, name) => {
-
+       
         const skill = [];
         const subject = [];
         let saveStatus = 'draft';
+        var bool=true;
 
 
         if (name === 'skill' || name === 'grade') {
@@ -321,24 +338,30 @@ const StudentSkills = (props) => {
         }
 
 
-        subject.push(
-            {
-                "subject_id": skillData.id,
-                "subject_name": skillData.name,
-                "skill": skill
-            },
-        )
+        
+        
         if (name === 'publish') {
             saveStatus = 'published';
+            bool=false;
         }
         
-       console.log(allSubject);
-        const restSubject = allSubject.filter((sub) => {
-            return (sub.subject_name != (skillData.name && sub.subject_id))
-        });
-        console.log(restSubject);
+       
+            subject.push(
+                {
+                    "subject_id": skillData.id,
+                    "subject_name": skillData.name,
+                    "skill": skill
+                },
+            )
+            console.log(setSubjectArray);
+            console.log(allSubject);
+            var restSubject = allSubject.filter((sub) => {
+                return (sub.subject_name != (skillData.name && sub.subject_id))
+            });
+            console.log(restSubject);
+            var totalSubject = [...restSubject, ...subject];
+       
 
-        const totalSubject = [...restSubject, ...subject];
         const test = {
             "student_id": searchData.user_id,
             "test_id": testData.id,
@@ -353,21 +376,47 @@ const StudentSkills = (props) => {
             test['remarks']= remarkText || '.';
         }
 
-        console.log(test);
-        console.log(totalSubject);
+        // console.log(test);
+        // console.log(totalSubject);
+        console.log({
+            "id": reportData.grades[0].id,
+            "subject": totalSubject,
+            ...test
+        });
 
-        if (reportData.grades[0]) {
-            updateSkillCall({
-                "id": reportData.grades[0].id,
-                "subject": totalSubject,
-                ...test
-            })
-        } else {
-            addSkillCall({
-                "subject": subject,
-                ...test
-            })
+        if(bool){
+            if (reportData.grades[0]) {
+                updateSkillCall({
+                    "id": reportData.grades[0].id,
+                    "subject": totalSubject,
+                    ...test
+                })
+            } else {
+                addSkillCall({
+                    "subject": subject,
+                    ...test
+                })
+            }
         }
+        else{
+            if(Array.isArray(allSubject) && allSubject.length )
+            {
+                updateSkillCall({
+                    "id": reportData.grades[0].id,
+                    "subject": totalSubject,
+                    ...test
+                })
+            }
+            else{
+                updateSkillCall({
+                    "id": reportData.grades[0].id,
+                    "subject": setSubjectArray,
+                    ...test
+                })
+            }
+            
+        }
+        
     }
 
     const renderEditSkill = () => {

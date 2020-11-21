@@ -267,9 +267,13 @@ const GalleryIndex = (props) => {
               })}
             </GridList>
             {loading ? (
-            <div className={classes.loading}>
-              <CircularProgress color="primary" size={30} />
-            </div>
+             <>
+             <br />
+           <div className={classes.loading}>
+             <CircularProgress color="primary" size={30} />
+           </div>
+           <br />
+           </>
           ) : null}
           {!loading && !tileData.length ? (
             <div className={classes.emptyView}>

@@ -6,11 +6,14 @@ import { makeStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
 import * as moment from 'moment';
-import { dateDiff } from '../../../shared/datediff';
-
 import EditIcon from '../../../assets/images/Edit.svg';
 import { Box, CardHeader, CardMedia, CardActions } from '@material-ui/core';
-// import testImg from "../../assets/images/home/testImg.png";
+import AnnouncementService from '../AnnouncementService';
+import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyle = makeStyles((theme) => ({
   card: {
@@ -99,8 +102,12 @@ const useStyle = makeStyles((theme) => ({
   editBtn: {
     marginLeft: 'auto',
     paddingRight: '5px',
-    paddingTop: '5px',
+    // paddingTop: '5px',
     cursor: 'pointer',
+  },
+  editBtn1:{
+    // bottom:"-5px",
+    paddingTop:"-10px",
   },
   cardTitle: {},
   announcementImg: {
@@ -113,6 +120,13 @@ const useStyle = makeStyles((theme) => ({
       border: `1px solid ${theme.palette.common.deluge}`,
       borderRadius: '4px',
     },
+  },
+  deleteBtn: {
+    width: '22px',
+    height: '21px',
+    paddingLeft: '5px',
+    cursor: 'pointer',
+    color: '#AEAEB2',
   },
 }));
 
@@ -132,12 +146,59 @@ const NewsCard = (props) => {
     media_url,
     created_at,
   } = props.announcement;
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCloseNO = () => {
+    setOpen(false);
+  };
+  const handleCloseYES = () => {
+    handledeleteAnnouncement();
+    setOpen(false);
+  };
 
   const handleEditAnnouncement = () => {
     history.push(`/create-announcement/${id}`);
   };
+  const handledeleteAnnouncement=async()=> {
+    const token = localStorage.getItem('srmToken');
+    try {
+      console.log(id,token);
+      const response = await AnnouncementService.deleteAnnouncement(id,token);
+      console.log(response);
+      if (response.status === 200) {
+        console.log('Successfully Deleted');
+        // props.deleteHomework(id);
+        window.location.reload();
+      } else {
+        console.log('Failed to delete');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <>
+     <Dialog
+        open={open}
+        onClose={handleCloseNO}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete?"}</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseNO} color="primary" autoFocus>
+            NO
+          </Button>
+          <Button onClick={handleCloseYES} color="primary" >
+            YES
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Grid
         container
         direction='row'
@@ -205,11 +266,23 @@ const NewsCard = (props) => {
               <Grid item xs={3} className={classes.editBtnGrid}>
                 <Box className={classes.editBtn}>
                   {status !== 'published' ? (
+                    <>
+                    <span 
+                      className={classes.editBtn1}
+                      >
                     <img
                       src={EditIcon}
                       alt='Edit Icon'
                       onClick={handleEditAnnouncement}
                     />
+                    </span>
+                    <span 
+                      // onClick={()=>handledeleteAnnouncement(id)}
+                    onClick={handleClickOpen}
+                      >
+                  <DeleteOutlineOutlinedIcon fontSize={"inherit"} className={classes.deleteBtn}/>
+                  </span>
+                    </>
                   ) : (
                     ''
                   )}

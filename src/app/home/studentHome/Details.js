@@ -13,12 +13,20 @@ import remindersvg from "../../../assets/images/home/reminder.svg";
 import HomeService from "../HomeSerivce";
 import Reminder from "./Reminder";
 import BackIcon from "../../../assets/images/Back.svg";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
 const useStyle = makeStyles((theme) => ({
   cardContainer: {
     overflowY: "auto",
     "&::-webkit-scrollbar": {
       display: "none",
     },
+  },
+  loading: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
   },
   card: {
     width: "95%",
@@ -416,7 +424,9 @@ const Details = (props) => {
           )}
         </>
       ) : (
-        ""
+        <div className={classes.loading}>
+              <CircularProgress color="primary" size={30} />
+            </div>
       )}
     </>
   );

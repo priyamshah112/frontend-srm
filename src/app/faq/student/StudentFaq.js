@@ -140,6 +140,15 @@ const StudentFaq = (props) => {
             scrollableTarget='scrollable'
             scrollThreshold={0.5}
           >
+             {loading ? (
+            <>
+            <br/>
+            <div className={classes.loading}>
+              <CircularProgress color="primary" size={30} />
+            </div>
+            <br/>
+            </>
+          ) : null}
             {allFaqs.map((faq) => (
               <Grid key={faq.id} className={classes.cardGridStyle}>
                 <FaqCard

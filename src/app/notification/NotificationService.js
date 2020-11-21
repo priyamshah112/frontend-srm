@@ -23,6 +23,14 @@ class NotificationService {
       },
     });
   }
+  deleteNotification(id, token) {
+    return axios.delete(`${BACKEND_API_URL}/notifications/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
   fetchNotification(token, createdBy, currentRole, currentPage, filter) {
     return axios.get(`${BACKEND_API_URL}/notifications`, {
       headers: {

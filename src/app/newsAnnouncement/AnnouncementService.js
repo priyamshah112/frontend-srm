@@ -23,6 +23,14 @@ class AnnouncementService {
       },
     });
   }
+  deleteAnnouncement(id, token) {
+    return axios.delete(`${BACKEND_API_URL}/news/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
   publishAnnouncement(params, payload, token) {
     console.log(payload,params);
     return axios.put(`${BACKEND_API_URL}/news/${params.id}`, payload, {

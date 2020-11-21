@@ -120,6 +120,7 @@ const Homework = (props) => {
       hasMore={hasMore}
       loader={
         <>
+          <br />
           <div className={classes.loading}>
             <CircularProgress color='primary' size={30} />
           </div>
@@ -138,9 +139,13 @@ const Homework = (props) => {
         />
       ))}
       {isLoading ? (
+        <>
+        <br />
         <div className={classes.loading}>
           <CircularProgress color='primary' size={30} />
         </div>
+        <br />
+        </>
       ) : null}
       {!isLoading && !homework.length ? (
         <div className={classes.emptyView}>

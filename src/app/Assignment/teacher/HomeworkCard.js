@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
 import * as moment from 'moment';
 import { dateDiff } from '../../../shared/datediff';
-import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '../../../assets/images/Edit.svg';
 import {
   Box,
@@ -18,6 +17,11 @@ import {
 } from '@material-ui/core';
 // import testImg from "../../assets/images/home/testImg.png";
 import HomeworkService from '../HomeworkService';
+import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyle = makeStyles((theme) => ({
   card: {
@@ -124,6 +128,13 @@ const useStyle = makeStyles((theme) => ({
     transform: 'translateY(4px)',
     cursor: 'pointer',
   },
+  deleteBtn: {
+    width: '19px',
+    height: '19px',
+    paddingLeft: '5px',
+    // transform: 'translateY(4px)',
+    cursor: 'pointer',
+  },
   normalText: {
     fontStyle: 'normal',
     color: `${theme.palette.common.blackRussian}`,
@@ -138,20 +149,48 @@ const useStyle = makeStyles((theme) => ({
     color: '#AEAEB2',
     fontSize: '0.85rem',
   },
+  textAlignRight1: {
+    textAlign: 'left',
+    color: '#AEAEB2',
+    fontSize: '0.85rem',
+    paddingLeft:"50px",
+  },
   imgGrid: {
     position: 'relative',
   },
   imgDiv: {
+    bottom: "0px",
+    right: '35px',
+    position: 'absolute',
+    margin: '16px 0',
+  },
+  imgDiv_del: {
     bottom: 0,
     right: 0,
     position: 'absolute',
     margin: '16px 0',
+    transform: "translateY(5px)",
+    cursor: 'pointer',
+    color: '#AEAEB2',
   },
 }));
 
 const HomeworkCard = (props) => {
   const classes = useStyle();
   const history = useHistory();
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCloseNO = () => {
+    setOpen(false);
+  };
+  const handleCloseYES = () => {
+    handledeleteHomework();
+    setOpen(false);
+  };
   const statusColors = {
     draft: 'red',
     published: '#7B72AF',
@@ -170,7 +209,23 @@ const HomeworkCard = (props) => {
     props.handleChangeLoader();
     history.push(`/create-homework/${id}`);
   };
-
+  const handledeleteHomework=async()=> {
+    const token = localStorage.getItem('srmToken');
+    try {
+      console.log(id,token);
+      const response = await HomeworkService.deleteHomework(id,token);
+      console.log(response);
+      if (response.status === 200) {
+        console.log('Successfully Deleted');
+        // props.deleteHomework(id);
+        window.location.reload();
+      } else {
+        console.log('Failed to delete');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function deleteHw(id) {
     const token = localStorage.getItem('srmToken');
     try {
@@ -178,7 +233,7 @@ const HomeworkCard = (props) => {
       console.log(response);
       if (response.status === 200) {
         console.log('Successfully Deleted');
-        props.deleteHomework(id);
+        // props.deleteHomework(id);
       } else {
         console.log('Failed to delete');
       }
@@ -189,6 +244,23 @@ const HomeworkCard = (props) => {
 
   return (
     <>
+    <Dialog
+        open={open}
+        onClose={handleCloseNO}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete?"}</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseNO} color="primary" autoFocus>
+            NO
+          </Button>
+          <Button onClick={handleCloseYES} color="primary" >
+            YES
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Grid
         container
         direction='row'
@@ -235,7 +307,7 @@ const HomeworkCard = (props) => {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid item xs={11}>
+              <Grid item xs={8}>
                 <Typography className={classes.labelText} variant='body2'>
                   {main_content ? (
                     <div dangerouslySetInnerHTML={{ __html: main_content }} />
@@ -246,8 +318,9 @@ const HomeworkCard = (props) => {
                   )}
                 </Typography>
               </Grid>
-              <Grid item xs={1} className={classes.imgGrid}>
+              <Grid item xs={4} className={classes.imgGrid}>
                 {status !== 'published' ? (
+                  <>
                   <div
                     className={`${classes.imgDiv} ${classes.textAlignRight}`}>
                     <img
@@ -256,6 +329,20 @@ const HomeworkCard = (props) => {
                       onClick={handleEditHomework}
                     />
                   </div>
+                  <div
+                  className={`${classes.imgDiv_del}`}
+                    // onClick={()=>handledeleteHomework(id)}
+                    onClick={handleClickOpen}
+                  >
+                  {/* <img
+                    src={DeleteIcon}
+                    className={classes.deleteBtn}
+                    onClick={()=>handledeleteHomework(id)}
+                  /> */}
+                  <DeleteOutlineOutlinedIcon fontSize={"medium"}/>
+
+                </div>
+                </>
                 ) : (
                   ''
                 )}

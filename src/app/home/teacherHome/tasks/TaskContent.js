@@ -135,7 +135,7 @@ const useStyle = makeStyles((theme) => ({
   },
   loading:{
     paddingLeft:"50%",
-    paddingTop:"140px",
+    paddingTop:"120px",
   },
 }));
 
@@ -452,9 +452,13 @@ const TaskContent = (props) => {
                         })
                       : ""}
                       {isLoading ? (
+                        <>
+                        <br />
                       <div className={classes.loading}>
                         <CircularProgress color="primary" size={30} />
                       </div>
+                      <br />
+                      </>
                     ) : null}
                     {!isLoading && !doneTasks.length ? (
                       <div className={classes.emptyView}>
@@ -552,9 +556,13 @@ const TaskContent = (props) => {
                         })
                       : ""}
                     {isLoading ? (
-                      <div className={classes.loading}>
-                        <CircularProgress color="primary" size={30} />
-                      </div>
+                       <>
+                       <br />
+                     <div className={classes.loading}>
+                       <CircularProgress color="primary" size={30} />
+                     </div>
+                     <br />
+                     </>
                     ) : null}
                     {!isLoading && !tasks.length ? (
                       <div className={classes.emptyView}>

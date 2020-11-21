@@ -7,8 +7,9 @@ import Paper from '@material-ui/core/Paper';
 import medal from '../../../assets/images/Medal.png'
 import { Container } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import TestSubjectPage from './testSubjectPage';
+import { CircularProgress, Typography } from '@material-ui/core';
 
 
 
@@ -20,6 +21,12 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "400",
         lineHeight: "1.5",
     },
+    loading: {
+        width: '100%',
+        textAlign: 'center',
+        paddingTop: '8px',
+        fontSize: '20px',
+      },
     card: {
         width: '30%',
     },
@@ -44,6 +51,7 @@ const StudentTimeTable = (props) => {
         }else{
           var token = localStorage.getItem('srmToken');
         }
+    const [isLoading, setIsLoading] = useState(true);
     const [ClassTestList, SetClassTestList] = useState(null);
     const [testID, setTestID] = useState();
     const [ClassID, setClassID] = useState(props.classID);
@@ -59,6 +67,7 @@ const StudentTimeTable = (props) => {
         if (res.status === 200) {
             const data = res.data.data.data;
             SetClassTestList(data);
+            setIsLoading(false);
         }
     }
     useEffect(() => {
@@ -80,6 +89,17 @@ const StudentTimeTable = (props) => {
         <Fragment>
             {subPageUI === false ?
                 <div >
+                     {isLoading ? (
+                        <>
+                        <br />
+                        <div className={classes.loading}>
+                        <CircularProgress color='primary' size={30} />
+                        </div>
+                        <br />
+                        </>
+                    ) : 
+                    (
+                        <>
                     <Grid container spacing={12} style={{ marginTop: '8px', marginBottom: '15px',justifyContent:'center'}}>
                         <Typography className={classes.headingtest} style={{ textAlign: 'center', paddingRight: '20px' }}>Test List</Typography>
                     </Grid>
@@ -102,6 +122,9 @@ const StudentTimeTable = (props) => {
                                     )
                                 }) : null}
                         </Grid>
+                        </>
+                    )
+                        }
 
 
                 </div>

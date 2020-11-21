@@ -122,9 +122,15 @@ const Announcements = (props) => {
       scrollThreshold={0.2}
     >
       {content}
-      {loading ? <div className={classes.loading}>
+      {loading ? 
+      <>
+          <br />
+      <div className={classes.loading}>
             <CircularProgress color="primary" size={30} />
-          </div> : null}
+          </div>
+          <br />
+          </>
+           : null}
       {!loading && !announcements.length ? (
         <div className={classes.emptyView}>
           <Typography>You don't have any Announcement.</Typography>

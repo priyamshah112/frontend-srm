@@ -1,9 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
 import Grid from '@material-ui/core/Grid';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import TimetableService from '../timeTableService';
+import { CircularProgress, Typography } from '@material-ui/core';
 
 
 
@@ -25,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "400",
         lineHeight: "1.5",
     },
+    loading: {
+        width: '100%',
+        textAlign: 'center',
+        paddingTop: '8px',
+        fontSize: '20px',
+      },
     headingtest_1:{
         fonTize: "1rem",
         fontFamily: "Avenir Medium",
@@ -122,6 +129,7 @@ const TestSubjectPage = (props) => {
 
     const [examTimeTable, setExamTimeTable] = useState([]);
     const [subjectCategList, setSubjectCategList] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
 
     const formateSubjectCategory = (data) => {
@@ -158,7 +166,7 @@ const TestSubjectPage = (props) => {
             let subjectCategList = formateSubjectCategory(res.data);
             setSubjectCategList(subjectCategList);
             setExamTimeTable(res.data.data.examTimeTable.filter((ele) => ele.status === 'published'));
-
+            setIsLoading(false);
         }
     }
 
@@ -180,6 +188,16 @@ const TestSubjectPage = (props) => {
 
     return (
         <Fragment>
+            {isLoading ? (
+                        <>
+                        <br />
+                        <div className={classes.loading}>
+                        <CircularProgress color='primary' size={30} />
+                        </div>
+                        <br />
+                        </>
+                    ) : 
+
             <div>
                 <Grid container spacing={3} style={{}}>
                     <Grid item xs={12} style={{ paddingLeft: '12px' }}>
@@ -365,7 +383,8 @@ const TestSubjectPage = (props) => {
 
 
             </div>
-
+            
+            }
 
         </Fragment>
     )

@@ -18,6 +18,13 @@ import {
 import EditIcon from "../../../assets/images/Edit.svg";
 import DoneIcon from "../../../assets/images/notifications/Done.svg";
 import WarningIcon from "../../../assets/images/notifications/Warning.svg";
+// import DeleteIcon from '../../../assets/images/Delete.svg';
+import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
+
+import NotificationService from '../NotificationService';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -123,13 +130,36 @@ const useStyles = makeStyles((theme) => ({
     width: "113px",
     height: "36px",
   },
+  deleteBtn: {
+    // width: '10px',
+    // height: '10px',
+    // paddingLeft: '5px',
+    // paddingTop:"-10px",
+    // transform: 'translateY(4px)',
+    cursor: 'pointer',
+    // transform: "translateY(-30px)",
+    // transform: "translateX(40px)",
+    transform: "translateY(5px)",
+  },
 }));
 
 const TeacherNotificationCard = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = React.useState(false);
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCloseNO = () => {
+    setOpen(false);
+  };
+  const handleCloseYES = () => {
+    handledeletenotif();
+    setOpen(false);
+  };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -140,7 +170,42 @@ const TeacherNotificationCard = (props) => {
   const handleEdit = () => {
     history.push(`/create-notification/${props.notification.id}`);
   };
+  const handledeletenotif=async()=> {
+    const token = localStorage.getItem('srmToken');
+    try {
+      // console.log(props.notification.id,token);
+      const response = await NotificationService.deleteNotification(props.notification.id,token);
+      console.log(response);
+      if (response.status === 200) {
+        console.log('Successfully Deleted');
+        // props.deleteHomework(id);
+        window.location.reload();
+      } else {
+        console.log('Failed to delete');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
+    <>
+        <Dialog
+        open={open}
+        onClose={handleCloseNO}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete?"}</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseNO} color="primary" autoFocus>
+            NO
+          </Button>
+          <Button onClick={handleCloseYES} color="primary" >
+            YES
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
     <Card className={classes.card}>
       <CardHeader
         className={classes.cardHeader}
@@ -151,6 +216,7 @@ const TeacherNotificationCard = (props) => {
             >
               {moment(props.notification.created_at).format("DD MMM, hh.mma")}
               {props.notification.notify_status !== "published" ? (
+                <>
                 <span
                   className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
                 >
@@ -160,6 +226,19 @@ const TeacherNotificationCard = (props) => {
                     onClick={handleEdit}
                   />
                 </span>
+
+                  <span 
+                    // onClick={()=>handledeletenotif(props.notification.id)}
+                    onClick={handleClickOpen}
+                    >
+                  <DeleteOutlineOutlinedIcon fontSize={"small"} className={` ${classes.deleteBtn}`}/>
+                  </span>
+                  {/* <img
+                    src={DeleteOutlineOutlinedIcon}
+                    className={`${classes.deleteBtn}`}
+                    onClick={()=>handledeletenotif(props.notification.id)}
+                  /> */}
+                </>
               ) : (
                 ""
               )}
@@ -202,6 +281,7 @@ const TeacherNotificationCard = (props) => {
         </Grid>
       </CardContent>
     </Card>
+    </>
   );
 };
 
