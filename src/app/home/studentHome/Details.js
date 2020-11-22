@@ -13,6 +13,7 @@ import remindersvg from '../../../assets/images/home/reminder.svg'
 import HomeService from '../HomeSerivce'
 import Reminder from './Reminder'
 import BackIcon from '../../../assets/images/Back.svg'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const useStyle = makeStyles((theme) => ({
 	cardContainer: {
@@ -20,6 +21,12 @@ const useStyle = makeStyles((theme) => ({
 		'&::-webkit-scrollbar': {
 			display: 'none',
 		},
+	},
+	loading: {
+		width: '100%',
+		textAlign: 'center',
+		paddingTop: '8px',
+		fontSize: '20px',
 	},
 	card: {
 		width: '95%',
@@ -29,14 +36,15 @@ const useStyle = makeStyles((theme) => ({
 		boxShadow: 'none',
 	},
 	reminder: {
-		Align: 'right',
+		// width: "100%",
+		// textAlign: "right",
 		paddingLeft: '20px',
 		transform: 'translateY(4px)',
-		cursor: 'pointer',
 	},
 	title: {
 		fontWeight: 600,
 		fontStyle: 'normal',
+		// fontSize: '14px',
 	},
 	media: {
 		'& img': {
@@ -204,52 +212,7 @@ const Details = (props) => {
 		try {
 			let entityDate = {}
 
-			if (checkboxes.oneDayBefore === true) {
-				entityDate['1_day_before'] = moment(details.event_date)
-					.subtract(1, 'days')
-					.format('YYYY-MM-DD')
-			}
-			if (checkboxes.twoDayBefore === true) {
-				entityDate['2_day_before'] = moment(details.event_date)
-					.subtract(2, 'days')
-					.format('YYYY-MM-DD')
-			}
-			if (checkboxes.threeDayBefore === true) {
-				entityDate['3_day_before'] = moment(details.event_date)
-					.subtract(3, 'days')
-					.format('YYYY-MM-DD')
-			}
-			if (entityReminderDate) {
-				const response = await HomeService.updateReminder(
-					{
-						entity_id: details.id,
-						entity_date:
-							Object.keys(entityDate).length === 0 ? null : entityDate,
-						entity_type: 'news',
-					},
-					props.token,
-					reminderId
-				)
-				if (response.status === 200) {
-					setEntityReminderDate({ ...response.data.data.entity_date })
-				}
-			} else {
-				if (Object.keys(entityDate).length !== 0) {
-					const response = await HomeService.setReminder(
-						{
-							entity_id: details.id,
-							entity_date: entityDate,
-							entity_type: 'news',
-						},
-						props.token
-					)
-					if (response.status === 200) {
-						console.log(response.data)
-						setEntityReminderDate({ ...entityDate })
-						setReminderId(response.data.Reminder_id)
-					}
-				}
-			}
+			// const response =await HomeService.setReminder()
 		} catch (e) {
 			console.log(e)
 		}
@@ -303,6 +266,7 @@ const Details = (props) => {
 											{details.status === 'published' && reminderIcon ? (
 												<span>
 													<img
+														style={{ cursor: 'pointer' }}
 														className={classes.reminder}
 														src={remindersvg}
 														alt='reminder'
@@ -413,7 +377,9 @@ const Details = (props) => {
 					)}
 				</>
 			) : (
-				''
+				<div className={classes.loading}>
+					<CircularProgress color='primary' size={30} />
+				</div>
 			)}
 		</>
 	)

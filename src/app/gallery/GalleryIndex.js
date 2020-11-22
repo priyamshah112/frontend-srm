@@ -186,8 +186,14 @@ const GalleryIndex = (props) => {
 
 	return (
 		<>
-			<div className={classes.div}>
-				<div className={classes.divStyle}>
+			<div
+				style={{
+					margin: '10px',
+					backgroundColor: 'transparent',
+					height: '100%',
+				}}
+			>
+				<div style={{ textAlign: 'right' }}>
 					<IconButton
 						color='primary'
 						aria-label='upload picture'
@@ -201,7 +207,7 @@ const GalleryIndex = (props) => {
 						<Typography className={classes.headingText}>Upload</Typography>
 					</IconButton>
 				</div>
-				<div className={classes.marginBottom}></div>
+				<div style={{ marginBottom: '5px' }}></div>
 				<div className={classes.root} id='scrollable'>
 					<InfiniteScroll
 						dataLength={tileData.length}
@@ -209,7 +215,14 @@ const GalleryIndex = (props) => {
 						hasMore={hasMore}
 						loader={
 							<>
-								<div className={`${classes.loading} ${classes.loadingDiv}`}>
+								<div
+									className={classes.loading}
+									style={{
+										width: '100%',
+										textAlign: 'center',
+										marginTop: '8px',
+									}}
+								>
 									<CircularProgress color='primary' size={30} />
 								</div>
 								<br />
@@ -228,7 +241,7 @@ const GalleryIndex = (props) => {
 								return (
 									<GridListTile
 										key={tile.id}
-										className={classes.listStyleType}
+										style={{ listStyleType: 'none' }}
 										cols={1}
 									>
 										<img
@@ -257,9 +270,13 @@ const GalleryIndex = (props) => {
 							})}
 						</GridList>
 						{loading ? (
-							<div className={classes.loading}>
-								<CircularProgress color='primary' size={30} />
-							</div>
+							<>
+								<br />
+								<div className={classes.loading}>
+									<CircularProgress color='primary' size={30} />
+								</div>
+								<br />
+							</>
 						) : null}
 						{!loading && !tileData.length ? (
 							<div className={classes.emptyView}>

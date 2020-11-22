@@ -201,6 +201,7 @@ const useStyle = makeStyles((theme) => ({
 		margin: 'auto',
 		fontFamily: 'Avenir Medium',
 		fontize: '1.2rem',
+		color: '#1C1C1E',
 	},
 }))
 

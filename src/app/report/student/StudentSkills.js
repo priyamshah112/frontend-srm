@@ -159,6 +159,7 @@ const StudentSkills = (props) => {
 	const [refObj, setRefObj] = useState({})
 	const [isEditGrade, setIsEditGrade] = useState({})
 
+	// const { searchData, testData } = props;
 	var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')))
 	var string1 = 'parent'
 	if (String(role) === String(string1)) {
@@ -178,7 +179,7 @@ const StudentSkills = (props) => {
 	}
 
 	const reportVisibility = (data) => {
-		console.log(data)
+		// console.log(data);
 		if (data.grades[0]) {
 			if (data.grades[0].remarks !== '') {
 				setremarkText(data.grades[0].remarks)
@@ -205,15 +206,16 @@ const StudentSkills = (props) => {
 		let loading = true
 		setLoading(true)
 		if ((searchData.user_id || searchData.id) && testData.id) {
+			var response = {}
 			async function getReportCard() {
 				if (String(role) === 'student' || String(role) === 'parent') {
-					var response = await ReportService.fetchReportCard(
+					response = await ReportService.fetchReportCard(
 						token,
 						searchData.id,
 						testData.id
 					)
 				} else {
-					var response = await ReportService.fetchReportCard(
+					response = await ReportService.fetchReportCard(
 						token,
 						searchData.user_id,
 						testData.id
@@ -224,6 +226,24 @@ const StudentSkills = (props) => {
 						setReportData(response.data.data)
 						reportVisibility(response.data.data)
 						setLoading(false)
+						// functional post bug
+						if (
+							!(
+								Array.isArray(response.data.data.grades) &&
+								response.data.data.grades.length
+							)
+						) {
+							const test = {
+								student_id: searchData.user_id,
+								test_id: testData.id,
+								remarks: 'remark',
+								status: 'draft',
+							}
+							addSkillCall({
+								subject: [],
+								...test,
+							})
+						}
 					}
 				} else {
 					setError('Error in fetching report card')
@@ -284,6 +304,7 @@ const StudentSkills = (props) => {
 
 				if (response.status === 200) {
 					if (loading) {
+						setUpdateStatus((pre) => !pre)
 					}
 				}
 			} catch (error) {
@@ -300,6 +321,7 @@ const StudentSkills = (props) => {
 		const skill = []
 		const subject = []
 		let saveStatus = 'draft'
+		var bool = true
 
 		if (name === 'skill' || name === 'grade') {
 			const { value } = input.target
@@ -324,23 +346,28 @@ const StudentSkills = (props) => {
 			})
 		}
 
+		if (name === 'publish') {
+			saveStatus = 'published'
+			bool = false
+		}
+
 		subject.push({
 			subject_id: skillData.id,
 			subject_name: skillData.name,
 			skill: skill,
 		})
-		if (name === 'publish') {
-			saveStatus = 'published'
-		}
-
-		const restSubject = allSubject.filter((sub) => {
-			return sub.subject_name != skillData.name && sub.subject_id
+		console.log(setSubjectArray)
+		console.log(allSubject)
+		var restSubject = allSubject.filter((sub) => {
+			return sub.subject_name != (skillData.name && sub.subject_id)
 		})
+		console.log(restSubject)
+		var totalSubject = [...restSubject, ...subject]
 
-		const totalSubject = [...restSubject, ...subject]
 		const test = {
 			student_id: searchData.user_id,
 			test_id: testData.id,
+			// "remarks": remarkText || '.',
 			status: saveStatus,
 		}
 		if (name === 'remark') {
@@ -350,17 +377,41 @@ const StudentSkills = (props) => {
 			test['remarks'] = remarkText || '.'
 		}
 
-		if (reportData.grades[0]) {
-			updateSkillCall({
-				id: reportData.grades[0].id,
-				subject: totalSubject,
-				...test,
-			})
+		// console.log(test);
+		// console.log(totalSubject);
+		console.log({
+			id: reportData.grades[0].id,
+			subject: totalSubject,
+			...test,
+		})
+
+		if (bool) {
+			if (reportData.grades[0]) {
+				updateSkillCall({
+					id: reportData.grades[0].id,
+					subject: totalSubject,
+					...test,
+				})
+			} else {
+				addSkillCall({
+					subject: subject,
+					...test,
+				})
+			}
 		} else {
-			addSkillCall({
-				subject: subject,
-				...test,
-			})
+			if (Array.isArray(allSubject) && allSubject.length) {
+				updateSkillCall({
+					id: reportData.grades[0].id,
+					subject: totalSubject,
+					...test,
+				})
+			} else {
+				updateSkillCall({
+					id: reportData.grades[0].id,
+					subject: setSubjectArray,
+					...test,
+				})
+			}
 		}
 	}
 
@@ -393,7 +444,8 @@ const StudentSkills = (props) => {
 								variant='outlined'
 								placeholder={'Grade Name'}
 								defaultValue={obj.skill_list_data.grade_name || ''}
-								className={`${classes.bgWhite} ${classes.marginLeft}`}
+								className={classes.bgWhite}
+								style={{ marginLeft: '10px' }}
 								onChange={(event) => {
 									onChangeSkills(event, obj, key, 'grade')
 								}}
@@ -431,22 +483,30 @@ const StudentSkills = (props) => {
 
 	const PublishButton = () => {
 		return (
-			<Box display='block' displayPrint='none' className={classes.float}>
-				{!isPublish && editAccess() ? (
-					<Box>
-						<Button
-							variant='contained'
-							color='primary'
-							disableElevation
-							onClick={(event) => {
-								onChangeSkills(event, {}, 0, 'publish')
-								cancelUpdate()
-							}}
-						>
-							Publish Now
-						</Button>
-					</Box>
-				) : null}
+			<Box display='block' displayPrint='none' style={{ float: 'right' }}>
+				{
+					!isPublish && editAccess() ? (
+						//  && (reportData.grades[0] && reportData.grades[0].report_grade[0]) && <div className={classes.publishCard}>
+						// {/* {
+						// !isLoading && !editSkill && !isEditGrade && editAccess() && */}
+						<Box>
+							<Button
+								variant='contained'
+								color='primary'
+								disableElevation
+								onClick={(event) => {
+									onChangeSkills(event, {}, 0, 'publish')
+									cancelUpdate()
+								}}
+							>
+								Publish Now
+							</Button>
+						</Box>
+					) : null
+
+					// {/* } */}
+					// </div>
+				}
 			</Box>
 		)
 	}
@@ -495,7 +555,7 @@ const StudentSkills = (props) => {
 					)
 				})}
 				{
-					<span className={classes.display}>
+					<span style={{ display: 'none' }}>
 						{setSubjectArray.push({
 							subject_id: skillArr[0] ? skillArr[0].subject_id : null,
 							subject_name: skill.name,
@@ -604,7 +664,7 @@ const StudentSkills = (props) => {
 				{isPublish ? (
 					<div className={classes.remarkNote}>
 						<Typography className={classes.noteText}>
-							<span className={classes.color}> Remark : &nbsp;</span>
+							<span style={{ color: 'gray' }}> Remark : &nbsp;</span>
 							<span>{remarkText}</span>
 						</Typography>
 					</div>
@@ -626,9 +686,11 @@ const StudentSkills = (props) => {
 							defaultValue={remarkText}
 							placeholder={'Remark'}
 							className={classes.bgWhite}
+							// onChange={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
 							onBlur={(event) => {
 								onChangeSkills(event, {}, 0, 'remark')
 							}}
+							// onfocusout={(event) => { onChangeSkills(event, {}, 0, 'remark'); }}
 						/>
 					</div>
 				)}
@@ -665,6 +727,7 @@ const StudentSkills = (props) => {
 					<br />
 				</>
 			)}
+			{/* <BackdropLoader open={isLoading} /> */}
 		</Fragment>
 	)
 }

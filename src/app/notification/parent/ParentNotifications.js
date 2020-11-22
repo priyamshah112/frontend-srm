@@ -250,9 +250,13 @@ const ParentNotification = (props) => {
 					scrollThreshold={0.2}
 				>
 					{loading ? (
-						<div className={classes.loading}>
-							<CircularProgress color='primary' size={30} />
-						</div>
+						<>
+							<br />
+							<div className={classes.loading}>
+								<CircularProgress color='primary' size={30} />
+							</div>
+							<br />
+						</>
 					) : null}
 					{!loading && !notifications.length ? (
 						<div className={classes.emptyView}>
