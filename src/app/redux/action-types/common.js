@@ -1,3 +1,3 @@
 export default {
-  COMMON_API_CALL: "Common.apiCall",
-};
+	COMMON_API_CALL: 'Common.apiCall',
+}
