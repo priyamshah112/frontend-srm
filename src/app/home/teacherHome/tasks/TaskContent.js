@@ -52,6 +52,31 @@ const useStyle = makeStyles((theme) => ({
 	taskCard: {
 		borderRadius: '10px',
 		boxShadow: 'none',
+		margin: '0 10px 0 10px',	
+		height: '365px',	
+		[theme.breakpoints.down('xs')]: {	
+		  margin: '10px 0 0 0',	
+		},	
+	  },	
+	  clickCard: {	
+		cursor: "pointer",	
+		padding: "0 !important",	
+		margin: 0,	
+		width: "100%",	
+		height: "100%",	
+	  },	
+	  clickHere: {	
+		width: "100%",	
+		transform: "translateY(160px)",	
+		// padding: '50%, 0',	
+		textAlign: "center",	
+	  },	
+	  clickContent: {	
+		// paddingTop: '35%',	
+		fonTize: "1rem",	
+		fontFamily: "Avenir Medium",	
+		fontWeight: "400",	
+		color: '#1C1C1E',		
 	},
 	cardTitle: {
 		fontWeight: 500,

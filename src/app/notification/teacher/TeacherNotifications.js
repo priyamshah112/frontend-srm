@@ -133,9 +133,10 @@ const TeacherNotifications = (props) => {
 		}
 	}, [classState, category])
 
-	const handleChange = (newValue) => {
-		setValue(newValue)
-	}
+	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	  };
+	
 
 	return (
 		<div className={classes.container}>
