@@ -46,6 +46,7 @@ const useStyle = makeStyles((theme) => ({
 		margin: 'auto',
 		fontFamily: 'Avenir Medium',
 		fontize: '1.2rem',
+		color: '#1C1C1E',
 	},
 	adornmentColor: {
 		color: 'rgba(0, 0, 0, 0.54)',
@@ -60,6 +61,7 @@ const useStyle = makeStyles((theme) => ({
 	},
 	fieldStyle: {
 		width: '97%',
+		// float:"right",
 		fontFamily: 'Avenir Book',
 		fontSize: ' 1rem',
 		margin: 'auto',

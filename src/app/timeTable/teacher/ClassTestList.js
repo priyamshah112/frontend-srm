@@ -76,10 +76,12 @@ const ClassTestList = (props) => {
 	const token = localStorage.getItem('srmToken')
 	const [ClassTestList, SetClassTestList] = useState(null)
 	const [testID, setTestID] = useState()
+	// const [ClassID, setClassID] = useState();
 	const [subPageUI, setSubPageUI] = useState(false)
 	const [emptyTimeTable, setEmptyTimeTable] = useState('')
 	const [TimeTableData, setTimeTableData] = useState(null)
 	const [examTimeTable, setexamTimeTable] = useState(null)
+
 	const [forwardsublistT, setforwardsublistT] = useState('none')
 	const [subjectCategList, setSubjectCategList] = useState([])
 	const [testData, setTestData] = useState({})
@@ -87,10 +89,12 @@ const ClassTestList = (props) => {
 	const [isLoading, setLoading] = useState(true)
 
 	const fetchClassTestList = async () => {
+		setLoading(true)
 		const res = await TimetableService.getClassTestList(token, props.classID)
 		if (res.status === 200) {
 			const data = res.data.data.data
 			SetClassTestList(data)
+			setLoading(false)
 		}
 	}
 	const formateSubjectCategory = (data) => {
@@ -114,8 +118,14 @@ const ClassTestList = (props) => {
 				let timeTable = subjectTimeTable.filter(
 					(ele) => ele.subject_id === sub.id
 				)
+				// const pTimeTable = timeTable.filter((ele) => ele.status === 'published');
+				// let editable = true;
+				// if (pTimeTable.length) {
+				//     editable = false;
+				// }
 				let subjectDetails = {
 					timeTable: timeTable,
+					// editable: editable,
 					...sub,
 				}
 				tmpCategorySubject.subjectList.push(subjectDetails)
@@ -134,6 +144,7 @@ const ClassTestList = (props) => {
 
 		if (res.status === 200) {
 			let subjectCategList = formateSubjectCategory(res.data)
+			// console.log(subjectCategList);
 			setSubjectCategList(subjectCategList)
 			console.log(subjectCategList)
 
@@ -146,13 +157,16 @@ const ClassTestList = (props) => {
 				setexamTimeTable(data2)
 
 				if (Array.isArray(data1) && data1.length) {
+					// console.log(data1)
 					setTimeTableData(data1)
 					setexamTimeTable(data2)
 				} else {
 					setTimeTableData(null)
+					// setexamTimeTable(null);
 				}
 			} else {
 				setEmptyTimeTable('TimeTable is not avilabel ')
+				// setexamTimeTable(null);
 			}
 			setLoading(false)
 		}
@@ -173,6 +187,7 @@ const ClassTestList = (props) => {
 		setSubPageUI(false)
 	}
 	const double_sublistBacktick = () => {
+		// setSubPageUI(true);
 		setSubPageUI(false)
 		fetchTestSublistWithTime(selected_test)
 		setSubPageUI(true)
@@ -185,9 +200,13 @@ const ClassTestList = (props) => {
 		<Fragment>
 			{subPageUI === false ? (
 				<div>
-					<Grid container spacing={12} className={classes.Grid}>
-						<Grid item xs={12} className={classes.textAlign}>
-							<div className={classes.float}>
+					<Grid
+						container
+						spacing={12}
+						style={{ marginTop: '15px', marginBottom: '15px' }}
+					>
+						<Grid item xs={12} style={{ textAlign: 'center' }}>
+							<div style={{ float: 'left' }}>
 								<Link to='/timetable'>
 									<ArrowBackIosIcon
 										fontSize='small'
@@ -223,7 +242,13 @@ const ClassTestList = (props) => {
 													maxwidth='59px'
 													maxheight='78px'
 												/>
-												<Typography className={classes.typography}>
+												<Typography
+													style={{
+														color: '#1C1C1E',
+														font: 'normal normal medium 18px/25px Avenir',
+														letterSpacing: '0px',
+													}}
+												>
 													{ClassTestList[key].name}
 												</Typography>
 											</Paper>
@@ -233,20 +258,17 @@ const ClassTestList = (props) => {
 							: null}
 					</Grid>
 				</div>
-			) : isLoading === true ? (
+			) : isLoading ? (
 				<div className={classes.loder}>
-					<CircularProgress
-						color='primary'
-						thickness={5}
-						className={classes.CircularProgress}
-					/>
+					<CircularProgress color='primary' thickness={5} />
 				</div>
 			) : (
-				<Container className={classes.overflow}>
+				<Container style={{ marginBottom: '50px', overflow: 'auto' }}>
 					<TestSubjectPage
 						testID={testID}
 						testData={testData}
 						classDetail={props.classDetail}
+						// ClassID={ClassID}
 						sublistBacktick={sublistBacktick}
 						TimeTableData={TimeTableData}
 						double_sublistBacktick={double_sublistBacktick}

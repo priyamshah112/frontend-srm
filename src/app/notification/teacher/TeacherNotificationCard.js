@@ -1,11 +1,30 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
+import CardActions from '@material-ui/core/CardActions'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
 import * as moment from 'moment'
-import { Typography, makeStyles, Grid } from '@material-ui/core'
+import {
+	IconButton,
+	Typography,
+	makeStyles,
+	Grid,
+	Button,
+} from '@material-ui/core'
 import EditIcon from '../../../assets/images/Edit.svg'
+import DoneIcon from '../../../assets/images/notifications/Done.svg'
+import WarningIcon from '../../../assets/images/notifications/Warning.svg'
+// import DeleteIcon from '../../../assets/images/Delete.svg';
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
+
+import NotificationService from '../NotificationService'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -111,77 +130,168 @@ const useStyles = makeStyles((theme) => ({
 		width: '113px',
 		height: '36px',
 	},
+	deleteBtn: {
+		// width: '10px',
+		// height: '10px',
+		// paddingLeft: '5px',
+		// paddingTop:"-10px",
+		// transform: 'translateY(4px)',
+		cursor: 'pointer',
+		// transform: "translateY(-30px)",
+		// transform: "translateX(40px)",
+		transform: 'translateY(5px)',
+	},
 }))
 
 const TeacherNotificationCard = (props) => {
 	const classes = useStyles()
 	const history = useHistory()
+	const [anchorEl, setAnchorEl] = useState(null)
+	const [open, setOpen] = React.useState(false)
 
+	const handleClickOpen = () => {
+		setOpen(true)
+	}
+
+	const handleCloseNO = () => {
+		setOpen(false)
+	}
+	const handleCloseYES = () => {
+		handledeletenotif()
+		setOpen(false)
+	}
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget)
+	}
+
+	const handleClose = () => {
+		setAnchorEl(null)
+	}
 	const handleEdit = () => {
 		history.push(`/create-notification/${props.notification.id}`)
 	}
+	const handledeletenotif = async () => {
+		const token = localStorage.getItem('srmToken')
+		try {
+			// console.log(props.notification.id,token);
+			const response = await NotificationService.deleteNotification(
+				props.notification.id,
+				token
+			)
+			console.log(response)
+			if (response.status === 200) {
+				console.log('Successfully Deleted')
+				// props.deleteHomework(id);
+				window.location.reload()
+			} else {
+				console.log('Failed to delete')
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
 	return (
-		<Card className={classes.card}>
-			<CardHeader
-				className={classes.cardHeader}
-				action={
-					<>
-						<Typography
-							className={`${classes.contentStyle} ${classes.dateStyle}`}
-						>
-							{moment(props.notification.created_at).format('DD MMM, hh.mma')}
-							{props.notification.notify_status !== 'published' ? (
-								<span
-									className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
-								>
-									<img
-										src={EditIcon}
-										className={`${classes.titleIcon}`}
-										onClick={handleEdit}
-									/>
-								</span>
-							) : (
-								''
-							)}
-						</Typography>
-					</>
-				}
-				title={
-					<>
-						<Typography
-							className={classes.cardTitle}
-							onClick={() =>
-								history.push(`/notifications/${props.notification.id}?cby=true`)
-							}
-						>
-							{props.notification.data
-								? props.notification.data.title
+		<>
+			<Dialog
+				open={open}
+				onClose={handleCloseNO}
+				aria-labelledby='alert-dialog-title'
+				aria-describedby='alert-dialog-description'
+			>
+				<DialogTitle id='alert-dialog-title'>
+					{'Are you sure you want to delete?'}
+				</DialogTitle>
+				<DialogActions>
+					<Button onClick={handleCloseNO} color='primary' autoFocus>
+						NO
+					</Button>
+					<Button onClick={handleCloseYES} color='primary'>
+						YES
+					</Button>
+				</DialogActions>
+			</Dialog>
+
+			<Card className={classes.card}>
+				<CardHeader
+					className={classes.cardHeader}
+					action={
+						<>
+							<Typography
+								className={`${classes.contentStyle} ${classes.dateStyle}`}
+							>
+								{moment(props.notification.created_at).format('DD MMM, hh.mma')}
+								{props.notification.notify_status !== 'published' ? (
+									<>
+										<span
+											className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
+										>
+											<img
+												src={EditIcon}
+												className={`${classes.titleIcon}`}
+												onClick={handleEdit}
+											/>
+										</span>
+
+										<span
+											// onClick={()=>handledeletenotif(props.notification.id)}
+											onClick={handleClickOpen}
+										>
+											<DeleteOutlineOutlinedIcon
+												fontSize={'small'}
+												className={` ${classes.deleteBtn}`}
+											/>
+										</span>
+										{/* <img
+                    src={DeleteOutlineOutlinedIcon}
+                    className={`${classes.deleteBtn}`}
+                    onClick={()=>handledeletenotif(props.notification.id)}
+                  /> */}
+									</>
+								) : (
+									''
+								)}
+							</Typography>
+						</>
+					}
+					title={
+						<>
+							<Typography
+								className={classes.cardTitle}
+								onClick={() =>
+									history.push(
+										`/notifications/${props.notification.id}?cby=true`
+									)
+								}
+							>
+								{props.notification.data
 									? props.notification.data.title
-									: 'N/A'
-								: 'N/A'}
-						</Typography>
-					</>
-				}
-			/>
-			<CardContent classes={{ root: classes.cardContent }}>
-				<Grid container>
-					<Grid item xs={10}>
-						<Typography className={classes.contentStyle}>
-							{props.notification.data
-								? props.notification.data.summary
+										? props.notification.data.title
+										: 'N/A'
+									: 'N/A'}
+							</Typography>
+						</>
+					}
+				/>
+				<CardContent classes={{ root: classes.cardContent }}>
+					<Grid container>
+						<Grid item xs={10}>
+							<Typography className={classes.contentStyle}>
+								{props.notification.data
 									? props.notification.data.summary
-									: 'N/A'
-								: 'N/A'}
-						</Typography>
+										? props.notification.data.summary
+										: 'N/A'
+									: 'N/A'}
+							</Typography>
+						</Grid>
+						<Grid item xs={2} className={classes.readClass}>
+							<Typography className={classes.contentStyle}>
+								{`${props.notification.notify_status}`.toUpperCase()}
+							</Typography>
+						</Grid>
 					</Grid>
-					<Grid item xs={2} className={classes.readClass}>
-						<Typography className={classes.contentStyle}>
-							{`${props.notification.notify_status}`.toUpperCase()}
-						</Typography>
-					</Grid>
-				</Grid>
-			</CardContent>
-		</Card>
+				</CardContent>
+			</Card>
+		</>
 	)
 }
 

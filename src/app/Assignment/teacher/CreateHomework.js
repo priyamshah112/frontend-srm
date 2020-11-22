@@ -30,6 +30,10 @@ const useStyle = makeStyles((theme) => ({
 	formStyle: {
 		margin: 'auto',
 		width: '95%',
+
+		// marginLeft: '20px',
+		// marginRight: '20px',
+
 		backgroundColor: 'white',
 		justifyContent: 'center',
 		textAlign: 'center',
@@ -56,6 +60,7 @@ const useStyle = makeStyles((theme) => ({
 		margin: 'auto',
 		fontFamily: 'Avenir Medium',
 		fontize: '1.2rem',
+		color: '#1C1C1E',
 	},
 	fieldStyle: {
 		width: '100%',

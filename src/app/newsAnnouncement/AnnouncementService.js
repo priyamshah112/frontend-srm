@@ -23,6 +23,14 @@ class AnnouncementService {
 			},
 		})
 	}
+	deleteAnnouncement(id, token) {
+		return axios.delete(`${BACKEND_API_URL}/news/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
 	publishAnnouncement(params, payload, token) {
 		console.log(payload, params)
 		return axios.put(`${BACKEND_API_URL}/news/${params.id}`, payload, {
@@ -33,6 +41,7 @@ class AnnouncementService {
 		})
 	}
 	fetchAnnouncements(params, token) {
+		// console.log(token);
 		return axios.get(`${BACKEND_API_URL}/news`, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -44,6 +53,7 @@ class AnnouncementService {
 				current_role: params.selectedRole,
 			},
 		})
+		// return true;
 	}
 	fetchDraftAnnouncement(params, token) {
 		return axios.get(`${BACKEND_API_URL}/news/${params.id}`, {

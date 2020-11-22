@@ -52,30 +52,6 @@ const useStyle = makeStyles((theme) => ({
 	taskCard: {
 		borderRadius: '10px',
 		boxShadow: 'none',
-
-		margin: '0 10px 0 10px',
-		height: '365px',
-		[theme.breakpoints.down('xs')]: {
-			margin: '10px 0 0 0',
-		},
-	},
-	clickCard: {
-		cursor: 'pointer',
-		padding: '0 !important',
-		margin: 0,
-		width: '100%',
-		height: '100%',
-	},
-	clickHere: {
-		width: '100%',
-		transform: 'translateY(160px)',
-		textAlign: 'center',
-	},
-	clickContent: {
-		fonTize: '1rem',
-		fontFamily: 'Avenir Medium',
-		fontWeight: '400',
-		color: '#1C1C1E',
 	},
 	cardTitle: {
 		fontWeight: 500,
@@ -128,7 +104,7 @@ const useStyle = makeStyles((theme) => ({
 	},
 	loading: {
 		paddingLeft: '50%',
-		paddingTop: '140px',
+		paddingTop: '120px',
 	},
 }))
 
@@ -446,9 +422,13 @@ const TaskContent = (props) => {
 											  })
 											: ''}
 										{isLoading ? (
-											<div className={classes.loading}>
-												<CircularProgress color='primary' size={30} />
-											</div>
+											<>
+												<br />
+												<div className={classes.loading}>
+													<CircularProgress color='primary' size={30} />
+												</div>
+												<br />
+											</>
 										) : null}
 										{!isLoading && !doneTasks.length ? (
 											<div className={classes.emptyView}>
@@ -550,9 +530,13 @@ const TaskContent = (props) => {
 											  })
 											: ''}
 										{isLoading ? (
-											<div className={classes.loading}>
-												<CircularProgress color='primary' size={30} />
-											</div>
+											<>
+												<br />
+												<div className={classes.loading}>
+													<CircularProgress color='primary' size={30} />
+												</div>
+												<br />
+											</>
 										) : null}
 										{!isLoading && !tasks.length ? (
 											<div className={classes.emptyView}>

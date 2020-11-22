@@ -117,9 +117,13 @@ const Announcements = (props) => {
 		>
 			{content}
 			{loading ? (
-				<div className={classes.loading}>
-					<CircularProgress color='primary' size={30} />
-				</div>
+				<>
+					<br />
+					<div className={classes.loading}>
+						<CircularProgress color='primary' size={30} />
+					</div>
+					<br />
+				</>
 			) : null}
 			{!loading && !announcements.length ? (
 				<div className={classes.emptyView}>

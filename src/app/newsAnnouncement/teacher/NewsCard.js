@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -7,7 +7,13 @@ import Typography from '@material-ui/core/Typography'
 import { useHistory } from 'react-router-dom'
 import * as moment from 'moment'
 import EditIcon from '../../../assets/images/Edit.svg'
-import { Box, CardHeader, CardActions } from '@material-ui/core'
+import { Box, CardHeader, CardMedia, CardActions } from '@material-ui/core'
+import AnnouncementService from '../AnnouncementService'
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
 const useStyle = makeStyles((theme) => ({
 	card: {
@@ -96,8 +102,12 @@ const useStyle = makeStyles((theme) => ({
 	editBtn: {
 		marginLeft: 'auto',
 		paddingRight: '5px',
-		paddingTop: '5px',
+		// paddingTop: '5px',
 		cursor: 'pointer',
+	},
+	editBtn1: {
+		// bottom:"-5px",
+		paddingTop: '-10px',
 	},
 	cardTitle: {},
 	announcementImg: {
@@ -111,11 +121,23 @@ const useStyle = makeStyles((theme) => ({
 			borderRadius: '4px',
 		},
 	},
+	deleteBtn: {
+		width: '22px',
+		height: '21px',
+		paddingLeft: '5px',
+		cursor: 'pointer',
+		color: '#AEAEB2',
+	},
 }))
 
 const NewsCard = (props) => {
 	const classes = useStyle()
 	const history = useHistory()
+	const statusColors = {
+		draft: 'red',
+		published: '#7B72AF',
+		active: 'green',
+	}
 	const {
 		id,
 		status,
@@ -124,12 +146,61 @@ const NewsCard = (props) => {
 		media_url,
 		created_at,
 	} = props.announcement
+	const [open, setOpen] = React.useState(false)
+
+	const handleClickOpen = () => {
+		setOpen(true)
+	}
+
+	const handleCloseNO = () => {
+		setOpen(false)
+	}
+	const handleCloseYES = () => {
+		handledeleteAnnouncement()
+		setOpen(false)
+	}
 
 	const handleEditAnnouncement = () => {
 		history.push(`/create-announcement/${id}`)
 	}
+	const handledeleteAnnouncement = async () => {
+		const token = localStorage.getItem('srmToken')
+		try {
+			console.log(id, token)
+			const response = await AnnouncementService.deleteAnnouncement(id, token)
+			console.log(response)
+			if (response.status === 200) {
+				console.log('Successfully Deleted')
+				// props.deleteHomework(id);
+				window.location.reload()
+			} else {
+				console.log('Failed to delete')
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
 	return (
 		<>
+			<Dialog
+				open={open}
+				onClose={handleCloseNO}
+				aria-labelledby='alert-dialog-title'
+				aria-describedby='alert-dialog-description'
+			>
+				<DialogTitle id='alert-dialog-title'>
+					{'Are you sure you want to delete?'}
+				</DialogTitle>
+				<DialogActions>
+					<Button onClick={handleCloseNO} color='primary' autoFocus>
+						NO
+					</Button>
+					<Button onClick={handleCloseYES} color='primary'>
+						YES
+					</Button>
+				</DialogActions>
+			</Dialog>
+
 			<Grid
 				container
 				direction='row'
@@ -170,6 +241,8 @@ const NewsCard = (props) => {
 						}
 					/>
 
+					{/* {media_url ? <img src={media_url} /> : ""} */}
+
 					<CardContent className={classes.cardContent}>
 						{media_url && (
 							<Grid
@@ -199,11 +272,24 @@ const NewsCard = (props) => {
 							<Grid item xs={3} className={classes.editBtnGrid}>
 								<Box className={classes.editBtn}>
 									{status !== 'published' ? (
-										<img
-											src={EditIcon}
-											alt='Edit Icon'
-											onClick={handleEditAnnouncement}
-										/>
+										<>
+											<span className={classes.editBtn1}>
+												<img
+													src={EditIcon}
+													alt='Edit Icon'
+													onClick={handleEditAnnouncement}
+												/>
+											</span>
+											<span
+												// onClick={()=>handledeleteAnnouncement(id)}
+												onClick={handleClickOpen}
+											>
+												<DeleteOutlineOutlinedIcon
+													fontSize={'inherit'}
+													className={classes.deleteBtn}
+												/>
+											</span>
+										</>
 									) : (
 										''
 									)}

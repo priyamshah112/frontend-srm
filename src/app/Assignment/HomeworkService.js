@@ -23,6 +23,14 @@ class HomeworkService {
 			},
 		})
 	}
+	deleteHomework(id, token) {
+		return axios.delete(`${BACKEND_API_URL}/homework/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
 	publishHomework(params, payload, token) {
 		return axios.put(`${BACKEND_API_URL}/homework/${params.id}`, payload, {
 			headers: {
@@ -43,6 +51,7 @@ class HomeworkService {
 				created_by: true,
 			},
 		})
+		// return true;
 	}
 	fetchDraftHomework(params, token) {
 		return axios.get(`${BACKEND_API_URL}/homework/${params.id}`, {

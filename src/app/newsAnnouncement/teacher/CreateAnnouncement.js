@@ -57,6 +57,7 @@ const useStyle = makeStyles((theme) => ({
 	titleText: {
 		fontFamily: 'Avenir Medium',
 		fontize: '1.2rem',
+		color: '#1C1C1E',
 	},
 	fieldStyle: {
 		width: '100%',
