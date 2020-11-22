@@ -631,10 +631,12 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
             senderName = "Me"
           }
           let allread = false;
+          
           let readers = message.recievers.filter(r=>{
             return r.readAt == null
           })
-          allread = readers.length > 0
+          console.log(readers.length == 0)
+          allread = readers.length == 0
           
           return (<>
             { showDate &&
