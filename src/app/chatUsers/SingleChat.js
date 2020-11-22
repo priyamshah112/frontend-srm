@@ -8,7 +8,7 @@ import Avatar from '@material-ui/core/Avatar'
 import Badge from '@material-ui/core/Badge'
 import tick from '../../assets/images/chat/tick.svg'
 import doubleTick from '../../assets/images/chat/double-tick.svg'
-import { Input, Typography } from '@material-ui/core'
+import { Input, TextField, Typography } from '@material-ui/core'
 import smile from '../../assets/images/chat/smile.svg'
 import attach from '../../assets/images/chat/attach.svg'
 import closeIcon from '../../assets/images/chat/remove.svg'
@@ -16,12 +16,18 @@ import Picker from 'emoji-picker-react'
 import Group from '../../assets/images/chat/group.png'
 import moment from 'moment'
 import ChatService from '../chat/ChatService'
+import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded'
 import ChatGroupCard from './ChatGroupCard'
+import Select from '@material-ui/core/Select'
+import FormControl from '@material-ui/core/FormControl'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Menu from '@material-ui/core/Menu'
-import { IconButton } from '@material-ui/core'
+import * as actions from '../../app/auth/store/actions'
+import * as ChatActions from '../../app/chatUsers/store/action'
+import { IconButton, Grid, Button } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
+import { connect } from 'react-redux'
 var CryptoJS = require('crypto-js')
 
 const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
@@ -227,22 +233,6 @@ const useStyles = makeStyles((theme) => ({
 		width: '100% !important',
 		padding: 0,
 	},
-	aStyle: {
-		cursor: 'pointer',
-	},
-	imgStyle: {
-		height: 70,
-		width: undefined,
-		alignSelf: 'center',
-	},
-	floatStyleDiv: {
-		float: 'right',
-		flexDirection: 'flex-end',
-	},
-	clearStyleDiv: {
-		float: 'left',
-		clear: 'both',
-	},
 }))
 
 function SingleChat({ fullScreen = false, closeEmoji, props }) {
@@ -260,7 +250,6 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	let messagesEnd = createRef()
 	const history = useHistory()
 	let rootClass = [classes.root]
-
 	useEffect(() => {
 		showEmoji(false)
 		setShowAttachments(!closeEmoji)
@@ -284,6 +273,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 			setMessages([])
 		} else {
 			setMessages(chat.messages)
+			// timer = setInterval(()=>fetchChat(chat), 1000)
 		}
 	}, [chat])
 	const scrollToBottom = async () => {
@@ -293,8 +283,13 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		}
 		try {
 			const token = localStorage.getItem('srmToken')
+			// const selectedRole = props.selectedRole;
+
 			const response = await ChatService.markRead(token, chat.id)
+
+			// console.log('Scroll response', response);
 			if (response.status === 200) {
+				// console.log('Chat', response);
 			}
 		} catch (error) {
 			console.log(error.response)
@@ -304,6 +299,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		rootClass.push(classes.fullScreen)
 	}
 	const onEmojiClick = (event, emojiObject) => {
+		// console.log(emojiObject)
 		showEmoji(false)
 		let m = message
 		m += emojiObject.emoji
@@ -312,6 +308,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	}
 	let date = ''
 	const fileSelectHandler = (event) => {
+		// console.log(event.target.files)
 		attachments.push(...event.target.files)
 		event.target.value = null
 		setAttachments([...attachments])
@@ -322,6 +319,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	const removeAttachment = (item) => {
 		let index = attachments.indexOf(item)
 		attachments.splice(index, 1)
+		// console.log(attachments)
 		setAttachments([...attachments])
 	}
 	let name = chat.firstname + ' ' + chat.lastname
@@ -346,6 +344,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	}
 
 	const onKeyDown = (event) => {
+		// 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
 		if (event.key === 'Enter') {
 			event.preventDefault()
 			event.stopPropagation()
@@ -365,14 +364,18 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		}
 		try {
 			const token = localStorage.getItem('srmToken')
+			// const selectedRole = props.selectedRole;
 			if (chat.messages == undefined) {
 				data.reciever = chat.id
+				// console.log(data)
 				const response = await ChatService.newChat(data, token)
+				// console.log('Scroll response', response);
 				if (response.status === 200) {
 					console.log('Chat', response)
 					const { data } = response
 					setMessage('')
 					setMessages(data.chat.messages)
+					// data.chat.members = JSON.parse(data.chat.members)
 					props.onUpdateChat(data.chat)
 					setChat(data.chat)
 				} else {
@@ -386,7 +389,10 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 				})
 
 				const response = await ChatService.submitChat(frmdata, token, chat.id)
+
+				// console.log('Scroll response', response);
 				if (response.status === 200) {
+					// console.log('Chat', response);
 					const { data } = response
 					setMessage('')
 					setAttachments([])
@@ -400,12 +406,16 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 
 	const checkValidURLImage = (a) => {
 		var b = ['jpeg', 'jpg', 'png', 'gif', 'raw'] //format img
-		var c = a.split('.')
+
+		var c = a.split('.') // ["https://i", "imgur", "com/qMUWuXV", "jpg"]
+
+		// console.log(b.includes(c[c.length-1]))
 		return b.includes(c[c.length - 1])
 	}
 
 	const getMessage = () => {
 		var msg = CryptoJS.AES.encrypt(message, 'chat' + chat.id).toString()
+		// console.log(msg)
 		return msg
 	}
 
@@ -428,6 +438,15 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		return msg
 	}
 
+	const handleFilterChange = async (event) => {
+		if (event.target.value !== filter) {
+			try {
+			} catch (e) {
+				console.log(e)
+			}
+		}
+	}
+
 	const chatMessage = (message) => {
 		if (message.attachment != 'null' && message.attachment != null) {
 			return (
@@ -437,13 +456,17 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 						if (checkValidURLImage(at)) {
 							return (
 								<a
-									className={classes.aStyle}
+									style={{ cursor: 'pointer' }}
 									target='_blank'
 									href={BACKEND_IMAGE_URL + '/' + at}
 								>
 									<img
-										className={classes.imgStyle}
 										src={BACKEND_IMAGE_URL + '/' + at}
+										style={{
+											height: 70,
+											width: undefined,
+											alignSelf: 'center',
+										}}
 										alt=''
 									/>
 								</a>
@@ -451,7 +474,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 						} else {
 							return (
 								<a
-									className={classes.aStyle}
+									style={{ cursor: 'pointer' }}
 									target='_blank'
 									href={BACKEND_IMAGE_URL + '/' + at}
 								>
@@ -526,7 +549,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 						</ListItemAvatar>
 						<ListItemText primary={name} secondary={subheading} />
 						{chat.group != null && (
-							<div className={classes.floatStyleDiv}>
+							<div style={{ float: 'right', flexDirection: 'flex-end' }}>
 								<IconButton
 									aria-label='more'
 									aria-controls='long-menu'
@@ -544,6 +567,8 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 										list: classes.menuList,
 									}}
 									elevation={0}
+									// getContentAnchorEl={null} uncomment this to remove warning
+
 									keepMounted
 									anchorOrigin={{
 										vertical: 'top',
@@ -609,10 +634,12 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 						senderName = 'Me'
 					}
 					let allread = false
+
 					let readers = message.recievers.filter((r) => {
 						return r.readAt == null
 					})
-					allread = readers.length > 0
+					console.log(readers.length == 0)
+					allread = readers.length == 0
 
 					return (
 						<>
@@ -646,7 +673,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 						</>
 					)
 				})}
-				<div className={classes.clearStyleDiv} ref={messagesEnd}></div>
+				<div style={{ float: 'left', clear: 'both' }} ref={messagesEnd}></div>
 			</div>
 			{showAttachments && (
 				<div
@@ -728,5 +755,77 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		</List>
 	)
 }
+
+/* import React from "react";
+import Badge from "@material-ui/core/Badge";
+import Avatar from "@material-ui/core/Avatar";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    backgroundColor: "#44b700",
+    color: "#44b700",
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      animation: "$ripple 1.2s infinite ease-in-out",
+      border: "1px solid currentColor",
+      content: '""',
+    },
+  },
+  "@keyframes ripple": {
+    "0%": {
+      transform: "scale(.8)",
+      opacity: 1,
+    },
+    "100%": {
+      transform: "scale(2.4)",
+      opacity: 0,
+    },
+  },
+}))(Badge);
+
+const SmallAvatar = withStyles((theme) => ({
+  root: {
+    width: 22,
+    height: 22,
+    border: `2px solid ${theme.palette.background.paper}`,
+  },
+}))(Avatar);
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+}));
+
+export default function Chat() {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+      <StyledBadge
+        overlap="circle"
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        variant="dot"
+      >
+        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+      </StyledBadge>
+      Mani
+    </div>
+  );
+}
+ */
 
 export default SingleChat
