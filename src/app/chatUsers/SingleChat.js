@@ -635,7 +635,6 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
           let readers = message.recievers.filter(r=>{
             return r.readAt == null
           })
-          console.log(readers.length == 0)
           allread = readers.length == 0
           
           return (<>
