@@ -1,9 +1,10 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/styles'
 import SupportCard from '../SupportCard'
-import AddIcon from '../../../assets/images/Add.svg'
+import AddIcon from '../../../assets/images/Filled Add.svg'
 import { Typography } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -21,7 +22,20 @@ const useStyles = makeStyles((theme) => ({
 		width: '95%',
 		margin: '0 auto',
 	},
-
+	createHeader: {
+		marginTop: '20px',
+		textAlign: 'right',
+		fontWeight: 500,
+	},
+	createTitle: {
+		fontSize: '16px',
+		padding: '0 10px 0 5px',
+	},
+	createButtonIcon: {
+		height: '20px',
+		transform: 'translateY(5px)',
+		cursor: 'pointer',
+	},
 	header: {
 		paddingLeft: '15px',
 		paddingTop: '10px',
@@ -65,14 +79,24 @@ const SupportByMe = (props) => {
 	return (
 		<>
 			<div className={classes.supportContainer}>
-				<div className={classes.header}>
-					<div className={classes.addNew}>
+				{/* <div className={classes.header}> */}
+				<Typography className={classes.createHeader} color='primary'>
+					<AddCircleIcon
+						color='primary'
+						className={classes.createButtonIcon}
+						onClick={handleCreateNew}
+					/>
+					<span className={classes.createTitle} onClick={handleCreateNew}>
+						New
+					</span>
+				</Typography>
+				{/* <div className={classes.addNew}>
 						<div onClick={handleCreateNew} className={classes.addNewDiv}>
 							<img src={AddIcon} alt='add' />
 							<Typography className='new'>New</Typography>
 						</div>
-					</div>
-				</div>
+					</div> */}
+				{/* </div> */}
 				<SupportCard />
 			</div>
 		</>

@@ -25,7 +25,7 @@ import {
 
 const useStyle = makeStyles((theme) => ({
 	Formcontainer: {
-		width: '100%',
+		width: '99%',
 		backgroundColor: theme.palette.mainBackground,
 		height: '100%',
 		marign: '0',
@@ -36,8 +36,14 @@ const useStyle = makeStyles((theme) => ({
 		},
 	},
 	formStyle: {
-		margin: 'auto',
-		width: '95%',
+		marginTop:'50px',
+		marginLeft:'10px',
+		marginRight:'0px',
+		paddingTop:'15px',
+		paddingBottom:'15px',
+		paddingLeft:'15px',
+		paddingRight:'25px',
+		width: '97%',
 		backgroundColor: 'white',
 		justifyContent: 'center',
 		textAlign: 'center',
@@ -45,7 +51,7 @@ const useStyle = makeStyles((theme) => ({
 	},
 	backImg: {
 		float: 'left',
-		paddingLeft: '45px',
+		transform: 'translate(0px, 7px)',
 		cursor: 'pointer',
 	},
 	adornmentColor: {
@@ -53,7 +59,7 @@ const useStyle = makeStyles((theme) => ({
 		paddingTop: '6px',
 	},
 	themeColor: {
-		color: `${theme.palette.common.deluge}`,
+		color: '#1C1C1E',
 		padding: 0,
 		margin: 0,
 	},
@@ -61,11 +67,12 @@ const useStyle = makeStyles((theme) => ({
 		color: 'red',
 	},
 	titleText: {
+		textAlign: 'center',	
 		fontFamily: 'Avenir Medium',
 		fontize: '1.2rem',
 	},
 	fieldStyle: {
-		width: '90%',
+		width: '100%',
 		fontFamily: 'Avenir Book',
 		fontSize: ' 1rem',
 		margin: 'auto',
@@ -141,7 +148,7 @@ const CreateSupport = (props) => {
 	const history = useHistory()
 	const { id } = useParams()
 
-	console.log('CreateSupport id', id)
+	// console.log('CreateSupport id', id)
 
 	const [subject, setSubject] = useState('')
 	const [description, setDescription] = useState('')
@@ -284,7 +291,7 @@ const CreateSupport = (props) => {
 		history.replace('/support')
 	}
 
-	console.log('CreateSupport render', { ticketId, id, props })
+	// console.log('CreateSupport render', { ticketId, id, props })
 
 	return (
 		<>
@@ -373,7 +380,7 @@ const CreateSupport = (props) => {
 								</Button>
 							</Grid>
 							<Grid item sm={4} xs={12} className={classes.textAlignLeft}>
-								<Button
+								{/* <Button
 									id='cancelBtn'
 									variant='contained'
 									onClick={() => {
@@ -385,7 +392,7 @@ const CreateSupport = (props) => {
 									disableElevation
 								>
 									Cancel
-								</Button>
+								</Button> */}
 								<Backdrop
 									open={props.postLoading || props.singleSupportLoading}
 									className={classes.backdrop}
