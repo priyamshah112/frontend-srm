@@ -225,6 +225,7 @@ const useStyles = makeStyles((theme) => ({
 	mainContainer: {
 		height: '100%',
 		marginLeft: drawerWidth,
+		overflow: 'hidden',
 		width: `calc(100% - ${drawerWidth}px - ${drawerWidth}px )`,
 		padding: 0,
 		position: 'fixed',

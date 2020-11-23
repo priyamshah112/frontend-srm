@@ -18,14 +18,18 @@ import GalleryService from './GalleryService'
 const REACT_APP_BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
 
 const useStyles = makeStyles((theme) => ({
+	':root':{
+		'--makeStyles-mainContainer-23': {
+			overflow:'hidden'
+		},
+	},
 	root: {
 		height: '100%',
-		overflow: 'auto',
 		width: '100%',
+		overflow: 'hidden'
 	},
 	gridContainer: {
 		height: '100%',
-		overflow: 'auto',
 		width: '100%',
 	},
 
@@ -191,6 +195,7 @@ const GalleryIndex = (props) => {
 					margin: '10px',
 					backgroundColor: 'transparent',
 					height: '100%',
+					overflow: 'hidden'
 				}}
 			>
 				<div style={{ textAlign: 'right' }}>
@@ -208,11 +213,12 @@ const GalleryIndex = (props) => {
 					</IconButton>
 				</div>
 				<div style={{ marginBottom: '5px' }}></div>
-				<div className={classes.root} id='scrollable'>
+				<div  className={classes.root} id='scrollable'>
 					<InfiniteScroll
 						dataLength={tileData.length}
 						next={fetchImagesOnScroll}
 						hasMore={hasMore}
+						style={{ overflow: 'hidden'}}
 						loader={
 							<>
 								<div
