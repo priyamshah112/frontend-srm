@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 		cursor: 'pointer',
 	},
 	themeColor: {
-		color: `${theme.palette.common.deluge}`,
+		color: '#1C1C1E',
 		padding: 0,
 		margin: 0,
 	},

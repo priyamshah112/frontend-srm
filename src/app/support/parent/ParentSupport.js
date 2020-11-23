@@ -5,6 +5,7 @@ import { Typography } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
 import ParentSupportList from './ParentSupportList'
 import { connect } from 'react-redux'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -54,6 +55,21 @@ const useStyles = makeStyles((theme) => ({
 		paddingTop: '8px',
 		fontSize: '20px',
 	},
+	createHeader: {
+		marginTop: '20px',
+		textAlign: 'right',
+		fontWeight: 500,
+	},
+	createTitle: {
+		fontSize: '16px',
+		padding: '0 10px 0 5px',
+		cursor: 'pointer'
+	},
+	createButtonIcon: {
+		height: '20px',
+		transform: 'translateY(5px)',
+		cursor: 'pointer',
+	},
 }))
 
 const ParentSupport = (props) => {
@@ -68,12 +84,16 @@ const ParentSupport = (props) => {
 			<div className={classes.supportContainer}>
 				{props.role !== 'admin' && (
 					<div className={classes.header}>
-						<div className={classes.addNew}>
-							<div onClick={handleCreateNew} className={classes.addNewDiv}>
-								<img src={AddIcon} alt='add' />
-								<Typography className='new'>New</Typography>
-							</div>
-						</div>
+						<Typography className={classes.createHeader} color='primary'>
+							<AddCircleIcon
+								color='primary'
+								className={classes.createButtonIcon}
+								onClick={handleCreateNew}
+							/>
+							<span className={classes.createTitle} onClick={handleCreateNew}>
+								New
+							</span>
+						</Typography>
 					</div>
 				)}
 				<ParentSupportList />
