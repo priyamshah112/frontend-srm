@@ -88,11 +88,11 @@ const StudentSearch = (props) => {
 		}
 	}
 
-	const onChange = (value) => {
-		if (value) {
-			props.getSearch(value)
-		}
-	}
+	const onChange = (event, value) => {
+        if (value) {
+            props.getSearch(value)
+        }
+    }
 
 	const styleOptions = (option) => {
 		if (
