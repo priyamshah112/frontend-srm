@@ -1,3 +1,3 @@
-import CommonSagas from "./common";
+import CommonSagas from './common'
 
-export default [CommonSagas];
+export default [CommonSagas]

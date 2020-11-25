@@ -1,159 +1,154 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import HomeworkCard from './HomeworkCard';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { makeStyles } from '@material-ui/styles';
-import { CircularProgress, Typography } from '@material-ui/core';
-import HomeSerivce from '../../HomeSerivce';
+import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
+import HomeworkCard from './HomeworkCard'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import { makeStyles } from '@material-ui/styles'
+import { CircularProgress, Typography } from '@material-ui/core'
+import HomeSerivce from '../../HomeSerivce'
 
 const useStyles = makeStyles((theme) => ({
-  loading: {
-    width: '100%',
-    textAlign: 'center',
-    paddingTop: '8px',
-    fontSize: '20px',
-  },
-  emptyView: {
-    width: '100%',
-    textAlign: 'center',
-    paddingTop: '100px',
-    fontSize: '20px',
-  },
-}));
+	loading: {
+		width: '100%',
+		textAlign: 'center',
+		paddingTop: '8px',
+		fontSize: '20px',
+	},
+	emptyView: {
+		width: '100%',
+		textAlign: 'center',
+		paddingTop: '100px',
+		fontSize: '20px',
+	},
+}))
 
 const Homework = (props) => {
-  const classes = useStyles();
-  const [hasMore, setHasMore] = useState(true);
-  const [homework, setHomework] = useState([]);
+	const classes = useStyles()
+	const [hasMore, setHasMore] = useState(true)
+	const [homework, setHomework] = useState([])
 
-  const [nextUrl, setNextUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const selectedRole = props.selectedRole;
+	const [nextUrl, setNextUrl] = useState('')
+	const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    // console.log('Task Content');
-    let isHomeworkLoading = true;
-    const fetchHomework = async () => {
-      try {
-        var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
-        var string1 = String("parent");
-        if (String(role)===String(string1)){
-        console.log("true");
-          var token_child = localStorage.getItem('srmSelected_Child_token');  
-          var response = await HomeSerivce.fetchHomework(
-            token_child,
-            props.selectedRole
-          );
-        }else{
-        console.log("false");
-          var token = localStorage.getItem('srmToken');
-          var response = await HomeSerivce.fetchHomework(
-            token,
-            props.selectedRole
-          );
-        }
-        // var token = localStorage.getItem('srmToken');
-        // const response = await HomeSerivce.fetchHomework(
-        //   token,
-        //   props.selectedRole
-        // );
-        if (isHomeworkLoading) {
-          console.log(response.data.data.data);
-          setHomework(response.data.data.data);
-          let next_page_url = response.data.data.next_page_url;
-          if (next_page_url === null) {
-            setHasMore(false);
-          } else {
-            setNextUrl(response.data.data.next_page_url);
-          }
-          setIsLoading(false);
+	useEffect(() => {
+		let isHomeworkLoading = true
+		const fetchHomework = async () => {
+			try {
+				var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')))
+				var string1 = String('parent')
+				if (String(role) === String(string1)) {
+					console.log('true')
+					var token_child = localStorage.getItem('srmSelected_Child_token')
+					var response = await HomeSerivce.fetchHomework(
+						token_child,
+						props.selectedRole
+					)
+				} else {
+					console.log('false')
+					var token = localStorage.getItem('srmToken')
+					var response = await HomeSerivce.fetchHomework(
+						token,
+						props.selectedRole
+					)
+				}
+				if (isHomeworkLoading) {
+					console.log(response.data.data.data)
+					setHomework(response.data.data.data)
+					let next_page_url = response.data.data.next_page_url
+					if (next_page_url === null) {
+						setHasMore(false)
+					} else {
+						setNextUrl(response.data.data.next_page_url)
+					}
+					setIsLoading(false)
 
-          console.log(response.data);
-        }
-      } catch (error) {
-        console.log('Error: ', error);
-      }
-    };
-    fetchHomework();
-    return () => {
-      isHomeworkLoading = false;
-    };
-  }, []);
+					console.log(response.data)
+				}
+			} catch (error) {
+				console.log('Error: ', error)
+			}
+		}
+		fetchHomework()
+		return () => {
+			isHomeworkLoading = false
+		}
+	}, [])
 
-  const fetchHomeworkOnScroll = () => {
-    const fetchMoreHomework = async () => {
-      var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')));
-        // console.log(role);
-        var string1 = "parent";
-        if (String(role)===String(string1)){
-        // console.log("this is child token ");
-          var token_child = localStorage.getItem('srmSelected_Child_token');
-        }else{
-        // console.log("this is parent token");
-          var token = localStorage.getItem('srmToken');
-        }
-      if (hasMore) {
-        const response = await HomeSerivce.fetchMoreHomework(
-          token,
-          nextUrl,
-          props.selectedRole
-        );
-        console.log('Fetch More', response.data.data.data);
-        setHomework([...homework, ...response.data.data.data]);
-        let last_page_url = response.data.data.last_page_url;
-        if (nextUrl === last_page_url) {
-          setHasMore(false);
-        } else {
-          setHasMore(true);
-          setNextUrl(response.data.data.next_page_url);
-        }
-      }
-      // setIsLoading(false);
-    };
-    fetchMoreHomework();
-  };
+	const fetchHomeworkOnScroll = () => {
+		const fetchMoreHomework = async () => {
+			var role = String(JSON.parse(localStorage.getItem('srmSelectedRole')))
+			var string1 = 'parent'
+			if (String(role) === String(string1)) {
+				var token_child = localStorage.getItem('srmSelected_Child_token')
+			} else {
+				var token = localStorage.getItem('srmToken')
+			}
+			if (hasMore) {
+				const response = await HomeSerivce.fetchMoreHomework(
+					token,
+					nextUrl,
+					props.selectedRole
+				)
+				console.log('Fetch More', response.data.data.data)
+				setHomework([...homework, ...response.data.data.data])
+				let last_page_url = response.data.data.last_page_url
+				if (nextUrl === last_page_url) {
+					setHasMore(false)
+				} else {
+					setHasMore(true)
+					setNextUrl(response.data.data.next_page_url)
+				}
+			}
+		}
+		fetchMoreHomework()
+	}
 
-  return (
-    <InfiniteScroll
-      dataLength={homework.length}
-      next={fetchHomeworkOnScroll}
-      hasMore={hasMore}
-      loader={
-        <>
-          <div className={classes.loading}>
-            <CircularProgress color='primary' size={30} />
-          </div>
-          <br />
-        </>
-      }
-      scrollableTarget='scrollable'
-      scrollThreshold={0.2}>
-      {homework.map((hw, index) => (
-        <HomeworkCard
-          key={index}
-          id={hw.id}
-          title={hw.title}
-          due_date={hw.submission_date}
-          content={hw.main_content}
-        />
-      ))}
-      {isLoading ? (
-        <div className={classes.loading}>
-          <CircularProgress color='primary' size={30} />
-        </div>
-      ) : null}
-      {!isLoading && !homework.length ? (
-        <div className={classes.emptyView}>
-          <Typography>You don't have homework.</Typography>
-        </div>
-      ) : null}
-    </InfiniteScroll>
-  );
-};
+	return (
+		<InfiniteScroll
+			dataLength={homework.length}
+			next={fetchHomeworkOnScroll}
+			hasMore={hasMore}
+			loader={
+				<>
+					<br />
+					<div className={classes.loading}>
+						<CircularProgress color='primary' size={30} />
+					</div>
+					<br />
+				</>
+			}
+			scrollableTarget='scrollable'
+			scrollThreshold={0.2}
+		>
+			{homework.map((hw, index) => (
+				<HomeworkCard
+					key={index}
+					id={hw.id}
+					title={hw.title}
+					due_date={hw.submission_date}
+					content={hw.main_content}
+				/>
+			))}
+			{isLoading ? (
+				<>
+					<br />
+					<div className={classes.loading}>
+						<CircularProgress color='primary' size={30} />
+					</div>
+					<br />
+				</>
+			) : null}
+			{!isLoading && !homework.length ? (
+				<div className={classes.emptyView}>
+					<Typography>You don't have homework.</Typography>
+				</div>
+			) : null}
+		</InfiniteScroll>
+	)
+}
 const mapStateToProps = (state) => {
-  return {
-    token: state.auth.token,
-    selectedRole: state.auth.selectedRole,
-  };
-};
-export default connect(mapStateToProps)(Homework);
+	return {
+		token: state.auth.token,
+		selectedRole: state.auth.selectedRole,
+	}
+}
+export default connect(mapStateToProps)(Homework)

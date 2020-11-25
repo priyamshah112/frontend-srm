@@ -1,246 +1,239 @@
-import React, { createRef, useEffect, useRef, useState } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
-import Badge from "@material-ui/core/Badge";
+import React, { createRef, useEffect, useRef, useState } from 'react'
+import { makeStyles, withStyles } from '@material-ui/core/styles'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import ListItemAvatar from '@material-ui/core/ListItemAvatar'
+import Avatar from '@material-ui/core/Avatar'
+import Badge from '@material-ui/core/Badge'
 import tick from '../../assets/images/chat/tick.svg'
 import doubleTick from '../../assets/images/chat/double-tick.svg'
-import { Input, TextField, Typography } from "@material-ui/core";
+import { Input, TextField, Typography } from '@material-ui/core'
 import smile from '../../assets/images/chat/smile.svg'
 import attach from '../../assets/images/chat/attach.svg'
 import closeIcon from '../../assets/images/chat/remove.svg'
-import Picker from 'emoji-picker-react';
-import Group from '../../assets/images/chat/group.png';
+import Picker from 'emoji-picker-react'
+import Group from '../../assets/images/chat/group.png'
 import moment from 'moment'
-import ChatService from "../chat/ChatService";
-import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
-import ChatGroupCard from "./ChatGroupCard";
-import Select from "@material-ui/core/Select";
-import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Menu from "@material-ui/core/Menu";
-import * as actions from "../../app/auth/store/actions";
-import * as ChatActions from "../../app/chatUsers/store/action";
-import {
-  IconButton,
-  Grid,
-  Button,
-} from "@material-ui/core";
-import { useHistory } from "react-router-dom";
-import { connect } from "react-redux";
-var CryptoJS = require("crypto-js");
+import ChatService from '../chat/ChatService'
+import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded'
+import ChatGroupCard from './ChatGroupCard'
+import Select from '@material-ui/core/Select'
+import FormControl from '@material-ui/core/FormControl'
+import MenuItem from '@material-ui/core/MenuItem'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import Menu from '@material-ui/core/Menu'
+import * as actions from '../../app/auth/store/actions'
+import * as ChatActions from '../../app/chatUsers/store/action'
+import { IconButton, Grid, Button } from '@material-ui/core'
+import { useHistory } from 'react-router-dom'
+import { connect } from 'react-redux'
+var CryptoJS = require('crypto-js')
 
-
-const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
+const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
 
 const StyledBadge = withStyles((theme) => ({
-  badge: {
-    backgroundColor: "#44b700",
-    color: "#44b700",
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    "&::after": {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      borderRadius: "50%",
-      content: '""',
-    },
-  },
-}))(Badge);
+	badge: {
+		backgroundColor: '#44b700',
+		color: '#44b700',
+		boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+		'&::after': {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			borderRadius: '50%',
+			content: '""',
+		},
+	},
+}))(Badge)
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "95%",
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 0,
-    backgroundColor: '#F4F4F4',
-    height: '86%'
-  },
-  fullScreen: {
-    padding: 10,
-    borderRadius: 10,
-  },
-  inline: {
-    display: "inline",
-  },
-  listItem: {
-    backgroundColor: '#E7E7ED',
-    color: theme.palette.common.blackRussian,
-    "&:hover": {
-      backgroundColor: theme.palette.common.quartz,
-    },
-    borderRadius: "10px",
-    fontSize: "0.875rem",
-    fontWeight: 300,
-    marginBottom: "12px",
-    flexDirection: 'row',
-  },
-  owner:{
-    background: theme.palette.common.white,
-  },
-  primary: {
-    fontSize: 10,
-  },
-  tick:{
-    width: 10,
-    height: undefined
-  },
-  time: {
-    fontSize: 12, 
-    color: theme.palette.grey[600]
-  },
-  date:{
-    textAlign: 'center',
-    marginBottom: 15,
-    marginTop: 5
-  },
-  dateTextContainer: {
-    background: 'rgb(142,142,147, 0.2)',
-    padding: 5,
-    borderRadius: 5
-  },
-  dateText:{
-    fontSize: 12,
-    color: '#1C1C1E'
-  },
-  bottomContainer:{
-    position: 'absolute',
-    bottom: 30,
-    width: '100%'
-  },
-  fullBottomContainer:{
-    bottom: 10,
-  },
-  inputContainer:{
-    background: theme.palette.common.white,
-    borderRadius: 10,
-    flexDirection: 'row',
-    width: '100%',
-  },
-  fullScreenInput:{
-    width: '97%'
-  },
-  emojiContainer: {
-    height: '100%',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    marginTop: 8
-  },
-  smiley:{
-    height: 16,
-    width: undefined,
-    cursor: 'pointer'
-  },
-  inputBorder: {
-    marginLeft: 10,
-    border: 'none',
-    flex: 1
-  },
-  emojiPicker:{
-    position: 'absolute',
-    bottom: 80
-  },
-  fileInput:{
-    opacity: 0,
-    position: 'absolute'
-  },
-  attachmentContainer:{
-    backgroundColor: '#E7E7ED',
-    color: theme.palette.common.blackRussian,
-    borderRadius: 10,
-    marginTop: 5,
-    flexDirection: 'row',
-    marginBottom: 5,
-  },
-  attachmentFullScreen:{
-    width: '97%',
-  },
-  attachmentText:{
-    color: theme.palette.grey[600],
-    fontSize: 12,
-    width: '90%'
-  },
-  right:{ 
-    justifyContent: 'flex-end', 
-    textAlign: 'right', 
-    position: 'absolute', 
-    right: 15, 
-    bottom: 8
-  },
-  close:{
-    width: 16,
-    height: 10,
-    cursor: 'pointer'
-  },
-  chatList: {
-    maxHeight: '80%',
-    overflow: 'auto',
-    scrollbarWidth: 'none',
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    },
-  },
-  groupIconContainer: {
-    height: 35,
-    width: 35,
-    borderRadius: '50%',
-    padding:5,
-    justifyContent: 'center',
-    verticalAlign: 'middle',
-    background: theme.palette.primary.main,
-  },
-  menuItem: {
-    paddingLeft: "10px",
-    paddingRight: "10px",
-    colour: "#1C1C1E",
-  },
-  borderBottomDiv: {
-    width: "90%",
-    height: "30px",
-    margin: "auto",
-    marginTop: "5px",
-    borderBottom: "1px solid #D1D1D6",
-  },
-  borderBottomLastDiv: {
-    width: "90%",
-    height: "30px",
-    margin: "auto",
-    marginTop: "5px",
-  },
-  menuTopItemMargin: {
-    marginTop: "5px",
-  },
-  menuItemRoot: {
-    padding: 0,
-  },
-  menuContainer: {
-    backgroundColor: theme.palette.common.darkGray,
-    color: "black",
-    minWidth: "150px",
-    "&.MuiPaper-rounded": {
-      boxShadow: "0px 6px 6px #00000029",
-    },
-    [theme.breakpoints.down("md")]: {
-      minWidth: "150px",
-    },
-    [theme.breakpoints.down("sm")]: {
-      minWidth: "150px",
-    },
-  },
-  menuList: {
-    width: "100% !important",
-    padding: 0,
-  },
-}));
-
-
+	root: {
+		width: '95%',
+		marginLeft: 10,
+		marginRight: 10,
+		marginTop: 0,
+		backgroundColor: '#F4F4F4',
+		height: '86%',
+	},
+	fullScreen: {
+		padding: 10,
+		borderRadius: 10,
+	},
+	inline: {
+		display: 'inline',
+	},
+	listItem: {
+		backgroundColor: '#E7E7ED',
+		color: theme.palette.common.blackRussian,
+		'&:hover': {
+			backgroundColor: theme.palette.common.quartz,
+		},
+		borderRadius: '10px',
+		fontSize: '0.875rem',
+		fontWeight: 300,
+		marginBottom: '12px',
+		flexDirection: 'row',
+	},
+	owner: {
+		background: theme.palette.common.white,
+	},
+	primary: {
+		fontSize: 10,
+	},
+	tick: {
+		width: 10,
+		height: undefined,
+	},
+	time: {
+		fontSize: 12,
+		color: theme.palette.grey[600],
+	},
+	date: {
+		textAlign: 'center',
+		marginBottom: 15,
+		marginTop: 5,
+	},
+	dateTextContainer: {
+		background: 'rgb(142,142,147, 0.2)',
+		padding: 5,
+		borderRadius: 5,
+	},
+	dateText: {
+		fontSize: 12,
+		color: '#1C1C1E',
+	},
+	bottomContainer: {
+		position: 'absolute',
+		bottom: 30,
+		width: '100%',
+	},
+	fullBottomContainer: {
+		bottom: 10,
+	},
+	inputContainer: {
+		background: theme.palette.common.white,
+		borderRadius: 10,
+		flexDirection: 'row',
+		width: '100%',
+	},
+	fullScreenInput: {
+		width: '97%',
+	},
+	emojiContainer: {
+		height: '100%',
+		justifyContent: 'center',
+		flexDirection: 'column',
+		marginTop: 8,
+	},
+	smiley: {
+		height: 16,
+		width: undefined,
+		cursor: 'pointer',
+	},
+	inputBorder: {
+		marginLeft: 10,
+		border: 'none',
+		flex: 1,
+	},
+	emojiPicker: {
+		position: 'absolute',
+		bottom: 80,
+	},
+	fileInput: {
+		opacity: 0,
+		position: 'absolute',
+	},
+	attachmentContainer: {
+		backgroundColor: '#E7E7ED',
+		color: theme.palette.common.blackRussian,
+		borderRadius: 10,
+		marginTop: 5,
+		flexDirection: 'row',
+		marginBottom: 5,
+	},
+	attachmentFullScreen: {
+		width: '97%',
+	},
+	attachmentText: {
+		color: theme.palette.grey[600],
+		fontSize: 12,
+		width: '90%',
+	},
+	right: {
+		justifyContent: 'flex-end',
+		textAlign: 'right',
+		position: 'absolute',
+		right: 15,
+		bottom: 8,
+	},
+	close: {
+		width: 16,
+		height: 10,
+		cursor: 'pointer',
+	},
+	chatList: {
+		maxHeight: '80%',
+		overflow: 'auto',
+		scrollbarWidth: 'none',
+		'&::-webkit-scrollbar': {
+			display: 'none',
+		},
+	},
+	groupIconContainer: {
+		height: 35,
+		width: 35,
+		borderRadius: '50%',
+		padding: 5,
+		justifyContent: 'center',
+		verticalAlign: 'middle',
+		background: theme.palette.primary.main,
+	},
+	menuItem: {
+		paddingLeft: '10px',
+		paddingRight: '10px',
+		colour: '#1C1C1E',
+	},
+	borderBottomDiv: {
+		width: '90%',
+		height: '30px',
+		margin: 'auto',
+		marginTop: '5px',
+		borderBottom: '1px solid #D1D1D6',
+	},
+	borderBottomLastDiv: {
+		width: '90%',
+		height: '30px',
+		margin: 'auto',
+		marginTop: '5px',
+	},
+	menuTopItemMargin: {
+		marginTop: '5px',
+	},
+	menuItemRoot: {
+		padding: 0,
+	},
+	menuContainer: {
+		backgroundColor: theme.palette.common.darkGray,
+		color: 'black',
+		minWidth: '150px',
+		'&.MuiPaper-rounded': {
+			boxShadow: '0px 6px 6px #00000029',
+		},
+		[theme.breakpoints.down('md')]: {
+			minWidth: '150px',
+		},
+		[theme.breakpoints.down('sm')]: {
+			minWidth: '150px',
+		},
+	},
+	menuList: {
+		width: '100% !important',
+		padding: 0,
+	},
+}))
 
 function SingleChat({ fullScreen = false, closeEmoji, props }) {
   const classes = useStyles();
