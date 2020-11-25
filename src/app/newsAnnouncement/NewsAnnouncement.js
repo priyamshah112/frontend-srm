@@ -11,7 +11,7 @@ import CreateAnnouncement from './teacher/CreateAnnouncement'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-
+import { paths } from '../../Constants/Routes'
 const useStyles = makeStyles((theme) => ({
 	container: {
 		width: '100%',
@@ -139,7 +139,7 @@ const NewsAnnouncement = (props) => {
 	return (
 		<div className={classes.container} id='scrollable'>
 			{props.selectedRole === 'parent' || props.selectedRole === 'student' ? (
-				<Redirect to='/home' />
+				<Redirect to={paths.HOME} />
 			) : (
 				''
 			)}

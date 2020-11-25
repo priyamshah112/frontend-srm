@@ -38,7 +38,9 @@ class SnackBar extends React.Component {
 			>
 				<Alert onClose={this.handleSnackbarClose} severity='error'>
 					{this.state.error404 ? 'Error Occured' : ''}
-					{this.state.error500 ? 'Internal server not found' : ''}
+					{this.state.error500
+						? 'Internal server error! Please try after some time.'
+						: ''}
 				</Alert>
 			</Snackbar>
 		)

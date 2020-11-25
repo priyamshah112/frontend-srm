@@ -56,6 +56,9 @@ import * as actions from '../app/auth/store/actions'
 import ChatIndex from '../app/chat/ChatIndex'
 import ChatPopup from '../app/chatUsers/ChatPopup'
 import ChatService from '../app/chat/ChatService'
+import { paths } from '../Constants/Routes'
+import { Lang } from '../Constants/Languages/English'
+
 var CryptoJS = require('crypto-js')
 
 // default was 360
@@ -452,25 +455,25 @@ const Layout = (props) => {
 
 	const listItems = [
 		{
-			name: 'Home',
+			name: Lang.HOME.HOME,
 			icon: <img src={HomeIcon} alt='Menu' width='24' height='24' />,
-			linkTo: '/home',
+			linkTo: paths.HOME,
 			itemIndex: 0,
 		},
 		{
-			name: 'Notifications',
+			name: Lang.NOTIFICATIONS,
 			icon: <img src={NotificationIcon} alt='Menu' width='24' height='24' />,
-			linkTo: '/notifications',
+			linkTo: paths.NOTIFICATIONS,
 			itemIndex: 1,
 		},
 		{
-			name: 'Assignment',
+			name: Lang.ASSIGNMENT,
 			icon: <img src={AssignmentIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/assignment',
 			itemIndex: 2,
 		},
 		{
-			name: 'Attendance',
+			name: Lang.ATTENDANCE,
 			icon: (
 				<img src={DesktopAttendanceIcon} alt='Menu' width='24' height='24' />
 			),
@@ -479,73 +482,73 @@ const Layout = (props) => {
 		},
 
 		{
-			name: 'Events & Announcements',
+			name: Lang.EVENTS_ANNOUNCEMENTS,
 			icon: <img src={NewsIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/news',
 			itemIndex: 4,
 		},
 		{
-			name: 'Syllabus',
+			name: Lang.SYLLABUS,
 			icon: <img src={SyllabusIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/syllabus',
 			itemIndex: 5,
 		},
 		{
-			name: 'Transport',
+			name: Lang.TRANSPORT,
 			icon: <img src={TransportIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/transport',
 			itemIndex: 6,
 		},
 		{
-			name: 'Gallery',
+			name: Lang.GALLERY,
 			icon: <img src={GalleryIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/gallery',
 			itemIndex: 7,
 		},
 		{
-			name: 'Payments',
+			name: Lang.PAYMENTS,
 			icon: <img src={PaymentIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/payments',
 			itemIndex: 9,
 		},
 		{
-			name: 'TimeTable',
+			name: Lang.TIME_TABLE,
 			icon: <img src={TimetableIcon} alt='Menu' width='24' height='24' />,
-			linkTo: '/timetable',
+			linkTo: paths.TIME_TABLE,
 			itemIndex: 10,
 		},
 		{
-			name: 'Leave',
+			name: Lang.LEAVE,
 			icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/leave',
 			itemIndex: 11,
 		},
 		{
-			name: 'FAQ',
+			name: Lang.FAQ,
 			icon: <img src={FAQIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/faq',
 			itemIndex: 12,
 		},
 		{
-			name: 'Support',
+			name: Lang.SUPPORT,
 			icon: <img src={SupportIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/support',
 			itemIndex: 13,
 		},
 		{
-			name: 'Student Report Card',
+			name: Lang.STUDENT_REPORT_CARD,
 			icon: <img src={ReportIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/report',
 			itemIndex: 14,
 		},
 		{
-			name: 'Student Reports',
+			name: Lang.STUDENT_REPORTS,
 			icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/report-card',
 			itemIndex: 15,
 		},
 		{
-			name: 'Bulk Upload',
+			name: Lang.BULK_UPLOAD,
 			icon: <img src={EventsIcon} alt='Menu' width='24' height='24' />,
 			linkTo: '/report-upload',
 			itemIndex: 16,
@@ -977,7 +980,7 @@ const Layout = (props) => {
 									>
 										<NotificationsNoneIcon
 											onClick={(event) => {
-												history.push('/notifications')
+												history.push(paths.NOTIFICATIONS)
 											}}
 										/>
 									</Badge>
@@ -1024,7 +1027,7 @@ const Layout = (props) => {
 									>
 										<NotificationsNoneIcon
 											onClick={(event) => {
-												history.push('/notifications')
+												history.push(paths.NOTIFICATIONS)
 											}}
 										/>
 									</Badge>

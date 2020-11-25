@@ -6,6 +6,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import TaskBookIcon from '../../../../assets/images/home/teacher/TaskBook.svg'
 import TaskEditor from './TaskEditor'
 import TaskContent from './TaskContent'
+import { Lang } from '../../../../Constants/Languages/English'
 
 const useStyle = makeStyles((theme) => ({
 	taskDiv: {
@@ -109,7 +110,7 @@ const Tasks = () => {
 						alt='Task Icon'
 						className={classes.taskIcon}
 					/>
-					<span className={classes.titleName}>&nbsp;Tasks</span>
+					<span className={classes.titleName}>&nbsp;{Lang.HOME.TASKS}</span>
 					{openEditor ? (
 						<CancelIcon
 							color='primary'

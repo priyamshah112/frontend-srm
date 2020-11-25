@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box'
 import useScrollTrigger from '@material-ui/core/useScrollTrigger'
 import Announcements from './Announcements'
 import Homeworks from './homeWork/Homeworks'
+import { Lang } from '../../../Constants/Languages/English'
 
 function ElevationScroll(props) {
 	const { children } = props
@@ -105,12 +106,12 @@ const ActivityContainer = (props) => {
 					className={classes.tabs}
 				>
 					<Tab
-						label='Events/Announcements'
+						label={Lang.HOME.EVENTS_ANNOUNCEMENTS}
 						{...a11yProps(0)}
 						className={`${classes.eventsTab} ${classes.borderRight}`}
 					/>
 					<Tab
-						label='Homework'
+						label={Lang.HOME.HOMEWORK}
 						{...a11yProps(1)}
 						className={classes.eventsTab}
 					/>

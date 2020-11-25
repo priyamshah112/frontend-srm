@@ -6,6 +6,7 @@ import CardContent from '@material-ui/core/CardContent'
 import * as moment from 'moment'
 import { Typography, makeStyles, Grid } from '@material-ui/core'
 import EditIcon from '../../assets/images/Edit.svg'
+import { paths } from '../../Constants/Routes'
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -151,7 +152,9 @@ const ChatGroupCard = (props) => {
 						<Typography
 							className={classes.cardTitle}
 							onClick={() =>
-								history.push(`/notifications/${props.notification.id}?cby=true`)
+								history.push(
+									`${paths.NOTIFICATIONS}/${props.notification.id}?cby=true`
+								)
 							}
 						>
 							{props.notification.data

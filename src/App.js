@@ -43,6 +43,7 @@ import ReportUpload from './app/report/student/ReportUpload'
 import AttendanceUpload from './app/Attendance/teacherAttendance/AttendanceUpload'
 import TimeTable from './app/timeTable/timeTable'
 import UpdateGroupUsers from './app/chatUsers/UpdateGroupUsers'
+import { paths } from './Constants/Routes'
 
 function App(props) {
 	const { onAutoSignup } = props
@@ -64,64 +65,96 @@ function App(props) {
 		<>
 			<Layout>
 				<Switch>
-					<Route path='/home' exact component={Home} />
-					<Route path='/notifications' exact component={Notification} />
+					<Route path={paths.HOME} exact component={Home} />
+					<Route path={paths.NOTIFICATIONS} exact component={Notification} />
 					<Route
-						path='/create-notification/:id'
+						path={`${paths.CREATE_NOTIFICATIONS}/:id`}
 						exact
 						component={Notification}
 					/>
-					<Route path='/notifications/:id' exact component={Details} />
-					<Route path='/news/:id' exact component={NewsDetails} />
 					<Route
-						path='/announcement'
+						path={`${paths.NOTIFICATIONS}/:id`}
+						exact
+						component={Details}
+					/>
+					<Route path={`${paths.NEWS}/:id`} exact component={NewsDetails} />
+					<Route
+						path={paths.ANNOUNCEMENT}
 						exact
 						component={() => <Typography>announcement</Typography>}
 					/>
-					<Route path='/assignment' exact component={Assignment} />
-					<Route path='/create-homework/:id' exact component={Assignment} />
-					<Route path='/attendance' exact component={Attendance} />
-					<Route path='/attendance/upload' exact component={AttendanceUpload} />
+					<Route path={paths.ASSIGNMENT} exact component={Assignment} />
 					<Route
-						path='/events'
+						path={`${paths.CREATE_HOMEWORK}/:id`}
+						exact
+						component={Assignment}
+					/>
+					<Route path={paths.ATTENDANCE} exact component={Attendance} />
+					<Route
+						path={paths.ATTENDANCE_UPLOAD}
+						exact
+						component={AttendanceUpload}
+					/>
+					<Route
+						path={paths.EVENTS}
 						exact
 						component={() => <Typography>Events Home</Typography>}
 					/>
-					<Route path='/news' exact component={NewsAnnouncement} />
+					<Route path={paths.NEWS} exact component={NewsAnnouncement} />
 					<Route
-						path='/create-announcement/:id'
+						path={`${paths.CREATE_ANNOUNCEMENT}/:id`}
 						exact
 						component={NewsAnnouncement}
 					/>
-					<Route path='/syllabus' exact component={Syllabus} />
-					<Route path='/syllabus/:id/edit/:eid' exact component={EditChapter} />
+					<Route path={paths.SYLLABUS} exact component={Syllabus} />
 					<Route
-						path='/syllabus/add/:id/class/:classid'
+						path={`${paths.SYLLABUS}/:id/edit/:eid`}
 						exact
 						component={EditChapter}
 					/>
-					<Route path='/transport' exact component={Transport} />
-					<Route path='/gallery' exact component={Gallery} />
-					<Route path='/gallery/upload' exact component={ImageUpload} />
-					<Route path='/payments' exact component={Payments} />
-					<Route path='/payments/:id' exact component={PaymentDetails} />
-					<Route path='/timetable' exact component={TimeTable} />
-					<Route path='/leave/' exact component={Leave} />
-					<Route path='/leave/create/' exact component={LeaveCreateContainer} />
-					<Route path='/faq' exact component={Faq} />
-					<Route path='/faq/create/' exact component={FaqEditor} />
-					<Route path='/faq/edit/:id' exact component={FaqEditor} />
-					<Route path='/profile' exact component={Profile} />
-					<Route path='/support' exact component={Support} />
-					<Route path='/support/create' exact component={CreateSupport} />
-					<Route path='/support/create/:id' exact component={CreateSupport} />
-					<Route path='/support/:id' exact component={SupportSection} />
-					<Route path='/chat' exact component={ChatFullScreen} />
-					<Route path='/report' exact component={ReportContainer} />
-					<Route path='/report-card' exact component={StudentCard} />
-					<Route path='/report-upload' exact component={ReportUpload} />
-					<Route path='/chat/:id' exact component={ChatFullScreen} />
-					<Route path='/updategroup' exact component={UpdateGroupUsers} />
+					<Route
+						path={`${paths.SYLLABUS}/add/:id/class/:classid`}
+						exact
+						component={EditChapter}
+					/>
+					<Route path={paths.TRANSPORT} exact component={Transport} />
+					<Route path={paths.GALLERY} exact component={Gallery} />
+					<Route path={paths.GALLERY_UPLOAD} exact component={ImageUpload} />
+					<Route path={paths.PAYMENTS} exact component={Payments} />
+					<Route
+						path={`${paths.PAYMENTS}/:id`}
+						exact
+						component={PaymentDetails}
+					/>
+					<Route path={paths.TIME_TABLE} exact component={TimeTable} />
+					<Route path={paths.LEAVE} exact component={Leave} />
+					<Route
+						path={paths.CREATE_LEAVE}
+						exact
+						component={LeaveCreateContainer}
+					/>
+					<Route path={paths.FAQ} exact component={Faq} />
+					<Route path={paths.CREATE_FAQ} exact component={FaqEditor} />
+					<Route path={`${paths.FAQ_EDIT}/:id`} exact component={FaqEditor} />
+					<Route path={paths.PROFILE} exact component={Profile} />
+					<Route path={paths.SUPPORT} exact component={Support} />
+					<Route path={paths.CREATE_SUPPORT} exact component={CreateSupport} />
+					<Route
+						path={`${paths.CREATE_SUPPORT}/:id`}
+						exact
+						component={CreateSupport}
+					/>
+					<Route
+						path={`${paths.SUPPORT}/:id`}
+						exact
+						component={SupportSection}
+					/>
+					<Route path={paths.CHAT} exact component={ChatFullScreen} />
+					<Route path={paths.REPORT} exact component={ReportContainer} />
+					<Route path={paths.REPORT_CARD} exact component={StudentCard} />
+					<Route path={paths.REPORT_UPLOAD} exact component={ReportUpload} />
+					<Route path={`${paths.CHAT}/:id`} exact component={ChatFullScreen} />
+					<Route path={paths.UPDATE_GROUP} exact component={UpdateGroupUsers} />
 				</Switch>
 			</Layout>
 		</>

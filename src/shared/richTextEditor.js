@@ -4,6 +4,7 @@ import axios from 'axios'
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL
 const IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
+const RTE_API_KEY = process.env.RTE_API_KEY
 
 const RichTextEditor = (props) => {
 	const [isUpload, setUpload] = useState(false)
@@ -16,7 +17,7 @@ const RichTextEditor = (props) => {
 	return (
 		<>
 			<Editor
-				apiKey='yqzp8s3o1swniyhlgunkrtdujfe9jdii4p30czhpdex1ubaz'
+				apiKey={RTE_API_KEY}
 				value={props.value}
 				init={{
 					zIndex: 0,

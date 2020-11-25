@@ -16,11 +16,8 @@ import {
 	Button,
 } from '@material-ui/core'
 import EditIcon from '../../../assets/images/Edit.svg'
-import DoneIcon from '../../../assets/images/notifications/Done.svg'
-import WarningIcon from '../../../assets/images/notifications/Warning.svg'
-// import DeleteIcon from '../../../assets/images/Delete.svg';
+import { paths } from '../../../Constants/Routes'
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
-
 import NotificationService from '../NotificationService'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -211,60 +208,54 @@ const TeacherNotificationCard = (props) => {
 				</DialogActions>
 			</Dialog>
 
-			<Card className={classes.card}>
-				<CardHeader
-					className={classes.cardHeader}
-					action={
-						<>
-							<Typography
-								className={`${classes.contentStyle} ${classes.dateStyle}`}
-							>
-								{moment(props.notification.created_at).format('DD MMM, hh.mma')}
-								{props.notification.notify_status !== 'published' ? (
-									<>
+										
+		<Card className={classes.card}>
+			<CardHeader
+				className={classes.cardHeader}
+				action={
+					<>
+						<Typography
+							className={`${classes.contentStyle} ${classes.dateStyle}`}
+						>
+							{moment(props.notification.created_at).format('DD MMM, hh.mma')}
+							{props.notification.notify_status !== 'published' ? (
+								<>
+								<span
+									className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
+								>
+									<img
+										src={EditIcon}
+										className={`${classes.titleIcon}`}
+										onClick={handleEdit}
+									/>
+								</span>
 										<span
-											className={`${classes.titleIconSpan} ${classes.editIconSpan}`}
-										>
-											<img
-												src={EditIcon}
-												className={`${classes.titleIcon}`}
-												onClick={handleEdit}
-											/>
-										</span>
-
-										<span
-											// onClick={()=>handledeletenotif(props.notification.id)}
-											onClick={handleClickOpen}
-										>
-											<DeleteOutlineOutlinedIcon
-												fontSize={'small'}
-												className={` ${classes.deleteBtn}`}
-											/>
-										</span>
-										{/* <img
-                    src={DeleteOutlineOutlinedIcon}
-                    className={`${classes.deleteBtn}`}
-                    onClick={()=>handledeletenotif(props.notification.id)}
-                  /> */}
+										onClick={handleClickOpen}
+									>
+										<DeleteOutlineOutlinedIcon
+											fontSize={'small'}
+											className={` ${classes.deleteBtn}`}
+										/>
+									</span>
 									</>
 								) : (
-									''
-								)}
-							</Typography>
-						</>
-					}
-					title={
-						<>
-							<Typography
-								className={classes.cardTitle}
-								onClick={() =>
-									history.push(
-										`/notifications/${props.notification.id}?cby=true`
-									)
-								}
-							>
-								{props.notification.data
-									? props.notification.data.title
+								''
+							)}
+						</Typography>
+					</>
+				}
+				title={
+					<>
+						<Typography
+							className={classes.cardTitle}
+							onClick={() =>
+								history.push(
+									`${paths.NOTIFICATIONS}/${props.notification.id}?cby=true`
+								)
+							}
+						>
+							{props.notification.data
+								? props.notification.data.title
 										? props.notification.data.title
 										: 'N/A'
 									: 'N/A'}

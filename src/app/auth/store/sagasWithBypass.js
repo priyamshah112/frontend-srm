@@ -11,6 +11,7 @@ import * as actions from './actions'
 import * as actionTypes from './actionTypes'
 import AuthService from '../AuthService'
 import * as moment from 'moment'
+import { paths } from '../../../Constants/Routes'
 const USE_API = process.env.REACT_APP_USE_API
 
 export function* watchAuth() {
@@ -94,7 +95,7 @@ export function* authUserSaga(action) {
 				actions.authSuccess({
 					token: response.data.access_token,
 					userInfo: response.data.user,
-					redirectUrl: '/home',
+					redirectUrl: paths.HOME,
 					selectedRole: response.data.user.roles[0].name,
 				})
 			)
@@ -106,7 +107,7 @@ export function* authUserSaga(action) {
 			//Initiate the Expiry Time of token
 			yield put(actions.checkAuthTimeout(response.data.expires_at, true))
 
-			yield put(push('/home'))
+			yield put(push(paths.HOME))
 		} else {
 			//Initiate AUTH_FAIL action for Invalid credentials
 			yield put(actions.authFail('Invalid Credentials'))
@@ -141,13 +142,13 @@ export function* authCheckStateSaga(action) {
 				actions.authSuccess({
 					token: token,
 					userInfo: userInfo,
-					redirectUrl: '/home',
+					redirectUrl: paths.HOME,
 					selectedRole: selectedRole,
 				})
 			)
 			const currentPath = yield localStorage.getItem('srmCurrentRoute')
 			if (currentPath == null) {
-				yield put(push('/home'))
+				yield put(push(paths.HOME))
 			} else {
 				yield put(push(currentPath))
 			}

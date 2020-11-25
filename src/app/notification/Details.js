@@ -14,6 +14,7 @@ import NotificationService from './NotificationService'
 import ReadIcon from '../../assets/images/notifications/read.svg'
 import UnReadIcon from '../../assets/images/notifications/unread.svg'
 import BackIcon from '../../assets/images/Back.svg'
+import { paths } from '../../Constants/Routes'
 
 const useStyles = makeStyles((theme) => ({
 	detailsContainer: {
@@ -225,7 +226,7 @@ const Details = (props) => {
 									alt='Back'
 									className={classes.backImg}
 									onClick={() => {
-										history.push('/notifications')
+										history.push(paths.NOTIFICATIONS)
 									}}
 								/>
 							</Grid>
