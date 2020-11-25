@@ -14,6 +14,7 @@ import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded'
 import * as moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import HomeSerivce from '../../HomeSerivce'
+import { Lang } from '../../../../Constants/Languages/English'
 
 const useStyle = makeStyles((theme) => ({
 	homeworkDiv: {
@@ -168,7 +169,7 @@ const Homework = (props) => {
 						alt='homework Icon'
 						className={classes.homeworkIcon}
 					/>
-					<span className={classes.titleName}>&nbsp;Homeworks</span>
+					<span className={classes.titleName}>&nbsp;{Lang.HOME.HOMEWORKS}</span>
 					<AddCircleRoundedIcon
 						color='primary'
 						className={classes.addhomeworkIcon}

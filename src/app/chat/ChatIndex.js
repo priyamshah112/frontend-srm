@@ -16,6 +16,7 @@ import ChatService from './ChatService'
 import closeIcon from '../../assets/images/chat/remove.svg'
 import * as ChatActions from '../../app/chatUsers/store/action'
 import Chat from './Chat'
+import { Lang } from '../../Constants/Languages/English'
 
 const useStyles = makeStyles((theme) => ({
 	cursorPointer: {
@@ -215,7 +216,10 @@ const ChatIndex = (props) => {
 						<div>
 							<img src={UserIcon} alt='User' />
 						</div>
-						<Typography className={classes.headingText}> Chats</Typography>
+						<Typography className={classes.headingText}>
+							{' '}
+							{Lang.HOME.CHATS}
+						</Typography>
 						<AddCircleRoundedIcon
 							color='primary'
 							className={classes.addTaskIcon}
@@ -227,7 +231,7 @@ const ChatIndex = (props) => {
 									className={classes.cursorPointer}
 									onClick={() => setNewGroup(true)}
 								>
-									New Group
+									{Lang.HOME.NEW_GROUP}
 								</span>
 							</Typography>
 						</div>

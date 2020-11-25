@@ -14,6 +14,7 @@ import AuthService from '../AuthService'
 import * as moment from 'moment'
 import axiosService from '../../redux/api/axios-service'
 import { requestFirebaseNotificationPermission } from '../../../firebaseInit'
+import { paths } from '../../../Constants/Routes'
 const USE_API = process.env.REACT_APP_USE_API
 
 export function* watchAuth() {
@@ -115,7 +116,7 @@ export function* authUserSaga(action) {
 				actions.authSuccess({
 					token: response.data.access_token,
 					userInfo: response.data.user,
-					redirectUrl: '/home',
+					redirectUrl: paths.HOME,
 					selectedRole: response.data.user.roles[0].name,
 				})
 			)
@@ -127,7 +128,7 @@ export function* authUserSaga(action) {
 			//Initiate the Expiry Time of token
 			yield put(actions.checkAuthTimeout(response.data.expires_at, true))
 			yield put(startNotificationCount())
-			yield put(push('/home'))
+			yield put(push(paths.HOME))
 		} else {
 			//Initiate AUTH_FAIL action for Invalid credentials
 			yield put(actions.authFail('Invalid Credentials'))
@@ -163,7 +164,7 @@ export function* authCheckStateSaga(action) {
 				actions.authSuccess({
 					token: token,
 					userInfo: userInfo,
-					redirectUrl: '/home',
+					redirectUrl: paths.HOME,
 					selectedRole: selectedRole,
 				})
 			)
@@ -171,7 +172,7 @@ export function* authCheckStateSaga(action) {
 			yield put(startNotificationCount())
 			const currentPath = yield localStorage.getItem('srmCurrentRoute')
 			if (currentPath == null) {
-				yield put(push('/home'))
+				yield put(push(paths.HOME))
 			} else {
 				yield put(push(currentPath))
 			}
@@ -202,5 +203,5 @@ export function* authInitiateRoleSelectionSaga(action) {
 		JSON.stringify(action.selectedRole)
 	)
 	yield put(actions.authRoleSelectionSucceed(action.selectedRole))
-	yield put(push('/home'))
+	yield put(push(paths.HOME))
 }

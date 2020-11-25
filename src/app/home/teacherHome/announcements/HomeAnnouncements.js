@@ -3,11 +3,11 @@ import { makeStyles } from '@material-ui/styles'
 import { connect } from 'react-redux'
 import { Typography, CardContent, CircularProgress } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
-
 import taskBookIcon from '../../../../assets/images/home/teacher/TaskBook.svg'
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded'
 import { useHistory } from 'react-router-dom'
 import HomeSerivce from '../../HomeSerivce'
+import { Lang } from '../../../../Constants/Languages/English'
 
 const useStyle = makeStyles((theme) => ({
 	homeworkDiv: {
@@ -163,7 +163,9 @@ const Homework = (props) => {
 							alt='Announcements Icon'
 							className={classes.homeworkIcon}
 						/>
-						<span className={classes.titleName}>&nbsp;Announcements</span>
+						<span className={classes.titleName}>
+							&nbsp;{Lang.HOME.ANNOUNCEMENTS}
+						</span>
 						<AddCircleRoundedIcon
 							color='primary'
 							className={classes.addhomeworkIcon}

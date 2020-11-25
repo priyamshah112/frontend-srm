@@ -6,6 +6,7 @@ import TeacherNotificationsContainer from './TeacherNotificationsContainer'
 import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader'
 import CreateNotification from './CreateNotification'
 import AnnouncementService from '../../newsAnnouncement/AnnouncementService'
+import { paths } from '../../../Constants/Routes'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -140,7 +141,7 @@ const TeacherNotifications = (props) => {
 
 	return (
 		<div className={classes.container}>
-			{location.pathname === '/notifications' ? (
+			{location.pathname === paths.NOTIFICATIONS ? (
 				<>
 					<AppBar position='sticky' className={classes.tabBar}>
 						<Tabs

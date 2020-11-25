@@ -13,6 +13,7 @@ import * as actions from './store/action'
 import NotificationService from './NotificationService'
 import ReadIcon from '../../assets/images/notifications/read.svg'
 import UnReadIcon from '../../assets/images/notifications/unread.svg'
+import { paths } from '../../Constants/Routes'
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -175,7 +176,7 @@ const NotificationCard = (props) => {
 			if (props.notificationCount !== 0) {
 				props.subNotificationCount()
 			}
-			history.push(`/notifications/${props.notification.id}`)
+			history.push(`${paths.NOTIFICATIONS}/${props.notification.id}`)
 		} catch (e) {
 			console.log(e)
 		}

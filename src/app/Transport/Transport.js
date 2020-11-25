@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import Notsubscribred from './not_sub'
 import Subscribred from './subscribed'
 import { Redirect } from 'react-router-dom'
+import { paths } from '../../Constants/Routes'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -33,7 +34,7 @@ const Transport = (props) => {
 					<Notsubscribred handle={event_issubscribred} />
 				)
 			) : (
-				<Redirect to='/home' />
+				<Redirect to={paths.HOME} />
 			)}
 			{}
 

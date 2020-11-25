@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import TestSubjectPage from './testSubjectPage'
 import { Link } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { paths } from '../../../Constants/Routes'
 
 const useStyles = makeStyles((theme) => ({
 	headingtest: {
@@ -200,14 +201,10 @@ const ClassTestList = (props) => {
 		<Fragment>
 			{subPageUI === false ? (
 				<div>
-					<Grid
-						container
-						spacing={12}
-						style={{ marginTop: '15px', marginBottom: '15px' }}
-					>
-						<Grid item xs={12} style={{ textAlign: 'center' }}>
-							<div style={{ float: 'left' }}>
-								<Link to='/timetable'>
+					<Grid container spacing={12} className={classes.Grid}>
+						<Grid item xs={12} className={classes.textAlign}>
+							<div className={classes.float}>
+								<Link to={paths.TIME_TABLE}>
 									<ArrowBackIosIcon
 										fontSize='small'
 										className={classes.backarrowbutton}

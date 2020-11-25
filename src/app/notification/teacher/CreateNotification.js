@@ -20,6 +20,7 @@ import RichTextEditor from '../../../shared/richTextEditor'
 import PublishLater from '../../newsAnnouncement/teacher/PublishLater'
 import NumberFormatCustom from '../../../shared/NumberFormatCustom'
 import NotificationService from '../NotificationService'
+import { paths } from '../../../Constants/Routes'
 
 const useStyle = makeStyles((theme) => ({
 	formStyle: {
@@ -502,7 +503,7 @@ const CreateNotification = (props) => {
 			)
 			if (response.status === 200) {
 				console.log(response)
-				history.replace('/notifications')
+				history.replace(paths.NOTIFICATIONS)
 			}
 		} catch (e) {
 			console.log(e)
@@ -535,7 +536,7 @@ const CreateNotification = (props) => {
 								className={classes.backImg}
 								onClick={() => {
 									saveDetails()
-									history.push('/notifications')
+									history.push(paths.NOTIFICATIONS)
 								}}
 							/>
 							<Typography
