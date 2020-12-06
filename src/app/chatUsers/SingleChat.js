@@ -28,6 +28,8 @@ import * as ChatActions from '../../app/chatUsers/store/action'
 import { IconButton, Grid, Button } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { FirebaseDatabaseMutation } from '@react-firebase/database'
+import { chats } from '../../firebaseInit'
 var CryptoJS = require('crypto-js')
 
 const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
@@ -294,7 +296,8 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
       
       // console.log('Scroll response', response);
       if (response.status === 200) {
-        // console.log('Chat', response);
+        console.log('Chat', response);
+        chats().child(chat.id).set(chat)
       }
     } catch (error) {
       console.log(error.response);
@@ -359,6 +362,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
   }
 
   useEffect(()=>{
+    console.log(closeEmoji)
     if(!closeEmoji){
       scrollToBottom()
     }
@@ -380,13 +384,14 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
         );
         // console.log('Scroll response', response);
         if (response.status === 200) {
-          console.log('Chat', response);
           const { data } = response
           setMessage('')
           setMessages(data.chat.messages)
           // data.chat.members = JSON.parse(data.chat.members)
           props.onUpdateChat(data.chat)
           setChat(data.chat)
+          chats().child(data.chat.id).set(data.chat)
+          
         }
         else{
           return;
@@ -412,6 +417,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
           setMessage('')
           setAttachments([])
           setMessages(data.chat.messages)
+          chats().child(data.chat.id).set(data.chat)
         }
       }
     } catch (error) {

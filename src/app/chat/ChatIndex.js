@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import UserIcon from '../../assets/images/chat/User.svg'
@@ -17,6 +17,8 @@ import closeIcon from '../../assets/images/chat/remove.svg'
 import * as ChatActions from '../../app/chatUsers/store/action'
 import Chat from './Chat'
 import { Lang } from '../../Constants/Languages/English'
+import { FirebaseDatabaseNode } from '@react-firebase/database'
+import { chats } from '../../firebaseInit'
 
 const useStyles = makeStyles((theme) => ({
 	cursorPointer: {
@@ -152,6 +154,7 @@ const ChatIndex = (props) => {
 	const [chat, setChat] = useState({})
 	const [groupInfo, showGroupInfo] = useState(false)
 
+
 	const addContactToGroup = (item) => {
 		let users = selectedUsers
 		let index = users.indexOf(item)
@@ -188,6 +191,7 @@ const ChatIndex = (props) => {
 	}
 
 	const fetchChat = async (chat) => {
+		
 		const token = localStorage.getItem('srmToken')
 		const response = await ChatService.fetchChat(chat.id, token)
 		if (response.status === 200) {

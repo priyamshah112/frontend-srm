@@ -17,6 +17,7 @@ import { rootSaga } from './rootSaga'
 import AttendenceReducer from './app/redux/reducers/attendence.reducer'
 import SupportReducer from './app/redux/reducers/support.reducer'
 import SnackBar from './SnackBar'
+import { FirebaseDatabaseProvider } from "@react-firebase/database";
 
 if (process.env.NODE_ENV === 'production') {
 	console.log = function () {}
@@ -52,10 +53,12 @@ const store = createStore(
 sagaMiddleware.run(rootSaga)
 const app = (
 	<Provider store={store}>
-		<ConnectedRouter history={history}>
-			<App />
-			<SnackBar />
-		</ConnectedRouter>
+		<FirebaseDatabaseProvider>
+			<ConnectedRouter history={history}>
+				<App />
+				<SnackBar />
+			</ConnectedRouter>
+		</FirebaseDatabaseProvider>
 	</Provider>
 )
 

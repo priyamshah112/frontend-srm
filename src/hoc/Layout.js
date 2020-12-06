@@ -30,7 +30,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import Collapse from '@material-ui/core/Collapse'
-import { onMessageListener } from '../firebaseInit'
+import { chats, onMessageListener } from '../firebaseInit'
 import HomeIcon from '../assets/images/navigation/DesktopHome.svg'
 import NotificationIcon from '../assets/images/navigation/DesktopNotification.svg'
 import AssignmentIcon from '../assets/images/navigation/DesktopAssignment.svg'
@@ -358,6 +358,46 @@ const Layout = (props) => {
 	)
 	const srmSelected_Child = localStorage.getItem('srmSelected_Child')
 	const isMenuOpen = Boolean(anchorEl)
+
+	useEffect(()=>{
+		chats().on('value', snapshot=>{
+			let cs = snapshot.val()
+			for(let key in cs){
+				let chat = cs[key]
+				let members = chat.members;
+				try{
+					members = JSON.parse(chat.members)
+				}
+				catch(e){
+
+				}
+				if(members.includes(props.userInfo.id)){
+					console.log("Chat", chat)
+					chat.messages.forEach(m=>{
+						let read = m.recievers.filter(r=>{
+							return r.readAt == null;
+						})
+						let reciever = read.filter(r=>{
+							return r.reciever.id == props.userInfo.id
+						})
+						if(reciever.length>0){
+							const token = localStorage.getItem('srmToken')
+							ChatService.fetchChat(chat.id, token).then(response=>{
+								if (response.status === 200) {
+									const { data } = response
+									setSelectedChat(data.chat)
+									setRefreshChat(true)
+									props.onUpdateChat(data.chat)
+								}
+							})
+							return;
+						}
+					})
+				}
+			}
+			
+		})
+	}, [])
 
 	onMessageListener()
 		.then(async (payload) => {

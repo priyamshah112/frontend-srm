@@ -10,7 +10,7 @@ axios.defaults.timeout = 120000
 
 axios.interceptors.response.use(
 	function (response) {
-		console.log('interceptor response', response)
+		// console.log('interceptor response', response)
 		return response
 	},
 	function (error) {
@@ -29,7 +29,7 @@ axios.interceptors.response.use(
 
 axios.interceptors.request.use(
 	function (response) {
-		console.log('interceptor request', response)
+		// console.log('interceptor request', response)
 		return response
 	},
 	function (error) {

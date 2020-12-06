@@ -10,6 +10,7 @@ import { Typography } from '@material-ui/core'
 import ChatService from './ChatService'
 import groupicon from '../../assets/images/chat/group.png'
 import moment from 'moment'
+import { chats } from '../../firebaseInit'
 var CryptoJS = require('crypto-js')
 
 const StyledBadge = withStyles((theme) => ({
@@ -97,6 +98,13 @@ export default function Chat({
 	const [offset, setOffset] = useState(100)
 	const [currentPage, setCurrentPage] = useState(0)
 
+	useEffect(()=>{
+		chats().on('value', snapshot=>{
+			let cs = snapshot.val()
+			console.log("SnapShot", cs)
+			fetchChats()
+		})
+	}, [])
 	useEffect(() => {
 		if (updateGroup) {
 			setFilteredChats([...Users])
@@ -200,6 +208,7 @@ export default function Chat({
 				setChats([...data.chats])
 				setFilteredChats([...data.chats])
 				setUsers([...data.users])
+				
 			}
 		} catch (error) {
 			console.log(error)

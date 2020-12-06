@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/messaging'
+import 'firebase/database'
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyCkaH2x1_0yBsSNU5u66NQB4d_oXV8107A',
@@ -19,6 +20,12 @@ if (firebase.messaging.isSupported()) {
 } else {
 	messaging = null
 }
+
+const db = firebase.database()
+
+export const chat = uid => db.ref(`chats/${uid}`)
+
+export const chats = () => db.ref(`chats`)
 
 export const requestFirebaseNotificationPermission = () =>
 	new Promise((resolve, reject) => {

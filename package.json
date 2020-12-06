@@ -9,6 +9,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
     "@material-ui/styles": "^4.10.0",
+    "@react-firebase/database": "^0.3.11",
     "@tinymce/tinymce-react": "^3.6.0",
     "axios": "^0.19.2",
     "browser-image-compression": "^1.0.12",
