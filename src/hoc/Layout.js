@@ -372,7 +372,6 @@ const Layout = (props) => {
 
 				}
 				if(members.includes(props.userInfo.id)){
-					console.log("Chat", chat)
 					chat.messages.forEach(m=>{
 						let read = m.recievers.filter(r=>{
 							return r.readAt == null;
@@ -416,14 +415,14 @@ const Layout = (props) => {
 				setSnackbarDescription(
 					getPlainMessage(payload.notification.body, data.entity_id)
 				)
-				const token = localStorage.getItem('srmToken')
-				const response = await ChatService.fetchChat(data.entity_id, token)
-				if (response.status === 200) {
-					const { data } = response
-					setSelectedChat(data.chat)
-					setRefreshChat(true)
-					props.onUpdateChat(data.chat)
-				}
+				// const token = localStorage.getItem('srmToken')
+				// const response = await ChatService.fetchChat(data.entity_id, token)
+				// if (response.status === 200) {
+				// 	const { data } = response
+				// 	setSelectedChat(data.chat)
+				// 	setRefreshChat(true)
+				// 	props.onUpdateChat(data.chat)
+				// }
 			} else {
 				setSnackbarDescription(
 					getPlainMessage(payload.notification.body, data.entity_id)
