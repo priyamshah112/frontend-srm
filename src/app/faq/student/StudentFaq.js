@@ -1,172 +1,202 @@
-import React, { useState, useEffect } from 'react'
-import Container from '@material-ui/core/Container'
+import React, { useState, useEffect, Fragment } from "react";
+import Container from "@material-ui/core/Container";
 import {
-	makeStyles,
-	Grid,
-	Typography,
-	CircularProgress,
-} from '@material-ui/core'
-import FaqCard from './FaqCard'
-import FaqService from '../FaqService'
-import InfiniteScroll from 'react-infinite-scroll-component'
+  makeStyles,
+  Grid,
+  Typography,
+  CircularProgress,
+  Box,
+  Input,
+  IconButton,
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import FaqCard from "./FaqCard";
+import FaqService from "../FaqService";
 
 const useStyles = makeStyles((theme) => ({
-	container: {
-		width: '100%',
-		height: '100%',
-		margin: 0,
-		padding: 0,
-		overflowY: 'auto',
-		'&::-webkit-scrollbar': {
-			display: 'none',
-		},
-	},
-	createHeader: {
-		marginTop: '20px',
-	},
-	createTitle: {
-		fontSize: '20px',
-	},
-	loading: {
-		textAlign: 'center',
-		justifyContent: 'center',
-		margin: 'auto',
-	},
-	createButtonIcon: {
-		padding: '0 0 0 10px',
-		transform: 'translateY(5px)',
-		cursor: 'pointer',
-	},
-	cardGridStyle: {
-		marginTop: '20px',
-	},
-	emptyView: {
-		width: '100%',
-		textAlign: 'center',
-		paddingTop: '100px',
-		fontSize: '20px',
-	},
-}))
+  container: {
+    width: "100%",
+    height: "100%",
+    margin: 0,
+    padding: "0 10px",
+    overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
+  },
+  headerText: {
+    marginTop: "20px",
+    textAlign: "center",
+    fontSize: "20px",
+  },
+  loading: {
+    textAlign: "center",
+    justifyContent: "center",
+    margin: "20px auto",
+  },
+  cardGridStyle: {
+    marginTop: "20px",
+  },
+  emptyView: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "100px",
+    fontSize: "20px",
+  },
+  searchForm: {
+    width: "100%",
+    marginTop: "20px",
+  },
+  searchContainer: {
+    width: "100%",
+    display: "flex",
+  },
+  search: {
+    width: "100% !important",
+    padding: "7px 8px",
+    backgroundColor: "white",
+    borderRadius: "5px 0px 0px 5px",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  searchIcon: {
+    color: "white",
+    backgroundColor: "#7B72AF",
+    borderRadius: "0px 5px 5px 0px",
+    "&:hover": {
+      backgroundColor: "#7B72AF",
+    },
+  },
+}));
 
-const StudentFaq = (props) => {
-	const classes = useStyles()
-	const [hasMore, setHasMore] = useState(true)
-	const [allFaqs, setFaq] = useState([])
-	const [nextUrl, setNextUrl] = useState(null)
-	const [currentPage, setCurrentPage] = useState(1)
-	const [loading, setLoading] = useState(true)
+const Header = ({ title }) => {
+  const classes = useStyles();
+  return <Typography className={classes.headerText}>{title}</Typography>;
+};
 
-	useEffect(() => {
-		let isLoading = true
-		const fetchFaq = async () => {
-			try {
-				var role = localStorage.getItem('srmSelectedRole')
-				var string1 = String('parent')
-				if (String(role) === String(string1)) {
-					var token = localStorage.getItem('srmSelected_Child_token')
-				} else {
-					var token = localStorage.getItem('srmToken')
-				}
-				const response = await FaqService.fetchAllFaqs(token)
-				setLoading(false)
-				if (isLoading) {
-					setFaq(response.data.data.data)
-					let next_page_url = response.data.data.next_page_url
-					if (next_page_url === null) {
-						setHasMore(false)
-					} else {
-						setNextUrl(next_page_url)
-						setCurrentPage(currentPage + 1)
-						setHasMore(true)
-					}
-				}
-			} catch (error) {
-				setLoading(false)
-				console.log('Error: ', error)
-			}
-		}
-		fetchFaq()
-		return () => {
-			isLoading = false
-		}
-	}, [])
+const Spinner = ({ isLoading }) => {
+  const classes = useStyles();
+  if (!isLoading) return null;
+  return (
+    <Box className={classes.loading}>
+      <CircularProgress color="primary" size={30} />
+    </Box>
+  );
+};
 
-	const fetchMoreFaqs = async () => {
-		try {
-			var role = localStorage.getItem('srmSelectedRole')
-			if (role === 'parent') {
-				var token = localStorage.getItem('srmSelected_Child_token')
-			} else {
-				var token = localStorage.getItem('srmToken')
-			}
-			const response = await FaqService.fetchMoreFaqs(token, nextUrl)
-			setFaq([...allFaqs, ...response.data.data.data])
-			let next_page_url = response.data.data.next_page_url
-			if (next_page_url === null) {
-				setHasMore(false)
-			} else {
-				setNextUrl(next_page_url)
-				setCurrentPage(currentPage + 1)
+const SearchBar = ({ handleSearch, handleSearchChange }) => {
+  const classes = useStyles();
+  return (
+    <Box
+      component="form"
+      className={classes.searchForm}
+      onSubmit={handleSearch}
+    >
+      <Box className={classes.searchContainer}>
+        <Input
+          placeholder="Search…"
+          className={classes.search}
+          disableUnderline={true}
+          onChange={handleSearchChange}
+        />
+        <IconButton type="submit" className={classes.searchIcon}>
+          <SearchIcon />
+        </IconButton>
+      </Box>
+    </Box>
+  );
+};
 
-				setHasMore(true)
-			}
-		} catch (error) {
-			console.log('Error: ', error)
-		}
-	}
-	return (
-		<>
-			<div className={classes.container} id='scrollable'>
-				<Container>
-					<InfiniteScroll
-						dataLength={allFaqs.length}
-						next={fetchMoreFaqs}
-						hasMore={hasMore}
-						loader={
-							<>
-								<br />
-								<div className={classes.loading}>
-									<CircularProgress />
-								</div>
-								<br />
-							</>
-						}
-						scrollableTarget='scrollable'
-						scrollThreshold={0.5}
-					>
-						{loading ? (
-							<>
-								<br />
-								<div className={classes.loading}>
-									<CircularProgress color='primary' size={30} />
-								</div>
-								<br />
-							</>
-						) : null}
-						{allFaqs.map((faq) => (
-							<Grid key={faq.id} className={classes.cardGridStyle}>
-								<FaqCard
-									id={faq.id}
-									question={faq.question}
-									answer={faq.answer}
-								/>
-							</Grid>
-						))}
-						{!loading && !allFaqs.length ? (
-							<div className={classes.emptyView}>
-								<Typography>Don't have any FAQ.</Typography>
-							</div>
-						) : null}
-					</InfiniteScroll>
-				</Container>
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-			</div>
-		</>
-	)
-}
+const AllCards = ({ faqs }) => {
+  const classes = useStyles();
+  return (
+    <Fragment>
+      {faqs.map((faq) => (
+        <Grid key={faq.id} className={classes.cardGridStyle}>
+          <FaqCard id={faq.id} question={faq.question} answer={faq.answer} />
+        </Grid>
+      ))}
+    </Fragment>
+  );
+};
 
-export default StudentFaq
+const StudentFaq = () => {
+  const classes = useStyles();
+  const [allFaqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [noResults, setNoResults] = useState(false);
+
+  useEffect(() => {
+    async function fetchAllFaqs() {
+      try {
+        setLoading(true);
+        const role = localStorage.getItem("srmSelectedRole");
+        const token =
+          role === "parent"
+            ? localStorage.getItem("srmSelected_Child_token")
+            : localStorage.getItem("srmToken");
+        const response = await FaqService.fetchAllFaqs(token);
+        setFaqs(response.data.data.data);
+      } catch (error) {
+        console.warn("Error: ", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAllFaqs();
+  }, []);
+
+  const handleSearchChange = (event) => {
+    if (event.target.value === "") {
+      setSearchQuery(event.target.value);
+      setSearchResults([]);
+      setNoResults(false);
+    } else {
+      setSearchQuery(event.target.value);
+    }
+  };
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const filteredFaqs = allFaqs.filter(
+      (faq) => faq.question.toLowerCase().search(searchQuery) !== -1
+    );
+    if (filteredFaqs.length === 0) {
+      setSearchResults(filteredFaqs);
+      setNoResults(true);
+    } else {
+      setSearchResults(filteredFaqs);
+    }
+  };
+
+  return (
+    <Container className={classes.container} id="scrollable">
+      <Header title="Frequently Asked Questions" />
+      <SearchBar
+        handleSearch={handleSearch}
+        handleSearchChange={handleSearchChange}
+      />
+      <Spinner isLoading={loading} />
+      {searchResults.length === 0 && !noResults ? (
+        <AllCards faqs={allFaqs} />
+      ) : (
+        <AllCards faqs={searchResults} />
+      )}
+      {(!loading && !allFaqs.length) || noResults ? (
+        <div className={classes.emptyView}>
+          <Typography>Don't have any FAQ.</Typography>
+        </div>
+      ) : null}
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+    </Container>
+  );
+};
+
+export default StudentFaq;

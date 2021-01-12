@@ -340,10 +340,10 @@ const HomeworkCard = (props) => {
 											onClick={handleClickOpen}
 										>
 											{/* <img
-                    src={DeleteIcon}
-                    className={classes.deleteBtn}
-                    onClick={()=>handledeleteHomework(id)}
-                  /> */}
+												src={DeleteIcon}
+												className={classes.deleteBtn}
+												onClick={()=>handledeleteHomework(id)}
+											/> */}
 											<DeleteOutlineOutlinedIcon fontSize={'medium'} />
 										</div>
 									</>

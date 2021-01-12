@@ -132,7 +132,7 @@ const NewsAnnouncement = (props) => {
 		}
 	}, [classState, category])
 
-	const handleChange = (event,newValue) => {
+	const handleChange = (event, newValue) => {
 		setValue(newValue)
 	}
 

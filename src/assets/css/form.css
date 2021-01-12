@@ -38,3 +38,7 @@
 .makeStyles-mainContainer-23{
     overflow: auto;
 }
+
+.MuiCheckbox-colorSecondary.Mui-checked {
+    color: #7B72AF;
+}

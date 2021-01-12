@@ -34,16 +34,24 @@ import SupportSection from './app/support/SupportSection'
 import Leave from './app/leave/LeaveContainer'
 import LeaveCreateContainer from './app/leave/LeaveCreateContainer'
 import Attendance from './app/Attendance/Attendance'
-import Syllabus from './app/syllabus/Syllabus'
-import EditChapter from './app/syllabus/teacher/editChapter'
+import Planning from './app/planning/Planning'
+import CreatePlanning from './app/planning/teacher/createPlanning'
 import ChatFullScreen from './app/chatUsers/ChatFullScreen'
 import ReportContainer from './app/report/student/ReportContainer'
 import StudentCard from './app/report/student/StudentCard'
 import ReportUpload from './app/report/student/ReportUpload'
 import AttendanceUpload from './app/Attendance/teacherAttendance/AttendanceUpload'
-import TimeTable from './app/timeTable/timeTable'
+import DateSheet from './app/dateSheet/dateSheet'
 import UpdateGroupUsers from './app/chatUsers/UpdateGroupUsers'
 import { paths } from './Constants/Routes'
+import WeeklyTimeTable from './app/weeklyTimeTable/teacher/WeeklyTimeTable'
+import Diary from './app/diary/teacher/Diary'
+import Library from './app/diary/library/Library'
+import HolidayCalender from './app/diary/teacher/HolidayCalender'
+import Miscellaneous from './app/diary/teacher/Miscellaneous'
+import MultipleStudent from './app/diary/MultipleStudent'
+import Dishes from './app/lunch/Dishes'
+import Menu from './app/lunch/Menu'
 
 function App(props) {
 	const { onAutoSignup } = props
@@ -106,17 +114,17 @@ function App(props) {
 						exact
 						component={NewsAnnouncement}
 					/>
-					<Route path={paths.SYLLABUS} exact component={Syllabus} />
+					<Route path={paths.PLANNING} exact component={Planning} />
 					<Route
-						path={`${paths.SYLLABUS}/:id/edit/:eid`}
+						path={`${paths.CREATE_PLANNING}/:id`}
+						exact
+						component={Planning}
+					/>
+					{/* <Route
+						path={`${paths.PLANNING}/edit/:id/class/:classid`}
 						exact
 						component={EditChapter}
-					/>
-					<Route
-						path={`${paths.SYLLABUS}/add/:id/class/:classid`}
-						exact
-						component={EditChapter}
-					/>
+					/> */}
 					<Route path={paths.TRANSPORT} exact component={Transport} />
 					<Route path={paths.GALLERY} exact component={Gallery} />
 					<Route path={paths.GALLERY_UPLOAD} exact component={ImageUpload} />
@@ -126,7 +134,7 @@ function App(props) {
 						exact
 						component={PaymentDetails}
 					/>
-					<Route path={paths.TIME_TABLE} exact component={TimeTable} />
+					<Route path={paths.DATE_SHEET} exact component={DateSheet} />
 					<Route path={paths.LEAVE} exact component={Leave} />
 					<Route
 						path={paths.CREATE_LEAVE}
@@ -155,6 +163,20 @@ function App(props) {
 					<Route path={paths.REPORT_UPLOAD} exact component={ReportUpload} />
 					<Route path={`${paths.CHAT}/:id`} exact component={ChatFullScreen} />
 					<Route path={paths.UPDATE_GROUP} exact component={UpdateGroupUsers} />
+					<Route
+						path={paths.WEEKLY_TIME_TABLE}
+						exact
+						component={WeeklyTimeTable}
+					/>
+					<Route path={paths.DIARY} exact component={Diary} />
+					<Route path='/diary-entry' exact component={Diary} />
+					<Route path='/holiday-calender' exact component={HolidayCalender} />
+					<Route path='/library' exact component={Library} />
+					<Route path='/miscellaneous' exact component={Miscellaneous} />
+					<Route path='/multiple-student' exact component={MultipleStudent} />
+					<Route path='/dishes' exact component={Dishes} />
+					<Route path='/menu' exact component={Menu} />
+
 				</Switch>
 			</Layout>
 		</>

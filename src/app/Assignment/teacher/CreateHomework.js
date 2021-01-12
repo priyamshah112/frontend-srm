@@ -503,6 +503,7 @@ const CreateHomework = (props) => {
 									)
 								}}
 							>
+								<MenuItem value='all teacher'>All Teachers</MenuItem>
 								{classStateNames.map((classname) => (
 									<MenuItem key={classname} value={classname}>
 										{classname}
