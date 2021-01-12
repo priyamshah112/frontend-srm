@@ -27,7 +27,7 @@ const ClassesDropdown = (props) => {
 
 	useEffect(() => {
 		if (data.length && !props.value) {
-			props.onChange(data[0].id)
+			props.onChange(data[0].id, data[0])
 		}
 	}, [loading])
 
@@ -36,7 +36,8 @@ const ClassesDropdown = (props) => {
 	}
 
 	const handleClassChange = (event) => {
-		props.onChange && props.onChange(event.target.value)
+		const result = data.find(({ id }) => id === event.target.value)
+		props.onChange && props.onChange(event.target.value, result)
 	}
 
 	const renderData = () =>

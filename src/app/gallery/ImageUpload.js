@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { DropzoneArea } from 'material-ui-dropzone'
@@ -12,6 +12,8 @@ import Alert from '@material-ui/lab/Alert'
 import imageCompression from 'browser-image-compression'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
+import { FormControl, TextField } from '@material-ui/core'
+import Dropdown from './dropdown'
 
 const useStyles = makeStyles((theme) => ({
 	snackBar: {
@@ -73,15 +75,45 @@ const useStyles = makeStyles((theme) => ({
 			marginRight: '5px',
 		},
 	},
+	folderSelect:{
+		paddingTop: 20,
+	}
 }))
 
 const ImageUpload = (props) => {
 	const classes = useStyles()
 	const history = useHistory()
-
+	const [ mounted, setMounted ] = useState(false)
 	const [fileList, setFileList] = useState([])
 	const [isUploading, setIsUploading] = useState(false)
 	const [openSnackbar, setOpenSnackbar] = useState(false)
+	const [ folderID, setFolderID ] = useState('Folder')
+	const [ folderList, setFolderList ] = useState([])
+	const [ folderLoading, setFolderLoading ] = useState(false)
+	const token = localStorage.getItem('srmToken')
+
+	useEffect(()=>{
+		if(!mounted){
+			fetchFolders();
+			setMounted(true)
+		}
+	})
+
+	const fetchFolders = async() =>{
+		setFolderLoading(true)
+		try {
+			const res = await GalleryService.fetchFolders(token);
+			if(res.status === 200){
+				setFolderList(res.data.data)
+			}
+
+		}
+		catch (e){
+			console.log(e)
+		}
+		setFolderLoading(false)
+	}
+
 	const handleChange = (files) => {
 		setFileList(files)
 	}
@@ -108,7 +140,10 @@ const ImageUpload = (props) => {
 				const imageString = await toBase64(compressedImage)
 
 				const response = await GalleryService.uploadImage(
-					{ img_name: imageString },
+					{ 
+						img_name: imageString,
+						folder_id: folderID
+					 },
 					props.token
 				)
 				console.log(response)
@@ -126,7 +161,9 @@ const ImageUpload = (props) => {
 	const handleCancel = () => {
 		history.goBack()
 	}
-
+	const handleFolderSelected = (value) => {
+		setFolderID(value)
+	}
 	return (
 		<>
 			<div className={classes.div}>
@@ -150,6 +187,9 @@ const ImageUpload = (props) => {
 						dropzoneText='Drag and drop a file (max 10 MB each) here or click'
 					/>
 				</div>
+				<FormControl class={classes.folderSelect}>
+					<Dropdown data={folderList} loading={folderLoading} onChange={handleFolderSelected} initialValue="Folder" value={folderID}/>
+				</FormControl>
 				<Box className={`${classes.margin} ${classes.sideMargins}`}>
 					<Grid
 						container
@@ -165,7 +205,7 @@ const ImageUpload = (props) => {
 									classes.fieldStyle
 								} ${'publishBtn'} ${'publishLaterBtn'}`}
 							>
-								Cancle
+								Cancel
 							</Button>
 							<Button
 								id='publishBtn'

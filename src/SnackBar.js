@@ -15,7 +15,7 @@ class SnackBar extends React.Component {
 		}
 	}
 
-	open = (status) => {
+	open = (status, success, message) => {
 		console.log('console', status)
 		this.setState({ openSnackBar: true })
 		if (status === 500) {
@@ -23,6 +23,8 @@ class SnackBar extends React.Component {
 		} else {
 			this.setState({ error404: true })
 		}
+		this.setState({ success })
+		this.setState({ message })
 	}
 
 	handleSnackbarClose = () => {
@@ -31,18 +33,26 @@ class SnackBar extends React.Component {
 
 	render() {
 		return (
-			<Snackbar
-				open={this.state.openSnackBar}
-				autoHideDuration={10000}
-				onClose={this.handleSnackbarClose}
-			>
-				<Alert onClose={this.handleSnackbarClose} severity='error'>
-					{this.state.error404 ? 'Error Occured' : ''}
-					{this.state.error500
-						? 'Internal server error! Please try after some time.'
-						: ''}
-				</Alert>
-			</Snackbar>
+			<>
+				<Snackbar
+					open={this.state.openSnackBar}
+					autoHideDuration={10000}
+					onClose={this.handleSnackbarClose}
+				>
+					<Alert
+						onClose={this.handleSnackbarClose}
+						severity={this.state.success ? 'success' : 'error'}
+					>
+						{this.state.message
+							? this.state.message
+							: this.state.error404
+							? 'Error Occured'
+							: this.state.error500
+							? 'Internal server error! Please try after some time.'
+							: ''}
+					</Alert>
+				</Snackbar>
+			</>
 		)
 	}
 }

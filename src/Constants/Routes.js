@@ -1,5 +1,5 @@
 export const paths = {
-	TIME_TABLE: '/timetable',
+	DATE_SHEET: '/dateSheet',
 	HOME: '/home',
 	NOTIFICATIONS: '/notifications',
 	CREATE_NOTIFICATIONS: '/create-notification',
@@ -11,7 +11,8 @@ export const paths = {
 	ATTENDANCE_UPLOAD: '/attendance/upload',
 	EVENTS: '/events',
 	CREATE_ANNOUNCEMENT: '/create-announcement',
-	SYLLABUS: '/syllabus',
+	PLANNING: '/planning',
+	CREATE_PLANNING: '/create-planning',
 	TRANSPORT: '/transport',
 	GALLERY: '/gallery',
 	GALLERY_UPLOAD: '/gallery/upload',
@@ -29,4 +30,6 @@ export const paths = {
 	REPORT_CARD: '/report-card',
 	REPORT_UPLOAD: '/report-upload',
 	UPDATE_GROUP: '/updategroup',
+	WEEKLY_TIME_TABLE: '/weekly-time-table',
+	DIARY: '/diary',
 }

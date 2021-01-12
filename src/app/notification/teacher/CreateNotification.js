@@ -33,18 +33,12 @@ const useStyle = makeStyles((theme) => ({
 	},
 	backImg: {
 		float: 'left',
-
 		transform: 'translateY(7px)',
-
 		cursor: 'pointer',
 	},
 	sideMargins: {
 		marginLeft: '20px',
 		marginRight: '20px',
-	},
-	adornmentColor: {
-		color: 'rgba(0, 0, 0, 0.54)',
-		paddingTop: '6px',
 	},
 	themeColor: {
 		color: `${theme.palette.common.deluge}`,
@@ -72,46 +66,12 @@ const useStyle = makeStyles((theme) => ({
 	inputBorder: {
 		height: '50px',
 	},
-	datePicker: {
-		width: '100%',
-		[theme.breakpoints.down('xs')]: {
-			width: '100%',
-		},
-	},
-	paper: {
-		display: 'flex',
-		minHeight: '40px',
-		backgroundColor: 'none',
-		justifyContent: 'left',
-		flexWrap: 'wrap',
-		listStyle: 'none',
-		border: '1px solid #eaeaea',
-		padding: theme.spacing(0.5),
-		textAlign: 'left',
-	},
-	paperShowIn: {
-		display: 'flex',
-		backgroundColor: 'none',
-		justifyContent: 'left',
-		flexWrap: 'wrap',
-		listStyle: 'none',
-
-		padding: theme.spacing(0.5),
-		margin: 'auto',
-	},
-
 	chip: {
 		margin: theme.spacing(0.5),
-	},
-	paperBoxShadow: {
-		boxShadow: `2px 2px 2px 0 #E5E5EA`,
 	},
 	textAlignLeft: {
 		textAlign: 'left',
 		color: 'rgba(0, 0, 0, 0.54)',
-	},
-	contentCenter: {
-		justifyContent: 'center',
 	},
 	chips: {
 		display: 'flex',
@@ -325,7 +285,8 @@ const CreateNotification = (props) => {
 				}
 			}
 
-			console.log(payload)
+			console.log('notification payload', payload)
+			if (!payload.type) return
 			const response = await NotificationService.saveNotification(
 				id,
 				payload,
