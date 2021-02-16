@@ -241,7 +241,7 @@ const StudentSkills = (props) => {
 							}
 							addSkillCall({
 								subject: [],
-								...test,
+								...test
 							})
 						}
 					}

@@ -77,13 +77,12 @@ const useStyles = makeStyles((theme) => ({
 		opacity: '0.7',
 	},
 	tablestyle: {
-		paddingTop: '20px',
-		paddingBottom: '20px',
+		paddingTop: '10px',
+		paddingBottom: '10px',
 	},
 	displayPadding: {
-		paddingLeft: '5px',
-		paddingRight: '5px',
-		marginBottom: '50px',
+		paddingTop: '10px',
+		paddingBottom: '50px',
 	},
 	spanStyle: {
 		float: 'right',
@@ -366,7 +365,7 @@ const TestSubjectPage = (props) => {
 							<div className={classes.displayPadding}>								
 								{ datesheetDataTable.length > 0 ?
 									datesheetDataTable.map((item,index)=>{ return (
-										<Grid container spacing={3} key={index+""+item.id}>
+										<Grid container key={index+""+item.id}>
 											<Grid
 												container
 												className={classes.tablestyle}

@@ -14,10 +14,10 @@ const useStyles = makeStyles((theme) => ({
 		width: '100%',
 		backgroundColor: theme.palette.mainBackground,
 		height: '100%',
-		marign: '0',
+		padding: '20px',
 		overflowY: 'auto',
-		padding: '24px 0px',
-		paddingBottom: '50px',
+		marginBottom: '50px',
+		boxSizing: 'border-box'
 	},
 	subjectTitle: {
 		marginBottom: '20px',
@@ -31,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
 	background: {
 		background: '#fff',
 		borderRadius: '5px',
+		marginTop: 10,
+		marginBottom: 10,
 	},
 	select: {
 		width: '50%',
@@ -90,11 +92,11 @@ const useStyles = makeStyles((theme) => ({
 		},
 	  },
 	  option:{
-		  'display':'flex',
-		  'width': '99%',
-		  'paddingTop': '20px',
-		  'marginBottom': '20px',
-		  'overflowX': 'hidden',
+		display:'flex',
+		width: '100%',
+		paddingTop: '20px',
+		paddingBottom: '10px',
+		overflowX: 'hidden',
 	  },
 	  menu:{	  
 		  'width':'50%'
@@ -241,25 +243,21 @@ const StudentPlanning = (props) => {
 		isLoading == false && planningDetails !== null
 			? Object.entries(planningDetails).map(function ([key,value], index) {
 					return (
-						<div key={`${classID}${index}`}>
-							<div className={classes.background}>
-								<SubjectPlanning
-									class_id={classID}
-									key={`${classID}${index}`}
-									planningDetails={value}
-									title={key}
-									get_by={get_by}
-								/>
-							</div>
-							<br />
-							<br />
+						<div className={classes.background} key={`${classID}${index}`}>
+							<SubjectPlanning
+								class_id={classID}
+								key={`${classID}${index}`}
+								planningDetails={value}
+								title={key}
+								get_by={get_by}
+							/>
 						</div>
 					)
 			  })
 			: null
 			
 	return (	
-		<Container>
+		<div>
 			<div className={classes.container}>
 				<div className={classes.header}>
 					<div className={classes.filterForm}>
@@ -278,17 +276,16 @@ const StudentPlanning = (props) => {
 						<Dropdown data={menuList} loading={menuLoading} onChange={handleMenuSelected} makeDisable={false} initialValue="All" value={menuSelected}/>
 					</FormControl>
 				</div>
-				<div>
+				<div style={{display: 'grid'}}>
 					{isLoading ? (
 						<div className={classes.loading}>
 							<CircularProgress color='primary' size={30} />
 						</div>
 					) : null}
-					<br />
 					{table}
 				</div>
 			</div>
-		</Container>
+		</div>
 	)
 }
 const mapStateToProps = (state) => {

@@ -16,6 +16,9 @@ import TeacherNotificationCard from './TeacherNotificationCard'
 import NotificationService from '../NotificationService'
 
 const useStyles = makeStyles((theme) => ({
+	infiniteContainer:{
+		display: 'grid',
+	},
 	datePicker: {
 		width: '25%',
 		paddingRight: '10px',
@@ -23,16 +26,17 @@ const useStyles = makeStyles((theme) => ({
 	sectionContainer: {
 		height: '100%',
 		width: '100%',
+		padding: '20px',
+		boxSizing: 'border-box'
 	},
 
-	header: {
-		paddingRight: '15px',
-		paddingLeft: '15px',
-		paddingTop: '10px',
+	header: {   
 		textAlign: 'right',
+		paddingBottom: '10px',
 	},
 	filterHeader: {
 		width: '100%',
+		paddingBottom: '10px',
 	},
 	selectFiler: {
 		color: `${theme.palette.common.adornment}`,
@@ -46,18 +50,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	formControl: {
 		width: '110px',
-		padding: '10px 0px  0px 27px',
 	},
 	cardBoxPadding: {
-		padding: '0px 24px 24px 24px',
-		[theme.breakpoints.down('sm')]: {
-			padding: '16px',
-		},
+		padding: '0px',
 	},
 	addNew: {
 		color: theme.palette.common.deluge,
-		marginTop: '15px',
-		marginRight: '15px',
 		'& .new': {
 			float: 'right',
 			fontSize: '14px',
@@ -92,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
 const TeacherNotificationsContainer = (props) => {
 	const classes = useStyles()
 	const history = useHistory()
+	console.log(props)
 	const selectedRole = props.selectedRole
 	const [hasMore, setHasMore] = useState(true)
 	const [currentPage, setCurrentPage] = useState(1)
@@ -161,7 +160,9 @@ const TeacherNotificationsContainer = (props) => {
 		try {
 			const response = await NotificationService.createNotification(props.token)
 			if (response.status === 200) {
-				history.push(`/create-notification/${response.data.data.id}`)
+				history.push({pathname:`/create-notification/${response.data.data.id}`,state:{
+					tab: props.selectedTab
+				}})
 			}
 		} catch (e) {
 			console.log(e)
@@ -243,6 +244,7 @@ const TeacherNotificationsContainer = (props) => {
 			<TeacherNotificationCard
 				key={notification.id}
 				notification={notification}
+				selectedTab={props.selectedTab}
 			/>
 		))
 	} else {
@@ -253,6 +255,7 @@ const TeacherNotificationsContainer = (props) => {
 				key={notification.id}
 				notification={notification}
 				handleRemoveNotifcation={handleRemoveNotifcation}
+				selectedTab={props.selectedTab}
 			/>
 		))
 	}
@@ -319,6 +322,7 @@ const TeacherNotificationsContainer = (props) => {
 					// }
 					scrollableTarget='scrollable'
 					scrollThreshold={0.2}
+					className={classes.infiniteContainer}
 				>
 					{loading ? (
 						<>
@@ -331,7 +335,7 @@ const TeacherNotificationsContainer = (props) => {
 					) : null}
 					{!loading && !notifications.length ? (
 						<div className={classes.emptyView}>
-							<Typography>You don't have any notification.</Typography>
+							<Typography>No notifications available</Typography>
 						</div>
 					) : null}
 					{content}

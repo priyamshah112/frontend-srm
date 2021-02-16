@@ -23,12 +23,18 @@ const useStyles = makeStyles(() => ({
 	tableCell: {
 		borderLeft: '1px solid rgba(224, 224, 224, 1)',
 	},
-	title:{
-		fontSize: '0.9rem',
-		fontWeight: 'bold',
+	subjectName:{		
+		fontSize: '14px',
+		fontFamily: 'Avenir Heavy'
 	},
-	typography: {
+	title:{
+		fontSize: '14px',
+		fontFamily: 'Avenir Heavy'
+	},
+	chapters: {
 		'white-space': 'pre-wrap',
+		fontSize: '14px',
+		fontFamily: 'Avenir Book'
 	},
 	div: {
 		float: 'right',
@@ -44,7 +50,7 @@ const useStyles = makeStyles(() => ({
 const SubjectPlanning = (props) => {
 	const classes = useStyles()
 	const history = useHistory()
-	const {planningDetails,title,get_by} = props
+	const {planningDetails,title,get_by,menuSelected} = props
 	const [open, setOpen] = useState(false)
 	const [planningID,setPlanningID] = useState(null)
 	// console.log("PlanningDetail",props)
@@ -84,7 +90,7 @@ const SubjectPlanning = (props) => {
 					</Typography>
 					<Typography
 						variant='subtitle1'
-						className={classes.typography}
+						className={classes.chapters}
 						gutterBottom
 					>
 						{row.chapters}
@@ -97,7 +103,9 @@ const SubjectPlanning = (props) => {
 							onClick={(event) => {
 								history.push({pathname:`/create-planning/${row.id}`,state:{
 									'class_id': props.class_id,
-									'class_detail': props.class_detail,
+									'class_detail': props.class_detail,									
+									'get_by': get_by,
+									'menuSelected': menuSelected,
 								}})
 							}}
 						>
@@ -136,7 +144,12 @@ const SubjectPlanning = (props) => {
 							<Button onClick={handleCloseNO} color='primary' autoFocus>
 								NO
 							</Button>
-							<Button onClick={handleCloseYES} color='primary'>
+							<Button 
+								onClick={handleCloseYES} 
+								color='primary'
+								disableElevation
+								disableRipple
+							>
 								YES
 							</Button>
 						</DialogActions>
@@ -150,8 +163,8 @@ const SubjectPlanning = (props) => {
 									colSpan={2}
 									className={classes.tableCell}
 								>
-									<Typography variant='subtitle1'>
-										<b>{title}</b>
+									<Typography variant='subtitle1' className={classes.subjectName}>
+										{title}
 									</Typography>
 								</TableCell>
 							</TableRow>
@@ -171,8 +184,8 @@ const SubjectPlanning = (props) => {
 									width='100%'
 									className={classes.tableCell}
 								>
-									<Typography variant='subtitle1'>
-										<b>{title}</b>
+									<Typography variant='subtitle1' className={classes.subjectName}>
+										{title}
 									</Typography>
 								</TableCell>
 							</TableRow>
@@ -182,7 +195,7 @@ const SubjectPlanning = (props) => {
 								<TableCell align='left' width='65%' className={classes.tableCell}>
 									<Typography
 										variant='subtitle1'
-										className={classes.typography}
+										className={classes.chapters}
 										gutterBottom
 									>
 										No Chapters

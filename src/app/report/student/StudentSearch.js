@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField'
 import { makeStyles } from '@material-ui/styles'
 import { Typography } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
-import NotificationService from '../../notification/NotificationService'
+import ReportService from '../ReportService'
 
 const AutoComplete = withStyles({
 	option: {
@@ -62,14 +62,14 @@ const StudentSearch = (props) => {
 
 	const suggestions = {
 		options: searchData,
-		getOptionLabel: (option) => option.username,
+		getOptionLabel: (option) => option.username + option.firstname,
 	}
 
 	const fetchSearchAPI = async (event) => {
 		if (event.target.value) {
 			if (event.target.value && event.target.value.length % 2 === 0) {
 				try {
-					const response = await NotificationService.searchUser(
+					const response = await ReportService.searchUser(
 						event.target.value,
 						props.token
 					)
@@ -103,17 +103,17 @@ const StudentSearch = (props) => {
 			return (
 				<div className={classes.optionContainer}>
 					<Typography className={classes.optionTitle}>
-						{`${option.firstname} ${option.lastname} - ${option.roles[0].name}`}
+						   {`${option.firstname} ${option.lastname} - ${option.roles[0].name}`}
 					</Typography>
 					{option.user_classes && option.user_classes.classes_data && (
 						<Typography>
 							<span className={classes.className}>
-								{option.user_classes.classes_data.class_name}
+								Class: {option.user_classes.classes_data.class_name}
 							</span>
 						</Typography>
 					)}
 					<Typography>
-						<span className={classes.className}> {option.username}</span>
+						<span className={classes.className}> Username: {option.username}</span>
 					</Typography>
 				</div>
 			)

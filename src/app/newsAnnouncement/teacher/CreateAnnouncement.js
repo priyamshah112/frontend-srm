@@ -119,6 +119,7 @@ const useStyle = makeStyles((theme) => ({
 	textAlignLeft: {
 		textAlign: 'left',
 		color: 'rgba(0, 0, 0, 0.54)',
+		paddingTop: '10px',
 	},
 	contentCenter: {
 		justifyContent: 'center',
@@ -134,8 +135,12 @@ const useStyle = makeStyles((theme) => ({
 		textAlign: 'right',
 		justifyContent: 'right',
 	},
+	header:{
+		marginTop: '20px',
+		paddingTop: '20px',
+	},
 	margin: {
-		marginTop: '30px',
+		marginTop: '20px',
 		[theme.breakpoints.down('xs')]: {
 			marginTop: '10px',
 		},
@@ -152,7 +157,7 @@ const useStyle = makeStyles((theme) => ({
 		'& .publishLaterBtn': {
 			backgroundColor: `${theme.palette.common.white}`,
 			border: `1px solid ${theme.palette.common.adornment}`,
-			marginRight: '5px',
+			marginRight: '20px',
 		},
 	},
 }))
@@ -166,8 +171,11 @@ const CreateAnnouncement = (props) => {
 	const [title, setTitle] = useState('')
 	const [summary, setSummary] = useState('')
 	const [description, setDescription] = useState('')
+	const [ status, setStatus ] = useState("draft");
+	const [ publishDate, setPublishedDate ] = useState(null);
 	const [errMessage, setError] = useState('')
 	const [category, setCategory] = useState('')
+	const [selectedGrade, setSelectedGrade] = useState([])
 	const [classState, setClassState] = useState([])
 
 	const classStateNames = [
@@ -178,7 +186,7 @@ const CreateAnnouncement = (props) => {
 	]
 
 	const categoryValues = [...Object.values(props.categories)]
-
+	const gradeNames = [...Object.values(props.grades)]
 	let saveDataApi
 	useEffect(() => {
 		let isFormLoading = true
@@ -222,6 +230,15 @@ const CreateAnnouncement = (props) => {
 								? props.categories[response.data.data.category_id]
 								: ''
 						)
+						setStatus(response.data.data.status)
+						setPublishedDate(response.data.data.published_date)
+						let tempGrade = []
+						if(response.data.data.grade_group){
+							response.data.data.grade_group.forEach((gradeID) => {
+								tempGrade.push(props.grades[gradeID])
+							})
+						}
+						setSelectedGrade(tempGrade)
 					}
 				}
 			} catch (e) {
@@ -235,6 +252,17 @@ const CreateAnnouncement = (props) => {
 	}, [])
 	const saveDetails = async () => {
 		try {
+			
+			let gradeMapping = [];
+			selectedGrade.forEach((gradeName)=>{
+				gradeMapping.push(parseInt(
+					Object.keys(props.grades).find(
+						(id) => props.grades[id] === gradeName
+					)
+				))
+			})
+			console.log(selectedGrade)
+
 			let classMapping = { class: [] }
 
 			let isSelectAll = classState.find(
@@ -267,9 +295,11 @@ const CreateAnnouncement = (props) => {
 				{
 					title,
 					summary,
+					grade_group_id:gradeMapping,
 					event_date: eventDate,
 					main_content: description,
 					published_to: classMapping,
+					status,
 					category_id: parseInt(
 						Object.keys(props.categories).find(
 							(category_id) => props.categories[category_id] === category
@@ -290,7 +320,7 @@ const CreateAnnouncement = (props) => {
 			saveDetails()
 		}, 10000)
 		return () => clearInterval(saveDataApi)
-	}, [title, eventDate, description, summary, classState, category])
+	}, [title, eventDate, description, summary,selectedGrade,classState, category])
 
 	const handleChangeInput = (event) => {
 		let name = event.target.name
@@ -309,6 +339,15 @@ const CreateAnnouncement = (props) => {
 	}
 	const hanldeDeleteClass = (value) => {
 		setClassState(classState.filter((classname) => classname !== value))
+	}
+
+	
+	const handleGradeChange = (event) => {
+		console.log(event.target.value)
+		setSelectedGrade(event.target.value)
+	}
+	const hanldeDeleteGrade = (value) => {
+		setSelectedGrade(selectedGrade.filter((gradename) => gradename !== value))
 	}
 
 	const handleDescription = (data) => {
@@ -330,10 +369,17 @@ const CreateAnnouncement = (props) => {
 		setOpenPubLater(false)
 	}
 
-	const publishData = async (publisedDate, status, mediaURL) => {
+	const publishData = async (date, status, mediaURL) => {
 		try {
 			let classMapping = { class: [] }
-
+			let gradeMapping = [];
+			selectedGrade.forEach((gradeName)=>{
+				gradeMapping.push(parseInt(
+					Object.keys(props.grades).find(
+						(id) => props.grades[id] === gradeName
+					)
+				))
+			})
 			let isSelectAll = classState.find(
 				(classname) => classname === 'Select All'
 			)
@@ -365,9 +411,10 @@ const CreateAnnouncement = (props) => {
 					title,
 					summary,
 					status,
+					grade_group_id: gradeMapping,
 					event_date: eventDate,
 					main_content: description,
-					published_date: publisedDate,
+					published_date: date,
 					published_to: classMapping,
 					media_url: mediaURL,
 					category_id: parseInt(
@@ -385,7 +432,7 @@ const CreateAnnouncement = (props) => {
 			console.log(e)
 		}
 	}
-	const handlePublishLater = (laterEventDate) => {
+	const handlePublishLater = () => {
 		clearInterval(saveDataApi)
 		let mediaUrlContainer = document.createElement('div')
 		mediaUrlContainer.innerHTML = description
@@ -396,7 +443,7 @@ const CreateAnnouncement = (props) => {
 
 		const status = 'active'
 
-		publishData(laterEventDate.toISOString(), status, mediaURL)
+		publishData(publishDate ,status, mediaURL)
 	}
 	const submitForm = async (event) => {
 		event.preventDefault()
@@ -416,14 +463,14 @@ const CreateAnnouncement = (props) => {
 	return (
 		<>
 			<form className={classes.formStyle} onSubmit={submitForm}>
-				<Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
+				<Box className={`${classes.header} ${classes.sideMargins}`} >
 					<div>
 						<img
 							src={BackIcon}
 							alt='Back'
 							className={classes.backImg}
-							onClick={() => {
-								saveDetails()
+							onClick={async() => {
+								await saveDetails()
 								history.push('/news')
 							}}
 						/>
@@ -508,6 +555,58 @@ const CreateAnnouncement = (props) => {
 							{categoryValues.map((category) => (
 								<MenuItem key={category} value={category}>
 									{category}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</Box>
+				<Box className={`${classes.margin} ${classes.sideMargins}`}>
+					<FormControl className={classes.fieldStyle}>
+						<InputLabel>Select grade</InputLabel>
+						<Select
+							labelId='demo-mutiple-chip-label'
+							id='demo-mutiple-chip'
+							value={selectedGrade}
+							multiple
+							onChange={handleGradeChange}
+							input={<Input id='select-multiple-chip' />}
+							MenuProps={{
+								PaperProps: {
+									style: {
+										maxHeight: '300px',
+									},
+								},
+								anchorOrigin: {
+									vertical: 'bottom',
+									horizontal: 'center',
+								},
+								transformOrigin: {
+									vertical: 'top',
+									horizontal: 'center',
+								},
+								getContentAnchorEl: null,
+							}}
+							renderValue={(selected) => {
+								return (
+									<div className={classes.chips}>
+										{selected.map((value) => (
+											<Chip
+												onDelete={() => hanldeDeleteGrade(value)}
+												onMouseDown={(event) => {
+													event.stopPropagation()
+												}}
+												key={value}
+												label={value}
+												className={classes.chip}
+											/>
+										))}
+									</div>
+								)
+							}}
+						>
+							{gradeNames.map((gradename) => (
+								<MenuItem key={gradename} value={gradename}>
+									{gradename}
 								</MenuItem>
 							))}
 						</Select>
@@ -633,7 +732,6 @@ const CreateAnnouncement = (props) => {
 								Publish Now
 							</Button>
 						</Grid>
-						<Grid item sm={4} xs={12} className={classes.textAlignLeft}></Grid>
 						<br />
 						<br />
 						<br />
@@ -645,7 +743,9 @@ const CreateAnnouncement = (props) => {
 			{openPubLater ? (
 				<PublishLater
 					open={openPubLater}
+					publishDate={publishDate}
 					handleClose={handleClosePubLater}
+					handlePublishDate={setPublishedDate}
 					handlePublishLater={handlePublishLater}
 				/>
 			) : (

@@ -146,7 +146,7 @@ const useStyle = makeStyles((theme) => ({
 		marginRight: '50px',
 	},
 	margin: {
-		marginTop: '30px',
+		marginTop: '20px',
 		[theme.breakpoints.down('xs')]: {
 			marginTop: '10px',
 		},
@@ -163,9 +163,12 @@ const useStyle = makeStyles((theme) => ({
 		'& .publishLaterBtn': {
 			backgroundColor: `${theme.palette.common.white}`,
 			border: `1px solid ${theme.palette.common.adornment}`,
-			marginRight: '5px',
+			marginRight: '20px',
 		},
-	},
+	},	
+	header:{
+		paddingTop: '20px',
+	}
 }))
 
 const CreateHomework = (props) => {
@@ -392,7 +395,7 @@ const CreateHomework = (props) => {
 		<>
 			<div>
 				<form className={classes.formStyle} onSubmit={submitForm}>
-					<Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
+					<Box className={`${classes.margin} ${classes.sideMargins} ${classes.header}`}>
 						<div>
 							<img
 								src={BackIcon}

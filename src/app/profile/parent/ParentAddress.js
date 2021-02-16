@@ -55,7 +55,7 @@ const ParentAddress = (props) => {
 	return (
 		<>
 			<div className={classes.profileContainer}>
-				<ProfileCard title='Address' editableId={props.addressId}>
+				<ProfileCard title='Address' editableId={props.addressId} address={address}> 
 					<Grid container>
 						<div className={classes.mainDiv}>
 							<div className={classes.contentDiv}>
@@ -64,7 +64,7 @@ const ParentAddress = (props) => {
 										{address.address_line1 ? `${address.address_line1},` : ''}{' '}
 										{address.address_line2 ? `${address.address_line2},` : ''}{' '}
 										{address.address_line3 ? `${address.address_line3},` : ''}{' '}
-										{address.city_id} {address.state_id} {address.country_id}{' '}
+										{address.city_name} {address.state_name} {address.country_name}{' '}
 										{address.pincode}
 									</Typography>
 								) : (

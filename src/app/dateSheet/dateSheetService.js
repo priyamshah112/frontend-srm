@@ -41,10 +41,31 @@ class DateSheetService {
 			}
 		)
 	}
+	createDateSheet(token, data) {
+		return axios.post(
+			`${BACKEND_API_URL}/datesheet?class_id=`+data.class_id, data,
+			{
+				headers: {
+					accept: 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+	}
 
 	 
-	publish(token, id, classID) {
-		return axios.put(`${BACKEND_API_URL}/datesheetpublish/${id}?class_id=${classID}`,null,
+	publish(token, id, classID, payload) {
+		return axios.put(`${BACKEND_API_URL}/datesheetpublish/${id}?class_id=${classID}`,payload,
+			{
+				headers: {
+					accept: 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+	}
+	publishLater(token, id, classID,payload) {
+		return axios.put(`${BACKEND_API_URL}/datesheetpublish/${id}?class_id=${classID}`,payload,
 			{
 				headers: {
 					accept: 'application/json',

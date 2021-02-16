@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: theme.palette.mainBackground,
 		margin: '0',
 		overflowY: 'auto',
-		padding: '24px',
+		padding: '20px',
 		boxSizing: 'border-box',
 	},
 	headingtest: {
@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme) => ({
 
 	},
 	Grid: {
-		marginTop: '12px',
-		marginBottom: '20px',
+		marginTop: '10px',
+		marginBottom: '50px',
 	},
 	typography: {
 		color: '#1C1C1E',
@@ -150,14 +150,26 @@ const TeacherDateSheet = (props) => {
 		}
 	}
 
-	const fetchdatesheet = async (testid) => {
+	const createDatesheet = async(testid) => {
 		setDatesheetLoading(true)
+		const res = await DateSheetService.createDateSheet(
+			token,
+			{
+				term_id: testid.id,
+				class_id: testid.class_id,
+				school_id: testid.school_id,
+			}
+		)
+		if(res.status === 200){
+			fetchdatesheet(testid)
+		}
+	}
+	const fetchdatesheet = async (testid) => {		
 		const res = await DateSheetService.getDatesheetList(
 			token,
 			testid.id,
 			testid.class_id,
 		)
-
 		if (res.status === 200) {
 			console.log("datesheetrr",res)
 			setDatesheetist(res.data.data.datesheet)
@@ -177,7 +189,7 @@ const TeacherDateSheet = (props) => {
 		e.preventDefault()
 		setTestData(testid)
 		setTestID(testid.id)
-		fetchdatesheet(testid)
+		testid.datesheet_table === null ? createDatesheet(testid) : fetchdatesheet(testid)
 		setselected_test(testid)
 		setSubPageUI(true)
 	}
@@ -203,7 +215,7 @@ const TeacherDateSheet = (props) => {
 						<Grid container spacing={3} className={classes.Grid}>
 							{ClassTermList !== null && !isLoading ? ClassTermList.map((item, index) => {
 								return (
-									<Grid item xs={6} sm={4} lg={3} xl={3}>
+									<Grid item xs={6} sm={4} lg={3} xl={3} style={{padding: 10}}>
 										<Paper
 											className={classes.paper}
 											key={index}
@@ -227,10 +239,10 @@ const TeacherDateSheet = (props) => {
 											<Typography
 												className={classes.typographyStatus}
 												style={{
-													color: item.datesheet_table.status !== 'published' ? '#707070' : '#7B72AF',
+													color: item.datesheet_table !== null ? item.datesheet_table.status !== 'published' ? '#707070' : '#7B72AF' : '#707070',
 												}}
 											>
-												{item.datesheet_table.status}
+												{ item.datesheet_table !== null ? item.datesheet_table.status : 'draft'}
 											</Typography>
 										</Paper>
 									</Grid>

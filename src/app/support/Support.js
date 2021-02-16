@@ -8,7 +8,6 @@ const useStyles = makeStyles((theme) => ({
 		width: '100%',
 		backgroundColor: theme.palette.mainBackground,
 		height: '100%',
-		marign: '0',
 		padding: '0',
 		overflowY: 'auto',
 		'&::-webkit-scrollbar': {
@@ -16,8 +15,8 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	supportContainer: {
-		width: '95%',
-		margin: '0 auto',
+		width: '100%',
+		margin: '0 20px',
 	},
 }))
 const Support = (props) => {

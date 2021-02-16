@@ -335,9 +335,9 @@ const ParentLeaveApply = (props) => {
 
   return (
     <>
-      <div className={classes.formStyle}>
+      <Box className={classes.formStyle}>
         <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
-          <div>
+          <Box>
             <img
               src={BackIcon}
               alt="Back"
@@ -352,7 +352,7 @@ const ParentLeaveApply = (props) => {
             >
               Create leave
             </Typography>
-          </div>
+          </Box>
         </Box>
         <Snackbar
           open={errorSnackbarOpen}
@@ -363,7 +363,7 @@ const ParentLeaveApply = (props) => {
             {snackbarmsg}
           </Alert>
         </Snackbar>
-        <div>
+        <Box>
           <Box className={classes.margin}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container className={classes.fieldStyle}>
@@ -426,11 +426,11 @@ const ParentLeaveApply = (props) => {
               </Grid>
             </MuiPickersUtilsProvider>
           </Box>
-        </div>
+        </Box>
 
         <Box className={classes.margin}>
           <Grid className={classes.fieldStyle}>
-            <div className={classes.form_row}>
+            <Box className={classes.form_row}>
               <Typography variant="h5" className={`${classes.slotd}`}>
                 <FormControl component="fieldset">
                   <RadioGroup
@@ -496,13 +496,13 @@ const ParentLeaveApply = (props) => {
                   ))}
                 </Select>
               </FormControl>
-            </div>
+            </Box>
           </Grid>
         </Box>
 
         <Box className={classes.margin}>
           <Grid className={classes.fieldStyle}>
-            <div className={classes.form_txtarea}>
+            <Box className={classes.form_txtarea}>
               <Typography className={`${classes.titleText}`}>
                 <TextareaAutosize
                   className={classes.textarea}
@@ -514,7 +514,7 @@ const ParentLeaveApply = (props) => {
                   name="content"
                 />
               </Typography>
-            </div>
+            </Box>
           </Grid>
         </Box>
         <Box className={classes.margin}>
@@ -535,7 +535,7 @@ const ParentLeaveApply = (props) => {
           </Grid>
           <br />
         </Box>
-      </div>
+      </Box>
     </>
   );
 };

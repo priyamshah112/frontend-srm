@@ -4,7 +4,6 @@ import {
 	Typography,
 	Button,
 	Snackbar,
-	Input,
 	IconButton,
 } from '@material-ui/core'
 import editButtonIcon from '../../../assets/images/Edit Button.svg'
@@ -17,6 +16,7 @@ import TeacherEmail from './TeacherEmail'
 import TeacherAddress from './TeacherAddress'
 import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader'
 import { useHistory } from 'react-router-dom'
+import * as actions from '../../auth/store/actions'
 
 function Alert(props) {
 	return <MuiAlert elevation={6} variant='filled' {...props} />
@@ -178,6 +178,7 @@ const ParentProfile = (props) => {
 				}
 			)
 			if (response.status === 200) {
+				props.onChangeProfile(response.data.thumbnail)
 				history.push('/profile')
 			}
 		} catch (error) {
@@ -227,7 +228,7 @@ const ParentProfile = (props) => {
 						}}
 					>
 						<form>
-							<Input
+							<input
 								id='icon-button-file'
 								name='file'
 								className={`${classes.input}`}
@@ -322,5 +323,10 @@ const mapStateToProps = (state) => {
 		userInfo: state.auth.userInfo,
 	}
 }
-
-export default connect(mapStateToProps)(ParentProfile)
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onChangeProfile: (thumbnail) =>
+			dispatch(actions.authChangeProfile(thumbnail)),
+	}
+}
+export default connect(mapStateToProps,mapDispatchToProps)(ParentProfile)

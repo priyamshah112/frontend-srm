@@ -16,19 +16,15 @@ const useStyles = makeStyles((theme) => ({
 
 const LeaveCreateContainer = (props) => {
   const classes = useStyles();
-  const selectedRole = props.selectedRole;
-  return (
-    <>
-      <div className={classes.container}>
-        {selectedRole === "teacher" || selectedRole === "admin" ? (
-          <TeacherLeave />
-        ) : (
-          ""
-        )}
+  const { selectedRole } = props;
 
-        {selectedRole === "parent" ? <ParentLeaveApply /> : ""}
-      </div>
-    </>
+  return (
+    <div className={classes.container}>
+      {selectedRole === "teacher" || selectedRole === "admin" ? (
+        <TeacherLeave />
+      ) : null}
+      {selectedRole === "parent" ? <ParentLeaveApply /> : null}
+    </div>
   );
 };
 

@@ -133,6 +133,17 @@ class ReportService {
 			},
 		})
 	}
+	searchUser(userString, token) {
+		return axios.get(`${BACKEND_API_URL}/getUserLists_student`, {
+			params: {
+				username: userString,
+			},
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
 }
 
 export default new ReportService()

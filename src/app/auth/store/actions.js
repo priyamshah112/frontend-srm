@@ -31,6 +31,13 @@ export const authUser = (userName, password) => {
 		password: password,
 	}
 }
+/* Update Profile */
+export const authChangeProfile = (thumbnail) => {
+	return {
+		type: actionTypes.AUTH_CHANGE_PROFILE,
+		thumbnail: thumbnail,
+	}
+}
 
 /* Initiated from UI */
 export const logout = (isAuthenticated) => {

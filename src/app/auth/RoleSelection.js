@@ -158,7 +158,7 @@ const RoleSelection = (props) => {
 			<div className={classes.cardContainer}>
 				{props.userInfo.roles.map((role) => {
 					let userRole = definedRoles.find((x) => x.roleName === role.name)
-					console.log('Name of user Role', userRole, userRole.roleName)
+					// console.log('Name of user Role', userRole, userRole.roleName)
 					return (
 						<div key={role.name}>
 							<Card className={classes.card}>

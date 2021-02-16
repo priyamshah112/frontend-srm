@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import AddIcon from "../../assets/images/Filled Add.svg";
 import { Typography } from "@material-ui/core";
-import { Grid, FormControl } from "@material-ui/core";
+import { FormControl } from "@material-ui/core";
 import { connect } from "react-redux";
 import AddMenu from "./AddMenu";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuCard from "./MenuCard";
-import DishDetails from "./DishDetails";
+import { getLunchMenuId } from "../redux/actions/attendence.action";
+import { lunchMenuGetByWeek } from "../redux/actions/attendence.action";
+import { lunchMenuAll } from "../redux/actions/attendence.action";
+import { lunchMenuAllStu } from "../redux/actions/attendence.action";
+import { lunchMenuSearch } from "../redux/actions/attendence.action";
+import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
+import ClassesDropdown from "../common/ui/classesDropdown";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   container: {},
@@ -19,11 +26,12 @@ const useStyles = makeStyles((theme) => ({
   sectionContainer: {
     height: "100%",
     width: "100%",
-    marginBottom: "10px",
+    // marginBottom: "10px",
   },
 
   header: {
     display: "inline block",
+    marginRight: "20px",
   },
   cardBoxPadding: {
     padding: "24px",
@@ -42,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.common.deluge,
     float: "right",
     // marginTop: '15px',
-    marginRight: "15px",
+    // marginRight: "20px",
     cursor: "pointer",
     "& .new": {
       float: "right",
@@ -63,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   fieldStyle: {
-    width: "50%",
+    width: "170px",
     marginleft: "15px",
     fontFamily: "Avenir Book",
     fontSize: " 1rem",
@@ -80,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     textAlign: "left",
     color: "rgba(0, 0, 0, 0.54)",
-    marginLeft: "16px",
+    marginRight: "20px",
   },
   loading: {
     width: "100%",
@@ -126,53 +134,111 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "flex-end",
     justifyContent: "flex-end",
   },
+  dropdown: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginLeft: "20px",
+    width: "50%",
+  },
 }));
 
 function Menu(props) {
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
-  const [selectValue, setSelectValue] = useState("All");
-  const [openDetails, setOpenDetails] = useState(false);
-  const [heading, setHeading] = useState("");
-  const [type, setType] = useState("");
-  const [image, setImage] = useState([]);
-  const [desc, setDesc] = useState("");
-  const [price, setPrice] = useState("");
+  const [day, setDay] = useState("All");
+  const [edit, setEdit] = useState(false);
 
-  const { selectedRole } = props;
+  const [class_id, setClassId] = useState("");
+  const [name, setClassName] = useState("");
+  // const [schoolId, setSchoolId] = useState("");
+
+  const { data, loading } = props;
+  const lunch_menu_id = data.lunch_menu_id;
+  const {
+    selectedRole,
+    weekday,
+    school_id,
+    lunchMenuData,
+    lunchMenuLoading,
+    lunchMenuAllData,
+    lunchMenuAllLoading,
+    classesLoading,
+  } = props;
+
+  console.log("school_id", school_id, class_id, day);
+
+  let menuData = day === "All" ? lunchMenuAllData || {} : lunchMenuData || {};
+  menuData = menuData.lunch_menu_dish;
+  console.log('menuData', menuData)
 
   const handleAdd = () => {
+    props.getLunchMenuId();
     setOpenAdd(true);
   };
   const handleCloseAdd = () => {
     setOpenAdd(false);
   };
   const handleChange = (event) => {
-    setSelectValue(event.target.value);
+    setDay(event.target.value);
+  };
+
+  const fetchWeekData = () => {
+    console.log("object");
+    props.lunchMenuGetByWeek();
+    if (day === "All" && class_id) {
+      props.lunchMenuAll(school_id, class_id);
+    }
+    if(selectedRole==="parent" || selectedRole==="student"){
+      props.lunchMenuAllStu()
+    }
+  };
+  const fetchData = () => {
+    if (day != "All") {
+      props.lunchMenuSearch(day, class_id, school_id);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [day]);
+
+  useEffect(() => {
+    fetchWeekData();
+  }, [class_id]);
+
+  const onChangeClass = (id, classname) => {
+    setClassId(id);
+    setClassName(classname.class_name);
+    // setSchoolId(classname.school_id);
   };
 
   return (
     <>
-      {openDetails ? (
-        <DishDetails
-          heading={heading}
-          type={type}
-          image={image}
-          desc={desc}
-          price={price}
-          close={setOpenDetails}
-        />
-      ) : (
-        <div>
-          {openAdd ? (
-            <AddMenu close={handleCloseAdd} />
+      <div>
+        {openAdd ? (
+          loading ? (
+            <BackdropLoader open={loading} />
           ) : (
-            <div className={classes.container}>
+            <AddMenu
+              lunchMenuId={lunch_menu_id}
+              class_id={class_id}
+              close={handleCloseAdd}
+            />
+          )
+        ) : (
+          <div className={classes.container}>
+            {edit ? (
+              ""
+            ) : (
               <div className={classes.head}>
                 <div className={classes.heading}>
                   <span className={classes.heading1}>Menu</span>
                 </div>
               </div>
+            )}
+            {edit ? (
+              ""
+            ) : (
               <div className={classes.sectionContainer}>
                 <div className={classes.header}>
                   <div className={classes.filterForm}>
@@ -186,60 +252,89 @@ function Menu(props) {
                     )}
                   </div>
                 </div>
-                <div className={classes.header}>
-                  <div className={classes.filterForm}>
-                    {selectedRole === "teacher" || selectedRole === "admin" ? (
+                <div className={classes.dropdown}>
+                  {selectedRole === "teacher" || selectedRole === "admin" ? (
+                    <div className={classes.header}>
+                      <div className={classes.filterForm}>
+                        <FormControl className={classes.fieldStyle}>
+                          <ClassesDropdown
+                            className={classes.menuItem}
+                            onChange={onChangeClass}
+                            value={class_id}
+                          />
+                        </FormControl>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  <div className={classes.header}>
+                    <div className={classes.filterForm}>
                       <FormControl className={classes.fieldStyle}>
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          value={selectValue}
+                          value={day}
                           className={classes.menuItem}
                           onChange={handleChange}
                         >
                           <MenuItem value="All">All</MenuItem>
-                          <MenuItem value="Monday">Monday</MenuItem>
-                          <MenuItem value="Tuesday">Tuesday</MenuItem>
-                          <MenuItem value="Wednesday">Wednesday</MenuItem>
-                          <MenuItem value="Thursday">Thursday</MenuItem>
-                          <MenuItem value="Friday">Friday</MenuItem>
-                          <MenuItem value="Saturday">Saturday</MenuItem>
+                          {weekday.map((item) => (
+                            <MenuItem value={item.id}>{item.name}</MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
-                    ) : (
-                      ""
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
-              {selectedRole === "student" ||
-              selectedRole === "teacher" ||
-              selectedRole === "admin" ||
-              selectedRole === "parent" ? (
-                <MenuCard
-                  heading={setHeading}
-                  type={setType}
-                  image={setImage}
-                  desc={setDesc}
-                  price={setPrice}
-                  openDetails={setOpenDetails}
-                />
-              ) : (
-                ""
-              )}
-            </div>
-          )}
-          <div></div>
-        </div>
-      )}
+            )}
+            <MenuCard
+              class_id={class_id}
+              setEdit={setEdit}
+              menuData={menuData}
+              classesLoading={classesLoading}
+              menuFilterLoading={lunchMenuLoading}
+              menuDataLoading={lunchMenuAllLoading}
+            />
+          </div>
+        )}
+      </div>
     </>
   );
 }
 
 const mapStateToProps = (state) => {
+  const {
+    getLunchMenuId,
+    lunchMenuAll = [],
+    lunchMenuAllLoading,
+    getLunchMenuIdLoading,
+    lunchMenuGetByWeek = [],
+    lunchMenuSearch = [],
+    lunchMenuSearchLoading,
+    classesLoading,
+  } = state.Attendence;
+  const userInfo = state.auth.userInfo || {};
+  const userClasses = userInfo.user_classes || {};
   return {
+    weekday: lunchMenuGetByWeek,
+    lunchMenuData: lunchMenuSearch,
+    lunchMenuLoading: lunchMenuSearchLoading,
+    lunchMenuAllData: lunchMenuAll,
+    lunchMenuAllLoading: lunchMenuAllLoading,
+    data: getLunchMenuId,
+    loading: getLunchMenuIdLoading,
+    classesLoading: classesLoading,
     selectedRole: state.auth.selectedRole,
+    school_id: userClasses.school_id,
   };
 };
 
-export default connect(mapStateToProps)(Menu);
+export default connect(mapStateToProps, {
+  lunchMenuGetByWeek,
+  getLunchMenuId,
+  lunchMenuSearch,
+  lunchMenuAll,
+  lunchMenuAllStu,
+})(Menu);

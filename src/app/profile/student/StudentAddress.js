@@ -53,7 +53,7 @@ const StudentAddress = (props) => {
 	return (
 		<>
 			<div className={classes.profileContainer}>
-				<StudentProfileCard title='Address'>
+				<StudentProfileCard title='Address' address={address}>
 					<Grid container>
 						<div className={classes.mainDiv}>
 							<div className={classes.contentDiv}>
@@ -62,7 +62,7 @@ const StudentAddress = (props) => {
 										{address.address_line1 ? `${address.address_line1},` : ''}{' '}
 										{address.address_line2 ? `${address.address_line2},` : ''}{' '}
 										{address.address_line3 ? `${address.address_line3},` : ''}{' '}
-										{address.city_id}, {address.state_id}, {address.country_id}{' '}
+										{address.city_name} {address.state_name} {address.country_name}{' '}
 										- {address.pincode}
 									</Typography>
 								) : (

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 import AddIcon from "../../assets/images/Filled Add.svg";
 import { Typography } from "@material-ui/core";
-import { Grid, FormControl } from "@material-ui/core";
 import { connect } from "react-redux";
 import AddDishes from "./AddDishes";
 import DishesCard from "./DishesCard";
@@ -42,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     // marginTop: '15px',
     // marginRight: "15px",
     cursor: "pointer",
-    marginRight:'15px',
+    marginRight: "15px",
     "& .new": {
       float: "right",
       fontSize: "14px",
@@ -110,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
 function Dishes(props) {
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
+  const [edit, setEdit] = useState(false);
   const { selectedRole } = props;
 
   const handleAdd = () => {
@@ -125,31 +125,36 @@ function Dishes(props) {
         <AddDishes close={handleCloseAdd} />
       ) : (
         <div className={classes.container}>
-          <div className={classes.head}>
-            <div className={classes.heading}>
-              <span className={classes.heading1}>Dishes</span>
+          {edit ? (
+            ""
+          ) : (
+            <div className={classes.head}>
+              <div className={classes.heading}>
+                <span className={classes.heading1}>Dishes</span>
+              </div>
             </div>
-          </div>
+          )}
+          {edit?'':
           <div className={classes.sectionContainer}>
             <div className={classes.header}>
               <div className={classes.filterForm}>
                 {selectedRole === "teacher" || selectedRole === "admin" ? (
-                  <div className={classes.addNew} onClick={handleAdd}>
-                    <img src={AddIcon} alt="add" />
-                    <Typography className="new">Add Dishes</Typography>
-                  </div>
+                    <div className={classes.addNew} onClick={handleAdd}>
+                      <img src={AddIcon} alt="add" />
+                      <Typography className="new">Add Dishes</Typography>
+                    </div>
                 ) : (
                   ""
                 )}
               </div>
             </div>
-          </div>
+          </div>}
           <div>
             {selectedRole === "student" ||
             selectedRole === "teacher" ||
             selectedRole === "admin" ||
             selectedRole === "parent" ? (
-              <DishesCard />
+              <DishesCard setEdit={setEdit} />
             ) : (
               ""
             )}

@@ -1,9 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core";
-import TeacherLeave from "./teacher/TeacherLeave";
-import ParentHomeLeave from "./parent/ParentHomeLeave";
+import { makeStyles, Box } from "@material-ui/core";
 import AdminLeave from "./admin/AdminLeave";
+import TeacherLeave from "./teacher/TeacherLeave";
+import ParentLeave from "./parent/ParentLeave";
+import StudentLeave from "./student/StudentLeave";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -12,22 +13,24 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.mainBackground,
     margin: 0,
     padding: 0,
+    overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: 0,
+    },
   },
 }));
 
-const FaqContainer = (props) => {
+const LeaveContainer = (props) => {
   const classes = useStyles();
-  const selectedRole = props.selectedRole;
+  const { selectedRole } = props;
+
   return (
-    <>
-      <div className={classes.container}>
-        {selectedRole === "admin" ? <AdminLeave /> : ""}
-
-        {selectedRole === "teacher" ? <TeacherLeave /> : ""}
-
-        {selectedRole === "parent" ? <ParentHomeLeave /> : ""}
-      </div>
-    </>
+    <Box className={classes.container}>
+      {selectedRole === "admin" ? <AdminLeave /> : null}
+      {selectedRole === "teacher" ? <TeacherLeave /> : null}
+      {selectedRole === "parent" ? <ParentLeave /> : null}
+      {selectedRole === "student" ? <StudentLeave /> : null}
+    </Box>
   );
 };
 
@@ -37,4 +40,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(FaqContainer);
+export default connect(mapStateToProps)(LeaveContainer);

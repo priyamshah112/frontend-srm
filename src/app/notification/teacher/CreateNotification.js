@@ -102,7 +102,7 @@ const useStyle = makeStyles((theme) => ({
 		'& .publishLaterBtn': {
 			backgroundColor: `${theme.palette.common.white}`,
 			border: `1px solid ${theme.palette.common.adornment}`,
-			marginRight: '5px',
+			marginRight: '20px',
 		},
 	},
 	optionContainer: {
@@ -117,9 +117,13 @@ const useStyle = makeStyles((theme) => ({
 		fontize: '1.2rem',
 		color: '#1C1C1E',
 	},
+	header:{
+		paddingTop: '20px',
+	}
 }))
 
 const CreateNotification = (props) => {
+	console.log(props)
 	const classes = useStyle()
 	const history = useHistory()
 	const { id } = useParams()
@@ -272,7 +276,6 @@ const CreateNotification = (props) => {
 					published_to: classMapping,
 				}
 			}
-
 			if (category === 'payment') {
 				payload = {
 					...payload,
@@ -354,13 +357,14 @@ const CreateNotification = (props) => {
 	}
 
 	const handleCategoryChange = (event) => {
-		if (event.target.value === 'payment') {
+		let trimValue = event.target.value.toLowerCase().replace(/\s+/g, '')
+		if (trimValue === 'payment') {
 			setOpenPayment(true)
 		} else {
 			setOpenPayment(false)
 			setPayment('')
 		}
-		setCategory(event.target.value)
+		setCategory(trimValue)
 	}
 
 	const handleChangePayment = (event) => {
@@ -489,7 +493,7 @@ const CreateNotification = (props) => {
 		<>
 			<div>
 				<form className={classes.formStyle} onSubmit={submitForm}>
-					<Box className={`${classes.margin}  ${classes.sideMargins}`} pt={4}>
+					<Box className={`${classes.margin}  ${classes.sideMargins} ${classes.header}`} pt={4}>
 						<div>
 							<img
 								src={BackIcon}
@@ -497,7 +501,11 @@ const CreateNotification = (props) => {
 								className={classes.backImg}
 								onClick={() => {
 									saveDetails()
-									history.push(paths.NOTIFICATIONS)
+									history.push({pathname : paths.NOTIFICATIONS,
+										state: {
+											tab : props.selectedTab
+										}
+									})
 								}}
 							/>
 							<Typography

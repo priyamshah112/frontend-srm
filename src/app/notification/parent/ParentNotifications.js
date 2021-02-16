@@ -13,6 +13,9 @@ import NotificationCard from '../NotificationCard'
 import NotificationService from '../NotificationService'
 
 const useStyles = makeStyles((theme) => ({
+	infiniteContainer:{
+		display: 'grid',
+	},
 	datePicker: {
 		width: '25%',
 		paddingRight: '10px',
@@ -21,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
 		height: '100%',
 		width: '100%',
 		overflow: 'auto',
+		padding: '20px',
+		boxSizing: 'border-box'
 	},
 
 	header: {
@@ -31,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	filterHeader: {
 		width: '100%',
+		paddingBottom: '10px',
 	},
 	selectFiler: {
 		color: `${theme.palette.common.adornment}`,
@@ -43,36 +49,11 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	formControl: {
-		width: '10%',
+		width: '110px',
 		whiteSpace: 'nowrap',
-		padding: '10px 0px  0px 27px',
 	},
 	cardBoxPadding: {
-		padding: '0px 24px 24px 24px',
-		[theme.breakpoints.down('sm')]: {
-			padding: '16px',
-		},
-	},
-	addNew: {
-		color: theme.palette.common.deluge,
-		marginTop: '15px',
-		marginRight: '15px',
-		'& .new': {
-			float: 'right',
-			fontSize: '14px',
-			padding: '5px',
-		},
-		'& img': {
-			margin: '5px',
-			height: '20px',
-			cursor: 'pointer',
-		},
-	},
-
-	addNewDiv: {
-		cursor: 'pointer',
-		width: 'fit-content',
-		marginLeft: 'auto',
+		padding: '0px',
 	},
 	loading: {
 		width: '100%',
@@ -248,6 +229,7 @@ const ParentNotification = (props) => {
 					}
 					scrollableTarget='scrollable'
 					scrollThreshold={0.2}
+					className={classes.infiniteContainer}
 				>
 					{loading ? (
 						<>
@@ -260,7 +242,7 @@ const ParentNotification = (props) => {
 					) : null}
 					{!loading && !notifications.length ? (
 						<div className={classes.emptyView}>
-							<Typography>You don't have any notification.</Typography>
+							<Typography>No notifications available</Typography>
 						</div>
 					) : null}
 					{content}

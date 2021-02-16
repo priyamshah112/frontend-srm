@@ -92,21 +92,23 @@ const useStyle = makeStyles((theme) => ({
 }))
 
 const ChangeAddress = (props) => {
+	console.log(props.address)
+	const { address_line1, address_line2, address_line3, pincode,city_id, state_id, country_id } = props.address
 	const classes = useStyle()
 	const history = useHistory()
-	const [add1, setAdd1] = useState('')
-	const [add2, setAdd2] = useState('')
-	const [add3, setAdd3] = useState('')
-	const [landmark, setLandmark] = useState('')
-	const [pinCode, setPinCode] = useState('')
-	const [reason, setReason] = useState('')
+	const [add1, setAdd1] = useState( address_line1 ? address_line1 : '')
+	const [add2, setAdd2] = useState( address_line2 ? address_line2 : '')
+	const [add3, setAdd3] = useState( address_line3 ? address_line3 : '')
+	const [landmark, setLandmark] = useState( props.address ? props.address.landmark : '')
+	const [pinCode, setPinCode] = useState( pincode ? pincode : '')
+	const [reason, setReason] = useState( props.address ? props.address.reason : '')
 	const [document, setDocument] = useState()
 	const [countryData, setCountryData] = useState([])
 	const [stateData, setStateData] = useState([])
 	const [cityData, setCityData] = useState([])
-	const [selectedCountry, setSelectedCountry] = useState('101')
-	const [selectedState, setSelectedState] = useState('')
-	const [selectedCity, setSelectedCity] = useState('')
+	const [selectedCountry, setSelectedCountry] = useState( country_id ? country_id : '101')
+	const [selectedState, setSelectedState] = useState( state_id ? state_id : '')
+	const [selectedCity, setSelectedCity] = useState( city_id ? city_id : '')
 	const [errMessage, setError] = useState('')
 	const [isLoading, setLoading] = useState(false)
 	const UserId = props.userInfo['id']
@@ -303,6 +305,7 @@ const ChangeAddress = (props) => {
 									type='text'
 									onChange={handleForm}
 									placeholder='Flat/Home Number'
+									value={add1}
 								/>
 							</FormControl>
 						</Box>
@@ -315,6 +318,7 @@ const ChangeAddress = (props) => {
 									type='text'
 									onChange={handleForm}
 									placeholder='Area, Street Number'
+									value={add2}
 								/>
 							</FormControl>
 						</Box>
@@ -327,6 +331,7 @@ const ChangeAddress = (props) => {
 									type='text'
 									onChange={handleForm}
 									placeholder='Address Line 3'
+									value={add3}
 								/>
 							</FormControl>
 						</Box>
@@ -339,11 +344,12 @@ const ChangeAddress = (props) => {
 									type='text'
 									onChange={handleForm}
 									placeholder='Landmark'
+									value={landmark}
 								/>
 							</FormControl>
 						</Box>
 						<Box className={classes.margin}>
-							<FormControl className={classes.fieldStyle} disabled>
+							<FormControl className={classes.fieldStyle}>
 								<InputLabel id='countryIP'>Country</InputLabel>
 								<Select
 									labelId='countryIP'
@@ -411,6 +417,7 @@ const ChangeAddress = (props) => {
 									type='text'
 									onChange={handleForm}
 									placeholder='Pin Code'
+									value={pinCode}
 								/>
 							</FormControl>
 						</Box>
@@ -423,18 +430,21 @@ const ChangeAddress = (props) => {
 									type='text'
 									onChange={handleForm}
 									placeholder='Reason'
+									value={reason}
 								/>
 							</FormControl>
 						</Box>
 						<Box className={classes.margin}>
 							<FormControl className={classes.fieldStyle}>
-								<Input
+								<input
 									id='file'
 									name='file'
 									className={classes.inputBorder}
 									type='file'
 									onChange={handleForm}
-									placeholder='Document'
+									placeholder='Images'
+									accept='image/*'
+									
 								/>
 							</FormControl>
 						</Box>

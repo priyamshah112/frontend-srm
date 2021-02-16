@@ -18,10 +18,6 @@ const useStyles = makeStyles((theme) => ({
 		background: 'lightgrey',
 		height: '100%',
 	},
-	textList: {
-		position: '',
-		marginTop: '30px',
-	},
 	container: {
 		display: 'table-cell',
 		textAlign: 'center',
@@ -75,7 +71,7 @@ const TeacherPlanning = (props) => {
 	}
 
 	return (
-		<Fragment>
+		<>
 			{isLoading === true ? (
 				<div className={classes.loder}>
 					<CircularProgress
@@ -116,13 +112,11 @@ const TeacherPlanning = (props) => {
 							</div>
 						</div>
 					) : (
-						<Container>
-							<ClassPlanning classID={classID} classDetail={classDetail} />
-						</Container>
+							<ClassPlanning classID={classID} classDetail={classDetail} back={props.back}/>
 					)}
 				</div>
 			)}
-		</Fragment>
+		</>
 	)
 }
 export default TeacherPlanning

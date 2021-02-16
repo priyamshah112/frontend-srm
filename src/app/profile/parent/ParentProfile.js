@@ -19,6 +19,7 @@ import ProfileService from '../ProfileService'
 import { connect } from 'react-redux'
 import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader'
 import { useHistory } from 'react-router-dom'
+import * as actions from '../../auth/store/actions'
 
 function Alert(props) {
 	return <MuiAlert elevation={6} variant='filled' {...props} />
@@ -85,7 +86,7 @@ const ParentProfile = (props) => {
 	const [associatedAccounts, setAssociatedAccounts] = useState([])
 	const [showNoAdd, setShowNoAdd] = useState(false)
 
-	const [address, setAddress] = useState()
+	const [address, setAddress] = useState([])
 
 	const userInfo = props.userInfo
 	const currentUserId = userInfo['id']
@@ -234,6 +235,7 @@ const ParentProfile = (props) => {
 				}
 			)
 			if (response.status === 200) {
+				props.onChangeProfile(response.data.thumbnail)
 				history.push('/profile')
 			}
 		} catch (error) {
@@ -283,7 +285,7 @@ const ParentProfile = (props) => {
 						}}
 					>
 						<form>
-							<Input
+							<input
 								id='icon-button-file'
 								name='file'
 								className={`${classes.input}`}
@@ -388,5 +390,10 @@ const mapStateToProps = (state) => {
 		userInfo: state.auth.userInfo,
 	}
 }
-
-export default connect(mapStateToProps)(ParentProfile)
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onChangeProfile: (thumbnail) =>
+			dispatch(actions.authChangeProfile(thumbnail)),
+	}
+}
+export default connect(mapStateToProps,mapDispatchToProps)(ParentProfile)

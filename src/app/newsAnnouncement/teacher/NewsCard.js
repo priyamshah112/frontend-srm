@@ -7,20 +7,18 @@ import Typography from '@material-ui/core/Typography'
 import { useHistory } from 'react-router-dom'
 import * as moment from 'moment'
 import EditIcon from '../../../assets/images/Edit.svg'
-import { Box, CardHeader, CardMedia, CardActions } from '@material-ui/core'
+import { Box, CardHeader, CardActions } from '@material-ui/core'
 import AnnouncementService from '../AnnouncementService'
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import Confirm from '../../common/confirm'
 
 const useStyle = makeStyles((theme) => ({
 	card: {
 		width: '100%',
 		margin: 'auto',
-		marginTop: '20px',
-		borderRadius: '10px',
+		marginTop: '10px',
+		marginBottom: '10px',
+		borderRadius: '5px',
 		boxShadow: 'none',
 	},
 	reminder: {
@@ -42,6 +40,9 @@ const useStyle = makeStyles((theme) => ({
 				fontSize: '16px',
 			},
 		},
+		'& .MuiCardHeader-action':{
+			marginRight: '0px',
+		}
 	},
 	cardContent: {
 		padding: '0px 16px 0px 16px',
@@ -61,14 +62,18 @@ const useStyle = makeStyles((theme) => ({
 			borderRadius: '4px',
 		},
 	},
+	circular: {
+		fontStyle: 'normal',
+		color: `${theme.palette.common.lightFont}`,
+		paddingTop: '10px',
+		fontSize: '14px',
+	},
 	statusText: {
 		fontStyle: 'normal',
 		color: `${theme.palette.common.lightFont}`,
-		textTransform: 'uppercase',
-		paddingTop: '10px',
-		[theme.breakpoints.down('xs')]: {
-			fontSize: '13px',
-		},
+		textTransform: 'capitalize',
+		fontSize: '14px',
+		textAlign: 'right'
 	},
 	cardActionStyle: {
 		padding: '8px 16px 8px 16px',
@@ -107,7 +112,7 @@ const useStyle = makeStyles((theme) => ({
 	},
 	editBtn1: {
 		// bottom:"-5px",
-		paddingTop: '-10px',
+		paddingTop: '0px',
 	},
 	cardTitle: {},
 	announcementImg: {
@@ -124,9 +129,10 @@ const useStyle = makeStyles((theme) => ({
 	deleteBtn: {
 		width: '22px',
 		height: '21px',
-		paddingLeft: '5px',
+		paddingLeft: '10px',
 		cursor: 'pointer',
 		color: '#AEAEB2',
+		transform: 'translateY(3px)',
 	},
 }))
 
@@ -143,6 +149,7 @@ const NewsCard = (props) => {
 		status,
 		title,
 		summary,
+		circular_no,
 		media_url,
 		created_at,
 	} = props.announcement
@@ -172,7 +179,7 @@ const NewsCard = (props) => {
 			if (response.status === 200) {
 				console.log('Successfully Deleted')
 				// props.deleteHomework(id);
-				window.location.reload()
+				props.refresh()
 			} else {
 				console.log('Failed to delete')
 			}
@@ -181,25 +188,12 @@ const NewsCard = (props) => {
 		}
 	}
 	return (
-		<>
-			<Dialog
-				open={open}
-				onClose={handleCloseNO}
-				aria-labelledby='alert-dialog-title'
-				aria-describedby='alert-dialog-description'
-			>
-				<DialogTitle id='alert-dialog-title'>
-					{'Are you sure you want to delete?'}
-				</DialogTitle>
-				<DialogActions>
-					<Button onClick={handleCloseNO} color='primary' autoFocus>
-						NO
-					</Button>
-					<Button onClick={handleCloseYES} color='primary'>
-						YES
-					</Button>
-				</DialogActions>
-			</Dialog>
+		<>			
+			<Confirm 
+				open={open} 
+				handleClose={handleCloseNO} 
+				onhandleDelete={handleCloseYES}
+			/> 
 
 			<Grid
 				container
@@ -213,12 +207,14 @@ const NewsCard = (props) => {
 						className={classes.NewsHeader}
 						action={
 							<>
-								{props.createdBy ? (
-									<Typography className={classes.statusText} variant='body2'>
-										{status}
+								{circular_no ? (
+									<Typography className={classes.circular} variant='body2'>
+										News ID: {circular_no}
 									</Typography>
 								) : (
-									''
+									<Typography className={classes.circular} variant='body2'>
+										News ID: N/A
+									</Typography>
 								)}
 							</>
 						}
@@ -244,7 +240,8 @@ const NewsCard = (props) => {
 					{/* {media_url ? <img src={media_url} /> : ""} */}
 
 					<CardContent className={classes.cardContent}>
-						{media_url && (
+					<Grid container>
+						{/* {media_url && (
 							<Grid
 								container
 								direction='row'
@@ -252,12 +249,24 @@ const NewsCard = (props) => {
 							>
 								<img src={media_url} alt='Announcement'></img>
 							</Grid>
-						)}
-						{summary ? (
-							<Typography variant='body2'>{summary}</Typography>
-						) : (
-							<Typography variant='body2'>N/A</Typography>
-						)}
+						)} */}
+						<Grid item xs={9}>
+							{summary ? (
+								<Typography variant='body2'>{summary}</Typography>
+							) : (
+								<Typography variant='body2'>N/A</Typography>
+							)}
+						</Grid>
+						<Grid item xs={3}>
+							{status ? (
+								<Typography className={classes.statusText} variant='body2'>
+									{status}
+								</Typography>
+							) : (
+								<Typography className={classes.statusText} variant='body2'>N/A</Typography>
+							)}
+						</Grid>
+						</Grid>
 					</CardContent>
 					<CardActions className={classes.cardActionStyle}>
 						<Grid container>
@@ -270,10 +279,10 @@ const NewsCard = (props) => {
 								)}`}</Typography>
 							</Grid>
 							<Grid item xs={3} className={classes.editBtnGrid}>
-								<Box className={classes.editBtn}>
+								<Box className={classes.editBtn1}>
 									{status !== 'published' ? (
 										<>
-											<span className={classes.editBtn1}>
+											<span className={classes.editBtn}>
 												<img
 													src={EditIcon}
 													alt='Edit Icon'

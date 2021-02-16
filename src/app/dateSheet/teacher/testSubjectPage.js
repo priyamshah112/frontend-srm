@@ -23,6 +23,7 @@ import EventIcon from '@material-ui/icons/Event'
 import ScheduleIcon from '@material-ui/icons/Schedule'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
+import PublishLater from '../../newsAnnouncement/teacher/PublishLater'
 
 import {
 	MuiPickersUtilsProvider,
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 		paddingTop: '0',
 	},
 	grid3: {
-		paddingLeft: '12px',
+		paddingLeft: '10px',
 	},
 	grid4: {
 		borderRight: '0',
@@ -93,33 +94,14 @@ const useStyles = makeStyles((theme) => ({
 		opacity: '0.7',
 	},
 	tablestyle: {
-		paddingTop: '20px',
-		paddingBottom: '20px',
+		paddingTop: '10px',
+		paddingBottom: '10px',
 	},
 	displayPadding: {
-		paddingLeft: '5px',
-		paddingRight: '5px',
+		paddingTop: '10px',
 		paddingBottom: '50px',
 	},
-	spanStyle: {
-		float: 'right',
-		marginRight: '10px',
-		marginTop: '2px',
-		cursor: 'pointer',
-	},
 	span2: {
-		float: 'right',
-		marginRight: '10px',
-		marginTop: '2px',
-		cursor: 'pointer',
-	},
-	span3: {
-		float: 'right',
-		marginRight: '10px',
-		marginTop: '2px',
-		cursor: 'pointer',
-	},
-	span4: {
 		float: 'right',
 		marginRight: '10px',
 		marginTop: '2px',
@@ -186,8 +168,8 @@ const useStyles = makeStyles((theme) => ({
 		lineHeight: '1.5',
 	},
 	headingtest: {
-		fontSize: '16px',
-		fontFamily: 'Avenir Book',
+		fontSize: '18px',
+		fontFamily: 'Avenir Medium',
 		lineHeight: '1.5',
 		marginBottom: '0',
 	},
@@ -208,22 +190,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 	root: {
 		flexGrow: 1,
-	},
-
-	subcategory: {
-		marginBottom: '15px',
-		textAlign: 'left',
-		textAlign: 'center',
-		borderRadius: '5px',
-		paddingLeft: '12px',
-		float: 'left',
-		fonTize: '1rem',
-		fontFamily: 'Avenir Medium',
-		fontWeight: '400',
-		lineHeight: '1.5',
-		width: '100%',
-		textTransform: 'uppercase',
-		marginTop: '25px',
 	},
 	paper: {
 		textAlign: '',
@@ -290,12 +256,34 @@ const useStyles = makeStyles((theme) => ({
 			transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
 		},
 	},
+	margin: {
+		'& .publishBtn': {
+			borderRadius: '3px',
+			width: 'inherit',
+			margin: 0,
+			[theme.breakpoints.down('xs')]: {
+				marginTop: '10px',
+				marginRight: 0,
+				width: '100%',
+			},
+		},
+		'& .publishLaterBtn': {
+			backgroundColor: `${theme.palette.common.white}`,
+			border: `1px solid ${theme.palette.common.adornment}`,
+			marginRight: '5px',
+		},
+	},
 	empty:{
 		textAlign:"center",
 		padding: '20px',
 		paddingLeft: '38px',
 		'& p':{
 			fontSize: '0.8rem'
+		}
+	},
+	model:{
+		'& .MuiPaper-root':{
+			minWidth: '390px',
 		}
 	},
 	model_title:{
@@ -380,6 +368,7 @@ const TestSubjectPage = (props) => {
 	const [chapterContent, setChapterContent] = useState('')
 	const [selected_sub, setselected_sub] = useState(null)
 	const [modify_sub, setmodify_sub] = useState(false)
+	const [openPubLater, setOpenPubLater] = useState(false)
 
 	const handleEventDate = (date) => {
 		setEventDate(date)
@@ -427,7 +416,7 @@ const TestSubjectPage = (props) => {
 
 	const publish_datesheet = async () => {
 		if (DateSheetData !== null && datesheetDataTable.length > 0){
-			const res = await DateSheetService.publish(token,DateSheetData.id,classID)
+			const res = await DateSheetService.publishLater(token,DateSheetData.id,classID,{'status':'published'})
 			if (res.status === 200) {
 				setSuccessMsg("Published Successfully !!")
 				setSuccessOpenSnackbar(true)				
@@ -438,6 +427,37 @@ const TestSubjectPage = (props) => {
 			}
 		} else {
 			setErrorMsg('Please Create A Time Table first')
+			setErrorOpenSnackbar(true)
+		}
+	}
+	const handleOpenPubLater = ()=>{
+		if (DateSheetData === null || datesheetDataTable.length <= 0){
+			setErrorMsg('Please Create A Time Table first')
+			setErrorOpenSnackbar(true)
+		}else{
+			setOpenPubLater(true)	
+		}
+	}
+
+	const handleClosePubLater = () => {
+		setOpenPubLater(false)
+	}
+	const publish_datesheet_later = async (date) => {
+		const res = await DateSheetService.publish(
+			token,
+			DateSheetData.id,
+			classID,
+			{
+				'status':'active',
+				'published_date': date
+			})
+		if (res.status === 200) {
+			setOpenPubLater(false)
+			setSuccessMsg("Publish Later Successfully !!")
+			setSuccessOpenSnackbar(true)				
+			props.refeshDatesheet(testData)
+		} else {
+			setErrorMsg("Failed to publish")
 			setErrorOpenSnackbar(true)
 		}
 	}
@@ -485,6 +505,7 @@ const TestSubjectPage = (props) => {
 					onClose={handleClose}
 					aria-labelledby='customized-dialog-title'
 					open={open}
+					className={classes.model}
 				>
 					<DialogTitle id='customized-dialog-title' 
 					className={classes.model_title}
@@ -579,12 +600,19 @@ const TestSubjectPage = (props) => {
 						</MuiPickersUtilsProvider>
 					</DialogContent>
 					<DialogActions>
-						<Button autoFocus onClick={check_put_post_data} color='primary'>
+						<Button 
+							autoFocus 
+							onClick={check_put_post_data} 
+							color='primary'
+							variant='contained'
+							disableRipple={true}
+							disableElevation
+						>
 							Save
 						</Button>
 					</DialogActions>
 				</Dialog>
-				<Grid container className={classes.grid1} spacing={3}>
+				<Grid container className={classes.grid1}>
 					<Grid className={classes.grid2} item xs={12}>
 						<div className={classes.floatLeft}>
 							<ArrowBackIosIcon
@@ -606,7 +634,7 @@ const TestSubjectPage = (props) => {
 							<div className={classes.displayPadding}>								
 								{ datesheetDataTable.length > 0 ?
 									datesheetDataTable.map((item,index)=>{ return (
-										<Grid container spacing={3} key={index+""+item.id}>
+										<Grid container key={index+""+item.id}>
 											<Grid
 												container
 												className={classes.tablestyle}
@@ -724,15 +752,28 @@ const TestSubjectPage = (props) => {
 									)
 								}
 								{DateSheetData.status !== null ? (
-								DateSheetData.status === 'published' ? (
-									<span></span>
-								) :  (
+								DateSheetData.status === 'published' || DateSheetData.status === 'active'  ? null :  (
 									<Grid item xs={12} className={classes.grid9}>
-										<Typography>
+										<Typography className={classes.margin}>
+											<Button
+												id='publishLaterBtn'
+												variant='contained'
+												onClick={handleOpenPubLater}
+												className={`${
+													classes.fieldStyle
+												} ${'publishBtn'} ${'publishLaterBtn'}`}
+												disableRipple
+												disableElevation
+											>
+												Publish Later
+											</Button>
 											<Button
 												variant='contained'
 												onClick={publish_datesheet}
-												className={classes.typography7}
+												className={`${classes.fieldStyle} ${'publishBtn'}`}
+												color='primary'
+												disableRipple
+												disableElevation
 											>
 												Publish Now
 											</Button>
@@ -743,9 +784,24 @@ const TestSubjectPage = (props) => {
 								<Grid item xs={12} className={classes.grid10}>
 									<Typography>
 										<Button
+											id='publishLaterBtn'
+											variant='contained'
+											onClick={handleOpenPubLater}
+											className={`${
+												classes.fieldStyle
+											} ${'publishBtn'} ${'publishLaterBtn'}`}
+											disableRipple
+											disableElevation
+										>
+											Publish Later
+										</Button>
+										<Button
 											variant='contained'
 											onClick={publish_datesheet}
-											className={classes.typography8}
+											className={`${classes.fieldStyle} ${'publishBtn'}`}
+											color='primary'
+											disableRipple
+											disableElevation
 										>
 											Publish Now
 										</Button>
@@ -783,6 +839,15 @@ const TestSubjectPage = (props) => {
 					{successMsg}
 				</Alert>
 			</Snackbar>	
+			{openPubLater ? (
+				<PublishLater
+					open={openPubLater}
+					handleClose={handleClosePubLater}
+					handlePublishLater={publish_datesheet_later}
+				/>
+			) : (
+				''
+			)}
 			</div>
 		</Fragment>
 	)

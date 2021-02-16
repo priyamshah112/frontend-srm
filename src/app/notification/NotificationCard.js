@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
 		boxShadow: 'none',
 		background: '#FFFFFF 0% 0% no-repeat padding-box',
 		borderRadius: '10px',
-		marginTop: '20px',
+		marginTop: '10px',
+		marginBottom: '10px',
 	},
 	cardHeader: {
 		padding: '15px 20px 0 20px',
@@ -122,44 +123,45 @@ const NotificationCard = (props) => {
 	const handleClose = async (event) => {
 		const updatedStatus = event.currentTarget.getAttribute('value')
 		setAnchorEl(null)
-
-		try {
-			const token = localStorage.getItem('srmToken')
-			const response = await NotificationService.updateStatus(
-				props.notification.notify_status_id,
-				updatedStatus,
-				token
-			)
-
-			if (response.status === 200) {
-				if (updatedStatus === 'read' && status !== 'read') {
-					if (props.notificationCount !== 0) {
-						props.subNotificationCount()
+		if(updatedStatus !== null){
+			try {
+				const token = localStorage.getItem('srmToken')
+				const response = await NotificationService.updateStatus(
+					props.notification.notify_status_id,
+					updatedStatus,
+					token
+				)
+	
+				if (response.status === 200) {
+					if (updatedStatus === 'read' && status !== 'read') {
+						if (props.notificationCount !== 0) {
+							props.subNotificationCount()
+						}
+						setStatus('read')
+					} else if (updatedStatus === 'unread' && status !== 'unread') {
+						props.addNotificationCount()
+						setStatus('unread')
+					} else if (updatedStatus === 'deleted' && status !== 'deleted') {
+						if (props.notificationCount !== 0) {
+							props.subNotificationCount()
+						}
+						props.handleRemoveNotifcation(props.notification.id)
+						setStatus('deleted')
+					} else if (updatedStatus === 'archive' && status !== 'archive') {
+						if (props.notificationCount !== 0) {
+							props.subNotificationCount()
+						}
+						props.handleRemoveNotifcation(props.notification.id)
+						setStatus('archive')
+					} else {
+						console.log()
 					}
-					setStatus('read')
-				} else if (updatedStatus === 'unread' && status !== 'unread') {
-					props.addNotificationCount()
-					setStatus('unread')
-				} else if (updatedStatus === 'deleted' && status !== 'deleted') {
-					if (props.notificationCount !== 0) {
-						props.subNotificationCount()
-					}
-					props.handleRemoveNotifcation(props.notification.id)
-					setStatus('deleted')
-				} else if (updatedStatus === 'archive' && status !== 'archive') {
-					if (props.notificationCount !== 0) {
-						props.subNotificationCount()
-					}
-					props.handleRemoveNotifcation(props.notification.id)
-					setStatus('archive')
-				} else {
-					console.log()
+					// code here
+					props.changestatus_handeler('', true)
 				}
-				// code here
-				props.changestatus_handeler('', true)
-			}
-		} catch (e) {
-			console.log(e)
+			} catch (e) {
+				console.log(e)
+			}			
 		}
 	}
 

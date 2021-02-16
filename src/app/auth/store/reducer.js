@@ -62,7 +62,19 @@ const authInitiateRoleSelection = (state) => {
 		changeRole: true,
 	})
 }
-
+const authChangeProfile =(state, action) => {
+	let data = {
+		...state.userInfo
+	}
+	data.thumbnail = action.thumbnail;
+	localStorage.setItem(
+		'srmUserInfo',
+		JSON.stringify(data)
+	);
+	return updateObject(state,{
+		userInfo: data,
+	})
+}
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
 		case actionTypes.AUTH_START:
@@ -73,6 +85,8 @@ const reducer = (state = initialState, action) => {
 			return authFail(state, action)
 		case actionTypes.AUTH_LOGOUT:
 			return authLogout(state)
+		case actionTypes.AUTH_CHANGE_PROFILE:
+			return authChangeProfile(state,action)
 		case actionTypes.AUTH_ROLE_SELECTION:
 			return authRoleSelection(state, action)
 		case actionTypes.AUTH_INITIATE_ROLE_SELECTION:

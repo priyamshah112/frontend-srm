@@ -25,43 +25,34 @@ import {
 
 const useStyle = makeStyles((theme) => ({
 	Formcontainer: {
-		width: '99%',
+		boxSizing: 'border-box',
+		width: '100%',
 		backgroundColor: theme.palette.mainBackground,
 		height: '100%',
-		marign: '0',
-		padding: '0',
-		overflowY: 'auto',
+		padding: '20px',
+		marginBottom: '100px',
 		'&::-webkit-scrollbar': {
 			width: 0,
 		},
 	},
 	formStyle: {
-		marginTop:'50px',
-		marginLeft:'10px',
-		marginRight:'0px',
-		paddingTop:'15px',
-		paddingBottom:'15px',
-		paddingLeft:'15px',
-		paddingRight:'25px',
-		width: '97%',
+		width: '100%',
 		backgroundColor: 'white',
-		justifyContent: 'center',
-		textAlign: 'center',
 		borderRadius: '5px',
+	},
+	header:{
+		padding: '20px',
+		paddingBottom: '0px'		
 	},
 	backImg: {
 		float: 'left',
-		transform: 'translate(0px, 7px)',
 		cursor: 'pointer',
 	},
 	adornmentColor: {
 		color: 'rgba(0, 0, 0, 0.54)',
-		paddingTop: '6px',
 	},
 	themeColor: {
 		color: '#1C1C1E',
-		padding: 0,
-		margin: 0,
 	},
 	errorColor: {
 		color: 'red',
@@ -69,13 +60,24 @@ const useStyle = makeStyles((theme) => ({
 	titleText: {
 		textAlign: 'center',	
 		fontFamily: 'Avenir Medium',
-		fontize: '1.2rem',
+		fontSize: '18px',
 	},
 	fieldStyle: {
 		width: '100%',
 		fontFamily: 'Avenir Book',
 		fontSize: ' 1rem',
-		margin: 'auto',
+		boxSizing:'border-box',
+		paddingTop: 10,
+		paddingBottom: 10,
+		paddingRight: 20,
+		paddingLeft: 20,
+		'& .publishBtn': {
+			borderRadius: '3px',
+			width: '120px',
+		},
+		'& .MuiInputBase-root':{
+			margin: '0px',
+		},
 		'& .MuiInput-underline:before': {
 			borderBottom: '2px solid #eaeaea',
 		},
@@ -85,15 +87,12 @@ const useStyle = makeStyles((theme) => ({
 			transitionDuration: '500ms',
 			transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
 		},
-	},
-	inputBorder: {
-		height: '50px',
+		'& .tox-tinymce':{
+			height: '350px !important',
+		}		
 	},
 	datePicker: {
 		width: '100%',
-		[theme.breakpoints.down('xs')]: {
-			width: '100%',
-		},
 	},
 
 	textAlignLeft: {
@@ -111,24 +110,12 @@ const useStyle = makeStyles((theme) => ({
 		margin: 2,
 	},
 	publishBtns: {
+		width: '120px',
 		textAlign: 'right',
 		justifyContent: 'right',
 	},
 	margin: {
-		marginTop: '30px',
-		[theme.breakpoints.down('xs')]: {
-			marginTop: '10px',
-		},
-		'& .publishBtn': {
-			borderRadius: '3px',
-			width: 'inherit',
-			margin: 0,
-			[theme.breakpoints.down('xs')]: {
-				marginTop: '10px',
-				marginRight: 0,
-				width: '100%',
-			},
-		},
+		
 		'& .publishLaterBtn': {
 			backgroundColor: `${theme.palette.common.white}`,
 			border: `1px solid ${theme.palette.common.adornment}`,
@@ -139,6 +126,23 @@ const useStyle = makeStyles((theme) => ({
 		zIndex: theme.zIndex.drawer + 1,
 		color: `#fff`,
 	},
+	richTextEditor:{
+		height: '350px',
+	},
+	width:{
+		width: '100%',
+	},
+	formControl:{
+		boxSizing: 'border-box',
+		width: '100%',
+		paddingTop: 5,
+		paddingBottom: 5,
+		paddingRight: 20,
+		paddingLeft: 20,
+	},
+	description:{
+		paddingTop: 12,
+	}
 }))
 
 let saveDataApi
@@ -214,12 +218,12 @@ const CreateSupport = (props) => {
 		return true
 	}
 
-	useEffect(() => {
-		saveDataApi = setInterval(() => {
-			saveDetails()
-		}, 10000)
-		return () => clearInterval(saveDataApi)
-	}, [subject, description, category])
+	// useEffect(() => {
+	// 	saveDataApi = setInterval(() => {
+	// 		saveDetails()
+	// 	}, 10000)
+	// 	return () => clearInterval(saveDataApi)
+	// }, [subject, description, category])
 
 	const saveDetails = (status, loading = false) => {
 		const data = {
@@ -287,7 +291,7 @@ const CreateSupport = (props) => {
 	}
 
 	const goBack = () => {
-		saveDetails()
+		// saveDetails()
 		history.replace('/support')
 	}
 
@@ -297,8 +301,7 @@ const CreateSupport = (props) => {
 		<>
 			<div className={classes.Formcontainer}>
 				<form className={classes.formStyle} onSubmit={submitForm}>
-					<Box className={classes.margin} pt={2}>
-						<div>
+					<div className={classes.header} pt={2}>
 							<img
 								src={BackIcon}
 								alt='Back'
@@ -311,117 +314,101 @@ const CreateSupport = (props) => {
 							>
 								Create Ticket
 							</Typography>
-						</div>
-					</Box>
+					</div>
 					{errMessage ? (
-						<Box className={classes.margin} pt={2}>
-							<div>
-								<Typography className={`${classes.errorColor}`}>
-									{errMessage}
-								</Typography>
-							</div>
-						</Box>
+						<Typography className={`${classes.errorColor}`}>
+							{errMessage}
+						</Typography>
 					) : (
 						''
 					)}
-					<Box className={classes.margin}>
-						<FormControl className={classes.fieldStyle}>
-							<TextField
-								id='subject'
-								name='subject'
-								label='Subject'
-								className={classes.inputBorder}
-								value={subject}
-								onChange={handleChangeInput}
-								required={true}
-							/>
-						</FormControl>
-					</Box>
-					<Box className={classes.margin}>
-						<FormControl className={classes.fieldStyle}>
-							<InputLabel>Categories</InputLabel>
+					<FormControl 
+						className={classes.formControl}
+					>
+						<TextField
+							id='subject'
+							name='subject'
+							label='Subject'
+							value={subject}
+							onChange={handleChangeInput}
+							required={true}
+						/>
+					</FormControl>
+					<div className={classes.formControl}>
+						<FormControl className={classes.width}>
+							<InputLabel className={classes.textAlignLeft}>
+								Categories
+							</InputLabel>					
 							<SelectCategory
 								value={category}
 								onChange={handleChangeCategory}
 							/>
 						</FormControl>
-						{props.categoryLoading && (
-							<CircularProgress color='primary' size={30} />
-						)}
-					</Box>
-					<Box className={classes.margin}>
-						<Grid className={classes.fieldStyle}>
-							<Typography className={classes.textAlignLeft}>
-								Description
-							</Typography>
-							<RichTextEditor
-								handleDescription={handleDescription}
-								value={description}
-								token={props.token}
-							/>
-						</Grid>
-					</Box>
-					<Box className={classes.margin}>
-						<Grid
-							container
-							className={classes.fieldStyle}
-							direction='row-reverse'
-						>
-							<Grid item sm={8} xs={12} className={classes.publishBtns}>
-								<Button
-									id='publishBtn'
-									variant='contained'
-									className={`${classes.fieldStyle} ${'publishBtn'}`}
-									color='primary'
-									type='submit'
-									disableElevation
-								>
-									Submit
-								</Button>
-							</Grid>
-							<Grid item sm={4} xs={12} className={classes.textAlignLeft}>
-								{/* <Button
-									id='cancelBtn'
-									variant='contained'
-									onClick={() => {
-										history.replace('/support')
-									}}
-									className={`${
-										classes.fieldStyle
-									} ${'publishBtn'} ${'publishLaterBtn'}`}
-									disableElevation
-								>
-									Cancel
-								</Button> */}
-								<Backdrop
-									open={props.postLoading || props.singleSupportLoading}
-									className={classes.backdrop}
-								>
-									<CircularProgress color='inherit' />
-								</Backdrop>
-							</Grid>
-						</Grid>
-						<Snackbar
-							open={openSnackbar}
-							autoHideDuration={5000}
-							onClose={handleSnackbarClose}
-						>
-							<Alert
-								onClose={handleSnackbarClose}
-								severity={snackbar.type || 'error'}
+					</div>
+					
+					<Grid className={classes.fieldStyle}>
+						<Typography className={`${classes.textAlignLeft}  ${classes.description}`}>
+							Description
+						</Typography>
+						<RichTextEditor
+							handleDescription={handleDescription}
+							value={description}
+							token={props.token}
+							style={{'height': '350px'}}
+						/>
+					</Grid>
+					<Grid
+						container
+						className={classes.fieldStyle}
+						direction='row-reverse'
+					>
+						<Grid item sm={8} xs={12} className={classes.publishBtns}>
+							<Button
+								id='publishBtn'
+								variant='contained'
+								className={`${classes.fieldStyle} ${'publishBtn'}`}
+								color='primary'
+								type='submit'
+								disableElevation
 							>
-								{snackbar.message || 'Something went wrong!! Please try again.'}
-							</Alert>
-						</Snackbar>
-					</Box>
-					<br />
+								Submit
+							</Button>
+						</Grid>
+						<Grid item sm={4} xs={12} className={classes.textAlignLeft}>
+							{/* <Button
+								id='cancelBtn'
+								variant='contained'
+								onClick={() => {
+									history.replace('/support')
+								}}
+								className={`${
+									classes.fieldStyle
+								} ${'publishBtn'} ${'publishLaterBtn'}`}
+								disableElevation
+							>
+								Cancel
+							</Button> */}
+							<Backdrop
+								open={props.postLoading || props.singleSupportLoading}
+								className={classes.backdrop}
+							>
+								<CircularProgress color='inherit' />
+							</Backdrop>
+						</Grid>
+					</Grid>
+					<Snackbar
+						open={openSnackbar}
+						autoHideDuration={5000}
+						onClose={handleSnackbarClose}
+					>
+						<Alert
+							onClose={handleSnackbarClose}
+							severity={snackbar.type || 'error'}
+						>
+							{snackbar.message || 'Something went wrong!! Please try again.'}
+						</Alert>
+					</Snackbar>
 				</form>
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
 			</div>
 		</>
 	)

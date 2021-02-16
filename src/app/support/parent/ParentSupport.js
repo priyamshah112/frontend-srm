@@ -25,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 
 	header: {
-		paddingLeft: '15px',
-		paddingTop: '10px',
+		paddingTop: '20px',
 		textAlign: 'right',
 	},
 	addNew: {
@@ -35,10 +34,8 @@ const useStyles = makeStyles((theme) => ({
 		'& .new': {
 			float: 'right',
 			fontSize: '14px',
-			padding: '5px',
 		},
 		'& img': {
-			margin: '5px',
 			height: '20px',
 			cursor: 'pointer',
 		},
@@ -56,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
 		fontSize: '20px',
 	},
 	createHeader: {
-		marginTop: '20px',
 		textAlign: 'right',
 		fontWeight: 500,
 	},

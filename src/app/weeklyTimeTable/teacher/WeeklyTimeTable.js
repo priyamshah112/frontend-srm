@@ -99,20 +99,21 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Avenir medium",
     fontSize: "18px",
     color: "rgb(150, 150, 150)",
+    textTransform: "capitalize",
   },
   head1: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontFamily: "Avenir",
-    width:'93%',
+    width: "93%",
   },
   head2: {
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "flex-end",
     fontFamily: "Avenir",
-    width:'7%'
+    width: "7%",
   },
   heading21: {
     position: "absolute",
@@ -132,6 +133,7 @@ function WeeklyTimeTable(props) {
   const [schoolId, setSchoolId] = useState("");
   const [status, setStatus] = useState("published");
   const { selectedRole } = props;
+  const [length, setLength] = useState("");
 
   const onChangeClass = (id, classname) => {
     setClassId(id);
@@ -162,46 +164,39 @@ function WeeklyTimeTable(props) {
               Weekly Time Table 2020 - 21
             </span>
           </div>
-          <div className={classes.head2}>
-            {status === "draft" ? (
-              <span className={classes.heading2}>Draft</span>
-            ) : (
-              ""
-            )}
-          </div>
+          {selectedRole === "teacher" || selectedRole === "admin" ? (
+            <div className={classes.head2}>
+              {length ? <span className={classes.heading2}>{status}</span> : ""}
+            </div>
+          ) : (
+            ""
+          )}
         </div>
 
-        <div className={classes.sectionContainer}>
-          <div className={classes.header}>
-            <div className={classes.filterForm}>
-              {selectedRole === "teacher" ||
-              selectedRole === "admin" ||
-              selectedRole === "parent" ? (
+        {selectedRole === "teacher" || selectedRole === "admin" ? (
+          <div className={classes.sectionContainer}>
+            <div className={classes.header}>
+              <div className={classes.filterForm}>
                 <FormControl className={classes.formControl}>
                   <ClassesDropdown onChange={onChangeClass} value={class_id} />
                 </FormControl>
-              ) : (
-                ""
-              )}
-              {selectedRole === "teacher" || selectedRole === "admin" ? (
                 <div className={classes.addNew} onClick={handleAdd}>
                   <img src={AddIcon} alt="add" />
                   <Typography className="new">Add Lectures/Break</Typography>
                 </div>
-              ) : (
-                ""
-              )}
+              </div>
             </div>
           </div>
-        </div>
-        {selectedRole === "student" ||
-        selectedRole === "teacher" ||
-        selectedRole === "admin" ||
-        selectedRole === "parent" ? (
-          <TimeTable status={setStatus} schoolId={schoolId} class_id={class_id} name={name} />
         ) : (
           ""
         )}
+        <TimeTable
+          status={setStatus}
+          schoolId={schoolId}
+          class_id={class_id}
+          name={name}
+          length={setLength}
+        />
       </div>
     </>
   );

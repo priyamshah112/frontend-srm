@@ -110,9 +110,10 @@ function LectureBreak(props) {
   const tableId = props.tableId;
   const class_id = props.class_id;
   const schoolId = props.schoolId;
-  let edit = props.edit;
+  const edit = props.edit;
+  const open = props.open
   const classes = useStyles();
-  const [startTime, setStartTime] = useState(new Date("2020-08-18T08:30:00"));
+  const [startTime, setStartTime] = useState(new Date("2020-08-18T08:00:00"));
   const [endTime, setEndTime] = useState(new Date("2020-08-18T08:30:00"));
   const [radioValue, setRadioValue] = useState("Break");
   const [breakfast, setBreakfast] = useState("Break");
@@ -126,10 +127,15 @@ function LectureBreak(props) {
   const data = props.data ? props.data : []
 
   useEffect(() => {
-    if (class_id) {
-      fetchData();
+    if (class_id && open) {
+      props.weeklyTimeTableSubject(class_id);
     }
-  }, [class_id]);
+  }, [open]);
+  useEffect(() => {
+    if (class_id && edit) {
+      props.weeklyTimeTableSubject(class_id);
+    }
+  }, [edit]);
 
   useEffect(() => {
     if (edit) {
@@ -140,6 +146,12 @@ function LectureBreak(props) {
       setStartTime(updateStartTime);
       setEndTime(updateEndTime);
       setRadioValue(props.updateRadioValue);
+      console.log('breakStatus', props.breakStatus)
+      if(props.breakStatus==='BreakFast'){
+      setBreakfast(props.updateBreakfast)
+    }else{
+      setBreakfast('Break')
+    }
       setMonday(props.updateMonday ? props.updateMonday : "no lecture");
       setTuesday(props.updateTuesday ? props.updateTuesday : "no lecture");
       setWednesday(
@@ -148,7 +160,6 @@ function LectureBreak(props) {
       setThursday(props.updateThursday ? props.updateThursday : "no lecture");
       setFriday(props.updateFriday ? props.updateFriday : "no lecture");
       setSaturday(props.updateSaturday ? props.updateSaturday : "no lecture");
-      console.log("props", props.tableId, props.updateEndTime);
     }
   }, [edit]);
 
@@ -160,8 +171,6 @@ function LectureBreak(props) {
     setStartTime(time);
     console.log("time", time);
   };
-  let date = new Date();
-  console.log("current", date);
 
   const handleEndTimeChange = (time) => {
     console.log("time", time);
@@ -355,20 +364,6 @@ function LectureBreak(props) {
 										),
 									}}
 								/>
-                {/* <KeyboardTimePicker
-                  className={classes.label}
-                  margin="normal"
-                  id="end-time"
-                  label="End Time"
-                  ampm={false}
-                  views={["hours", "minutes", "seconds"]}
-                  format="HH:mm:ss"
-                  value={endTime}
-                  onChange={handleEndTimeChange}
-                  KeyboardButtonProps={{
-                    "aria-label": "change time",
-                  }}
-                /> */}
                 <FormControl component="fieldset">
                   <RadioGroup
                     className={classes.radio}

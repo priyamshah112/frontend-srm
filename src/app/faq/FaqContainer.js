@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: theme.palette.mainBackground,
 		margin: 0,
 		padding: 0,
+		marginBottom: '60px',
 	},
 }))
 

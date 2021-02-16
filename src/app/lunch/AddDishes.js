@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -16,13 +16,17 @@ import { withStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import LunchIcon from "../../assets/images/lunch/Lunch.svg";
 import { AddDishInDishes } from "../redux/actions/attendence.action";
+import { removeLunchImage } from "../redux/actions/attendence.action";
+import { updateDishInDishes } from "../redux/actions/attendence.action";
 import { SnackBarRef } from "../../SnackBar";
 import imageCompression from "browser-image-compression";
+import { showDishListInDishes } from "../redux/actions/attendence.action";
+import { CircularProgress } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
-    margin: "auto",
-    width: "95%",
+    margin: "0 20px 85px 20px !important",
     marginBottom: "85px",
     backgroundColor: "white",
     justifyContent: "center",
@@ -208,9 +212,26 @@ const useStyle = makeStyles((theme) => ({
     fontSize: 20,
     fontFamily: "Avenir book",
   },
+  imageContainer: {
+    display: "flex",
+    marginRight: "10px",
+  },
+  delImgContainer: {
+    cursor: "pointer",
+    height: "21px",
+    border: "1px solid #7B72AF",
+    borderRadius: "50%",
+    marginLeft: "-30px",
+    marginTop: "3px",
+    backgroundColor: "#7B72AF",
+  },
+  heading:{
+    margin:'20px'
+  }
 }));
 
 function AddDishes(props) {
+  const IMAGE_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
   const classes = useStyle();
   const [errMessage, setError] = useState("");
   const [title, setTitle] = useState("");
@@ -218,10 +239,65 @@ function AddDishes(props) {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Veg");
   const [fileList, setFileList] = useState([]);
-  const { loading, class_id, school_id } = props;
+  const { loading, class_id, school_id, updateLoading } = props;
+  const {
+    edit,
+    setEdit,
+    editId,
+    updateName,
+    updateStatus,
+    updatePrice,
+    updateDesc,
+    updateImage,
+  } = props;
+
+  console.log("updateImage", updateImage);
+
+  useEffect(() => {
+    if (edit) {
+      setTitle(updateName);
+      setPrice(updatePrice);
+      setDescription(updateDesc);
+      setStatus(updateStatus);
+      handleUpdateImage();
+    }
+  }, []);
+
+  const validForm = () => {
+    if (!title && !price && !description && fileList[0]) {
+      setError("All field are mandatory ");
+    } else if (!title && !price && description) {
+      setError("All field are mandatory ");
+    } else if (!price && !description && !fileList[0]) {
+      setError("All field are mandatory ");
+    } else if (!title && !description && !fileList[0]) {
+      setError("All field are mandatory ");
+    } else if (!title && !price && !fileList[0]) {
+      setError("All field are mandatory ");
+    } else if (!title && !price) {
+      setError("All field are mandatory ");
+    } else if (!price && !description) {
+      setError("All field are mandatory ");
+    } else if (!description && !fileList[0]) {
+      setError("All field are mandatory ");
+    } else if (!title && !fileList[0]) {
+      setError("All field are mandatory ");
+    } else if (!title) {
+      setError("All field are mandatory ");
+    } else if (!price) {
+      setError("All field are mandatory ");
+    } else if (!description) {
+      setError("All field are mandatory ");
+    } else if (!fileList[0]) {
+      setError("All field are mandatory ");
+    } else {
+      return true;
+    }
+  };
 
   const handleChange = async (e) => {
     console.log("change files", e.target.files);
+    setError("");
     const file = e.target.files;
     const filesArray = [];
     const options = {
@@ -230,7 +306,6 @@ function AddDishes(props) {
     };
     for (let i = 0; i < file.length; i++) {
       try {
-        // console.log(fileList[image])
         const compressedImage = await imageCompression(file[i], options);
         const imageString = await toBase64(compressedImage);
         filesArray.push(imageString);
@@ -239,25 +314,51 @@ function AddDishes(props) {
         console.log("error", e);
       }
     }
-    console.log("filesArray", filesArray);
-        if(!fileList[0]){
-        setFileList(filesArray);
-        }else{
-          fileList.push(filesArray)
-          setFileList(fileList)
-        }
-    // if (e.target.files) {
-    //   const fileArray = Array.from(e.target.files).map((file) =>
-    //     URL.createObjectURL(file)
-    //   );
-    //   setFileList((preImages) => preImages.concat(fileArray));
-    //   Array.from(e.target.files).map((file) => URL.revokeObjectURL(file));
-    // }
+    if (!fileList[0]) {
+      setFileList(filesArray);
+    } else {
+      const array = fileList.concat(filesArray);
+      setFileList(array);
+    }
+  };
+
+  const handleUpdateImage = () => {
+    const images = [];
+    updateImage.map((item) => {
+      let imagePath = `${IMAGE_BASE_URL}/${item.img_path}/${item.img_name}`;
+      images.push(imagePath);
+    });
+    console.log("updateImage", images);
+    setFileList(images);
+  };
+  const handleDeleteImg = (index, imageUrl) => {
+    const imgArray = [...fileList];
+    const removeImg = imgArray.splice(index, 1);
+    console.log("fileList remove", removeImg, imgArray);
+    setFileList(imgArray);
+
+    updateImage.map((item) => {
+      let imagePath = `${IMAGE_BASE_URL}/${item.img_path}/${item.img_name}`;
+      if (imagePath === imageUrl) {
+        props.removeLunchImage(item.id);
+      }
+    });
   };
 
   const renderPhotos = (source) => {
-    return source.map((photo) => {
-      return <img src={photo} key={photo} className={classes.img} style={{}} />;
+    console.log("updateImage source", source);
+    return source.map((photo, index) => {
+      return (
+        <div className={classes.imageContainer}>
+          <img src={photo} key={photo} className={classes.img} style={{}} />
+          <div
+            onClick={() => handleDeleteImg(index, photo)}
+            className={classes.delImgContainer}
+          >
+            <CloseIcon style={{ color: "white" }} fontSize="small" />
+          </div>
+        </div>
+      );
     });
   };
 
@@ -271,19 +372,27 @@ function AddDishes(props) {
 
   const handleChangePrice = (e) => {
     setPrice(e.target.value);
+    setError("");
   };
   const handleChangeRadio = (e) => {
     setStatus(e.target.value);
+    setError("");
   };
 
   const handleDescription = (e) => {
     setDescription(e.target.value);
+    setError("");
   };
   const handleBack = () => {
-    props.close();
+    if (edit) {
+      setEdit(!edit);
+    } else {
+      props.close();
+    }
   };
   const handleChangeInput = (event) => {
     setTitle(event.target.value);
+    setError("");
   };
 
   const toBase64 = (file) =>
@@ -295,7 +404,14 @@ function AddDishes(props) {
     });
 
   const handleSuccess = () => {
-    SnackBarRef.open("", true, "Dish added successfully");
+    if (edit) {
+      SnackBarRef.open("", true, "Dish updated successfully");
+      setEdit(false);
+    } else {
+      SnackBarRef.open("", true, "Dish added successfully");
+      handleBack();
+    }
+    props.showDishListInDishes(school_id);
   };
   const handleFail = (error) => {
     console.log("error", error);
@@ -305,19 +421,38 @@ function AddDishes(props) {
   };
 
   const handleSave = async (e) => {
-    console.log("fileList", fileList);
     e.preventDefault();
-
-    const data = {
-      school_id: school_id,
-      class_id: class_id,
-      name: title,
-      price: price,
-      status: status,
-      description: description,
-      image: fileList,
-    };
-    props.AddDishInDishes(data, handleSuccess, handleFail);
+    let fileArray = [];
+    fileList.map((item, index) => {
+      let includeArray = item.includes("lunch-image");
+      if (!includeArray) {
+        fileArray.push(item);
+      }
+    });
+    if (validForm()) {
+      const data = {
+        school_id: school_id,
+        class_id: class_id,
+        name: title,
+        price: price,
+        status: status,
+        description: description,
+        image: fileArray,
+      };
+      if (edit) {
+        console.log("array2 fileList", fileArray);
+        props.updateDishInDishes(
+          data,
+          editId,
+          class_id,
+          school_id,
+          handleSuccess,
+          handleFail
+        );
+      } else {
+        props.AddDishInDishes(data, handleSuccess, handleFail);
+      }
+    }
   };
 
   const GreenRadio = withStyles({
@@ -331,23 +466,21 @@ function AddDishes(props) {
 
   return (
     <div>
+      <div className={classes.heading}>
+        <img
+          src={BackIcon}
+          alt="Back"
+          className={classes.backImg}
+          onClick={handleBack}
+        />
+        <Typography
+          variant="h5"
+          className={`${classes.themeColor} ${classes.titleText}`}
+        >
+          {edit ? "Update Dish" : "Add Dish"}
+        </Typography>
+      </div>
       <form className={classes.formStyle}>
-        <Box className={`${classes.margin} ${classes.sideMargins}`} pt={4}>
-          <div>
-            <img
-              src={BackIcon}
-              alt="Back"
-              className={classes.backImg}
-              onClick={handleBack}
-            />
-            <Typography
-              variant="h5"
-              className={`${classes.themeColor} ${classes.titleText}`}
-            >
-              Add Dish
-            </Typography>
-          </div>
-        </Box>
         {errMessage ? (
           <Box className={classes.margin} pt={2}>
             <div>
@@ -365,6 +498,7 @@ function AddDishes(props) {
               id="title"
               name="title"
               className={classes.inputBorder}
+              style={{marginTop:'20px'}}
               value={title}
               onChange={handleChangeInput}
               required={true}
@@ -439,8 +573,8 @@ function AddDishes(props) {
                 label="Veg"
               />
               <FormControlLabel
-                checked={status === "Non Veg"}
-                value="Non Veg"
+                checked={status === "Non_veg"}
+                value="Non_veg"
                 control={<GreenRadio />}
                 label="Non Veg"
               />
@@ -491,17 +625,21 @@ function AddDishes(props) {
             direction="row-reverse"
           >
             <Grid item sm={6} xs={12} className={classes.publishBtns}>
-              <Button
-                id="publishBtn"
-                variant="contained"
-                className={`${classes.fieldStyle} ${"publishBtn"}`}
-                color="primary"
-                type="submit"
-                onClick={handleSave}
-                disableElevation
-              >
-                Save
-              </Button>
+              {loading || updateLoading ? (
+                <CircularProgress />
+              ) : (
+                <Button
+                  id="publishBtn"
+                  variant="contained"
+                  className={`${classes.fieldStyle} ${"publishBtn"}`}
+                  color="primary"
+                  type="submit"
+                  onClick={handleSave}
+                  disableElevation
+                >
+                  {edit ? "Update" : "Save"}
+                </Button>
+              )}
             </Grid>
             <Grid item sm={6} xs={12} className={classes.textAlignLeft}>
               <br />
@@ -519,10 +657,17 @@ function AddDishes(props) {
 }
 
 const mapStateToProps = (state) => {
-  const { add_dish_in_dishes = [], addDishInDishesLoading } = state.Attendence;
+  const {
+    add_dish_in_dishes = [],
+    addDishInDishesLoading,
+    updateDishInDishesLoading,
+    removeLunchImageLoading,
+  } = state.Attendence;
   return {
     data: add_dish_in_dishes,
     loading: addDishInDishesLoading,
+    updateLoading: updateDishInDishesLoading,
+    removeImageLoading: removeLunchImageLoading,
     class_id: state.auth.userInfo.user_classes.class_id,
     school_id: state.auth.userInfo.user_classes.school_id,
   };
@@ -530,4 +675,7 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   AddDishInDishes,
+  showDishListInDishes,
+  updateDishInDishes,
+  removeLunchImage,
 })(AddDishes);

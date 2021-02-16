@@ -19,19 +19,16 @@ const useStyles = makeStyles((theme) => ({
 	sectionContainer: {
 		height: '100%',
 		width: '100%',
+		padding: '20px',
+		boxSizing: 'border-box'
 	},
 
-	header: {
-		paddingRight: '15px',
-		paddingLeft: '15px',
-		paddingTop: '10px',
-		display: 'inline block',
+	header: {   
+		textAlign: 'right',
+		paddingBottom: '5px',
 	},
 	cardBoxPadding: {
-		padding: '24px',
-		[theme.breakpoints.down('sm')]: {
-			padding: '16px',
-		},
+		padding: '0px',
 	},
 	style: {
 		fonTize: '1rem',
@@ -42,21 +39,22 @@ const useStyles = makeStyles((theme) => ({
 	},
 	addNew: {
 		color: theme.palette.common.deluge,
-		float: 'right',
-		marginTop: '15px',
-		marginRight: '15px',
-		cursor: 'pointer',
 		'& .new': {
 			float: 'right',
 			fontSize: '14px',
 			padding: '5px',
-			fontWeight: 500,
 		},
 		'& img': {
 			margin: '5px',
 			height: '20px',
 			cursor: 'pointer',
 		},
+	},
+
+	addNewDiv: {
+		cursor: 'pointer',
+		width: 'fit-content',
+		marginLeft: 'auto',
 	},
 	InfiniteScroll: {
 		overflow: 'revert !important',
@@ -165,18 +163,20 @@ const HomeworkSection = (props) => {
 	return (
 		<div className={classes.sectionContainer}>
 			<div className={classes.header}>
-				<div className={classes.filterForm}>
-					{selectedRole === 'teacher' || selectedRole === 'admin' ? (
-						<div className={classes.addNew} onClick={handleCreateHomework}>
+				{selectedRole === 'teacher' || selectedRole === 'admin' ? (
+					<div className={classes.addNew}>
+						<div
+							onClick={handleCreateHomework}
+							className={classes.addNewDiv}
+						>
 							<img src={AddIcon} alt='add' />
 							<Typography className='new'>New</Typography>
 						</div>
-					) : (
-						''
-					)}
-				</div>
+					</div>
+				) : (
+					''
+				)}
 			</div>
-			<br />
 			<Box className={classes.cardBoxPadding}>
 				<InfiniteScroll
 					className={classes.InfiniteScroll}

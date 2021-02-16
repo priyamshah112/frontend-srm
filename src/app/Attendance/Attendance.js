@@ -17,9 +17,10 @@ const Attendance = (props) => {
 
 	return (
 		<div className={classes.attendanceRoot}>
-			{selectedRole === 'teacher' || selectedRole === 'admin' ? (
+			{(selectedRole === 'teacher' || selectedRole === 'admin') && (
 				<TeacherAttendanceContainer />
-			) : (
+			)}
+			{ (selectedRole === 'parent' || selectedRole === 'student') && (
 				<ParentAttendanceContainer />
 			)}
 		</div>

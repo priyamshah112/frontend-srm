@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: theme.palette.mainBackground,
 		margin: '0',
 		overflowY: 'auto',
-		padding: '24px',
+		padding: '20px',
 		boxSizing: 'border-box',
 	},
 	headingtest: {
@@ -60,8 +60,8 @@ const useStyles = makeStyles((theme) => ({
 
 	},
 	Grid: {
-		marginTop: '12px',
-		marginBottom: '20px',
+		marginTop: '10px',
+		marginBottom: '50px',
 	},
 	typography: {
 		color: '#1C1C1E',
@@ -187,7 +187,7 @@ const StudentDateSheet = (props) => {
 						<Grid container spacing={3} className={classes.Grid}>
 							{ClassTermList !== null && !isLoading ? ClassTermList.map((item, index) => {
 								return (
-									<Grid item xs={6} sm={4} lg={3} xl={3}>
+									<Grid item xs={6} sm={4} lg={3} xl={3} style={{padding: 10}}>
 										<Paper
 											className={classes.paper}
 											key={index}

@@ -149,6 +149,7 @@ const ProfileCard = (props) => {
 			)}
 			{changeAddressOpen ? (
 				<ChangeAddress
+					address={props.address}
 					open={changeAddressOpen}
 					editableId={editableId}
 					handleClose={changeAddressClose}

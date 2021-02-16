@@ -16,10 +16,10 @@ const useStyles = makeStyles((theme) => ({
 		width: '100%',
 		backgroundColor: theme.palette.mainBackground,
 		height: '100%',
-		marign: '0',
 		overflowY: 'auto',
-		padding: '24px 0px',
-		paddingBottom: '50px',
+		padding: '20px',
+		marginBottom: '50px',
+		boxSizing: 'border-box'
 	},
 	subjectTitle: {
 		marginBottom: '20px',
@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
 	background: {
 		background: '#fff',
 		borderRadius: '5px',
+		marginTop: 10,
+		marginBottom: 10,
 	},
 	select: {
 		width: '50%',
@@ -92,11 +94,11 @@ const useStyles = makeStyles((theme) => ({
 		},
 	  },
 	  option:{
-		  'display':'flex',
-		  'width': '99%',
-		  'paddingTop': '20px',
-		  'marginBottom': '20px',
-		  'overflowX': 'hidden',
+		  display:'flex',
+		  width: '100%',
+		  paddingTop: '20px',
+		  paddingBottom: '10px',
+		  overflowX: 'hidden',
 	  },
 	  menu:{	  
 		  'width':'50%'
@@ -105,27 +107,34 @@ const useStyles = makeStyles((theme) => ({
 
 const ClassPlanning = (props) => {
 	const classes = useStyles()
+	const { back } = props
 	const history = useHistory()
-	const location = useLocation()
 	const selectedRole = props.selectedRole
 	const [mounted,setMounted] = useState(false)
 	const [isLoading, setLoading] = useState(true)
-	const [get_by,setGet_by]= useState('subject')
+	const [get_by,setGet_by]= useState( back !== undefined ? back.get_by : 'subject')
 	const [menuList,setMenuList]= useState([])
 	const [menuLoading,setMenuLoading]= useState(false)
-	const [menuSelected,setMenuSelected]= useState('All')
+	const [menuSelected,setMenuSelected]= useState(back !== undefined ? back.menuSelected : 'All')
 	const [planningDetails, setPlanningDetails] = useState(null)
 	const token = localStorage.getItem('srmToken')
 
 	const fetchClassPlanning = async (id) => {
 		setLoading(true)
 		setPlanningDetails(null)
-		try {
-			const response = await PlanningService.getPlanning(token,id,get_by)
-			if (response.status === 200) {
-				// console.log("PlanningDtl",response.data.data.planning)	
-				setPlanningDetails(response.data.data.planning)	
-			}			
+		try {	
+			if(menuSelected === 'All'){
+				const response = await PlanningService.getPlanning(token,id,get_by)
+				if (response.status === 200) {
+					setPlanningDetails(response.data.data.planning)	
+				}	
+			}
+			else{
+				const response = await PlanningService.get_by_search(token,menuSelected,id,get_by)
+				if (response.status === 200) {
+					setPlanningDetails(response.data.data.planning)	
+				}	
+			}		
 		} catch (e) {
 			console.log(e)
 		}
@@ -139,6 +148,8 @@ const ClassPlanning = (props) => {
 			history.push({pathname:`/create-planning/${response.data.data.id}`,state:{
 				'class_id': props.classID,
 				'class_detail': props.classDetail,
+				'get_by': get_by,
+				'menuSelected': menuSelected,
 			}})
 		} catch (e) {
 			console.log(e)
@@ -154,11 +165,10 @@ const ClassPlanning = (props) => {
 	}
 	const fetchMenuSelected = async() =>{
 		try {
-			const response = await PlanningService.get_by(token,props.classID,'subject')
+			const response = await PlanningService.get_by(token,props.classID,get_by)
 			if (response.status === 200) {
 				let data = response.data.data
-				setMenuList(data)
-				setMenuSelected('All')
+				setMenuList(data)				
 			}
 
 				setLoading(false)
@@ -170,6 +180,7 @@ const ClassPlanning = (props) => {
 	}
 	const handleOptionChange = async (event)=>{
 		let get_by = event.target.value
+		setMenuSelected('All')
 		setGet_by(get_by)
 		setMenuLoading(true);
 		try {
@@ -177,7 +188,6 @@ const ClassPlanning = (props) => {
 			if (response.status === 200) {
 				let data = response.data.data
 				setMenuList(data)
-				setMenuSelected('All')
 			}
 
 				setLoading(false)
@@ -197,7 +207,6 @@ const ClassPlanning = (props) => {
 			try {
 				const response = await PlanningService.getPlanning(token,props.classID,get_by)
 				if (response.status === 200) {
-					console.log(response)
 					setPlanningDetails(response.data.data.planning)	
 				}			
 			} catch (e) {
@@ -208,7 +217,6 @@ const ClassPlanning = (props) => {
 			try {
 				const response = await PlanningService.get_by_search(token,value,props.classID,get_by)
 				if (response.status === 200) {
-					console.log(response)
 					setPlanningDetails(response.data.data.planning)	
 				}			
 			} catch (e) {
@@ -221,31 +229,29 @@ const ClassPlanning = (props) => {
 		isLoading == false && planningDetails !== null
 			? Object.entries(planningDetails).map(function ([key,value], index) {
 					return (
-						<div key={`${props.classID}${index}`}>
-							<div className={classes.background}>
-								<SubjectPlanning
-									class_id={props.classID}
-									class_detail={props.classDetail}
-									key={`${props.classID}${index}`}
-									planningDetails={value}
-									title={key}
-									get_by={get_by}
-								/>
-							</div>
-							<br />
-							<br />
+						<div className={classes.background} key={`${props.classID}${index}`}>
+							<SubjectPlanning
+								class_id={props.classID}
+								class_detail={props.classDetail}
+								key={`${props.classID}${index}`}
+								planningDetails={value}
+								title={key}
+								get_by={get_by}
+								menuSelected={menuSelected}
+							/>
 						</div>
 					)
 			  })
 			: null
 	
 	useEffect(() => {
-			fetchClassPlanning(props.classID)
-			if(!mounted){
-				fetchMenuSelected()
-				setMounted(true)
-			}
+		fetchClassPlanning(props.classID)
+		if(!mounted){
+			fetchMenuSelected()
+			setMounted(true)
+		}
 	}, [get_by])
+
 
 	const StyledRadio = (props) =>{
 
@@ -291,7 +297,7 @@ const ClassPlanning = (props) => {
 					<Dropdown data={menuList} loading={menuLoading} onChange={handleMenuSelected} makeDisable={false} initialValue="All" value={menuSelected}/>
 				</FormControl>
 			</div>
-			<div>
+			<div style={{display: 'grid'}}>
 				{isLoading ? (
 					<div className={classes.loading}>
 						<CircularProgress color='primary' size={30} />

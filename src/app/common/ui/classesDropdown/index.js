@@ -7,6 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 
 const useStyle = makeStyles((theme) => ({
 	categoryClass: {
+		color: "rgba(0, 0, 0, 0.54)",
 		'& span': {
 			textAlign: 'left',
 		},

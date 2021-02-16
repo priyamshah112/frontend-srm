@@ -55,6 +55,21 @@ class AnnouncementService {
 		})
 		// return true;
 	}
+	fetchSearchAnnouncements(params, token,search) {
+		// console.log(token);
+		return axios.get(`${BACKEND_API_URL}/news_search/${search}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			params: {
+				page: params.currentPage,
+				created_by: params.createdBy,
+				current_role: params.selectedRole,
+			},
+		})
+		// return true;
+	}
 	fetchDraftAnnouncement(params, token) {
 		return axios.get(`${BACKEND_API_URL}/news/${params.id}`, {
 			headers: {
@@ -76,6 +91,15 @@ class AnnouncementService {
 			params: {
 				type: type,
 			},
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	fetchGrades(token, data) {
+		return axios.get(`${BACKEND_API_URL}/school_grades`, {
+			params: data,
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,

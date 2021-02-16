@@ -93,10 +93,11 @@ function a11yProps(index) {
 }
 
 const TeacherNotifications = (props) => {
+	console.log(props)
 	const classes = useStyles()
 	const location = useLocation()
 	const { id } = useParams()
-	const [value, setValue] = useState(0)
+	const [value, setValue] = useState( location.state !== undefined ? location.state.tab : 0)
 	const [classState, setClassState] = useState(null)
 	const [category, setcategory] = useState(null)
 	const [isClassLoading, setIsClassLoading] = useState(true)
@@ -135,6 +136,7 @@ const TeacherNotifications = (props) => {
 	}, [classState, category])
 
 	const handleChange = (event, newValue) => {
+		console.log(newValue )
 		setValue(newValue);
 	  };
 	
@@ -165,10 +167,10 @@ const TeacherNotifications = (props) => {
 						</Tabs>
 					</AppBar>
 					<TabPanel value={value} index={0}>
-						<TeacherNotificationsContainer key={0} created_by={false} />
+						<TeacherNotificationsContainer key={0} created_by={false} selectedTab={value}/>
 					</TabPanel>
 					<TabPanel value={value} index={1}>
-						<TeacherNotificationsContainer key={1} created_by={true} />
+						<TeacherNotificationsContainer key={1} created_by={true} selectedTab={value}/>
 					</TabPanel>
 					<br />
 					<br />
@@ -177,7 +179,7 @@ const TeacherNotifications = (props) => {
 			) : location.pathname === `/create-notification/${id}` &&
 			  isClassLoading === false ? (
 				<Box>
-					<CreateNotification categories={category} classState={classState} />
+					<CreateNotification categories={category} classState={classState} selectedTab={value} />
 					<br />
 					<br />
 					<br />

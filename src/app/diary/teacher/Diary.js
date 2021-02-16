@@ -1,172 +1,321 @@
-import 'date-fns'
-import React, { useState, useEffect } from 'react'
-import AddIcon from '../../../assets/images/Filled Add.svg'
-import MenuItem from '@material-ui/core/MenuItem'
-import { IconButton, Typography, makeStyles } from '@material-ui/core'
-import FormControl from '@material-ui/core/FormControl'
-import Select from '@material-ui/core/Select'
-import TabBar from '../TabBar'
-import NewDiaryEntry from './NewDiaryEntry'
+import "date-fns";
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/styles";
+import TabBar from "../TabBar";
+import StudentImage from "../../lunch/images/girl1.jpg";
+import StudentImage2 from "../../lunch/images/dummy.png";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import Avatar from "@material-ui/core/Avatar";
+import { CircularProgress, FormControl } from "@material-ui/core";
+import ClassesDropdown from "../../common/ui/classesDropdown";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { IconButton } from "@material-ui/core";
+import { connect } from "react-redux";
+import { classStudentList } from "../../redux/actions/attendence.action";
+import { useHistory } from "react-router-dom";
+import Spinner from "../../common/ui/spinner/Spinner";
+import StudentDiary from "../StudentDiary";
 
 const useStyles = makeStyles((theme) => ({
-	datePicker: {
-		width: '25%',
-		paddingRight: '10px',
-	},
-	sectionContainer: {
-		height: '100%',
-		width: '100%',
-	},
-	formControl: {
-		marginTop: '15px',
-		marginRight: '15px',
-		width: '169px',
-	},
+  datePicker: {
+    width: "25%",
+    paddingRight: "10px",
+  },
+  sectionContainer: {
+    marginBottom: "85px",
+    width: "100%",
+  },
 
-	header: {
-		position: 'relative',
-		display: 'flex',
-		flexDirection: 'row',
-		paddingRight: '15px',
-		paddingLeft: '15px',
-		paddingTop: '10px',
-		textAlign: 'left',
-	},
-	cardBoxPadding: {
-		padding: '0px 24px 24px 24px',
-		[theme.breakpoints.down('sm')]: {
-			padding: '16px',
-		},
-	},
-	addNew: {
-		color: theme.palette.common.deluge,
-		position: 'absolute',
-		right: 0,
-		marginTop: '15px',
-		marginRight: '15px',
-		cursor: 'pointer',
-		'& .new': {
-			float: 'right',
-			fontSize: '14px',
-			padding: '5px',
-		},
-		'& img': {
-			margin: '5px',
-			height: '20px',
-			cursor: 'pointer',
-		},
-	},
-	loading: {
-		width: '100%',
-		textAlign: 'center',
-		paddingTop: '8px',
-		fontSize: '20px',
-	},
-	iconButtonRoot: {
-		padding: '8px',
-	},
-	menuContainer: {
-		backgroundColor: theme.palette.common.darkGray,
-		color: 'black',
-		minWidth: '150px',
-		'&.MuiPaper-rounded': {
-			boxShadow: '0px 6px 6px #00000029',
-		},
-		[theme.breakpoints.down('md')]: {
-			minWidth: '150px',
-		},
-		[theme.breakpoints.down('sm')]: {
-			minWidth: '150px',
-		},
-	},
-	menuList: {
-		width: '100% !important',
-		padding: 0,
-	},
-	menuItemRoot: {
-		padding: 0,
-	},
-	menuItem: {
-		paddingLeft: '10px',
-		paddingRight: '10px',
-		colour: '#1C1C1E',
-	},
-	menuTopItemMargin: {
-		marginTop: '5px',
-	},
-	borderBottomDiv: {
-		width: '90%',
-		height: '30px',
-		margin: 'auto',
-		marginTop: '5px',
-		borderBottom: '1px solid #D1D1D6',
-	},
-	borderBottomLastDiv: {
-		width: '90%',
-		height: '30px',
-		margin: 'auto',
-		marginTop: '5px',
-	},
-}))
+  cardBoxPadding: {
+    padding: "0px 24px 24px 24px",
+    [theme.breakpoints.down("sm")]: {
+      padding: "16px",
+    },
+  },
+  addNew: {
+    color: theme.palette.common.deluge,
+    position: "absolute",
+    right: 0,
+    marginTop: "15px",
+    marginRight: "15px",
+    cursor: "pointer",
+    "& .new": {
+      float: "right",
+      fontSize: "14px",
+      padding: "5px",
+    },
+    "& img": {
+      margin: "5px",
+      height: "20px",
+      cursor: "pointer",
+    },
+  },
+  loading: {
+    width: "100%",
+    textAlign: "center",
+    paddingTop: "8px",
+    fontSize: "20px",
+  },
+  iconButtonRoot: {
+    padding: "8px",
+  },
 
-export default function Home(props) {
-	const classes = useStyles()
-	const [anchorEl, setAnchorEl] = useState(null)
-	const [menuVal, setMenuVal] = useState('General Diary Entry')
-	const [open, setOpen] = useState(false)
+  menuItemRoot: {
+    padding: 0,
+  },
+  menuItem: {
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    colour: "#1C1C1E",
+  },
+  menuTopItemMargin: {
+    marginTop: "5px",
+  },
+  borderBottomDiv: {
+    width: "90%",
+    height: "30px",
+    margin: "auto",
+    marginTop: "5px",
+    borderBottom: "1px solid #D1D1D6",
+  },
+  borderBottomLastDiv: {
+    width: "90%",
+    height: "30px",
+    margin: "auto",
+    marginTop: "5px",
+  },
+  root: {
+    margin: "20px",
+    display: "flex",
+    cursor: "pointer",
+    // justifyContent: "space-between",
+  },
+  stuName: {
+    fontFamily: "Avenir medium",
+    fontSize: 18,
+    marginTop: "12px",
+    marginLeft: "10px",
+  },
+  stuClass: {
+    fontFamily: "Avenir medium",
+    fontSize: 14,
+    position: "absolute",
+    marginTop: "31px",
+    right: "41px",
+  },
+  Avatar: {
+    margin: "20px 0 20px 20px",
+  },
+  dropdown: {
+    display: "flex",
+    justifyContent: "space-between",
+    margin: "30px 20px 20px 20px",
+  },
+  header: {
+    display: "inline block",
+  },
+  fieldStyle: {
+    width: "250px",
+    marginleft: "15px",
+    marginTop: "-16px",
+    fontFamily: "Avenir Book",
+    fontSize: " 1rem",
+    "& .MuiInput-underline:before": {
+      borderBottom: "2px solid #eaeaea",
+    },
+    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+      borderBottom: "2px solid #7B72AF",
+      transitionProperty: "border-bottom-color",
+      transitionDuration: "500ms",
+      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+  },
+  fieldStyleClass: {
+    width: "170px",
+    marginleft: "15px",
+    fontFamily: "Avenir Book",
+    fontSize: " 1rem",
+    "& .MuiInput-underline:before": {
+      borderBottom: "2px solid #eaeaea",
+    },
+    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+      borderBottom: "2px solid #7B72AF",
+      transitionProperty: "border-bottom-color",
+      transitionDuration: "500ms",
+      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+  },
+  circularProgress: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "20px",
+  },
+  message: {
+    fontFamily: "Avenir book",
+    fontSize: 14,
+    textAlign: "center",
+    margin: "20px",
+  },
+}));
 
-	const handleClose = (event) => {
-		const updatedStatus = event.currentTarget.getAttribute('value')
-		setAnchorEl(null)
-	}
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget)
-	}
-	const handleMenuChange = (e) => {
-		setMenuVal(e.target.value)
-	}
+function Diary(props) {
+  const history = useHistory();
+  const classes = useStyles();
+  const [class_id, setClassId] = useState("");
+  const [name, setClassName] = useState("");
+  const [username, setUsername] = useState("");
+  const [classesLoading, setClassLoading] = useState(true)
+  const { studentList, studentListLoading, school_id, selectedRole } = props;
+  console.log("class_id", class_id,classesLoading);
 
-	const handleNew = () => {
-		setOpen(true)
-	}
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    console.log("username", e.target.value);
+  };
 
-	return (
-		<>
-			{open ? (
-				<NewDiaryEntry />
-			) : (
-				<div className={classes.sectionContainer}>
-					<TabBar />
-					<div className={classes.header}>
-						<div style={{ zIndex: '1' }}>
-							<FormControl className={classes.formControl}>
-								<Select
-									labelId='demo-simple-select-label'
-									id='demo-simple-select'
-									value={menuVal}
-									onChange={handleMenuChange}
-									classes={{
-										paper: classes.menuContainer,
-										list: classes.menuList,
-									}}
-								>
-									<MenuItem value='General Diary Entry'>
-										General Diary Entry
-									</MenuItem>
-									<MenuItem value='Teacher Observation'>
-										Teacher Observation
-									</MenuItem>
-									<MenuItem value='Late Coming'>Late Coming</MenuItem>
-								</Select>
-							</FormControl>
-						</div>
-						<div className={classes.addNew} onClick={handleNew}>
-							<img src={AddIcon} alt='add' />
-							<Typography className='new'>New</Typography>
-						</div>
-					</div>
-				</div>
-			)}
-		</>
-	)
+  const onChangeClass = (id, classname) => {
+    setClassId(id);
+    setClassName(classname.class_name);
+    // setSchoolId(classname.school_id);
+  };
+
+  const fetchData = () => {
+    props.classStudentList(class_id, username);
+  };
+  useEffect(() => {
+    if (class_id) {
+      fetchData();
+    }
+  }, [class_id, username]);
+  useEffect(() => {
+    if (class_id) {
+      setClassLoading(false);
+    }
+  }, [class_id]);
+
+  const handleDiary = (id) => {
+    history.push(`/diary/${id}`);
+  };
+
+  return (
+    <>
+      {selectedRole === "teacher" || selectedRole === "admin" ? (
+        <div className={classes.sectionContainer}>
+          <div className={classes.dropdown}>
+            <div className={classes.header}>
+              <div className={classes.filterForm}>
+                <FormControl className={classes.fieldStyle}>
+                  <Autocomplete
+                    id="tags-filled"
+                    options={studentList.map((option) => option.firstname)}
+                    freeSolo
+                    value={username}
+                    // renderTags={(value, getTagProps) =>
+                    //   value.map((option, index) => (
+                    //     <Chip
+                    //       variant="outlined"
+                    //       label={option}
+                    //       {...getTagProps({ index })}
+                    //     />
+                    //   ))
+                    // }
+                    renderInput={(params) => (
+                      <TextField
+                        onChange={handleUsernameChange}
+                        {...params}
+                        label="Search - Name / User ID"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton>
+                                <SearchIcon />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
+              </div>
+            </div>
+            <div className={classes.header}>
+              <div className={classes}>
+                <FormControl className={classes.fieldStyleClass}>
+                  <ClassesDropdown
+                    label="Class"
+                    onChange={onChangeClass}
+                    value={class_id}
+                  />
+                </FormControl>
+              </div>
+            </div>
+          </div>
+          {studentListLoading || classesLoading ? (
+            <div className={classes.circularProgress}>
+              <Spinner />
+            </div>
+          ) : studentList.length === 0 ? (
+            <Typography className={classes.message}>
+              No student available!
+            </Typography>
+          ) : (
+            studentList.map((item) => (
+              <Card
+                className={classes.root}
+                onClick={() => handleDiary(item.id)}
+              >
+                <div style={{ width: "7%" }}>
+                  <Avatar
+                    className={classes.Avatar}
+                    alt="Student image"
+                    src={StudentImage2}
+                  />
+                </div>
+                <div style={{ display: "flex" }}>
+                  <CardContent>
+                    <Typography className={classes.stuName} variant="body2">
+                      {item.firstname}
+                    </Typography>
+                  </CardContent>
+                  <Typography
+                    className={classes.stuClass}
+                    variant="body2"
+                    component="p"
+                  >
+                    Class - {name}
+                  </Typography>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+      ) : (
+        ""
+      )}
+      {selectedRole === "parent" ? <TabBar /> : ""}
+      {selectedRole === "student" ? <StudentDiary /> : ""}
+    </>
+  );
 }
+
+const mapStateToProps = (state) => {
+  const { classStudentList = [], classStudentListLoading } = state.Attendence;
+  const userInfo = state.auth.userInfo || {};
+  const userClasses = userInfo.user_classes || {};
+  return {
+    studentList: classStudentList,
+    studentListLoading: classStudentListLoading,
+    school_id: userClasses.school_id,
+    selectedRole: state.auth.selectedRole,
+  };
+};
+
+export default connect(mapStateToProps, {
+  classStudentList,
+})(Diary);

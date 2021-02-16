@@ -6,14 +6,15 @@ import Button from '@material-ui/core/Button'
 import { connect } from 'react-redux'
 import GalleryService from './GalleryService'
 import Backdrop from '@material-ui/core/Backdrop'
+import BackIcon from '../../assets/images/Back.svg'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
 import imageCompression from 'browser-image-compression'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
-import { FormControl, TextField } from '@material-ui/core'
-import Dropdown from './dropdown'
+import Typography from '@material-ui/core/Typography'
+import { collapseToast } from 'react-toastify'
 
 const useStyles = makeStyles((theme) => ({
 	snackBar: {
@@ -77,42 +78,55 @@ const useStyles = makeStyles((theme) => ({
 	},
 	folderSelect:{
 		paddingTop: 20,
-	}
+	},	
+	CircularProgress: {
+		position: 'absolute',
+		left: '50%',
+		top: '50%',
+		zIndex: '1',
+	},
+	backImg: {
+		float: 'left',
+		transform: 'translate(0px, 4px)',
+		cursor: 'pointer',
+	},	
+	header: {
+		display: 'inline block',
+	},
+	header_title:{
+		fonTize: '1rem',
+		fontFamily: 'Avenir Medium',
+		fontWeight: '400',
+		color: '#1C1C1E',
+		textAlign: 'center',
+		padding: 12,
+		textTransform: 'captilize',
+		'& .headerTitle':{
+			marginLeft: 10,
+		}
+
+	},		
+	saveBtn:{
+		width: '100%',
+		padding: 10,
+		paddingTop: 20,
+		boxSizing: 'border-box',
+		'& Button':{
+			float: 'right',
+		}
+	},
 }))
 
-const ImageUpload = (props) => {
+const ImageUpload = () => {
 	const classes = useStyles()
 	const history = useHistory()
-	const [ mounted, setMounted ] = useState(false)
+	const { location } = history
 	const [fileList, setFileList] = useState([])
 	const [isUploading, setIsUploading] = useState(false)
 	const [openSnackbar, setOpenSnackbar] = useState(false)
-	const [ folderID, setFolderID ] = useState('Folder')
-	const [ folderList, setFolderList ] = useState([])
-	const [ folderLoading, setFolderLoading ] = useState(false)
 	const token = localStorage.getItem('srmToken')
 
-	useEffect(()=>{
-		if(!mounted){
-			fetchFolders();
-			setMounted(true)
-		}
-	})
 
-	const fetchFolders = async() =>{
-		setFolderLoading(true)
-		try {
-			const res = await GalleryService.fetchFolders(token);
-			if(res.status === 200){
-				setFolderList(res.data.data)
-			}
-
-		}
-		catch (e){
-			console.log(e)
-		}
-		setFolderLoading(false)
-	}
 
 	const handleChange = (files) => {
 		setFileList(files)
@@ -142,9 +156,9 @@ const ImageUpload = (props) => {
 				const response = await GalleryService.uploadImage(
 					{ 
 						img_name: imageString,
-						folder_id: folderID
+						folder_id: location.state.folderID
 					 },
-					props.token
+					token
 				)
 				console.log(response)
 			} catch (e) {
@@ -153,19 +167,38 @@ const ImageUpload = (props) => {
 			}
 		}
 		setIsUploading(false)
-		history.goBack()
+		handleBack()
 	}
 	const handleSnackbarClose = () => {
 		setOpenSnackbar(false)
 	}
-	const handleCancel = () => {
-		history.goBack()
-	}
-	const handleFolderSelected = (value) => {
-		setFolderID(value)
+
+	const handleBack = () =>{
+		history.push({pathname:'/gallery',state:{
+			'folderID':location.state.folderID,
+			'folderDetail': location.state.folderDetail,
+			'folderView': true,
+		}})
 	}
 	return (
-		<>
+		<div
+			style={{
+				margin: '10px',
+				backgroundColor: 'transparent',
+				overflow: 'hidden'
+			}}
+		>		
+			<div className={classes.header}>
+				<Typography className={classes.header_title}>
+					<img
+						src={BackIcon}
+						alt='Back'
+						className={classes.backImg}
+						onClick={handleBack}
+					/>
+					<span className="headerTitle">{location.state.folderDetail}</span>
+				</Typography>
+			</div>
 			<div className={classes.div}>
 				<div>
 					<DropzoneArea
@@ -187,43 +220,17 @@ const ImageUpload = (props) => {
 						dropzoneText='Drag and drop a file (max 10 MB each) here or click'
 					/>
 				</div>
-				<FormControl class={classes.folderSelect}>
-					<Dropdown data={folderList} loading={folderLoading} onChange={handleFolderSelected} initialValue="Folder" value={folderID}/>
-				</FormControl>
-				<Box className={`${classes.margin} ${classes.sideMargins}`}>
-					<Grid
-						container
-						className={classes.fieldStyle}
-						direction='row-reverse'
+				<div className={classes.saveBtn}>
+					<Button
+						id='publishBtn'
+						variant='contained'
+						color='primary'
+						onClick={handleUpload}
+						disabled={fileList.length === 0}
 					>
-						<Grid item sm={8} xs={12} className={classes.publishBtns}>
-							<Button
-								id='publishLaterBtn'
-								variant='contained'
-								onClick={handleCancel}
-								className={`${
-									classes.fieldStyle
-								} ${'publishBtn'} ${'publishLaterBtn'}`}
-							>
-								Cancel
-							</Button>
-							<Button
-								id='publishBtn'
-								variant='contained'
-								className={`${classes.fieldStyle} ${'publishBtn'}`}
-								color='primary'
-								onClick={handleUpload}
-								disabled={fileList.length === 0}
-							>
-								Upload
-							</Button>
-						</Grid>
-						<Grid item sm={4} xs={12} className={classes.textAlignLeft}></Grid>
-						<br />
-						<br />
-						<br />
-					</Grid>
-				</Box>
+						Upload
+					</Button>						
+				</div>	
 
 				<Backdrop open={isUploading} className={classes.backdrop}>
 					<CircularProgress color='inherit' />
@@ -238,7 +245,7 @@ const ImageUpload = (props) => {
 					Something went wrong!! Please try again.
 				</Alert>
 			</Snackbar>
-		</>
+		</div>
 	)
 }
 const mapStateToProps = (state) => {

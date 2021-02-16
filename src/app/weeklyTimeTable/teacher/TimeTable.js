@@ -17,14 +17,8 @@ import Buttons from "./Buttons";
 import LectureBreak from "./LectureBreak";
 import { publishWeeklyTimeTable } from "../../redux/actions/attendence.action";
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Button from "@material-ui/core/Button";
 import { SnackBarRef } from "../../../SnackBar";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import Confirm from "../../common/confirm";
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -65,6 +59,7 @@ const useStyles = makeStyles(() => ({
     fontFamily: "Avenir",
     fontSize: 14,
     fontWeight: 100,
+    textAlign: "center",
     padding: "10px",
     backgroundColor: "#7B72AF",
     color: "white",
@@ -79,9 +74,9 @@ const useStyles = makeStyles(() => ({
   tableDataCell1: {
     fontFamily: "Avenir medium",
     fontSize: 14,
-    padding: "10px",
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   paper: {
     textAlign: "",
@@ -99,6 +94,7 @@ const useStyles = makeStyles(() => ({
     fontFamily: "Avenir",
     fontWeight: "400",
     lineHeight: "1.5",
+    marginRight: "5%",
   },
   date: {
     fontSize: 14,
@@ -132,12 +128,11 @@ const useStyles = makeStyles(() => ({
     marginBottom: "20px",
   },
   imgDiv_del: {
-    bottom: 0,
-    right: 0,
-    // color:'red',
     transform: "translateY(5px)",
     cursor: "pointer",
     color: "#AEAEB2",
+    margin: "0 0 0 5px",
+    height: "23px",
   },
   tableCell00: {
     textAlign: "center",
@@ -148,14 +143,22 @@ const useStyles = makeStyles(() => ({
 
 function TimeTable(props) {
   const selectedRole = props.selectedRole;
-  const class_id =
-    selectedRole === "student" ? props.studentClassId : props.class_id;
-  const { data = {}, loading, classLoading, publishLoading } = props;
+  const class_id = props.class_id;
+  const {
+    data = {},
+    loading,
+    classLoading,
+    publishLoading,
+    deleteRowLoading,
+  } = props;
   const tableData = data[class_id] || {};
   const status = tableData.status;
+  console.log("tableData", tableData);
   props.status(status);
+  console.log("status", status);
   const weekTimeTableData = tableData.data || [];
   let length = weekTimeTableData.length;
+  props.length(length);
 
   const classes = useStyles();
   const [edit, setEdit] = useState(false);
@@ -163,6 +166,8 @@ function TimeTable(props) {
   const [updateStartTime, setUpdateStartTime] = useState("");
   const [updateEndTime, setUpdateEndTime] = useState("");
   const [updateRadioValue, setUpdateRadioValue] = useState("");
+  const [updateBreakfast, setupdateBreakfast] = useState("");
+  const [breakStatus, setBreakStatus] = useState("");
   const [updateMonday, setUpdateMonday] = useState("");
   const [updateTuesday, setUpdateTuesday] = useState("");
   const [updateWednesday, setUpdateWednesday] = useState("");
@@ -195,6 +200,7 @@ function TimeTable(props) {
   const handleDelete = () => {
     console.log("Deleting row");
     props.deleteRowWeeklyTimeTable(deleteId, handleSuccess, handleFail);
+    handleCloseNO()
   };
 
   useEffect(() => {
@@ -203,8 +209,9 @@ function TimeTable(props) {
     }
   }, [class_id]);
 
+  console.log("class_id", class_id);
+
   const fetchData = () => {
-    console.log("alert");
     props.getWeekFilterUsingALL(class_id);
   };
 
@@ -218,12 +225,27 @@ function TimeTable(props) {
     } else {
       setUpdateRadioValue("Break");
     }
+    if (item.Monday.subject_name === "BreakFast") {
+      setupdateBreakfast("BreakFast");
+      setBreakStatus("BreakFast");
+    } else {
+      setupdateBreakfast("Break");
+    }
     setUpdateMonday(item.Monday.subject_id);
     setUpdateTuesday(item.Tuesday.subject_id);
     setUpdateWednesday(item.Wednesday.subject_id);
     setUpdateThursday(item.Thursday.subject_id);
     setUpdateFriday(item.Friday.subject_id);
     setUpdateSaturday(item.Saturday.subject_id);
+    console.log(
+      "timetable",
+      item.Monday.subject_id,
+      item.Tuesday.subject_id,
+      item.Wednesday.subject_id,
+      item.Thursday.subject_id,
+      item.Friday.subject_id,
+      item.Saturday.subject_id
+    );
   };
 
   const monthNames = [
@@ -276,29 +298,15 @@ function TimeTable(props) {
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleCloseNO}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Are you sure you want to delete?"}
-        </DialogTitle>
-        {props.deleteRowLoading ? (
-          <LinearProgress />
-        ) : (
-          <DialogActions>
-            <Button onClick={handleCloseNO} color="primary" autoFocus>
-              NO
-            </Button>
-            <Button onClick={handleDelete} color="primary">
-              YES
-            </Button>
-          </DialogActions>
-        )}
-      </Dialog>
-
+      {open ? (
+        <Confirm
+          open={open}
+          handleClose={handleCloseNO}
+          onhandleDelete={handleDelete}
+        />
+      ) : (
+        ""
+      )}
       {selectedRole === "teacher" || selectedRole === "admin" ? (
         <LectureBreak
           edit={edit}
@@ -311,6 +319,8 @@ function TimeTable(props) {
           updateStartTime={updateStartTime}
           updateEndTime={updateEndTime}
           updateRadioValue={updateRadioValue}
+          updateBreakfast={updateBreakfast}
+          breakStatus={breakStatus}
           updateMonday={updateMonday}
           updateTuesday={updateTuesday}
           updateWednesday={updateWednesday}
@@ -322,7 +332,7 @@ function TimeTable(props) {
         ""
       )}
       <div className={classes.container}>
-        {loading || classLoading ? (
+        {loading || classLoading || deleteRowLoading ? (
           <div className={classes.loading}>
             <CircularProgress color="primary" size={30} />
           </div>
@@ -359,20 +369,7 @@ function TimeTable(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell className={classes.tableHeadCell1}>
-                      <div>
-                        <div className={classes.tableCell00}>
-                          Days{" "}
-                          <div style={{marginTop:'5px'}}>
-                            <ArrowForwardIcon fontSize="small" />
-                          </div>
-                        </div>
-                        <div className={classes.tableCell00}>
-                          Time{" "}
-                          <div style={{marginTop:'5px'}}>
-                            <ArrowDownwardIcon fontSize="small" />
-                          </div>
-                        </div>
-                      </div>
+                      Time/Days
                     </TableCell>
                     <TableCell className={classes.tableHead} align="center">
                       Monday
@@ -408,7 +405,12 @@ function TimeTable(props) {
                           className={classes.tableDataCell1}
                           scope="row"
                         >
-                          <div style={{ marginTop: "7px" }}>
+                          <div
+                            style={{
+                              marginTop: "7px",
+                              textAlign: "center",
+                            }}
+                          >
                             {item.start_time}-{item.end_time}
                           </div>
                           {selectedRole === "teacher" ||
@@ -417,57 +419,116 @@ function TimeTable(props) {
                               className={`${classes.imgDiv_del}`}
                               onClick={() => handleClickOpen(item.id)}
                             >
-                              <DeleteOutlineOutlinedIcon
-                                style={{ color: "red" }}
-                                fontSize={"medium"}
-                              />
+                              <DeleteOutlineOutlinedIcon fontSize={"medium"} />
                             </div>
                           ) : (
                             ""
                           )}
                         </TableCell>
-                        <TableCell
-                          onClick={() => handleOnClick(item)}
-                          className={classes.tableData}
-                          align="center"
-                        >
-                          {renderCellItem(item.Monday)}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => handleOnClick(item)}
-                          className={classes.tableData}
-                          align="center"
-                        >
-                          {renderCellItem(item.Tuesday)}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => handleOnClick(item)}
-                          className={classes.tableData}
-                          align="center"
-                        >
-                          {renderCellItem(item.Wednesday)}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => handleOnClick(item)}
-                          className={classes.tableData}
-                          align="center"
-                        >
-                          {renderCellItem(item.Thursday)}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => handleOnClick(item)}
-                          className={classes.tableData}
-                          align="center"
-                        >
-                          {renderCellItem(item.Friday)}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => handleOnClick(item)}
-                          className={classes.tableData}
-                          align="center"
-                        >
-                          {renderCellItem(item.Saturday)}
-                        </TableCell>
+                        {item.Monday.subject_name === "Break" &&
+                        item.Tuesday.subject_name === "Break" &&
+                        item.Wednesday.subject_name === "Break" &&
+                        item.Thursday.subject_name === "Break" &&
+                        item.Friday.subject_name === "Break" &&
+                        item.Saturday.subject_name === "Break" ? (
+                          <TableCell
+                            onClick={() => handleOnClick(item)}
+                            className={classes.tableData}
+                            align="center"
+                            colSpan="6"
+                          >
+                            {renderCellItem(item.Monday)}
+                          </TableCell>
+                        ) : item.Monday.subject_name === "BreakFast" &&
+                          item.Tuesday.subject_name === "BreakFast" &&
+                          item.Wednesday.subject_name === "BreakFast" &&
+                          item.Thursday.subject_name === "BreakFast" &&
+                          item.Friday.subject_name === "BreakFast" &&
+                          item.Saturday.subject_name === "BreakFast" ? (
+                          <TableCell
+                            onClick={() => handleOnClick(item)}
+                            className={classes.tableData}
+                            align="center"
+                            colSpan="6"
+                          >
+                            {item.Monday.subject_name}
+                          </TableCell>
+                        ) : (
+                          <>
+                            <TableCell
+                              onClick={() => handleOnClick(item)}
+                              className={classes.tableData}
+                              align="center"
+                            >
+                              {renderCellItem(item.Monday)}
+                              {item.Monday.subject_name === "No Lecture"
+                                ? ""
+                                : item.Monday.teacher_subject
+                                ? ` (${item.Monday.teacher_subject.user.firstname})`
+                                : ""}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleOnClick(item)}
+                              className={classes.tableData}
+                              align="center"
+                            >
+                              {renderCellItem(item.Tuesday)}
+                              {item.Tuesday.subject_name === "No Lecture"
+                                ? ""
+                                : item.Tuesday.teacher_subject
+                                ? ` (${item.Tuesday.teacher_subject.user.firstname})`
+                                : ""}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleOnClick(item)}
+                              className={classes.tableData}
+                              align="center"
+                            >
+                              {renderCellItem(item.Wednesday)}
+                              {item.Wednesday.subject_name === "No Lecture"
+                                ? ""
+                                : item.Wednesday.teacher_subject
+                                ? ` (${item.Wednesday.teacher_subject.user.firstname})`
+                                : ""}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleOnClick(item)}
+                              className={classes.tableData}
+                              align="center"
+                            >
+                              {renderCellItem(item.Thursday)}
+                              {item.Thursday.subject_name === "No Lecture"
+                                ? ""
+                                : item.Thursday.teacher_subject
+                                ? ` (${item.Thursday.teacher_subject.user.firstname})`
+                                : ""}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleOnClick(item)}
+                              className={classes.tableData}
+                              align="center"
+                            >
+                              {renderCellItem(item.Friday)}
+                              {item.Friday.subject_name === "No Lecture"
+                                ? ""
+                                : item.Friday.teacher_subject
+                                ? ` (${item.Friday.teacher_subject.user.firstname})`
+                                : ""}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleOnClick(item)}
+                              className={classes.tableData}
+                              align="center"
+                            >
+                              {renderCellItem(item.Saturday)}
+                              {item.Saturday.subject_name === "No Lecture"
+                                ? ""
+                                : item.Saturday.teacher_subject
+                                ? ` (${item.Saturday.teacher_subject.user.firstname})`
+                                : ""}
+                            </TableCell>
+                          </>
+                        )}
                       </TableRow>
                     )
                   )}
@@ -513,7 +574,6 @@ const mapStateToProps = ({ Attendence, auth }) => {
     loading: getWeekFilterUsingAllLoading,
     classLoading: classesLoading,
     selectedRole: auth.selectedRole,
-    studentClassId: auth.userInfo.user_classes.class_id,
     publishLoading: publishWeeklyTimeTableLoading,
     deleteRowLoading: deleteRowWeeklyTimeTableLoading,
   };

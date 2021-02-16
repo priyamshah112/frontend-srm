@@ -27,8 +27,27 @@ class GalleryService {
 			},
 		})
 	}
+	fetchSharedFolders(token) {
+		return axios.get(`${BACKEND_API_URL}/folders/shared`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
 	fetchImages(token, currentPage) {
 		return axios.get(`${BACKEND_API_URL}/gallery`, {
+			params: {
+				page: currentPage,
+			},
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	fetchSharedImages(token, currentPage) {
+		return axios.get(`${BACKEND_API_URL}/gallery/shared`, {
 			params: {
 				page: currentPage,
 			},
@@ -49,8 +68,59 @@ class GalleryService {
 			},
 		})
 	}
+	fetchSharedImageByFolder(token, id, currentPage) {
+		return axios.get(`${BACKEND_API_URL}/folders/shared/${id}`, {
+			params: {
+				page: currentPage,
+			},
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	moveImagesToFolder(token,payload){		
+		return axios.put(`${BACKEND_API_URL}/folders/move`, payload, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	renameFolder(token,payload){		
+		return axios.put(`${BACKEND_API_URL}/folders/rename`, payload, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	shareto(token,id,payload){
+		return axios.put(`${BACKEND_API_URL}/folders/share/${id}`, payload, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
 	deleteImage(token, id) {
 		return axios.delete(`${BACKEND_API_URL}/gallery/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	deleteFolder(token, id) {
+		return axios.delete(`${BACKEND_API_URL}/folders/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	fetchClasses(token) {
+		return axios.get(`${BACKEND_API_URL}/classes`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,

@@ -191,6 +191,9 @@ const ParentAttendanceContainer = (props) => {
 			setClassId(cId)
 			fetchClassData(cId.class_id, attendance, get_by)
 		}
+		else{
+			setLoading(false)
+		}
 	}
 
 	const onFail = (err = {}) => {
@@ -206,7 +209,7 @@ const ParentAttendanceContainer = (props) => {
 		props.getSingleClass(
 			class_id,
 			(d) => onGetClassData(d, aData, get_by),
-			onFailFetchClassData
+			null
 		)
 	}
 
@@ -378,7 +381,8 @@ const ParentAttendanceContainer = (props) => {
 											</div>
 										) : (
 											<TableBody>
-												{attendanceData.map((row, rowIndex) => {
+												{attendanceData.length ? (
+												attendanceData.map((row, rowIndex) => {
 													const { day = {} } = row
 													return (
 														<StyledTableRow
@@ -393,7 +397,14 @@ const ParentAttendanceContainer = (props) => {
 															{renderDot(row.subjectAttendance || {})}
 														</StyledTableRow>
 													)
-												})}
+												})) : (
+													<div className={classes.loadingView}>
+														<div className={classes.loader}>
+															<Typography>Attendance Data Not Available</Typography>
+														</div>
+													</div>
+												)
+											}
 											</TableBody>
 										)}
 									</Table>

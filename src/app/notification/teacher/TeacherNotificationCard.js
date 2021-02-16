@@ -3,25 +3,17 @@ import { useHistory } from 'react-router-dom'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
 import * as moment from 'moment'
 import {
-	IconButton,
 	Typography,
 	makeStyles,
 	Grid,
-	Button,
 } from '@material-ui/core'
 import EditIcon from '../../../assets/images/Edit.svg'
 import { paths } from '../../../Constants/Routes'
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
 import NotificationService from '../NotificationService'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import Confirm from '../../common/confirm'
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -29,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 		background: '#FFFFFF 0% 0% no-repeat padding-box',
 		borderRadius: '10px',
 		marginTop: '10px',
+		marginBottom: '10px',
 	},
 
 	cardHeader: {
@@ -141,6 +134,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TeacherNotificationCard = (props) => {
+	console.log(props)
 	const classes = useStyles()
 	const history = useHistory()
 	const [anchorEl, setAnchorEl] = useState(null)
@@ -165,7 +159,9 @@ const TeacherNotificationCard = (props) => {
 		setAnchorEl(null)
 	}
 	const handleEdit = () => {
-		history.push(`/create-notification/${props.notification.id}`)
+		history.push({pathname:`/create-notification/${props.notification.id}`,state:{
+			tab: props.selectedTab
+		}})
 	}
 	const handledeletenotif = async () => {
 		const token = localStorage.getItem('srmToken')
@@ -179,7 +175,9 @@ const TeacherNotificationCard = (props) => {
 			if (response.status === 200) {
 				console.log('Successfully Deleted')
 				// props.deleteHomework(id);
-				window.location.reload()
+				history.push({pathname: paths.NOTIFICATIONS,state:{
+					tab: props.selectedTab
+				}})
 			} else {
 				console.log('Failed to delete')
 			}
@@ -189,25 +187,11 @@ const TeacherNotificationCard = (props) => {
 	}
 	return (
 		<>
-			<Dialog
-				open={open}
-				onClose={handleCloseNO}
-				aria-labelledby='alert-dialog-title'
-				aria-describedby='alert-dialog-description'
-			>
-				<DialogTitle id='alert-dialog-title'>
-					{'Are you sure you want to delete?'}
-				</DialogTitle>
-				<DialogActions>
-					<Button onClick={handleCloseNO} color='primary' autoFocus>
-						NO
-					</Button>
-					<Button onClick={handleCloseYES} color='primary'>
-						YES
-					</Button>
-				</DialogActions>
-			</Dialog>
-
+		<Confirm 
+			open={open} 
+			handleClose={handleCloseNO} 
+			onhandleDelete={handleCloseYES}
+		/> 
 										
 		<Card className={classes.card}>
 			<CardHeader

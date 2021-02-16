@@ -95,6 +95,7 @@ const NewsAnnouncement = (props) => {
 	const { id } = useParams()
 	const [classState, setClassState] = useState(null)
 	const [category, setcategory] = useState(null)
+	const [ grades, setGrades ] = useState(null)
 	const [isClassLoading, setIsClassLoading] = useState(null)
 	const [value, setValue] = useState(0)
 
@@ -118,8 +119,21 @@ const NewsAnnouncement = (props) => {
 			categoryResponse.data.data.forEach((categoryData) => {
 				categoryList[categoryData.id] = categoryData.category_name
 			})
+
+			const gradeResponse = await AnnouncementService.fetchGrades(
+				props.token,
+				{
+					school_id : props.school_id
+				}
+			)
+
+			let gradeList = {}
+			gradeResponse.data.data.forEach((gradeData) => {
+				gradeList[gradeData.id] = gradeData.name
+			})
 			setcategory({ ...categoryList })
 			setClassState({ ...initialClassState })
+			setGrades({...gradeList})
 		}
 		if (location.pathname === `/create-announcement/${id}`) {
 			fetchClasses()
@@ -179,7 +193,7 @@ const NewsAnnouncement = (props) => {
 			) : location.pathname === `/create-announcement/${id}` &&
 			  isClassLoading === false ? (
 				<Box p={3}>
-					<CreateAnnouncement classState={classState} categories={category} />
+					<CreateAnnouncement classState={classState} categories={category} grades={grades} />
 					<br />
 					<br />
 					<br />
@@ -195,6 +209,7 @@ const mapStateToProps = (state) => {
 	return {
 		token: state.auth.token,
 		selectedRole: state.auth.selectedRole,
+		school_id : state.auth.userInfo.user_classes ? state.auth.userInfo.user_classes.school_id : null, 
 	}
 }
 

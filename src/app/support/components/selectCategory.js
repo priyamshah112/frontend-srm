@@ -4,6 +4,7 @@ import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import { makeStyles } from '@material-ui/core/styles'
 import { getCategory } from '../../redux/actions/support.action'
+import { CircularProgress } from '@material-ui/core'
 
 const useStyle = makeStyles((theme) => ({
 	categoryClass: {
@@ -33,7 +34,7 @@ const SelectCategory = (props) => {
 		props.onChange && props.onChange(event.target.value)
 	}
 
-	const renderData = () =>
+	const renderData = () => 
 		data.map((item) => (
 			<MenuItem value={item.id}>{item.category_name}</MenuItem>
 		))
@@ -48,7 +49,9 @@ const SelectCategory = (props) => {
 				className={classes.categoryClass}
 				classes={{ select: classes.categorySelect }}
 			>
-				{renderData()}
+				{ loading ? (
+					<MenuItem><CircularProgress color='primary' size={30} /></MenuItem>
+				):renderData()}
 			</Select>
 		</>
 	)

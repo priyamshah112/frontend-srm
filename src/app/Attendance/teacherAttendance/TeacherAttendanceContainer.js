@@ -164,7 +164,7 @@ const TeacherAttendanceContainer = (props) => {
 	const to_date = moment(getWeekEndDate(weekStart)).format('YYYY-MM-DD')
 
 	useEffect(() => {
-		if (class_id && subject_id) {
+		if(class_id && subject_id) {
 			fetchAttendence()
 		}
 	}, [class_id, subject_id, weekStart])

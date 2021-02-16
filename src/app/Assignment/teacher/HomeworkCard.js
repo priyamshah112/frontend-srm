@@ -6,22 +6,11 @@ import { makeStyles } from '@material-ui/styles'
 import Typography from '@material-ui/core/Typography'
 import { useHistory } from 'react-router-dom'
 import * as moment from 'moment'
-import { dateDiff } from '../../../shared/datediff'
 import EditIcon from '../../../assets/images/Edit.svg'
-import {
-	Box,
-	CardHeader,
-	CardMedia,
-	CardActions,
-	IconButton,
-} from '@material-ui/core'
 // import testImg from "../../assets/images/home/testImg.png";
 import HomeworkService from '../HomeworkService'
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import Confirm from '../../common/confirm'
 
 const useStyle = makeStyles((theme) => ({
 	span: {
@@ -33,7 +22,8 @@ const useStyle = makeStyles((theme) => ({
 	card: {
 		width: '100%',
 		margin: 'auto',
-		marginTop: '20px',
+		marginTop: '10px',
+		marginBottom: '10px',
 		borderRadius: 0,
 		boxShadow: 'none',
 	},
@@ -250,25 +240,11 @@ const HomeworkCard = (props) => {
 
 	return (
 		<>
-			<Dialog
-				open={open}
-				onClose={handleCloseNO}
-				aria-labelledby='alert-dialog-title'
-				aria-describedby='alert-dialog-description'
-			>
-				<DialogTitle id='alert-dialog-title'>
-					{'Are you sure you want to delete?'}
-				</DialogTitle>
-				<DialogActions>
-					<Button onClick={handleCloseNO} color='primary' autoFocus>
-						NO
-					</Button>
-					<Button onClick={handleCloseYES} color='primary'>
-						YES
-					</Button>
-				</DialogActions>
-			</Dialog>
-
+			<Confirm 
+				open={open} 
+				handleClose={handleCloseNO} 
+				onhandleDelete={handleCloseYES}
+			/> 
 			<Grid
 				container
 				direction='row'

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
@@ -6,13 +6,15 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import DosaImg from "./images/Dosa.jpg";
-import EditIcon from "../../assets/images/Edit.svg";
 import BackIcon from "../../assets/images/Back.svg";
+import { connect } from "react-redux";
+import { menuDishDetails } from "../redux/actions/attendence.action";
+import { CircularProgress } from "@material-ui/core";
+import { useHistory, useParams } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "15px 15px 0 15px",
+    // margin: "15px 15px 0 15px",
     width: "100%",
     paddingBottom: "10px",
     [theme.breakpoints.down("xs")]: {
@@ -22,7 +24,9 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     display: "flex",
-    width: "100%",
+    // width: "100%",
+    margin:'20px',
+    justifyContent:'center',
     flexWrap: "wrap",
     marginBottom: "75px",
   },
@@ -46,11 +50,13 @@ const useStyles = makeStyles((theme) => ({
   },
   img: {
     height: "100px",
-    width: "20%",
-    marginRight: "5px",
+    width: "120px",
+    marginRight: "15px",
+    marginTop: "15px",
   },
   media: {
     display: "flex",
+    flexWrap: "wrap",
   },
   header: {
     display: "flex",
@@ -60,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   heading: {
     fontFamily: "Avenir medium",
-    fontSize: 14,
+    fontSize: 16,
   },
   heading1: {
     width: "80%",
@@ -100,11 +106,12 @@ const useStyles = makeStyles((theme) => ({
   content: {
     fontSize: 14,
     fontFamily: "Avenir",
+    color:'black'
   },
   contentCard: {
     display: "flex",
     width: "100%",
-    marginBottom: "15px",
+    // marginBottom: "10px",
   },
   description: {
     width: "80%",
@@ -127,133 +134,150 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "15px",
     paddingBottom: "15px",
   },
+  CircularProgress: {
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: "50px",
+  },
 }));
 
 function DishDetails(props) {
+  const IMAGE_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
+	const { id } = useParams()
   const classes = useStyles();
+  const history = useHistory()
+  const { data, loading, class_id, school_id } = props;
+  const dishImages = data[0] ? data[0].lunch_images : [];
+  let status = data[0] ? data[0].status : "";
+
+  console.log("details data", data);
+
+  const fetchData = () => {
+    props.menuDishDetails(id);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className={classes.container}>
-      <Card className={classes.root}>
-        <CardActionArea className={classes.actionArea}>
-          <CardActions className={classes.cardAction}>
-            <img
-              src={BackIcon}
-              className={classes.bachBtn}
-              onClick={() => props.close(false)}
-            />
-          </CardActions>
-          <div>
-            <Typography className={classes.actionHead}>Dish Details</Typography>
-          </div>
-        </CardActionArea>
-        <CardContent
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            paddingTop: "5px",
-            paddingBottom: "5px",
-            // width: "100%",
-          }}
-        >
-          <div className={classes.desc}>
-            <div className={classes.header}>
-              <div className={classes.heading1}>
-                <Typography
-                  className={classes.heading}
-                  variant="h5"
-                  component="h2"
-                >
-                  {props.heading}
-                </Typography>
+      {loading ? (
+        <div className={classes.CircularProgress}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <Card className={classes.root}>
+          <CardActionArea className={classes.actionArea}>
+            <CardActions className={classes.cardAction}>
+              <img
+                src={BackIcon}
+                className={classes.bachBtn}
+                onClick={() => history.replace('/lunch')}
+              />
+            </CardActions>
+            <div>
+              <Typography className={classes.actionHead}>
+                Dish Details
+              </Typography>
+            </div>
+          </CardActionArea>
+          <CardContent
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              paddingTop: "5px",
+              paddingBottom: "5px",
+            }}
+          >
+            <div className={classes.desc}>
+              <div className={classes.header}>
+                <div className={classes.heading1}>
+                  <Typography
+                    className={classes.heading}
+                    variant="h5"
+                    component="h2"
+                  >
+                    {data[0] ? data[0].name : ""}
+                  </Typography>
+                </div>
+                <div className={classes.heading2}>
+                  <div
+                    className={
+                      status === "Veg"
+                        ? `${classes.circleGreen} ${classes.circle}`
+                        : `${classes.circleRed} ${classes.circle}`
+                    }
+                  ></div>
+                  <Typography
+                    className={classes.heading}
+                    className={
+                      status === "Veg"
+                        ? `${classes.green} ${classes.heading}`
+                        : `${classes.red} ${classes.heading}`
+                    }
+                    variant="h5"
+                    component="h2"
+                  >
+                    {status === "Veg" ? "Veg" : "Non Veg"}
+                  </Typography>
+                </div>
               </div>
-              <div className={classes.heading2}>
-                <div
-                  className={
-                    props.type === "Veg"
-                      ? `${classes.circleGreen} ${classes.circle}`
-                      : `${classes.circleRed} ${classes.circle}`
-                  }
-                ></div>
-                <Typography
-                  className={classes.heading}
-                  className={
-                    props.type === "Veg"
-                      ? `${classes.green} ${classes.heading}`
-                      : `${classes.red} ${classes.heading}`
-                  }
-                  variant="h5"
-                  component="h2"
-                >
-                  {props.type}
-                </Typography>
+              <div className={classes.contentCard}>
+                <div className={classes.description}>
+                  <Typography
+                    className={classes.content}
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                  >
+                    {data[0] ? data[0].description : ""}
+                  </Typography>
+                </div>
+                <div className={classes.price}>
+                  <Typography
+                    className={classes.content}
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                  >
+                    Price - ₹{data[0] ? data[0].price : ""}/-
+                  </Typography>
+                </div>
               </div>
             </div>
-            <div className={classes.contentCard}>
-              <div className={classes.description}>
-                <Typography
-                  className={classes.content}
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                >
-                  {props.desc}
-                </Typography>
-              </div>
-              <div className={classes.price}>
-                <Typography
-                  className={classes.content}
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                >
-                  Price-{props.price}/-
-                </Typography>
-              </div>
+            <div className={classes.media}>
+              {dishImages.map((item) => (
+                <CardMedia
+                  className={classes.img}
+                  component="img"
+                  alt="Contemplative Reptile"
+                  height="50"
+                  width="40"
+                  image={`${IMAGE_BASE_URL}/${item.img_path}/${item.img_name}`}
+                  title="Contemplative Reptile"
+                />
+              ))}
             </div>
-          </div>
-          <div className={classes.media}>
-            <CardMedia
-              className={classes.img}
-              component="img"
-              alt="Contemplative Reptile"
-              height="50"
-              width="40"
-              image={props.image}
-              title="Contemplative Reptile"
-            />
-            <CardMedia
-              className={classes.img}
-              component="img"
-              alt="Contemplative Reptile"
-              height="50"
-              width="40"
-              image={DosaImg}
-              title="Contemplative Reptile"
-            />
-            <CardMedia
-              className={classes.img}
-              component="img"
-              alt="Contemplative Reptile"
-              height="50"
-              width="40"
-              image={DosaImg}
-              title="Contemplative Reptile"
-            />
-            <CardMedia
-              className={classes.img}
-              component="img"
-              alt="Contemplative Reptile"
-              height="50"
-              width="40"
-              image={DosaImg}
-              title="Contemplative Reptile"
-            />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
 
-export default DishDetails;
+// export default DishDetails;
+
+const mapStateToProps = (state) => {
+  const { menuDishDetails = [], menuDishDetailsLoading } = state.Attendence;
+  const userInfo = state.auth.userInfo || {};
+  const userClasses = userInfo.user_classes || {};
+  return {
+    data: menuDishDetails,
+    loading: menuDishDetailsLoading,
+    class_id: userClasses.class_id,
+    school_id: userClasses.school_id,
+  };
+};
+
+export default connect(mapStateToProps, { menuDishDetails })(DishDetails);

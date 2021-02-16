@@ -17,6 +17,7 @@ import { connect } from 'react-redux'
 import ProfileService from '../ProfileService'
 import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader'
 import { useHistory } from 'react-router-dom'
+import * as actions from '../../auth/store/actions'
 
 function Alert(props) {
 	return <MuiAlert elevation={6} variant='filled' {...props} />
@@ -210,6 +211,7 @@ const StudentProfile = (props) => {
 			)
 			if (response.status === 200) {
 				history.push('/profile')
+				props.onChangeProfile(response.data.thumbnail)
 			}
 		} catch (error) {
 			console.log(error)
@@ -261,7 +263,7 @@ const StudentProfile = (props) => {
 						}}
 					>
 						<form>
-							<Input
+							<input
 								id='icon-button-file'
 								name='file'
 								className={`${classes.input}`}
@@ -348,5 +350,10 @@ const mapStateToProps = (state) => {
 		userInfo: state.auth.userInfo,
 	}
 }
-
-export default connect(mapStateToProps)(StudentProfile)
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onChangeProfile: (thumbnail) =>
+			dispatch(actions.authChangeProfile(thumbnail)),
+	}
+}
+export default connect(mapStateToProps,mapDispatchToProps)(StudentProfile)

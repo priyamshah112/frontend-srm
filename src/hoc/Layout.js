@@ -35,7 +35,7 @@ import HomeIcon from "../assets/images/navigation/DesktopHome.svg";
 import NotificationIcon from "../assets/images/navigation/DesktopNotification.svg";
 import AssignmentIcon from "../assets/images/navigation/DesktopAssignment.svg";
 import EventsIcon from "../assets/images/navigation/DesktopEvents.svg";
-import LunchIcon from '../assets/images/lunch/Lunch.svg'
+import LunchIcon from "../assets/images/lunch/Lunch.svg";
 import DesktopCurriculum from "../assets/images/navigation/DesktopCurriculum.svg";
 import NewsIcon from "../assets/images/navigation/DesktopNews.svg";
 import GalleryIcon from "../assets/images/navigation/DesktopGallery.svg";
@@ -244,6 +244,10 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
     backgroundColor: theme.palette.common.whiteSmoke,
+    "&::-webkit-scrollbar": {
+      display: "none",
+      width: 0,
+    },
   },
   menuButton: {
     [theme.breakpoints.up("md")]: {
@@ -333,6 +337,9 @@ const useStyles = makeStyles((theme) => ({
   imgColorStyle: {
     color: "white",
   },
+  listItemMargin: {
+    marginLeft: "25px",
+  },
 }));
 
 const Layout = (props) => {
@@ -346,9 +353,11 @@ const Layout = (props) => {
   const [individualItem, setIndividualItem] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarId, setSnackBarId] = useState("");
-  const [reportItem, setReportItem] = React.useState(true);
-  const [diaryItem, setDiaryItem] = React.useState(true);
-  const [individual, setIndividual] = React.useState(true);
+  const [reportItem, setReportItem] = React.useState(false);
+  const [lunch, setLunch] = React.useState(false);
+  const [diaryItem, setDiaryItem] = React.useState(false);
+  const [lunchItem, setLunchItem] = React.useState(false);
+  const [individual, setIndividual] = React.useState(false);
   const [isOpen_child, setisOpen_child] = React.useState(false);
   const [snackbarTitle, setSnackbarTitle] = useState("");
   const [snackbarDescription, setSnackbarDescription] = useState("");
@@ -358,6 +367,8 @@ const Layout = (props) => {
   const schoolLogo = localStorage.getItem("schoolLogo");
   const matchesSm = useMediaQuery(theme.breakpoints.down("sm"));
   const [refreshChat, setRefreshChat] = useState(false);
+  const [studentId, setStudentId] = useState("");
+  const [show, setShow] = useState(false);
   const srmChild_dict = JSON.parse(localStorage.getItem("srmChild_dict"));
   const srmSelected_Child_token = localStorage.getItem(
     "srmSelected_Child_token"
@@ -365,6 +376,45 @@ const Layout = (props) => {
   const srmSelected_Child = localStorage.getItem("srmSelected_Child");
   const isMenuOpen = Boolean(anchorEl);
 
+  let url;
+  if (window) {
+    url = window.location.href;
+  }
+  useEffect(() => {
+    console.log("url1", url);
+    if (url) {
+      let searchStringDiary = url.includes("/diary/");
+      let searchStringLibrary = url.includes("/library/");
+      let searchStringIndividual = url.includes("/individual-diary");
+      let searchStringHoliday = url.includes("/holiday-calender");
+      let searchStringMiscellaneous = url.includes("/miscellaneous");
+      let searchStringMultiple = url.includes("/multiple-student");
+      if (
+        searchStringIndividual ||
+        searchStringHoliday ||
+        searchStringMiscellaneous ||
+        searchStringMultiple
+      ) {
+        setDiaryItem(true);
+      }
+
+      if (searchStringDiary) {
+        let splite = url.split("/diary/")[1];
+        setStudentId(splite);
+        setShow(true);
+        setDiaryItem(true);
+      }
+      if (searchStringLibrary) {
+        let splite = url.split("/library/")[1];
+        setStudentId(splite);
+        setShow(true);
+        setDiaryItem(true);
+      }
+      if (props.selectedRole === "parent" || props.selectedRole === "student") {
+        setShow(true);
+      }
+    }
+  }, [url]);
   onMessageListener()
     .then(async (payload) => {
       let data = JSON.parse(payload.data.data);
@@ -409,7 +459,6 @@ const Layout = (props) => {
   };
 
   const handleCloseSnack = (event, reason) => {
-    console.log("Reason", reason);
     if (reason === "clickaway") return;
 
     setSnackbarOpen(false);
@@ -430,15 +479,20 @@ const Layout = (props) => {
 
   const handleReportMenu = () => {
     setReportItem(!reportItem);
-    history.push("/report-card");
+    // history.push("/report-card");
+  };
+  const handleLunchMenu = () => {
+    setLunch(!lunch);
+    // history.push("/lunch");
   };
   const handleDiaryMenu = () => {
     setDiaryItem(!diaryItem);
-    history.push("/diary");
+    // history.push("/diary");
   };
   const handleIndividualMenu = () => {
+    setLunchItem(!lunchItem);
     setIndividual(!individual);
-    history.push("/diary");
+    // history.push("/diary");
   };
 
   const handleOpenLogoutDialog = () => {
@@ -586,20 +640,20 @@ const Layout = (props) => {
     {
       name: "Individual Student",
       icon: <img src={DesktopCurriculum} alt="Menu" width="24" height="24" />,
-      linkTo: "/individual-student",
+      linkTo: "/individual-diary",
       itemIndex: 19,
     },
 
     {
       name: "Diary Entry",
       icon: <img src={DesktopCurriculum} alt="Menu" width="24" height="24" />,
-      linkTo: "/diary-entry",
+      linkTo: `/diary/${studentId}`,
       itemIndex: 20,
     },
     {
       name: "Library",
       icon: <img src={DesktopCurriculum} alt="Menu" width="24" height="24" />,
-      linkTo: "/library",
+      linkTo: `/library/${studentId}`,
       itemIndex: 21,
     },
     {
@@ -622,19 +676,19 @@ const Layout = (props) => {
     },
     {
       name: "Lunch",
-      icon: <img src={LunchIcon} alt="Menu"  />,
+      icon: <img src={LunchIcon} alt="Menu" />,
       linkTo: "/lunch",
       itemIndex: 25,
     },
     {
       name: "Dishes",
-      icon: <img src={LunchIcon} alt="Menu"  />,
+      icon: <img src={LunchIcon} alt="Menu" />,
       linkTo: "/dishes",
       itemIndex: 26,
     },
     {
       name: "Menu",
-      icon: <img src={LunchIcon} alt="Menu"  />,
+      icon: <img src={LunchIcon} alt="Menu" />,
       linkTo: "/menu",
       itemIndex: 27,
     },
@@ -784,7 +838,14 @@ const Layout = (props) => {
         <div className={classes.mobileToolbar}>
           <div className={classes.widthStyleDiv}></div>
           <div>
-            <Avatar src="/broken-image.jpg" className={classes.avatar} />
+            <Avatar
+              src={
+                props.userInfo.thumbnail
+                  ? props.userInfo.thumbnail
+                  : "/broken-image.jpg"
+              }
+              className={classes.avatar}
+            />
           </div>
           <div>
             <Typography noWrap className={classes.profileName}>
@@ -871,6 +932,7 @@ const Layout = (props) => {
                 if (
                   props.selectedRole === "teacher" ||
                   props.selectedRole === "admin" ||
+                  props.selectedRole === "student" ||
                   props.selectedRole === "parent"
                 ) {
                   return (
@@ -898,7 +960,8 @@ const Layout = (props) => {
                 if (
                   props.selectedRole === "teacher" ||
                   props.selectedRole === "admin" ||
-                  props.selectedRole === "student"
+                  props.selectedRole === "student" ||
+                  props.selectedRole === "parent"
                 ) {
                   return (
                     <ListItem
@@ -933,8 +996,8 @@ const Layout = (props) => {
                     <ListItem
                       button
                       key={item.name}
-                      component={Link}
-                      to={item.linkTo}
+                      // component={Link}
+                      // to={item.linkTo}
                       className={classes.listItem}
                       onClick={() => {
                         handleChange(item.itemIndex);
@@ -1001,9 +1064,9 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                (props.selectedRole === "admin" ||
-                  props.selectedRole === "teacher" ) &&
-                item.name === "Lunch" ||
+                ((props.selectedRole === "admin" ||
+                  props.selectedRole === "teacher") &&
+                  item.name === "Lunch") ||
                 item.name === "Dishes" ||
                 item.name === "Menu"
               ) {
@@ -1012,12 +1075,12 @@ const Layout = (props) => {
                     <ListItem
                       button
                       key={item.name}
-                      component={Link}
-                      to={item.linkTo}
+                      // component={Link}
+                      // to={item.linkTo}
                       className={classes.listItem}
                       onClick={() => {
                         handleChange(item.itemIndex);
-                        handleIndividualMenu();
+                        handleLunchMenu();
                       }}
                     >
                       <ListItemIcon classes={{ root: classes.listItemIcon }}>
@@ -1027,7 +1090,7 @@ const Layout = (props) => {
                         primary={item.name}
                         className={classes.listItemText}
                       />
-                      {diaryItem ? (
+                      {lunch ? (
                         <ExpandLess className={classes.ExpandLess} />
                       ) : (
                         <ExpandMore />
@@ -1037,7 +1100,7 @@ const Layout = (props) => {
                 }
                 if (item.itemIndex === 26) {
                   return (
-                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
+                    <Collapse in={lunch} timeout="auto" unmountOnExit>
                       <ListItem
                         button
                         key={item.name}
@@ -1059,7 +1122,7 @@ const Layout = (props) => {
                 }
                 if (item.itemIndex === 27) {
                   return (
-                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
+                    <Collapse in={lunch} timeout="auto" unmountOnExit>
                       <ListItem
                         button
                         key={item.name}
@@ -1080,23 +1143,29 @@ const Layout = (props) => {
                   );
                 }
               } else if (
-                (props.selectedRole === "admin" ||
-                  props.selectedRole === "teacher") &&
-                (item.name === "Diary" ||
-                  item.name === "Individual Student" ||
-                  item.name === "Multiple Student")
+                ((props.selectedRole === "admin" ||
+                  props.selectedRole === "teacher" ||
+                  props.selectedRole === "parent" ||
+                  props.selectedRole === "student") &&
+                  item.name === "Diary") ||
+                item.name === "Individual Student" ||
+                item.name === "Diary Entry" ||
+                item.name === "Library" ||
+                item.name === "Holiday Calender" ||
+                item.name === "Miscellaneous" ||
+                item.name === "Multiple Student"
               ) {
                 if (item.itemIndex === 18) {
                   return (
                     <ListItem
                       button
                       key={item.name}
-                      component={Link}
-                      to={item.linkTo}
+                      // component={Link}
+                      // to={item.linkTo}
                       className={classes.listItem}
                       onClick={() => {
                         handleChange(item.itemIndex);
-                        handleIndividualMenu();
+                        handleDiaryMenu();
                       }}
                     >
                       <ListItemIcon classes={{ root: classes.listItemIcon }}>
@@ -1114,7 +1183,78 @@ const Layout = (props) => {
                     </ListItem>
                   );
                 }
-                if (item.itemIndex === 20) {
+                if (item.itemIndex === 19) {
+                  return (
+                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={classes.listItem}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText
+                          primary={item.name}
+                          className={classes.reportName}
+                        />
+                        {show ? (
+                          <ExpandLess className={classes.ExpandLess} />
+                        ) : (
+                          <ExpandMore />
+                        )}
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+                if (item.itemIndex === 20 && show) {
+                  return (
+                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={`${classes.listItem} ${classes.listItemMargin}`}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText
+                          primary={item.name}
+                          className={classes.reportName}
+                        />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+                if (item.itemIndex === 21 && show) {
+                  return (
+                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={`${classes.listItem} ${classes.listItemMargin}`}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText
+                          primary={item.name}
+                          className={classes.reportName}
+                        />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+                if (item.itemIndex === 22) {
                   return (
                     <Collapse in={diaryItem} timeout="auto" unmountOnExit>
                       <ListItem
@@ -1136,120 +1276,43 @@ const Layout = (props) => {
                     </Collapse>
                   );
                 }
-              } else if (
-                (props.selectedRole === "admin" ||
-                  props.selectedRole === "teacher") &&
-                (item.name === "Individual Student" ||
-                  item.name === "Diary Entry" ||
-                  item.name === "Library" ||
-                  item.name === "Holiday Calender" ||
-                  item.name === "Miscellaneous")
-              ) {
-                if (item.itemIndex === 19) {
-                  return (
-                    <ListItem
-                      button
-                      key={item.name}
-                      component={Link}
-                      to={item.linkTo}
-                      className={classes.listItem}
-                      onClick={() => {
-                        handleIndividualChange(item.itemIndex);
-                        handleDiaryMenu();
-                      }}
-                    >
-                      <ListItemIcon classes={{ root: classes.listItemIcon }}>
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.name}
-                        className={classes.listItemText}
-                      />
-                      {individual ? (
-                        <ExpandLess className={classes.ExpandLess} />
-                      ) : (
-                        <ExpandMore />
-                      )}
-                    </ListItem>
-                  );
-                }
-                if (item.itemIndex === 20) {
-                  return (
-                    <Collapse in={individual} timeout="auto" unmountOnExit>
-                      <ListItem
-                        button
-                        key={item.name}
-                        component={Link}
-                        to={item.linkTo}
-                        className={classes.listItem}
-                        onClick={() => handleIndividualChange(item.itemIndex)}
-                        selected={individualItem === item.itemIndex}
-                        classes={{ selected: classes.listItemSelected }}
-                      >
-                        <FiberManualRecordIcon className={classes.reportMenu} />
-                        <ListItemText
-                          primary={item.name}
-                          className={classes.reportName}
-                        />
-                      </ListItem>
-                    </Collapse>
-                  );
-                }
-                if (item.itemIndex === 21) {
-                  return (
-                    <Collapse in={individual} timeout="auto" unmountOnExit>
-                      <ListItem
-                        button
-                        key={item.name}
-                        component={Link}
-                        to={item.linkTo}
-                        className={classes.listItem}
-                        onClick={() => handleIndividualChange(item.itemIndex)}
-                        selected={individualItem === item.itemIndex}
-                        classes={{ selected: classes.listItemSelected }}
-                      >
-                        <FiberManualRecordIcon className={classes.reportMenu} />
-                        <ListItemText
-                          primary={item.name}
-                          className={classes.reportName}
-                        />
-                      </ListItem>
-                    </Collapse>
-                  );
-                }
-                if (item.itemIndex === 22) {
-                  return (
-                    <Collapse in={individual} timeout="auto" unmountOnExit>
-                      <ListItem
-                        button
-                        key={item.name}
-                        component={Link}
-                        to={item.linkTo}
-                        className={classes.listItem}
-                        onClick={() => handleIndividualChange(item.itemIndex)}
-                        selected={individualItem === item.itemIndex}
-                        classes={{ selected: classes.listItemSelected }}
-                      >
-                        <FiberManualRecordIcon className={classes.reportMenu} />
-                        <ListItemText
-                          primary={item.name}
-                          className={classes.reportName}
-                        />
-                      </ListItem>
-                    </Collapse>
-                  );
-                }
                 if (item.itemIndex === 23) {
                   return (
-                    <Collapse in={individual} timeout="auto" unmountOnExit>
+                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
                       <ListItem
                         button
                         key={item.name}
                         component={Link}
                         to={item.linkTo}
                         className={classes.listItem}
-                        onClick={() => handleIndividualChange(item.itemIndex)}
-                        selected={individualItem === item.itemIndex}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
+                        classes={{ selected: classes.listItemSelected }}
+                      >
+                        <FiberManualRecordIcon className={classes.reportMenu} />
+                        <ListItemText
+                          primary={item.name}
+                          className={classes.reportName}
+                        />
+                      </ListItem>
+                    </Collapse>
+                  );
+                }
+                if (
+                  item.itemIndex === 24 &&
+                  (props.selectedRole === "teacher" ||
+                    props.selectedRole === "admin")
+                ) {
+                  return (
+                    <Collapse in={diaryItem} timeout="auto" unmountOnExit>
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.linkTo}
+                        className={classes.listItem}
+                        onClick={() => handleChange(item.itemIndex)}
+                        selected={selectedItem === item.itemIndex}
                         classes={{ selected: classes.listItemSelected }}
                       >
                         <FiberManualRecordIcon className={classes.reportMenu} />
