@@ -15,6 +15,9 @@ import { CircularProgress } from "@material-ui/core";
 const useStyle = makeStyles((theme) => ({
   card: {
     marginBottom: "20px",
+    "& .MuiCardContent-root": {
+      padding: "20px",
+    },
   },
   sectionContainer: {
     flexWrap: "wrap",
@@ -47,9 +50,12 @@ const useStyle = makeStyles((theme) => ({
   },
 
   textAlignRight: {
+    fontStyle: "normal",
     textAlign: "right",
     color: "#AEAEB2",
-    fontSize: "0.85rem",
+    fontSize: 14,
+    fontFamily: "Avenir Roman",
+    marginBottom: "12px",
   },
   imgDiv: {
     display: "flex",
@@ -57,14 +63,17 @@ const useStyle = makeStyles((theme) => ({
     width: "100%",
   },
   typography: {
-    marginTop: "5px",
-    // cursor: "pointer",
-    color: "black",
+    // marginTop: "5px",
+    // // cursor: "pointer",
+    // color: "black",
   },
   labelText: {
     fontStyle: "normal",
-    color: "#8E8E93",
-    fontSize: ".8rem",
+    color: "#1C1C1E",
+    fontSize: 14,
+    fontFamily: "Avenir Book",
+    // marginBottom: "12px",
+    lineHeight: "19px",
   },
   span: {
     textTransform: "uppercase",
@@ -74,6 +83,12 @@ const useStyle = makeStyles((theme) => ({
     height: "70%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  title: {
+    fontFamily: "Avenir Heavy",
+    fontSize: 14,
+    color: "#2C2C2E",
+    paddingBottom: "12px",
   },
 }));
 
@@ -94,7 +109,7 @@ function DiaryDetails(props) {
       var srmChildArray = new Function("return [" + srmChild + "];")();
       const stuId = srmChildArray[0][srmSelectedChild].userDetails.id;
 
-      props.getDetailsByIdParent(id, selectedRole, stuId,token);
+      props.getDetailsByIdParent(id, selectedRole, stuId, token);
     } else if (selectedRole === "teacher" || selectedRole === "parent") {
       props.getDetailsById(id, selectedRole, student_id);
     } else {
@@ -140,14 +155,13 @@ function DiaryDetails(props) {
               <Grid container>
                 <Grid item xs={8}>
                   <span>
-                    <Typography variant="body1">{diary.title}</Typography>
+                    <Typography className={classes.title}>
+                      {diary.title}
+                    </Typography>
                   </span>
                 </Grid>
                 <Grid item xs={4}>
-                  <Typography
-                    className={`${classes.textAlignRight}`}
-                    variant="body2"
-                  >
+                  <Typography className={`${classes.textAlignRight}`}>
                     {moment(diary.created_at).format("DD MMM YY")}
                   </Typography>
                 </Grid>
@@ -155,23 +169,22 @@ function DiaryDetails(props) {
               <Grid container>
                 <Grid item xs={8}></Grid>
                 <Grid item xs={4}>
-                  <Typography
-                    className={`${classes.labelText} ${classes.textAlignRight}`}
-                    variant="body2"
-                  >
-                    <span className={`${classes.span}`}>{diary.status}</span>
-                  </Typography>
+                  {selectedRole === "student" ? (
+                    ""
+                  ) : (
+                    <Typography className={` ${classes.textAlignRight}`}>
+                      <span className={`${classes.span}`}>{diary.status}</span>
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item xs={8}>
-                  <Typography className={classes.labelText} variant="body2">
+                  <Typography className={classes.labelText}>
                     <Typography
                       className={`${classes.typography}`}
-                      variant="body2"
-                    >
-                      {diary.description}
-                    </Typography>
+                    ></Typography>
+                    {diary.description}
                   </Typography>
                 </Grid>
                 <Grid item xs={4}></Grid>

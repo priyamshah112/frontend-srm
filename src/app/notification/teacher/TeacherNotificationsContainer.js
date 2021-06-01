@@ -1,4 +1,3 @@
-import 'date-fns'
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { useHistory } from 'react-router-dom'
@@ -90,13 +89,12 @@ const useStyles = makeStyles((theme) => ({
 const TeacherNotificationsContainer = (props) => {
 	const classes = useStyles()
 	const history = useHistory()
-	console.log(props)
-	const selectedRole = props.selectedRole
 	const [hasMore, setHasMore] = useState(true)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [notifications, setNotifications] = useState([])
 	const [filter, setFilter] = useState('All')
 	const [loading, setLoading] = useState(true)
+	const selectedRole = JSON.parse(localStorage.getItem('srmSelectedRole'))
 
 	useEffect(() => {
 		let isNotificationLoading = true
@@ -104,10 +102,12 @@ const TeacherNotificationsContainer = (props) => {
 			try {
 				const response = await NotificationService.fetchNotification(
 					props.token,
-					props.created_by,
-					props.selectedRole,
-					currentPage,
-					filter.toLowerCase()
+					{
+						current_role: selectedRole,
+						created_by: props.created_by,
+						page: currentPage,
+						status: filter.toLowerCase(),
+					}
 				)
 				setLoading(false)
 				if (response.status === 200) {
@@ -137,11 +137,13 @@ const TeacherNotificationsContainer = (props) => {
 	const fetchNotificationOnScroll = async () => {
 		try {
 			const response = await NotificationService.fetchNotification(
-				props.token,
-				props.created_by,
-				props.selectedRole,
-				currentPage,
-				filter.toLowerCase()
+				props.token,				
+				{
+					current_role: selectedRole,
+					created_by: props.created_by,
+					page: currentPage,
+					status: filter.toLowerCase(),
+				}
 			)
 			if (response.status === 200) {
 				if (response.data.data.last_page === response.data.data.current_page) {
@@ -177,13 +179,15 @@ const TeacherNotificationsContainer = (props) => {
 					setFilter(event.target.value)
 
 					const token = localStorage.getItem('srmToken')
-					const selectedRole = localStorage.getItem('srmSelectedRole')
 					const response = await NotificationService.fetchNotification(
-						token,
-						false,
-						selectedRole,
-						1,
-						event.target.value.toLowerCase()
+						token,						
+						{
+							current_role: selectedRole,
+							created_by: false,
+							page: 1,
+							status: event.target.value.toLowerCase(),
+						}
+						
 					)
 					if (response.status === 200) {
 						if (
@@ -206,13 +210,14 @@ const TeacherNotificationsContainer = (props) => {
 				setFilter(filter)
 
 				const token = localStorage.getItem('srmToken')
-				const selectedRole = localStorage.getItem('srmSelectedRole')
 				const response = await NotificationService.fetchNotification(
-					token,
-					false,
-					selectedRole,
-					1,
-					filter.toLowerCase()
+					token,						
+					{
+						current_role: selectedRole,
+						created_by: false,
+						page: 1,
+						status: filter.toLowerCase(),
+					}
 				)
 				if (response.status === 200) {
 					if (

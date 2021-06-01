@@ -274,4 +274,9 @@ export default {
     SUCCESS: "attendence.put_acknowledgement:success",
     FAIL: "attendence.put_acknowledgement:fail",
   },
+  DIARY_PROFILE: {
+    START: "attendence.diary_profile:start",
+    SUCCESS: "attendence.diary_profile:success",
+    FAIL: "attendence.diary_profile:fail",
+  },
 };

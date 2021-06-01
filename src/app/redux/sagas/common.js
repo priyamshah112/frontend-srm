@@ -34,3 +34,4 @@ function* handleApiCall(action) {
 export default function* () {
 	yield takeEvery(CommonActions.COMMON_API_CALL, handleApiCall)
 }
+

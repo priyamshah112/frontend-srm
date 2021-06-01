@@ -94,6 +94,9 @@ const useStyles = makeStyles((theme) => ({
     color: "black",
     marginRight: "20px",
   },
+  publishBtn:{
+			textTransform: 'none',
+  },
 	CircularProgress: {
 		position: 'absolute',
 		left: '50%',
@@ -277,7 +280,7 @@ const FaqEditor = (props) => {
             <Box style={{ width: "100%", textAlign: "right" }}>
               <Box>
                 <Button
-                  className={classes.publishLaterBtn}
+                  className={`${classes.publishLaterBtn} ${classes.publishBtn}`}
                   variant="contained"
                   disableElevation={true}
                   onClick={handleOpenPubLater}
@@ -287,6 +290,7 @@ const FaqEditor = (props) => {
                 <Button
                   color="primary"
                   variant="contained"
+                  className={classes.publishBtn}
                   disableElevation={true}
                   onClick={handlePublishNow}
                 >

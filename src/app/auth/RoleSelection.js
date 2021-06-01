@@ -11,6 +11,8 @@ import ParentImg from '../../assets/images/login/Parent.svg'
 import AdminImg from '../../assets/images/login/Admin.svg'
 import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography'
 import { connect } from 'react-redux'
 import * as actions from './store/actions'
@@ -115,11 +117,19 @@ const useStyles = makeStyles((theme) => ({
 			fontSize: '0.85rem',
 		},
 	},
+	logo:{
+		marginLeft: '24px',
+	},
+	cancelBtn:{
+		float: 'right',
+		padding: '0px',
+		color: theme.palette.common.adornment,
+	}
 }))
 
 const RoleSelection = (props) => {
 	const classes = useStyles()
-	const { open, handleClose } = props
+	const { open, handleClose, handleCloseRoleModel } = props
 
 	const definedRoles = [
 		{
@@ -148,7 +158,16 @@ const RoleSelection = (props) => {
 	const renderContent = (
 		<div className={classes.roleContainer}>
 			<div>
-				<Typography>LOGO</Typography>
+				<Typography>
+					<span className={classes.logo}>LOGO</span>
+					<IconButton 
+						className={classes.cancelBtn}
+						onClick={handleCloseRoleModel}
+					>
+						<CloseIcon/>
+					</IconButton>
+				</Typography>
+				
 			</div>
 			<div style={{ marginTop: '48px' }}>
 				<Typography className={classes.roleSelectionHeading}>
@@ -196,7 +215,7 @@ const RoleSelection = (props) => {
 	)
 
 	return (
-		<Dialog open={open} onClose={handleClose} maxWidth={'xs'} fullWidth={false}>
+		<Dialog open={open} onClose={handleCloseRoleModel} maxWidth={'xs'} fullWidth={false}>
 			<DialogContent>
 				<div>
 					<div

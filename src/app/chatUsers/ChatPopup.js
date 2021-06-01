@@ -137,13 +137,15 @@ const useStyles = makeStyles((theme) => ({
 		justifyContent: 'flex-end',
 	},
 }))
-const ChatPopup = ({ selectedChat, props }) => {
+const ChatPopup = (props) => {
+	const { selectedChat } = props
+	console.log(selectedChat)
 	const [minimize, setMinimize] = useState(true)
 	const classes = useStyles()
 	const history = useHistory()
 
-	const chatHeader = () => {
-		let name = selectedChat.firstname + ' ' + selectedChat.lastname
+	const chatHeader = () => {		
+		let name = selectedChat.name || selectedChat.fullName
 		let img = selectedChat.thumbnail
 		let avatar = {}
 		let subheading = ''
@@ -203,7 +205,7 @@ const ChatPopup = ({ selectedChat, props }) => {
 			].join(' ')}
 		>
 			{chatHeader()}
-			<SingleChat props={props} closeEmoji={minimize} />
+			<SingleChat closeEmoji={minimize} />
 		</div>
 	)
 }

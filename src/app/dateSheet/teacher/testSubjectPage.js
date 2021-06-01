@@ -261,6 +261,7 @@ const useStyles = makeStyles((theme) => ({
 			borderRadius: '3px',
 			width: 'inherit',
 			margin: 0,
+			textTransform: 'none',
 			[theme.breakpoints.down('xs')]: {
 				marginTop: '10px',
 				marginRight: 0,

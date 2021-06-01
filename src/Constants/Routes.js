@@ -1,4 +1,6 @@
 export const paths = {
+  VIEW: "/view",
+  DETAILS: "/details",
   DATE_SHEET: "/dateSheet",
   HOME: "/home",
   NOTIFICATIONS: "/notifications",
@@ -6,6 +8,7 @@ export const paths = {
   ANNOUNCEMENT: "/announcement",
   NEWS: "/news",
   ASSIGNMENT: "/assignment",
+  HOMEWORK: "/homework",
   CREATE_HOMEWORK: "/create-homework",
   ATTENDANCE: "/attendance",
   ATTENDANCE_UPLOAD: "/attendance/upload",
@@ -33,4 +36,5 @@ export const paths = {
   UPDATE_GROUP: "/updategroup",
   WEEKLY_TIME_TABLE: "/weekly-time-table",
   DIARY: "/diary",
+  SETTINGS: "/settings"
 };

@@ -12,6 +12,11 @@ import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 import MiscellUpdate from "./MiscellUpdate";
 
 const useStyle = makeStyles((theme) => ({
+  descriptionContent: {
+    color: "#1C1C1E",
+    fontFamily: "Avenir Book",
+    fontSize: 14,
+  },
   root: {
     // minWidth: 275,
     margin: "20px",
@@ -19,8 +24,9 @@ const useStyle = makeStyles((theme) => ({
   title: {
     fontSize: 14,
     fontFamily: "Avenir medium",
-    lineHeight: "30px",
-    margin: "10px",
+    // lineHeight: "30px",
+    // margin: "10px",
+    color: "#707070",
   },
   message: {
     fontSize: 14,
@@ -38,17 +44,18 @@ const useStyle = makeStyles((theme) => ({
     marginBottom: "85px",
   },
   headingDiv: {
-    margin: "20px 22px 20px 20px",
+    margin: "20px 20px 20px 20px",
     display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
+    // alignItems: "center",
+    justifyContent: "center",
   },
   backImg: {
-    float: "left",
+    // float: "left",
     // transform: 'translateY(7px)',
     cursor: "pointer",
-    // position: "absolute",
+    position: "absolute",
     left: "20px",
+    top: "25px",
   },
   themeColor: {
     color: `${theme.palette.common.deluge}`,
@@ -60,7 +67,7 @@ const useStyle = makeStyles((theme) => ({
   titleText: {
     fontFamily: "Avenir Medium",
     color: "#1C1C1E",
-    marginLeft: "35px",
+    // marginLeft: "35px",
   },
   textArea: {
     width: "100%",
@@ -77,7 +84,7 @@ const useStyle = makeStyles((theme) => ({
   imgDiv: {
     display: "flex",
     justifyContent: "flex-end",
-    width: "100%",
+    // width: "100%",
   },
   fieldStyle: {
     width: "100%",
@@ -172,6 +179,15 @@ const useStyle = makeStyles((theme) => ({
     fontSize: 18,
     textTransform: "capitalize",
     color: "rgba(0,0,0,0.54)",
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+  },
+  cardContent: {
+    padding: "20px",
+    "& .MuiCardContent-root:last-child": {
+      paddingBottom: "none",
+    },
   },
 }));
 
@@ -181,20 +197,16 @@ function MiscellDetails(props) {
   const history = useHistory();
   const [edit, setEdit] = useState(false);
   const [description, setDescription] = useState("");
-  const { data, loading } = props;
+  const { data, loading, selectedRole } = props;
 
   console.log("data get", data);
 
-  const handleDescription = (e) => {
-    setDescription(e.target.value);
-  };
   const handleEdit = () => {
-    setEdit(true);
-    setDescription(data.description);
+    history.push(`/miscellaneous/${id}/edit`);
   };
 
   const fetchData = () => {
-    props.getMiscellaneous(id);
+    props.getMiscellaneous(id, selectedRole);
   };
 
   useEffect(() => {
@@ -205,19 +217,17 @@ function MiscellDetails(props) {
     <>
       {loading ? (
         <BackdropLoader open={loading} />
-      ) : edit ? (
-        <MiscellUpdate updateData={data} edit={edit} />
-      ) : (
+      )  : (
         <div className={classes.sectionContainer}>
+          <img
+            src={BackIcon}
+            alt="Back"
+            className={classes.backImg}
+            onClick={() => {
+              history.replace("/miscellaneous");
+            }}
+          />
           <div className={classes.headingDiv}>
-            <img
-              src={BackIcon}
-              alt="Back"
-              className={classes.backImg}
-              onClick={() => {
-                history.replace("/miscellaneous");
-              }}
-            />
             <Typography
               style={{ fontSize: 18 }}
               className={`${classes.themeColor} ${classes.titleText}`}
@@ -231,31 +241,39 @@ function MiscellDetails(props) {
                 : data.name === "jaya"
                 ? "Jaya Bharat Jananiya"
                 : data.name === "saare"
-                ? "Saare Jahan Se Achcha"
+                ? "National Anthem"
                 : data.name === "rules"
                 ? "School Rules and Other Info"
                 : ""}
             </Typography>
-            <Typography className={classes.status}>{data.status}</Typography>
           </div>
+          {selectedRole === "teacher" || selectedRole === "admin" ? (
+            <Typography className={classes.status}>{data.status}</Typography>
+          ) : (
+            ""
+          )}
           <Card className={classes.root}>
-            <CardContent>
+            <CardContent className={classes.cardContent}>
               {data.description ? (
-                <Typography className={classes.title} color="textSecondary">
-                  {data.description}
-                </Typography>
+                <div
+                  className={`${classes.descriptionContent}`}
+                  dangerouslySetInnerHTML={{
+                    __html: data.description,
+                  }}
+                />
               ) : (
-                <Typography className={classes.message} color="textSecondary">
+                <Typography className={classes.message}>
                   No record found!
                 </Typography>
               )}
               {props.selectedRole === "teacher" ||
               props.selectedRole === "admin" ? (
-                <div
-                  onClick={() => handleEdit()}
-                  className={`${classes.imgDiv} ${classes.textAlignRight}`}
-                >
-                  <img src={EditIcon} className={classes.editBtn} />
+                <div className={`${classes.imgDiv} ${classes.textAlignRight}`}>
+                  <img
+                    src={EditIcon}
+                    onClick={() => handleEdit()}
+                    className={classes.editBtn}
+                  />
                 </div>
               ) : (
                 ""

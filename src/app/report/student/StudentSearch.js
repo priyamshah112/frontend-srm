@@ -98,7 +98,7 @@ const StudentSearch = (props) => {
 		if (
 			option.roles &&
 			option.roles.length !== 0 &&
-			option.roles[0].name.toLowerCase() == 'student'
+			option.roles[0].name.toLowerCase() === 'student'
 		) {
 			return (
 				<div className={classes.optionContainer}>

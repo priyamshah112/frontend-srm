@@ -19,6 +19,8 @@ import { CircularProgress } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { SnackBarRef } from "../../../SnackBar";
+import ReadIcon from "../../../assets/images/notifications/read.svg";
+import Confirm from "../../common/confirm";
 
 const useStyle = makeStyles((theme) => ({
   message: {
@@ -31,7 +33,7 @@ const useStyle = makeStyles((theme) => ({
     textTransform: "capitalize",
   },
   typography: {
-    marginTop: "5px",
+    // marginBottom: "12px",
     cursor: "pointer",
   },
   card: {
@@ -117,8 +119,10 @@ const useStyle = makeStyles((theme) => ({
   },
   labelText: {
     fontStyle: "normal",
-    color: "#8E8E93",
-    fontSize: ".8rem",
+    color: "#AEAEB2",
+    fontSize: 14,
+    fontFamily: "Avenir Book",
+    marginBottom: "12px",
   },
 
   editBtnDiv: {
@@ -150,20 +154,16 @@ const useStyle = makeStyles((theme) => ({
     opacity: 1,
   },
   cardContent: {
-    paddingBottom: "15px !important",
+    padding: "20px !important",
     overflow: "auto",
     // margin: '10px',
   },
   textAlignRight: {
+    fontStyle: "normal",
     textAlign: "right",
     color: "#AEAEB2",
-    fontSize: "0.85rem",
-  },
-  textAlignRight1: {
-    textAlign: "left",
-    color: "#AEAEB2",
-    fontSize: "0.85rem",
-    paddingLeft: "50px",
+    fontSize: 14,
+    fontFamily: "Avenir Roman",
   },
   imgGrid: {
     // position: 'relative',
@@ -171,15 +171,27 @@ const useStyle = makeStyles((theme) => ({
   imgDiv: {
     display: "flex",
     justifyContent: "flex-end",
-    margin: "-2px 0",
+    // margin: "-2px 0",
     transform: "translateY(5px)",
     color: "#AEAEB2",
   },
+  imgRead: {
+    display: "flex",
+    justifyContent: "flex-end",
+    transform: "translateY(5px)",
+    color: "#AEAEB2",
+    paddingBottom: "6px",
+  },
   circularProgress: {
     display: "flex",
-    height: "70%",
     justifyContent: "center",
-    alignItems: "center",
+    margin: "8px",
+  },
+  title: {
+    fontFamily: "Avenir Heavy",
+    fontSize: 14,
+    color: "#2C2C2E",
+    paddingBottom: "12px",
   },
 }));
 
@@ -187,7 +199,7 @@ function MultiStudentCard(props) {
   const classes = useStyle();
   const [open, setOpen] = useState(false);
   const [id, setId] = useState("");
-  const { data, dataLoading, deleteLoading } = props;
+  const { data, dataLoading } = props;
   const history = useHistory();
 
   const handleClickDel = (id) => {
@@ -198,12 +210,6 @@ function MultiStudentCard(props) {
   const handleCloseNO = () => {
     setOpen(false);
   };
-  const fetchData = () => {
-    props.getDiaryMultiple();
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleSuccess = () => {
     SnackBarRef.open("", true, "Diary deleted successfully");
@@ -222,144 +228,104 @@ function MultiStudentCard(props) {
 
   return (
     <>
-      {dataLoading ? (
-        <div className={classes.circularProgress}>
-          <CircularProgress />
-        </div>
+      <Confirm
+        open={open}
+        handleClose={handleCloseNO}
+        onhandleDelete={handleDelete}
+      />
+
+      {!data.length && !dataLoading ? (
+        <Typography className={classes.message}>
+          No diary record available yet!
+        </Typography>
       ) : (
-        <>
-          <Dialog
-            open={open}
-            onClose={handleCloseNO}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">
-              {"Are you sure you want to delete?"}
-            </DialogTitle>
-            {deleteLoading ? (
-              <LinearProgress />
-            ) : (
-              <DialogActions>
-                <Button onClick={handleCloseNO} color="primary" autoFocus>
-                  NO
-                </Button>
-                <Button onClick={handleDelete} color="primary">
-                  YES
-                </Button>
-              </DialogActions>
-            )}
-          </Dialog>
-          {!data.length ? (
-            <Typography className={classes.message}>
-              No diary record available yet!
-            </Typography>
-          ) : (
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignContent="center"
-              style={{ marginBottom: "85px" }}
-            >
-              {data.map((item) => (
-                <Card className={classes.card}>
-                  <CardContent className={classes.cardContent}>
-                    <Grid container>
-                      <Grid item xs={8}>
-                        <span>
-                          {item.title ? (
-                            <Typography
-                              style={{ fontSize: 18 }}
-                              variant="body1"
-                            >
-                              {item.title}
-                            </Typography>
-                          ) : (
-                            <Typography
-                              style={{ fontSize: 18 }}
-                              variant="body1"
-                            >
-                              N/A
-                            </Typography>
-                          )}
-                        </span>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Typography
-                          className={`${classes.textAlignRight}`}
-                          variant="body2"
-                        >
-                          {moment(item.created_at).format("DD MMM YY")}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={8}
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          history.push(`/multiple-student/${item.id}`)
-                        }
-                      >
-                        <Typography
-                          className={classes.labelText}
-                          variant="body2"
-                        >
-                          <Typography
-                            className={`${classes.typography}`}
-                            variant="body2"
-                          ></Typography>
-                          Click here to check more details.
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Typography
-                          className={`${classes.labelText} ${classes.textAlignRight}`}
-                          variant="body2"
-                        >
-                          <span className={`${classes.span}`}>
-                            {item.status}
-                          </span>
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid item xs={12} className={classes.imgGrid}>
-                        <Typography> </Typography>
-                        {item.status !== "published" ? (
-                          <div className={`${classes.imgDiv}`}>
-                            <img
-                              src={EditIcon}
-                              className={classes.editBtn}
-                              onClick={() =>
-                                history.push(
-                                  `/multiple-student/edit/${item.id}`
-                                )
-                              }
-                            />
-                            <div
-                              className={classes.Del_img}
-                              onClick={() => handleClickDel(item.id)}
-                            >
-                              <DeleteOutlineOutlinedIcon fontSize={"medium"} />
-                            </div>
-                          </div>
-                        ) : (
-                          <div className={`${classes.imgDiv}`}>
-                            <DoneAllIcon fontSize={"medium"} />
-                          </div>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              ))}
-            </Grid>
-          )}
-        </>
+        ""
       )}
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignContent="center"
+        style={{ marginBottom: "85px" }}
+      >
+        {data.map((item) => (
+          <Card className={classes.card}>
+            <CardContent className={classes.cardContent}>
+              <Grid container>
+                <Grid item xs={8}>
+                  <span>
+                    {item.title ? (
+                      <Typography className={classes.title}>
+                        {item.title}
+                      </Typography>
+                    ) : (
+                      <Typography className={classes.title}>N/A</Typography>
+                    )}
+                  </span>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography className={`${classes.textAlignRight}`}>
+                    {moment(item.created_at).format("DD MMM, hh:mm A")}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid
+                  item
+                  xs={8}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => history.push(`/multiple-student/${item.id}`)}
+                >
+                  <Typography className={classes.labelText}>
+                    <Typography
+                      className={`${classes.typography}`}
+                    ></Typography>
+                    Click here to check more details.
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography className={`${classes.textAlignRight}`}>
+                    <span className={`${classes.span}`}>{item.status}</span>
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid item xs={12} className={classes.imgGrid}>
+                  <Typography> </Typography>
+                  {item.status !== "published" ? (
+                    <div className={`${classes.imgDiv}`}>
+                      <img
+                        src={EditIcon}
+                        className={classes.editBtn}
+                        onClick={() =>
+                          history.push(`/multiple-student/edit/${item.id}`)
+                        }
+                      />
+                      <div
+                        className={classes.Del_img}
+                        onClick={() => handleClickDel(item.id)}
+                      >
+                        <DeleteOutlineOutlinedIcon fontSize={"medium"} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`${classes.imgRead}`}>
+                      <img src={ReadIcon} />
+                    </div>
+                  )}
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        ))}
+        {dataLoading ? (
+          <div className={classes.circularProgress}>
+            <CircularProgress color="primary" size={30} />
+          </div>
+        ) : (
+          ""
+        )}
+      </Grid>
     </>
   );
 }
@@ -373,8 +339,6 @@ const mapStateToProps = (state) => {
   const userInfo = state.auth.userInfo || {};
   const userClasses = userInfo.user_classes || {};
   return {
-    data: getDiaryMultiple,
-    dataLoading: getDiaryMultipleLoading,
     deleteLoading: diaryDeleteLoading,
     selectedRole: state.auth.selectedRole,
     school_id: userClasses.school_id,

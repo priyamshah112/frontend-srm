@@ -148,6 +148,7 @@ const useStyle = makeStyles((theme) => ({
 			borderRadius: '3px',
 			width: 'inherit',
 			margin: 0,
+			textTransform: "none",
 			[theme.breakpoints.down('xs')]: {
 				marginTop: '10px',
 				marginRight: 0,
@@ -526,7 +527,7 @@ const CreateAnnouncement = (props) => {
 							labelId='demo-mutiple-chip-label'
 							id='demo-mutiple-chip'
 							value={category}
-							required
+							required={true}
 							onChange={handleCategoryChange}
 							input={<Input id='select-multiple-chip' />}
 							MenuProps={{
@@ -620,6 +621,7 @@ const CreateAnnouncement = (props) => {
 							id='demo-mutiple-chip'
 							value={classState}
 							multiple
+							required={true}
 							onChange={handleSelectClass}
 							input={<Input id='select-multiple-chip' />}
 							MenuProps={{

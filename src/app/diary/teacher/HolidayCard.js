@@ -13,6 +13,8 @@ import { CircularProgress } from "@material-ui/core";
 const useStyle = makeStyles((theme) => ({
   span: {
     textTransform: "capitalize",
+    fontSize: 14,
+    fontFamily: "Avenir Book",
   },
   typography: {
     margin: "16px 0",
@@ -43,7 +45,7 @@ const useStyle = makeStyles((theme) => ({
     },
   },
   cardContent: {
-    padding: "20px 20px 12px 0 !important",
+    padding: "20px 20px 16px 0 !important",
     // height: "80px",
     overflow: "auto",
     backgroundColor: "white",
@@ -110,7 +112,9 @@ const useStyle = makeStyles((theme) => ({
   },
   labelText: {
     fontStyle: "normal",
-    color: "#000",
+    fontFamily: "Avenir Roman",
+    fontSize: 14,
+    color: "#1C1C1E",
   },
 
   editBtnDiv: {
@@ -150,6 +154,7 @@ const useStyle = makeStyles((theme) => ({
   gridContainer: {
     display: "flex",
     justifyContent: "flex-end",
+    marginBottom: "5px",
   },
   imgGrid: {
     position: "relative",
@@ -181,7 +186,7 @@ const useStyle = makeStyles((theme) => ({
     width: "18px",
     position: "absolute",
     left: "20px",
-    marginTop: "-14px",
+    marginTop: "-8px",
   },
   Del_img: {
     cursor: "pointer",
@@ -206,6 +211,11 @@ const useStyle = makeStyles((theme) => ({
       fontFamily: "Avenir medium",
       margin: "20px",
     },
+  },
+  title: {
+    fontFamily: "Avenir Heavy",
+    fontSize: 14,
+    color: "#1C1C1E",
   },
 }));
 
@@ -275,7 +285,9 @@ function HolidayCard(props) {
               ) : (
                 <>
                   <div style={{ marginTop: "20px" }}>
-                    <Typography>{item[1][0] ? item[0] : ""}</Typography>
+                    <Typography className={classes.title}>
+                      {item[1][0] ? item[0] : ""}
+                    </Typography>
                   </div>
                   {item[1].map((data) => (
                     <div className={classes.card} key={data.id}>
@@ -289,11 +301,13 @@ function HolidayCard(props) {
                           <Grid item xs={7}>
                             <span>
                               {data.title ? (
-                                <Typography variant="body1">
+                                <Typography className={classes.title}>
                                   {data.title}
                                 </Typography>
                               ) : (
-                                <Typography variant="body1">N/A</Typography>
+                                <Typography className={classes.title}>
+                                  N/A
+                                </Typography>
                               )}
                             </span>
                           </Grid>
@@ -316,7 +330,6 @@ function HolidayCard(props) {
                             >
                               <Typography
                                 className={`${classes.typography}`}
-                                variant="body2"
                               ></Typography>
                               {moment(data.from_date).format("DD MMM YY")} -{" "}
                               {moment(data.to_date).format("DD MMM YY")}

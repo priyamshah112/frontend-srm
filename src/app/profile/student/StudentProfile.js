@@ -248,6 +248,7 @@ const StudentProfile = (props) => {
 
 	console.log('Phone', phone)
 	console.log('Email', email)
+	console.log('address', address)
 
 	return (
 		<>

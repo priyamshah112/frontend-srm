@@ -33,6 +33,7 @@ import { formatAttendanceData } from '../../../shared/filter'
 import AttendanceFooter from '../components/attendanceFooter'
 import moment from 'moment'
 import { Typography } from '@material-ui/core'
+import { AlertPop } from '../../common'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -158,6 +159,9 @@ const TeacherAttendanceContainer = (props) => {
 	const [aError, setAError] = useState({})
 	const [updateLoading, setUpdateLoading] = useState(false)
 	const [nextpage, setnextpage] = useState(false)
+	const [ openSnackbar, setOpenSnackbar] = useState(false)
+	const [ snackBarStatus, setSnackBarStatus ] = useState('')
+	const [ snackBarMsg, setSnackBarMsg ] = useState('')
 	const { loading } = props
 	const classes = useStyles()
 	const from_date = moment(weekStart).format('YYYY-MM-DD')
@@ -262,7 +266,8 @@ const TeacherAttendanceContainer = (props) => {
 			class_id: d.class_id,
 			attendance_date: d.attendance_date,
 			subject_id,
-			status: attendanceStatus[d.status] || 'absent',
+			status: attendanceStatus[d.status] || 'absent',			
+			current_role: props.selectedRole,
 		}
 		props.updateAddendance(
 			data,
@@ -281,6 +286,9 @@ const TeacherAttendanceContainer = (props) => {
 	const onUpdateFail = (e = {}, path) => {
 		setAError({ ...aError, [path]: 'Update Error' })
 		setUpdateLoading(false)
+		setSnackBarStatus('error')
+		setSnackBarMsg("You're not allowed to update past attendance")
+		setOpenSnackbar(true)
 	}
 
 	const getIsLoading = (rI, dI) => {
@@ -424,6 +432,13 @@ const TeacherAttendanceContainer = (props) => {
 					</TableContainer>
 				</Grid>
 			</Grid>
+			
+			<AlertPop 
+				openSnackbar={openSnackbar} 
+				onOpenSnackBar={setOpenSnackbar} 
+				status={snackBarStatus} 
+				msg={snackBarMsg}
+			/> 
 		</div>
 	)
 }

@@ -42,6 +42,9 @@ const useStyles = makeStyles((_theme) => ({
   dialogContent: {
     textAlign: "center",
   },
+  datepicker:{
+    
+  }
 }));
 
 const PublishLater = (props) => {
@@ -81,6 +84,7 @@ const PublishLater = (props) => {
                       </InputAdornment>
                     ),
                   }}
+                  className={classes.datepicker}
                 />
               </Grid>
             </MuiPickersUtilsProvider>

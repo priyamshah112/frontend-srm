@@ -12,16 +12,34 @@ import { postMiscellaneous } from "../../redux/actions/attendence.action";
 import { miscellaneous } from "../../redux/actions/attendence.action";
 import { getMiscellaneous } from "../../redux/actions/attendence.action";
 import { useHistory } from "react-router-dom";
-import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 import { SnackBarRef } from "../../../SnackBar";
+import Paper from "@material-ui/core/Paper";
 
 const useStyle = makeStyles((theme) => ({
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+    marginLeft: "20px",
+    marginBottom: "20px",
+    border: "1px solid #7B72AF",
+    height: "140px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    cursor: "pointer",
+  },
   sectionContainer: {
-    flexWrap: "wrap",
-    padding: "20px 0 20px 20px",
+    // flexWrap: "wrap",
+    paddingRight: "20px",
+
+    "& .MuiGrid-spacing-xs-2": {
+      margin: "calc(96% + 16px)",
+    },
   },
   head: {
-    // margin: "20px",
+    margin: "20px",
     display: "flex",
     justifyContent: "center",
   },
@@ -31,27 +49,28 @@ const useStyle = makeStyles((theme) => ({
     fontFamily: "Avenir",
   },
   heading1: {
-    fontSize: "18px",
+    fontSize: 18,
     fontFamily: "Avenir medium",
     textAlign: "center",
+    color: "#1C1C1E",
   },
   imageGroup: {
-    margin: "20px 20px 20px 0",
-    display: "flex",
-    flexWrap: "wrap",
+    // margin: "20px 20px 20px 0",
+    // display: "flex",
+    // flexWrap: "wrap",
   },
   imageContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    width: 103,
-    height: 125,
+    // display: "flex",
+    // flexDirection: "column",
+    // justifyContent: "center",
+    // width: 103,
+    // height: 125,
     border: "1px solid #7B72AF",
     backgroundColor: "white",
-    marginRight: "20px",
-    marginBottom: "20px",
-    padding: "10px",
-    cursor: "pointer",
+    // marginRight: "20px",
+    // marginBottom: "20px",
+    // padding: "10px",
+    // cursor: "pointer",
     borderRadius: "3px",
   },
   img: {
@@ -62,13 +81,19 @@ const useStyle = makeStyles((theme) => ({
     fontFamily: "Avenir medium",
     fontSize: 14,
     textAlign: "center",
-    // lineSpacing
+    color: "#1C1C1E",
   },
   CircularProgress: {
     display: "flex",
     height: "93%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  gridContainer: {
+    display: "flex",
+    "& .MuiPaper-elevation1": {
+      boxShadow: "none",
+    },
   },
 }));
 
@@ -84,11 +109,13 @@ function Miscellaneous(props) {
   } = props;
   console.log("miscellaneousList", miscellaneousList);
   const fetchData = () => {
-    props.miscellaneous();
+    props.miscellaneous(selectedRole);
   };
 
   useEffect(() => {
-    fetchData();
+    if (selectedRole) {
+      fetchData();
+    }
   }, []);
 
   const handleSuccess = (result) => {
@@ -99,37 +126,17 @@ function Miscellaneous(props) {
   const handleOpen = (name) => {
     let list = miscellaneousList.find((o) => o.name === name);
     console.log("list", list);
-    if ((selectedRole === "parent" || selectedRole === "student") && !list) {
-      SnackBarRef.open(
-        "",
-        true,
-        `${
-          name === "prayer"
-            ? "Prayer"
-            : name === "vijayi"
-            ? "Vijayi Vishwa Tiranga Pyara"
-            : name === "national"
-            ? "National Pledge"
-            : name === "jaya"
-            ? "Jaya Bharat Jananiya"
-            : name === "saare"
-            ? "Saare Jahan Se Achcha"
-            : name === "rules"
-            ? "School Rules and Other Info"
-            : ""
-        } is empty`
-      );
-    }
+
     if (!list) {
       let data = {
         name: name,
         school_id: props.school_id,
       };
-      console.log("post call")
-      props.postMiscellaneous(data, handleSuccess);
+      console.log("post call");
+      props.postMiscellaneous(selectedRole, data, handleSuccess);
     } else {
-      console.log('get call')
-      props.getMiscellaneous(list.id, handleSuccess);
+      console.log("get call");
+      history.push(`/miscellaneous/${list.id}`);
     }
   };
 
@@ -143,76 +150,81 @@ function Miscellaneous(props) {
         <div className={classes.sectionContainer}>
           <div className={classes.head}>
             <div className={classes.heading}>
-              <span className={classes.heading1}>Holidays</span>
+              <span className={classes.heading1}>Miscellaneous</span>
             </div>
           </div>
-          <Grid container className={classes.imageGroup}>
-            <div
+          <Grid spacing={2} className={classes.gridContainer}>
+            <Grid
+              item
+              xs={3}
               onClick={() => {
                 handleOpen("prayer");
               }}
-              className={classes.imageContainer}
             >
-              <div className={classes.img} style={{ marginTop: "-15px" }}>
-                <img src={PrayerIcon} width="88px" height="88px" />
-              </div>
-              <Typography className={classes.textStyle}>Prayer</Typography>
-            </div>
-            <div
-              onClick={() => handleOpen("vijayi")}
-              className={classes.imageContainer}
-            >
-              <div className={classes.img}>
-                <img src={Notebook} width="87px" height="88px" />
-              </div>
-              <Typography className={classes.textStyle}>
-                Vijayi Vishwa Tiranga Pyara
-              </Typography>
-            </div>
-            <div
-              onClick={() => handleOpen("national")}
-              className={classes.imageContainer}
-            >
-              <div className={classes.img} style={{ marginTop: "-24px" }}>
-                <img src={NationalFlag} width="71px" height="88px" />
-              </div>
-              <Typography className={classes.textStyle}>
-                National Pledge
-              </Typography>
-            </div>
-            <div
-              onClick={() => handleOpen("jaya")}
-              className={classes.imageContainer}
-            >
-              <div className={classes.img} style={{ marginTop: "-2px" }}>
-                <img src={JayaBharat} width="76px" height="88px" />
-              </div>
-              <Typography className={classes.textStyle}>
-                Jaya Bharat Jananiya
-              </Typography>
-            </div>
-            <div
-              onClick={() => handleOpen("saare")}
-              className={classes.imageContainer}
-            >
-              <div className={classes.img} style={{ marginTop: "-7px" }}>
-                <img src={Earth} width="112px" height="88px" />
-              </div>
-              <Typography className={classes.textStyle}>
-                Saare Jahan Se Achcha
-              </Typography>
-            </div>
-            <div
-              onClick={() => handleOpen("rules")}
-              className={classes.imageContainer}
-            >
-              <div className={classes.img} style={{ marginTop: "-7px" }}>
-                <img src={GraduationHat} width="82px" height="88px" />
-              </div>
-              <Typography className={classes.textStyle}>
-                School Rules and Other Info
-              </Typography>
-            </div>
+              <Paper className={classes.paper}>
+                <div className={classes.img}>
+                  <img src={PrayerIcon} width="88px" height="88px" />
+                </div>
+                <Typography
+                  style={{ marginTop: "5px" }}
+                  className={classes.textStyle}
+                >
+                  Prayer
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={3} onClick={() => handleOpen("vijayi")}>
+              <Paper className={classes.paper}>
+                <div className={classes.img}>
+                  <img src={Notebook} width="87px" height="88px" />
+                </div>
+                <Typography className={classes.textStyle}>
+                  Vijayi Vishwa Tiranga Pyara
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={3} onClick={() => handleOpen("national")}>
+              <Paper className={classes.paper}>
+                <div className={classes.img}>
+                  <img src={NationalFlag} width="71px" height="88px" />
+                </div>
+                <Typography className={classes.textStyle}>
+                  National Pledge
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={3} onClick={() => handleOpen("jaya")}>
+              <Paper className={classes.paper}>
+                <div className={classes.img}>
+                  <img src={JayaBharat} width="76px" height="88px" />
+                </div>
+                <Typography className={classes.textStyle}>
+                  Jaya Bharat Jananiya
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+          <Grid spacing={2} className={classes.gridContainer}>
+            <Grid item xs={3} onClick={() => handleOpen("saare")}>
+              <Paper className={classes.paper}>
+                <div className={classes.img}>
+                  <img src={Earth} width="112px" height="88px" />
+                </div>
+                <Typography className={classes.textStyle}>
+                  National Anthem
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={3} onClick={() => handleOpen("rules")}>
+              <Paper className={classes.paper}>
+                <div className={classes.img}>
+                  <img src={GraduationHat} width="82px" height="88px" />
+                </div>
+                <Typography className={classes.textStyle}>
+                  School Rules and Other Info
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
         </div>
       )}

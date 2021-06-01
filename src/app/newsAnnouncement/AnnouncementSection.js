@@ -304,7 +304,7 @@ const AnnouncementSection = (props) => {
 			>
 				<Box className={classes.searchContainer}>
 					<Input
-						placeholder="Search…"
+						placeholder="Search By News ID"
 						type="text" 
 						className={classes.search}
 						disableUnderline={true}

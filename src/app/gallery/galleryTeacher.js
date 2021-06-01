@@ -100,6 +100,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 	title:{
 		padding: 20,
+		'& h2':{
+			fontSize: '18px',
+		}
 	},
 	content:{
 		paddingTop: 0,
@@ -109,6 +112,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 	actions:{
 		padding: 20,
+		'& Button': {
+			textTransform: 'none',			
+		},
 	},
 	formControl: {
 		width: '100%',

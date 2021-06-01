@@ -147,6 +147,7 @@ const useStyle = makeStyles((theme) => ({
 	},
 	button: {
 		width: '94%',
+		textTransform: 'none',
 	},
 	card2_content1: {
 		fontWeight: '700',

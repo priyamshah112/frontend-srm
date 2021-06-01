@@ -45,7 +45,10 @@ const useStyles = makeStyles((theme) => ({
 		}
 	},
 	title:{
-		padding: 20,
+		padding: '20px',
+		'& h2':{
+			fontSize: '18px',
+		}
 	},
 	content:{
 		paddingTop: 0,
@@ -67,7 +70,11 @@ const FolderView = (props) =>{
 	const classes = useStyles()
 	const [ mounted, setMounted ] = useState(false)
 	const [ navLoading, setNavLoading ] = useState(false)
-    const token = props.token    
+	const role = JSON.parse(localStorage.getItem('srmSelectedRole'))
+	let token = localStorage.getItem('srmToken')
+	if (role === 'parent') {
+		token = localStorage.getItem('srmSelected_Child_token')
+	} 
 	const [ loading, setLoading ] = useState(true)
 	const [ folders, setFolders ] = useState([])
 	const [ folderHasMore, setFolderHasMore ] = useState(true)

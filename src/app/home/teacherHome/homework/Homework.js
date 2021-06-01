@@ -15,6 +15,7 @@ import * as moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import HomeSerivce from '../../HomeSerivce'
 import { Lang } from '../../../../Constants/Languages/English'
+import { calculateDate3,trimTitle } from '../../../common/function'
 
 const useStyle = makeStyles((theme) => ({
 	homeworkDiv: {
@@ -41,6 +42,10 @@ const useStyle = makeStyles((theme) => ({
 		height: '100%',
 		display: 'table-row',
 		marginTop: '10px',
+	},
+	homeworkTitle:{
+		wordBreak: 'break-all',
+		textAlign: 'justify'
 	},
 	cardContentStyle: {
 		cursor: 'pointer',
@@ -227,20 +232,26 @@ const Homework = (props) => {
 											}}
 										>
 											<CardContent className={classes.cardContentStyle}>
-												<Typography
-													className={classes.cardTitle}
+											{hw.title || hw.subject ? (
+												<Typography 
+													variant='body1'
+													className={classes.homeworkTitle}
+												>
+														{hw.title ? trimTitle(hw.title) : null} {hw.title && hw.subject ? '-' : null} {hw.subject ? hw.subject.name : null}
+												</Typography>
+											) : (
+												<Typography 
 													variant='body1'
 												>
-													{hw.title ? hw.title : 'N/A'}
+													N/A
 												</Typography>
+											)}
 											</CardContent>
 											<CardActions>
 												<Typography variant='body2'>
-													{hw.submission_date
-														? `Due: ${moment(hw.submission_date).format(
-																'DD/MM/YY hh:mm A'
-														  )}`
-														: 'Due: N/A'}
+													Due: {hw.submission_date
+														? `${calculateDate3(hw.submission_date)}`
+														: 'N/A'}
 												</Typography>
 											</CardActions>
 										</Card>

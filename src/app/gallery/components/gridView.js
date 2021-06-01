@@ -28,7 +28,11 @@ const GridView = (props) =>{
     const [tileData, setTileData] = useState([])
     const [ mounted, setMounted ] = useState(false)    
 	const [loading, setLoading] = useState(false)
-	const token = localStorage.getItem('srmToken')
+	const role = JSON.parse(localStorage.getItem('srmSelectedRole'))
+	let token = localStorage.getItem('srmToken')
+	if (role === 'parent') {
+		token = localStorage.getItem('srmSelected_Child_token')
+	}
 	const [hasMore, setHasMore] = useState(true)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [ snackBarStatus, setSnackBarStatus ] = useState('')

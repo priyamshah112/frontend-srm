@@ -145,8 +145,9 @@ const StudentFaq = () => {
 			newLeaveBtnHandler={(_event) => history.push("/faq/create")}
 			/>
 			<SearchBar
-			handleSearch={handleSearch}
-			handleSearchChange={handleSearchChange}
+				placeholder="Search By Title"
+				handleSearch={handleSearch}
+				handleSearchChange={handleSearchChange}
 			/>
 			{                
 			loading ? (

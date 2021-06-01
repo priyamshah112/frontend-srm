@@ -117,14 +117,18 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
-const ImageUpload = () => {
+const ImageUpload = (props) => {
 	const classes = useStyles()
 	const history = useHistory()
 	const { location } = history
 	const [fileList, setFileList] = useState([])
 	const [isUploading, setIsUploading] = useState(false)
 	const [openSnackbar, setOpenSnackbar] = useState(false)
-	const token = localStorage.getItem('srmToken')
+	const role = JSON.parse(localStorage.getItem('srmSelectedRole'))
+	let token = localStorage.getItem('srmToken')
+	if (role === 'parent') {
+		token = localStorage.getItem('srmSelected_Child_token')
+	}
 
 
 

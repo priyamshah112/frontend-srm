@@ -74,6 +74,7 @@ const useStyle = makeStyles((theme) => ({
 		'& .publishBtn': {
 			borderRadius: '3px',
 			width: '120px',
+			textTransform: 'none',
 		},
 		'& .MuiInputBase-root':{
 			margin: '0px',

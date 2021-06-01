@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 	saveBtn: {
 		width: '100%',
 		'& Button': {
+			textTransform: 'none',			
 			marginLeft: 'calc(100% - 66px)',
 		},
 	},

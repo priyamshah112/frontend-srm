@@ -38,14 +38,16 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "2px",
   },
   eventsTab: {
-    padding: "6px 0px",
-    borderBottom: "1px solid #aeaeb2",
-    textTransform: "capitalize",
-    color: "#1C1C1E",
-    "& .MuiTab-wrapper": {
-      height: "30px",
-    },
-  },
+		padding: '6px 0px',
+		borderBottom: '1px solid #aeaeb2',
+
+		'& .MuiTab-wrapper': {
+			height: '30px',
+		},
+		[theme.breakpoints.down('sm')]: {
+			fontSize: '11px',
+		},
+	},
   borderRight: {
     "& .MuiTab-wrapper": {
       borderRight: "1px solid  #aeaeb2",
@@ -210,24 +212,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function TabPanel(props) {
-  const classes = useStyles();
-  const { children, value, index, ...other } = props;
+	const { children, value, index, ...other } = props
 
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box className={classes.tabPanel} id="scrollable">
-          {children}
-        </Box>
-      )}
-    </Box>
-  );
+	return (
+		<div
+			role='tabpanel'
+			hidden={value !== index}
+			id={`full-width-tabpanel-${index}`}
+			aria-labelledby={`full-width-tab-${index}`}
+			{...other}
+		>
+			{value === index && <Box>{children}</Box>}
+		</div>
+	)
 }
 
 function a11yProps(index) {
@@ -409,28 +406,22 @@ const TeacherLeave = () => {
     <Box ref={tabref} id="scrollable">
       <AppBar position="sticky" className={classes.tabBar}>
         <Tabs
-          centered
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="black"
-          variant="fullWidth"
-          className={classes.tabs}
-          classes={{ indicator: classes.activeTab }}
+							centered
+							value={value}
+							onChange={handleChange}
+							indicatorColor='primary'
+							textColor='primary'
+							variant='fullWidth'
         >
           <Tab
             label="My Leave"
             {...a11yProps(0)}
-            className={`${classes.eventsTab} ${classes.borderRight} ${
-              value === 0 ? classes.activeTab : null
-            }`}
+            className={`${classes.eventsTab} ${classes.borderRight}`}
           />
           <Tab
             label="Student Leave"
             {...a11yProps(1)}
-            className={`${classes.eventsTab} ${
-              value === 1 ? classes.activeTab : null
-            }`}
+            className={`${classes.eventsTab}`}
           />
         </Tabs>
       </AppBar>

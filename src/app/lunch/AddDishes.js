@@ -1,45 +1,50 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import BackIcon from "../../assets/images/Back.svg";
-import { connect } from "react-redux";
-import { IconButton } from "@material-ui/core";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import { withStyles } from "@material-ui/core/styles";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import LunchIcon from "../../assets/images/lunch/Lunch.svg";
-import { AddDishInDishes } from "../redux/actions/attendence.action";
-import { removeLunchImage } from "../redux/actions/attendence.action";
-import { updateDishInDishes } from "../redux/actions/attendence.action";
-import { SnackBarRef } from "../../SnackBar";
-import imageCompression from "browser-image-compression";
-import { showDishListInDishes } from "../redux/actions/attendence.action";
-import { CircularProgress } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import React, { useState, useEffect } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
+import FormControl from '@material-ui/core/FormControl'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
+import BackIcon from '../../assets/images/Back.svg'
+import { connect } from 'react-redux'
+import { IconButton } from '@material-ui/core'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import { withStyles } from '@material-ui/core/styles'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import LunchIcon from '../../assets/images/lunch/Lunch.svg'
+import { AddDishInDishes } from '../redux/actions/attendence.action'
+import { removeLunchImage } from '../redux/actions/attendence.action'
+import { updateDishInDishes } from '../redux/actions/attendence.action'
+import { SnackBarRef } from '../../SnackBar'
+import imageCompression from 'browser-image-compression'
+import { showDishListInDishes } from '../redux/actions/attendence.action'
+import { CircularProgress } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
+import BackdropLoader from '../common/ui/backdropLoader/BackdropLoader'
+import DropArea from './dropArea'
+import DocsDeleteViewer from './ImgDeleteViewer'
+import NumberFormatCustom from '../../shared/NumberFormatCustom'
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
-    margin: "0 20px 85px 20px !important",
-    marginBottom: "85px",
-    backgroundColor: "white",
-    justifyContent: "center",
-    textAlign: "center",
-    borderRadius: "5px",
+    margin: '0 20px 85px 20px !important',
+    marginBottom: '85px',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    textAlign: 'center',
+    borderRadius: '5px',
+    paddingTop: '1px',
   },
   backImg: {
-    float: "left",
-    transform: "translate(0px, 7px)",
-    cursor: "pointer",
+    float: 'left',
+    transform: 'translate(0px, 7px)',
+    cursor: 'pointer',
   },
   adornmentColor: {
-    color: "rgba(0, 0, 0, 0.54)",
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   themeColor: {
     color: `${theme.palette.common.deluge}`,
@@ -47,34 +52,34 @@ const useStyle = makeStyles((theme) => ({
     margin: 0,
   },
   errorColor: {
-    color: "red",
+    color: 'red',
   },
   titleText: {
-    textAlign: "center",
-    margin: "auto",
-    fontFamily: "Avenir Medium",
-    fontize: "1.2rem",
-    color: "#1C1C1E",
+    textAlign: 'center',
+    margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
+    color: '#1C1C1E',
   },
   fieldStyle: {
-    width: "100%",
-    margin: "auto",
-    fontFamily: "Avenir Book",
-    fontSize: " 1rem",
-    "& .MuiInput-underline:before": {
-      borderBottom: "2px solid #eaeaea",
+    width: '100%',
+    margin: 'auto',
+    fontFamily: 'Avenir Book',
+    fontSize: ' 1rem',
+    '& .MuiInput-underline:before': {
+      borderBottom: '2px solid #eaeaea',
     },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-      borderBottom: "2px solid #7B72AF",
-      transitionProperty: "border-bottom-color",
-      transitionDuration: "500ms",
-      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+      borderBottom: '2px solid #7B72AF',
+      transitionProperty: 'border-bottom-color',
+      transitionDuration: '500ms',
+      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
   snackBar: {
-    "&.MuiSnackbar-root": {
+    '&.MuiSnackbar-root': {
       zIndex: theme.zIndex.drawer + 1,
-      maxWidth: "400px",
+      maxWidth: '400px',
     },
   },
   previewChip: {
@@ -82,42 +87,42 @@ const useStyle = makeStyles((theme) => ({
     maxWidth: 400,
   },
   inputBorder: {
-    height: "50px",
+    height: '50px',
   },
   datePicker: {
-    width: "100%",
-    [theme.breakpoints.down("xs")]: {
-      width: "100%",
+    width: '100%',
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
     },
   },
   paper: {
-    display: "flex",
-    minHeight: "40px",
-    backgroundColor: "none",
-    justifyContent: "left",
-    flexWrap: "wrap",
-    listStyle: "none",
+    display: 'flex',
+    minHeight: '40px',
+    backgroundColor: 'none',
+    justifyContent: 'left',
+    flexWrap: 'wrap',
+    listStyle: 'none',
     border: `1px solid ${theme.palette.common.deluge}`,
     padding: theme.spacing(0.5),
-    margin: "auto",
+    margin: 'auto',
   },
 
   showIn: {
-    paddingTop: "5px",
+    paddingTop: '5px',
   },
   textArea: {
-    width: "100%",
+    width: '100%',
   },
   paperShowIn: {
-    display: "flex",
-    minHeight: "40px",
-    backgroundColor: "none",
-    justifyContent: "left",
-    flexWrap: "wrap",
-    listStyle: "none",
+    display: 'flex',
+    minHeight: '40px',
+    backgroundColor: 'none',
+    justifyContent: 'left',
+    flexWrap: 'wrap',
+    listStyle: 'none',
 
     padding: theme.spacing(0.5),
-    margin: "auto",
+    margin: 'auto',
   },
   chip: {
     margin: theme.spacing(0.5),
@@ -126,120 +131,127 @@ const useStyle = makeStyles((theme) => ({
     boxShadow: `2px 2px 2px 0 #E5E5EA`,
   },
   textAlignLeft: {
-    textAlign: "left",
-    color: "rgba(0, 0, 0, 0.54)",
+    textAlign: 'left',
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   contentCenter: {
-    justifyContent: "left",
+    justifyContent: 'left',
   },
   chips: {
-    display: "flex",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   chip: {
     margin: 2,
   },
   publishBtns: {
-    textAlign: "right",
-    justifyContent: "right",
+    textAlign: 'right',
+    justifyContent: 'right',
+    '& .MuiButton-root': {
+      textTransform: 'capitalize',
+    },
   },
 
   sideMargins: {
-    marginLeft: "20px",
-    marginRight: "20px",
+    marginLeft: '20px',
+    marginRight: '20px',
   },
   sideMarginright: {
-    marginRight: "50px",
+    marginRight: '50px',
   },
   radio: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   dropzone: {
-    border: "solid !important",
-    minHeight: "0px !important",
-    width: "150px !important",
+    border: 'solid !important',
+    minHeight: '0px !important',
+    width: '150px !important',
   },
   margin: {
-    marginTop: "30px !important",
-    [theme.breakpoints.down("xs")]: {
-      marginTop: "10px",
+    marginTop: '20px !important',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: '10px',
     },
-    "& .publishBtn": {
-      borderRadius: "3px",
-      width: "inherit",
+    '& .publishBtn': {
+      borderRadius: '3px',
+      width: 'inherit',
       margin: 0,
-      [theme.breakpoints.down("xs")]: {
-        marginTop: "10px",
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
         marginRight: 0,
-        width: "100%",
+        width: '100%',
       },
     },
-    "& .publishLaterBtn": {
+    '& .publishLaterBtn': {
       backgroundColor: `${theme.palette.common.white}`,
       border: `1px solid ${theme.palette.common.adornment}`,
-      marginRight: "5px",
+      marginRight: '5px',
     },
   },
   imageDrop: {
-    border: "1px solid rgba(0,0,0,0.30)",
-    height: "90px",
-    lineHeight: "80px",
-    display: "flex",
-    textAlign: "center",
-    justifyContent: "center",
-    fontSize: "14px",
-    fontFamily: "Avenir book",
-    color: "#7B72AF",
-    cursor: "pointer",
+    border: '1px solid rgba(0,0,0,0.30)',
+    height: '90px',
+    lineHeight: '80px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '14px',
+    fontFamily: 'Avenir book',
+    color: '#7B72AF',
+    cursor: 'pointer',
   },
   imageUpload: {
-    width: "123px",
+    width: '123px',
   },
   imageHandler: {
-    display: "flex",
-    width: "100%",
-    flexWrap: "wrap",
+    display: 'flex',
+    width: '100%',
+    flexWrap: 'wrap',
   },
   img: {
-    marginRight: "5px",
-    marginBottom: "5px",
-    width: "123px",
-    height: "90px",
+    marginRight: '5px',
+    marginBottom: '5px',
+    width: '123px',
+    height: '90px',
   },
   rupeeSign: {
     fontSize: 20,
-    fontFamily: "Avenir book",
+    fontFamily: 'Avenir book',
   },
   imageContainer: {
-    display: "flex",
-    marginRight: "10px",
+    display: 'flex',
+    marginRight: '10px',
   },
   delImgContainer: {
-    cursor: "pointer",
-    height: "21px",
-    border: "1px solid #7B72AF",
-    borderRadius: "50%",
-    marginLeft: "-30px",
-    marginTop: "3px",
-    backgroundColor: "#7B72AF",
+    cursor: 'pointer',
+    height: '21px',
+    border: '1px solid #7B72AF',
+    borderRadius: '50%',
+    marginLeft: '-30px',
+    marginTop: '3px',
+    backgroundColor: '#7B72AF',
   },
-  heading:{
-    margin:'20px'
-  }
-}));
+  heading: {
+    margin: '20px',
+  },
+}))
 
 function AddDishes(props) {
-  const IMAGE_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
-  const classes = useStyle();
-  const [errMessage, setError] = useState("");
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("Veg");
-  const [fileList, setFileList] = useState([]);
-  const { loading, class_id, school_id, updateLoading } = props;
+  const IMAGE_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
+  const classes = useStyle()
+  const [errMessage, setError] = useState('')
+  const [title, setTitle] = useState('')
+  const [price, setPrice] = useState('')
+  const [description, setDescription] = useState('')
+  const [status, setStatus] = useState('Veg')
+  const [fileList, setFileList] = useState([])
+  const [documents, setDocuments] = useState([])
+  const { loading, school_id, updateLoading } = props
+  const class_id = 75
+  const IMAGES_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
+
   const {
     edit,
     setEdit,
@@ -249,186 +261,137 @@ function AddDishes(props) {
     updatePrice,
     updateDesc,
     updateImage,
-  } = props;
-
-  console.log("updateImage", updateImage);
+  } = props
 
   useEffect(() => {
     if (edit) {
-      setTitle(updateName);
-      setPrice(updatePrice);
-      setDescription(updateDesc);
-      setStatus(updateStatus);
-      handleUpdateImage();
+      setTitle(updateName)
+      setPrice(updatePrice)
+      setDescription(updateDesc)
+      setStatus(updateStatus)
+      setDocuments(updateImage)
+      // handleUpdateImage()
     }
-  }, []);
+  }, [])
 
   const validForm = () => {
-    if (!title && !price && !description && fileList[0]) {
-      setError("All field are mandatory ");
-    } else if (!title && !price && description) {
-      setError("All field are mandatory ");
-    } else if (!price && !description && !fileList[0]) {
-      setError("All field are mandatory ");
-    } else if (!title && !description && !fileList[0]) {
-      setError("All field are mandatory ");
-    } else if (!title && !price && !fileList[0]) {
-      setError("All field are mandatory ");
-    } else if (!title && !price) {
-      setError("All field are mandatory ");
-    } else if (!price && !description) {
-      setError("All field are mandatory ");
-    } else if (!description && !fileList[0]) {
-      setError("All field are mandatory ");
-    } else if (!title && !fileList[0]) {
-      setError("All field are mandatory ");
-    } else if (!title) {
-      setError("All field are mandatory ");
+    if (!title) {
+      setError(`A Mandatory field isn't filled!`)
     } else if (!price) {
-      setError("All field are mandatory ");
+      setError(`A Mandatory field isn't filled!`)
     } else if (!description) {
-      setError("All field are mandatory ");
+      setError(`A Mandatory field isn't filled!`)
     } else if (!fileList[0]) {
-      setError("All field are mandatory ");
+      setError(`A Mandatory field isn't filled!`)
     } else {
-      return true;
+      return true
     }
-  };
+  }
 
-  const handleChange = async (e) => {
-    console.log("change files", e.target.files);
-    setError("");
-    const file = e.target.files;
-    const filesArray = [];
+  const handleChangeImage = async (files) => {
+    console.log(files)
+    const file = files
+    let filesArray = []
     const options = {
       maxSizeMB: 0.5,
       useWebWorker: true,
-    };
+    }
     for (let i = 0; i < file.length; i++) {
       try {
-        const compressedImage = await imageCompression(file[i], options);
-        const imageString = await toBase64(compressedImage);
-        filesArray.push(imageString);
+        const compressedImage = await imageCompression(file[i], options)
+        const imageString = await toBase64(compressedImage)
+        filesArray.push(imageString)
       } catch (e) {
-        SnackBarRef.open("", false, e);
-        console.log("error", e);
+        SnackBarRef.open('', false, e)
+        console.log('error', e)
       }
     }
-    if (!fileList[0]) {
-      setFileList(filesArray);
+    if (edit) {
+      let images = []
+      updateImage.map((item) => {
+        let url = `${IMAGES_BASE_URL}/${item.img_path}/${item.img_name}`
+        images.push(url)
+      })
+      images = images.concat(filesArray)
+      setFileList(images)
     } else {
-      const array = fileList.concat(filesArray);
-      setFileList(array);
+      setFileList(filesArray)
     }
-  };
-
-  const handleUpdateImage = () => {
-    const images = [];
-    updateImage.map((item) => {
-      let imagePath = `${IMAGE_BASE_URL}/${item.img_path}/${item.img_name}`;
-      images.push(imagePath);
-    });
-    console.log("updateImage", images);
-    setFileList(images);
-  };
-  const handleDeleteImg = (index, imageUrl) => {
-    const imgArray = [...fileList];
-    const removeImg = imgArray.splice(index, 1);
-    console.log("fileList remove", removeImg, imgArray);
-    setFileList(imgArray);
-
-    updateImage.map((item) => {
-      let imagePath = `${IMAGE_BASE_URL}/${item.img_path}/${item.img_name}`;
-      if (imagePath === imageUrl) {
-        props.removeLunchImage(item.id);
-      }
-    });
-  };
-
-  const renderPhotos = (source) => {
-    console.log("updateImage source", source);
-    return source.map((photo, index) => {
-      return (
-        <div className={classes.imageContainer}>
-          <img src={photo} key={photo} className={classes.img} style={{}} />
-          <div
-            onClick={() => handleDeleteImg(index, photo)}
-            className={classes.delImgContainer}
-          >
-            <CloseIcon style={{ color: "white" }} fontSize="small" />
-          </div>
-        </div>
-      );
-    });
-  };
-
-  const fetchData = () => {
-    props.AddDishInDishes();
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  }
+  const onSuccess = (id) => {
+    SnackBarRef.open('', true, 'Image removes successfully')
+    setDocuments(documents.filter((document) => document.id !== id))
+  }
+  const handleDeleteFile = (id) => {
+    props.removeLunchImage(id, () => onSuccess(id))
+  }
 
   const handleChangePrice = (e) => {
-    setPrice(e.target.value);
-    setError("");
-  };
+    setPrice(e.target.value)
+    setError('')
+  }
   const handleChangeRadio = (e) => {
-    setStatus(e.target.value);
-    setError("");
-  };
+    setStatus(e.target.value)
+    setError('')
+  }
 
   const handleDescription = (e) => {
-    setDescription(e.target.value);
-    setError("");
-  };
+    setDescription(e.target.value)
+    setError('')
+  }
   const handleBack = () => {
     if (edit) {
-      setEdit(!edit);
+      setEdit(!edit)
     } else {
-      props.close();
+      props.close()
     }
-  };
-  const handleChangeInput = (event) => {
-    setTitle(event.target.value);
-    setError("");
-  };
+  }
+  const handleChangeInput = (e) => {
+    setTitle(e.target.value)
+    setError('')
+  }
 
   const toBase64 = (file) =>
     new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = (error) => reject(error)
+    })
+
+  console.log('props.fetchData :>> ', props.fetchData)
 
   const handleSuccess = () => {
     if (edit) {
-      SnackBarRef.open("", true, "Dish updated successfully");
-      setEdit(false);
+      console.log('success call')
+      props.fetchData(1)
+      SnackBarRef.open('', true, 'Dish updated successfully')
+      setEdit(false)
     } else {
-      SnackBarRef.open("", true, "Dish added successfully");
-      handleBack();
+      console.log('success call add')
+      props.fetchData()
+      SnackBarRef.open('', true, 'Dish added successfully')
+      handleBack()
     }
-    props.showDishListInDishes(school_id);
-  };
+  }
   const handleFail = (error) => {
-    console.log("error", error);
+    console.log('success call error')
+    console.log('error', error)
     if (error) {
-      SnackBarRef.open("", false, error.message);
+      SnackBarRef.open('', false, error.message)
     }
-  };
+  }
 
   const handleSave = async (e) => {
-    e.preventDefault();
-    let fileArray = [];
+    e.preventDefault()
+    let fileArray = []
     fileList.map((item, index) => {
-      let includeArray = item.includes("lunch-image");
+      let includeArray = item.includes('lunch-image')
       if (!includeArray) {
-        fileArray.push(item);
+        fileArray.push(item)
       }
-    });
+    })
+    console.log('fileArray', fileArray, fileList)
     if (validForm()) {
       const data = {
         school_id: school_id,
@@ -438,31 +401,30 @@ function AddDishes(props) {
         status: status,
         description: description,
         image: fileArray,
-      };
+      }
       if (edit) {
-        console.log("array2 fileList", fileArray);
         props.updateDishInDishes(
           data,
           editId,
           class_id,
           school_id,
           handleSuccess,
-          handleFail
-        );
+          handleFail,
+        )
       } else {
-        props.AddDishInDishes(data, handleSuccess, handleFail);
+        props.AddDishInDishes(data, handleSuccess, handleFail)
       }
     }
-  };
+  }
 
   const GreenRadio = withStyles({
     root: {
-      "&$checked": {
-        color: "#7B72AF",
+      '&$checked': {
+        color: '#7B72AF',
       },
     },
     checked: {},
-  })((props) => <Radio color="default" {...props} />);
+  })((props) => <Radio color="default" {...props} />)
 
   return (
     <div>
@@ -477,12 +439,12 @@ function AddDishes(props) {
           variant="h5"
           className={`${classes.themeColor} ${classes.titleText}`}
         >
-          {edit ? "Update Dish" : "Add Dish"}
+          {edit ? 'Update Dish' : 'Add Dish'}
         </Typography>
       </div>
       <form className={classes.formStyle}>
         {errMessage ? (
-          <Box className={classes.margin} pt={2}>
+          <Box pt={2}>
             <div>
               <Typography className={`${classes.errorColor}`}>
                 {errMessage}
@@ -490,7 +452,7 @@ function AddDishes(props) {
             </div>
           </Box>
         ) : (
-          ""
+          ''
         )}
         <Box className={`${classes.margin} ${classes.sideMargins}`}>
           <FormControl className={classes.fieldStyle}>
@@ -498,7 +460,6 @@ function AddDishes(props) {
               id="title"
               name="title"
               className={classes.inputBorder}
-              style={{marginTop:'20px'}}
               value={title}
               onChange={handleChangeInput}
               required={true}
@@ -526,6 +487,7 @@ function AddDishes(props) {
               required={true}
               label="Price"
               InputProps={{
+                inputComponent: NumberFormatCustom,
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton>
@@ -548,7 +510,6 @@ function AddDishes(props) {
               label=""
               multiline
               rows={5}
-              placeholder="Description"
               value={description}
               onChange={handleDescription}
               variant="outlined"
@@ -567,13 +528,13 @@ function AddDishes(props) {
               onChange={handleChangeRadio}
             >
               <FormControlLabel
-                checked={status === "Veg"}
+                checked={status === 'Veg'}
                 value="Veg"
                 control={<GreenRadio />}
                 label="Veg"
               />
               <FormControlLabel
-                checked={status === "Non_veg"}
+                checked={status === 'Non_veg'}
                 value="Non_veg"
                 control={<GreenRadio />}
                 label="Non Veg"
@@ -582,41 +543,13 @@ function AddDishes(props) {
           </FormControl>
         </Box>
         <Box className={`${classes.margin} ${classes.sideMargins}`}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Typography
-              component="p"
-              style={{
-                textAlign: "left",
-                fontFamily: "Avenir medium",
-                fontSize: "1rem",
-                marginBottom: "5px",
-                color: "rgba(0,0,0,0.54)",
-              }}
-            >
-              Images
-            </Typography>
-            <div className={classes.imageHandler}>
-              {renderPhotos(fileList)}
-              <input
-                accept="image/*"
-                id="input"
-                multiple
-                type="file"
-                onChange={handleChange}
-                // value={fileList}
-                style={{ display: "none" }}
-              />
-              <label htmlFor="input" className={classes.imageUpload}>
-                <div className={classes.imageDrop}>+ Add Image</div>
-              </label>
-            </div>
-          </div>
+          <DropArea handleChange={handleChangeImage} />
+          {documents.length > 0 && documents ? (
+            <DocsDeleteViewer
+              data={documents}
+              handleDelete={handleDeleteFile}
+            />
+          ) : null}
         </Box>
         <Box className={`${classes.margin} ${classes.sideMargins}`}>
           <Grid
@@ -631,13 +564,13 @@ function AddDishes(props) {
                 <Button
                   id="publishBtn"
                   variant="contained"
-                  className={`${classes.fieldStyle} ${"publishBtn"}`}
+                  className={`${classes.fieldStyle} ${'publishBtn'}`}
                   color="primary"
                   type="submit"
                   onClick={handleSave}
                   disableElevation
                 >
-                  {edit ? "Update" : "Save"}
+                  {edit ? 'Update' : 'Save'}
                 </Button>
               )}
             </Grid>
@@ -653,7 +586,7 @@ function AddDishes(props) {
         </Box>
       </form>
     </div>
-  );
+  )
 }
 
 const mapStateToProps = (state) => {
@@ -662,7 +595,7 @@ const mapStateToProps = (state) => {
     addDishInDishesLoading,
     updateDishInDishesLoading,
     removeLunchImageLoading,
-  } = state.Attendence;
+  } = state.Attendence
   return {
     data: add_dish_in_dishes,
     loading: addDishInDishesLoading,
@@ -670,12 +603,12 @@ const mapStateToProps = (state) => {
     removeImageLoading: removeLunchImageLoading,
     class_id: state.auth.userInfo.user_classes.class_id,
     school_id: state.auth.userInfo.user_classes.school_id,
-  };
-};
+  }
+}
 
 export default connect(mapStateToProps, {
   AddDishInDishes,
   showDishListInDishes,
   updateDishInDishes,
   removeLunchImage,
-})(AddDishes);
+})(AddDishes)

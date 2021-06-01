@@ -122,12 +122,22 @@ const useStyles = makeStyles((theme) => ({
 		fontSize: '14px',
 		fontStyle: 'normal',
 		paddingBottom: '6px',
+		wordBreak: 'break-word',
 	},
 	descriptionContent: {
 		color: `${theme.palette.common.lightFont}`,
+		wordBreak: 'break-word',
+		'& p':{
+			margin: '0px !important',
+		}
 	},
 	readClass: {
-		textAlign: 'right',
+		position: 'relative',
+		'& img':{
+			position: 'absolute',
+			right: '0px',
+			bottom: '0px',
+		}
 	},
 	payBtn: {
 		width: '113px',
@@ -136,11 +146,12 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const Details = (props) => {
+	console.log(props)
 	const classes = useStyles()
 	const theme = useTheme()
 	const { id } = useParams()
 	const query = new URLSearchParams(useLocation().search)
-
+	const location = useLocation()
 	const history = useHistory()
 	const [anchorEl, setAnchorEl] = useState(null)
 	const [status, setStatus] = useState('read')
@@ -175,19 +186,27 @@ const Details = (props) => {
 	const handleClose = async (event) => {
 		const updatedStatus = event.currentTarget.getAttribute('value')
 		setAnchorEl(null)
-
+		if(!updatedStatus){
+			return 
+		}
 		try {
 			const token = localStorage.getItem('srmToken')
 			const response = await NotificationService.updateStatus(
-				id,
-				updatedStatus,
+				details.notify_status_id,
+				{
+					status : updatedStatus,
+					notifications_id: id,
+				},
 				token
 			)
 			if (response.status === 200) {
-				console.log('priyam')
+				setDetails({
+					...details,
+					status: updatedStatus
+				})
 				console.log(status)
 				if (updatedStatus === 'read' && status !== 'read') {
-					if (props.notificationCount !== 0) {
+					if (props.notificationCount !== 0 && details.status === 'unread') {
 						props.subNotificationCount()
 					}
 					setStatus('read')
@@ -195,16 +214,15 @@ const Details = (props) => {
 					props.addNotificationCount()
 					setStatus('unread')
 				} else if (updatedStatus === 'deleted' && status !== 'deleted') {
-					if (props.notificationCount !== 0) {
+					if (props.notificationCount !== 0 && details.status ==='unread') {
 						props.subNotificationCount()
 					}
-					props.handleRemoveNotifcation(props.notification.id)
+					console.log("S-D")
 					setStatus('deleted')
 				} else if (updatedStatus === 'archive' && status !== 'archive') {
-					if (props.notificationCount !== 0) {
+					if (props.notificationCount !== 0 && details.notification_lists.status ==='unread') {
 						props.subNotificationCount()
 					}
-					props.handleRemoveNotifcation(props.notification.id)
 					setStatus('archive')
 				} else {
 					console.log()
@@ -226,7 +244,11 @@ const Details = (props) => {
 									alt='Back'
 									className={classes.backImg}
 									onClick={() => {
-										history.push(paths.NOTIFICATIONS)
+										history.push({pathname: paths.NOTIFICATIONS,
+											state: {
+												tab : location.state ? location.state.selectedTab : 0
+											}
+										})
 									}}
 								/>
 							</Grid>
@@ -324,11 +346,11 @@ const Details = (props) => {
 							<>
 								{!query.get('cby') ? (
 									<Typography className={classes.cardTitle}>
-										{details.notification_lists.data.title}
+										{details.data.title}
 									</Typography>
-								) : details.notification_lists.data.title ? (
+								) : details.data.title ? (
 									<Typography className={classes.cardTitle}>
-										{details.notification_lists.data.title}
+										{details.data.title}
 									</Typography>
 								) : (
 									<Typography className={classes.cardTitle}>{'N/A'}</Typography>
@@ -341,43 +363,46 @@ const Details = (props) => {
 							<Grid item xs={11}>
 								{!query.get('cby') ? (
 									<Typography className={classes.contentStyle}>
-										{details.notification_lists.data.summary}
+										{details.data.summary}
 									</Typography>
-								) : details.notification_lists.data.summary ? (
+								) : details.data.summary ? (
 									<Typography className={classes.contentStyle}>
-										{details.notification_lists.data.summary}
+										{details.data.summary}
 									</Typography>
 								) : (
 									<Typography className={classes.cardTitle}>{'N/A'}</Typography>
 								)}
 							</Grid>
-							{!query.get('cby') ? (
-								<Grid item xs={1} className={classes.readClass}>
-									{status === 'unread' ? (
-										<img src={UnReadIcon} alt='unread' />
-									) : status === 'read' ? (
-										<img src={ReadIcon} alt='read' />
-									) : (
-										''
-									)}
-								</Grid>
-							) : (
-								''
-							)}
 						</Grid>
 						<Grid container direction='row'>
-							{details.notification_lists.data.main_content ? (
-								<div
-									className={`${classes.descriptionContent} ${classes.announcementText}`}
-									dangerouslySetInnerHTML={{
-										__html: details.notification_lists.data.main_content,
-									}}
-								/>
-							) : (
-								<Typography className={classes.title}>
-									{'No description provided'}
-								</Typography>
-							)}
+							<Grid item xs={11}>
+								{details.data.main_content ? (
+									<div
+										className={`${classes.descriptionContent} ${classes.announcementText}`}
+										dangerouslySetInnerHTML={{
+											__html: details.data.main_content,
+										}}
+									/>
+								) : (
+									<Typography className={classes.title}>
+										{'No description provided'}
+									</Typography>
+								)}
+								</Grid>
+								
+								{!query.get('cby') ? (
+									<Grid item xs={1} className={classes.readClass}>
+										{status === 'unread' ? (
+											<img src={UnReadIcon} alt='unread' />
+										) : status === 'read' ? (
+											<img src={ReadIcon} alt='read' />
+										) : (
+											''
+										)}
+									</Grid>
+								) : (
+									''
+								)}
 						</Grid>
 					</CardContent>
 				</Card>

@@ -8,11 +8,13 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import * as moment from "moment";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import InfiniteRoll from "../common/infinteScroll";
 
 const useStyles = makeStyles((theme) => ({
+  CircularProgress: {
+    margin: "8px",
+    textAlign: "center",
+  },
   message: {
     textAlign: "center",
     fontSize: 14,
@@ -22,22 +24,19 @@ const useStyles = makeStyles((theme) => ({
   sectionContainer: {
     height: "100%",
     width: "100%",
-    paddingBottom: "75px",
+    // paddingBottom: "75px",
+    overflowY: "auto",
   },
 
   header: {
     paddingRight: "20px",
     paddingLeft: "20px",
     paddingBottom: "85px",
-    // textAlign: "right",
   },
   header2: {
     position: "relative",
     display: "flex",
     flexDirection: "row",
-    // paddingRight: '15px',
-    // paddingLeft: '15px',
-    // paddingTop: '10px',
     justifyContent: "space-between",
     textAlign: "left",
   },
@@ -51,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.common.deluge,
 
     marginTop: "15px",
-    // marginRight: "15px",
     cursor: "pointer",
     "& .new": {
       float: "right",
@@ -113,24 +111,23 @@ const useStyles = makeStyles((theme) => ({
     margin: "20px",
   },
   cardContent: {
-    paddingBottom: "15px !important",
+    padding: "20px !important",
     overflow: "auto",
-    // margin: '10px',
   },
   textAlignRight: {
     textAlign: "right",
     color: "#AEAEB2",
-    fontSize: "0.85rem",
   },
   labelText: {
     fontStyle: "normal",
-    color: "#8E8E93",
     fontSize: "14px !important",
-    fontFamily: "Avenir medium",
+    fontFamily: "Avenir Roman",
   },
   typography: {
-    marginTop: "5px",
     cursor: "pointer",
+    fontFamily: "Avenir Book",
+    fontSize: 14,
+    color: "#AEAEB2",
   },
   span: {
     textTransform: "capitalize",
@@ -154,141 +151,185 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
   },
   circularProgress: {
-    position: "absolute",
-    left: "46%",
-    top: "120px",
+    textAlign: "center",
+    padding: "20px",
+  },
+  title: {
+    fontFamily: "Avenir heavy",
+    fontSize: 14,
+    color: "#2C2C2E",
+    marginBottom: "12px",
+  },
+  InfiniteScroll: {
+    overflow: "revert !important",
+    "& .infinite-scroll-component": {
+      overflow: "revert !important",
+    },
+    paddingLeft: "20px",
+    paddingRight: "20px",
+    paddingBottom: "76px",
+  },
+  container: {
+    // height: "100%",
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "0 20px",
+    marginBottom: "85px",
+  },
+  heading: {
+    fontFamily: "Avenir Medium",
+    fontSize: 18,
+    color: "#1C1C1E",
+    paddingTop: "20px",
+    textAlign: "center",
   },
 }));
 
 const StudentDiary = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const [menuVal, setMenuVal] = useState("general");
-  const selectedRole = props.selectedRole;
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationInfo, setInfo] = useState({});
+  const { selectedRole } = props;
+  console.log("paginationInfo :>> ", data);
 
-  const { data, loading } = props;
-  console.log("student", data);
-
-  const fetchData = () => {
-    props.studentSideData();
+  const onSuccess = (result) => {
+    console.log("result :>> ", result);
+    if (result) {
+      setLoading(false);
+      setData([...data, ...result.data.data]);
+      setInfo(result.data);
+    }
+  };
+  const fetchData = (currentPage) => {
+    if (currentPage) {
+      props.studentSideData(currentPage, onSuccess);
+    } else {
+      const page = 1;
+      props.studentSideData(page, onSuccess);
+    }
   };
   useEffect(() => {
     fetchData();
   }, []);
-  const handleMenuChange = (e) => {
-    setMenuVal(e.target.value);
+  const handleLoadMore = (e) => {
+    // console.log("event", e);
+    // console.log("clientHeigh :>> ", e.target.clientHeigh);
+    // console.log("scrollTop :>> ", e.target.scrollTop);
+    // console.log("scrollHeight :>> ", e.target.scrollHeight);
+    let bottom =
+      e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop < 20;
+    console.log("bottom :>> ", bottom);
+    if (paginationInfo.last_page > currentPage) {
+      if (bottom && !loading) {
+        let page = currentPage + 1;
+        fetchData(page);
+        setLoading(true);
+        setCurrentPage(page);
+      }
+    }
   };
 
-  return (
-    <>
-      <div className={classes.sectionContainer}>
-        <div style={{ zIndex: "1", marginLeft: "20px" }}>
-          <FormControl className={classes.fieldStyle}>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={menuVal}
-              onChange={handleMenuChange}
-              classes={{
-                paper: classes.menuContainer,
-                list: classes.menuList,
-              }}
+  let content = data.map((item) => {
+    return (
+      <Card className={classes.card}>
+        <CardContent className={classes.cardContent}>
+          <Grid container>
+            <Grid item xs={8}>
+              <span>
+                {item.title === null ? (
+                  <Typography className={classes.title}>N/A</Typography>
+                ) : (
+                  <Typography className={classes.title}>
+                    {item.title}
+                  </Typography>
+                )}
+              </span>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography
+                className={`${classes.textAlignRight} ${classes.labelText}`}
+                variant="body2"
+              >
+                {moment(item.created_at).format("DD MMM YY")}
+              </Typography>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid
+              item
+              xs={8}
+              style={{ cursor: "pointer" }}
+              onClick={() => history.push(`/diary/diary-details/${item.id}`)}
             >
-              <MenuItem value="general">General Diary Entry</MenuItem>
+              <Typography className={`${classes.typography}`}>
+                <Typography></Typography>
+                Click here to check more details.
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
               {props.selectedRole === "teacher" ||
               props.selectedRole === "admin" ? (
-                <>
-                  <MenuItem value="teacher">Teacher Observation</MenuItem>
-                  <MenuItem value="late">Late Coming</MenuItem>
-                </>
+                <Typography
+                  className={`${classes.labelText} ${classes.textAlignRight}`}
+                  variant="body2"
+                >
+                  <span className={`${classes.span}`}>{item.status}</span>
+                </Typography>
               ) : (
                 ""
               )}
-            </Select>
-          </FormControl>
-        </div>
-        <div className={classes.header}>
-          {loading ? (
-            <div className={classes.circularProgress}>
-              <CircularProgress />
-            </div>
-          ) : !data[0] ? (
-            <Typography className={classes.message}>
-              No diary record available yet!
-            </Typography>
-          ) : (
-            data.map((item) => (
-              <Card className={classes.card}>
-                <CardContent className={classes.cardContent}>
-                  <Grid container>
-                    <Grid item xs={8}>
-                      <span>
-                        {item.title === null ? (
-                          <Typography variant="body1">N/A</Typography>
-                        ) : (
-                          <Typography variant="body1">{item.title}</Typography>
-                        )}
-                      </span>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Typography
-                        className={`${classes.textAlignRight} ${classes.labelText}`}
-                        variant="body2"
-                      >
-                        {moment(item.created_at).format("DD MMM YY")}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid
-                      item
-                      xs={8}
-                      style={{ cursor: "pointer" }}
-                      onClick={() =>
-                        history.push(`/diary/diary-details/${item.id}`)
-                      }
-                    >
-                      <Typography className={classes.labelText} variant="body2">
-                        <Typography
-                          className={`${classes.typography}`}
-                          variant="body2"
-                        ></Typography>
-                        Click here to check more details.
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4}>
-                      {props.selectedRole === "teacher" ||
-                      props.selectedRole === "admin" ? (
-                        <Typography
-                          className={`${classes.labelText} ${classes.textAlignRight}`}
-                          variant="body2"
-                        >
-                          <span className={`${classes.span}`}>
-                            {item.status}
-                          </span>
-                        </Typography>
-                      ) : (
-                        ""
-                      )}
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid item xs={12} className={classes.imgGrid}></Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={12} className={classes.imgGrid}></Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    );
+  });
+
+  return (
+    <div onScroll={handleLoadMore} className={classes.sectionContainer}>
+      <Typography className={classes.heading}>Diary</Typography>
+
+      <div className={classes.container}>
+        {content}
+        {loading ? (
+          <div className={classes.CircularProgress}>
+            <CircularProgress color="primary" size={30} />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
-    </>
+      {!data[0] ? (
+        !loading ? (
+          <Typography className={classes.message}>
+            No diary record available yet!
+          </Typography>
+        ) : (
+          ""
+        )
+      ) : (
+        ""
+      )}
+    </div>
   );
 };
 
 const mapStateToProps = (state) => {
-  const { studentSideData, studentSideDataLoading } = state.Attendence;
+  const {
+    studentSideData,
+    studentSideDataLoading,
+    studentSideDataInfo,
+    hasMore,
+  } = state.Attendence;
   return {
     data: studentSideData,
+    paginationInfo: studentSideDataInfo,
     loading: studentSideDataLoading,
     selectedRole: state.auth.selectedRole,
   };

@@ -43,7 +43,11 @@ const PhotoList = (props) => {
 	const matches = useMediaQuery('(max-width:400px)')
     const [photoIndex, setPhotoIndex] = useState(0)
 	const [openLightbox, setOpenLightBox] = useState(false)
-	const token = localStorage.getItem('srmToken')
+	const role = JSON.parse(localStorage.getItem('srmSelectedRole'))
+	let token = localStorage.getItem('srmToken')
+	if (role === 'parent') {
+		token = localStorage.getItem('srmSelected_Child_token')
+	}
     
     const handleOpenLightbox = (index) => {
 		setOpenLightBox(true)

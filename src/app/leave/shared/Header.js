@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles, Box, Typography } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { colors } from '../../common/ui/appStyles'
 
 const useStyles = makeStyles({
   root: {
@@ -31,6 +32,10 @@ const useStyles = makeStyles({
     float: "right",
     paddingRight: "3px",
     cursor: "pointer",
+    '& span':{
+      color: colors.tint,
+      fontSize: '14px',
+    }
   },
   newLeaveBtn: {
     paddingRight: "5px",

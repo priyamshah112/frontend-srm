@@ -34,6 +34,7 @@ const useStyle = makeStyles((theme) => ({
 	},
 	button: {
 		width: '94%',
+		textTransform: 'none',
 	},
 	card: {
 		boxShadow: 'none',

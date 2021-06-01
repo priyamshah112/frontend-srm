@@ -31,18 +31,13 @@ class NotificationService {
 			},
 		})
 	}
-	fetchNotification(token, createdBy, currentRole, currentPage, filter) {
+	fetchNotification(token, params) {
 		return axios.get(`${BACKEND_API_URL}/notifications`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			params: {
-				current_role: currentRole,
-				created_by: createdBy,
-				page: currentPage,
-				status: filter,
-			},
+			params,
 		})
 	}
 	fetchNotificationDetails(id, token) {
@@ -62,21 +57,19 @@ class NotificationService {
 		})
 	}
 
-	fetchNotificationCount(token, selectedRole) {
+	fetchNotificationCount(token, params) {
 		return axios.get(`${BACKEND_API_URL}/getNotificationCount`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			params: {
-				current_role: selectedRole,
-			},
+			params,
 		})
 	}
-	updateStatus(id, status, token) {
+	updateStatus(id, data, token) {
 		return axios.put(
 			`${BACKEND_API_URL}/notificationStatusUsers/${id}`,
-			{ status: status },
+			data,
 			{
 				headers: {
 					'Content-Type': 'application/json',

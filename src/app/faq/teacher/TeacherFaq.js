@@ -159,8 +159,9 @@ const TeacherFaq = () => {
 			newFaqBtnHandler={handleCreateNewFaq}
 			/>
 			<SearchBar
-			handleSearch={handleSearch}
-			handleSearchChange={handleSearchChange}
+				placeholder="Search By Title"
+				handleSearch={handleSearch}
+				handleSearchChange={handleSearchChange}
 			/>
 			{                
 			loading ? (

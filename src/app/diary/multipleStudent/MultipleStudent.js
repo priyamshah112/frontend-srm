@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import AddIcon from "../../../assets/images/Filled Add.svg";
-import MenuItem from "@material-ui/core/MenuItem";
-import { IconButton, Typography, makeStyles } from "@material-ui/core";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import { Typography, makeStyles } from "@material-ui/core";
 import MultiStudentCard from "./MultiStudentCard";
 import { connect } from "react-redux";
 import { postDiaryMultiple } from "../../redux/actions/attendence.action";
 import BackdropLoader from "../../common/ui/backdropLoader/BackdropLoader";
 import { useHistory } from "react-router-dom";
+import { getDiaryMultiple } from "../../redux/actions/attendence.action";
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    height: "100%",
+    overflow: "auto",
+  },
   formControl: {
     marginTop: "8px",
     marginRight: "15px",
@@ -22,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   header: {
     // position: "relative",
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     paddingRight: "20px",
     paddingLeft: "20px",
     paddingTop: "20px",
@@ -32,18 +34,19 @@ const useStyles = makeStyles((theme) => ({
 
   addNew: {
     color: theme.palette.common.deluge,
-    position: "absolute",
-    right: "20px",
+    // position: "absolute",
+    // right: "20px",
     // marginTop: "15px",
     // marginRight: "20px",
+    width: "70px",
     cursor: "pointer",
     "& .new": {
       float: "right",
       fontSize: "14px",
-      padding: "5px",
+      padding: "5px 5px 0 5px",
     },
     "& img": {
-      margin: "5px",
+      margin: "5px 5px 0 5px",
       height: "20px",
       cursor: "pointer",
     },
@@ -71,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
     // marginRight: "100px",
     fontFamily: "Avenir medium",
     fontSize: 18,
+    textAlign: "center",
   },
   fieldStyle: {
     width: "185px",
@@ -90,22 +94,66 @@ const useStyles = makeStyles((theme) => ({
       color: "#eaeaea",
     },
   },
+  newContainer: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: "15px",
+  },
 }));
 
 function MultipleStudent(props) {
   const classes = useStyles();
   const history = useHistory();
-  const [menuVal, setMenuVal] = useState("general");
   const { loading, selectedRole } = props;
+  const [data, setData] = useState([]);
+  const [paginationInfo, setInfo] = useState({});
+  const [dataLoading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  console.log("data :>> ", data, paginationInfo);
   const handleSuccess = (result) => {
     history.push(`/multiple-student/edit/${result.data.id}`);
   };
   const handleNewOpen = () => {
     props.postDiaryMultiple(handleSuccess);
   };
-  const handleMenuChange = (e) => {
-    setMenuVal(e.target.value);
+
+  const onSuccess = (result) => {
+    console.log("result :>> ", result);
+    if (result) {
+      setLoading(false);
+      setData([...data, ...result.data.data]);
+      setInfo(result.data);
+    }
+  };
+  const fetchData = (currentPage) => {
+    if (currentPage) {
+      props.getDiaryMultiple(currentPage, onSuccess);
+    } else {
+      const page = 1;
+      props.getDiaryMultiple(page, onSuccess);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const handleLoadMore = (e) => {
+    // console.log("event", e);
+    // console.log("clientHeigh :>> ", e.target.clientHeigh);
+    // console.log("scrollTop :>> ", e.target.scrollTop);
+    // console.log("scrollHeight :>> ", e.target.scrollHeight);
+    let bottom =
+      e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop < 20;
+    console.log("bottom :>> ", bottom);
+    if (paginationInfo.last_page > currentPage) {
+      if (bottom && !dataLoading) {
+        console.log("paginationInfo :>> ", paginationInfo);
+        let page = currentPage + 1;
+        fetchData(page);
+        setLoading(true);
+        setCurrentPage(page);
+      }
+    }
   };
 
   return (
@@ -113,34 +161,18 @@ function MultipleStudent(props) {
       {loading ? (
         <BackdropLoader open={loading} />
       ) : (
-        <>
+        <div onScroll={handleLoadMore} className={classes.container}>
           <div className={classes.header}>
-            {/* <div style={{ zIndex: "1" }}>
-              <FormControl className={classes.fieldStyle}>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={menuVal}
-                  onChange={handleMenuChange}
-                  classes={{
-                    paper: classes.menuContainer,
-                    list: classes.menuList,
-                  }}
-                >
-                  <MenuItem value="general">General Diary Entry</MenuItem>
-                  <MenuItem value="teacher">Teacher Observation</MenuItem>
-                  <MenuItem value="late">Late Coming</MenuItem>
-                </Select>
-              </FormControl>
-            </div> */}
-            <div className={classes.home}>Home</div>
-            <div className={classes.addNew} onClick={handleNewOpen}>
-              <img src={AddIcon} alt="add" />
-              <Typography className="new">New</Typography>
+            <div className={classes.home}>Diary</div>
+            <div className={classes.newContainer}>
+              <div className={classes.addNew} onClick={handleNewOpen}>
+                <img src={AddIcon} alt="add" />
+                <Typography className="new">New</Typography>
+              </div>
             </div>
           </div>
-          <MultiStudentCard />
-        </>
+          <MultiStudentCard data={data} dataLoading={dataLoading} />
+        </div>
       )}
     </>
   );
@@ -160,4 +192,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   postDiaryMultiple,
+  getDiaryMultiple,
 })(MultipleStudent);

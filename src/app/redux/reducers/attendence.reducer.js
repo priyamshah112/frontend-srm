@@ -137,7 +137,9 @@ const initialState = {
   putLibraryLoading: false,
 
   studentSideData: [],
+  studentSideDataInfo: null,
   studentSideDataLoading: false,
+  hasMore: true,
 
   putReturnLibrary: [],
   putReturnLibraryaLoading: false,
@@ -147,6 +149,9 @@ const initialState = {
 
   putAcknowledgement: [],
   putAcknowledgementLoading: false,
+
+  diaryProfile: [],
+  diaryProfileLoading: false,
 };
 
 const AttendenceReducer = (state = initialState, action) => {
@@ -418,8 +423,10 @@ const AttendenceReducer = (state = initialState, action) => {
     case attendenceActionTypes.STUDENT_SIDE_DATA.SUCCESS:
       return {
         ...state,
-        studentSideData: action.payload.data,
+        studentSideData: listDiary(state, action),
+        studentSideDataInfo: action.payload.data,
         studentSideDataLoading: false,
+        hasMore: false,
       };
     case attendenceActionTypes.STUDENT_SIDE_DATA.FAIL:
       return {
@@ -1063,6 +1070,23 @@ const AttendenceReducer = (state = initialState, action) => {
         removeLunchImageLoading: false,
       };
 
+    case attendenceActionTypes.DIARY_PROFILE.START:
+      return {
+        ...state,
+        diaryProfileLoading: true,
+      };
+    case attendenceActionTypes.DIARY_PROFILE.SUCCESS:
+      return {
+        ...state,
+        diaryProfile: action.payload.data,
+        diaryProfileLoading: false,
+      };
+    case attendenceActionTypes.DIARY_PROFILE.FAIL:
+      return {
+        ...state,
+        diaryProfileLoading: false,
+      };
+
     default:
       return state;
   }
@@ -1121,4 +1145,9 @@ function filterWeeklyTimeTable(payload, weeklyTimeTable, classId) {
   weeklyTimeTable[classId] = { data, status };
   return weeklyTimeTable;
 }
+
+const listDiary = (state, action) => {
+  console.log("state,action :>> ", state, action);
+  return action.payload.data;
+};
 export default AttendenceReducer;

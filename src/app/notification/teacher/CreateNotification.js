@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import 'date-fns'
 import { useHistory, useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import FormControl from '@material-ui/core/FormControl'
-import Input from '@material-ui/core/Input'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
-import Chip from '@material-ui/core/Chip'
-import Select from '@material-ui/core/Select'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
+import { Box,Grid,FormControl,Input,TextField,Button,Typography,Chip,Select,InputLabel,MenuItem } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import BackIcon from '../../../assets/images/Back.svg'
 import RichTextEditor from '../../../shared/richTextEditor'
-import PublishLater from '../../newsAnnouncement/teacher/PublishLater'
-import NumberFormatCustom from '../../../shared/NumberFormatCustom'
 import NotificationService from '../NotificationService'
 import { paths } from '../../../Constants/Routes'
+import { PublishNowButton,PublishLaterButton,CancelButton } from '../../common'
 
 const useStyle = makeStyles((theme) => ({
 	formStyle: {
@@ -88,22 +76,7 @@ const useStyle = makeStyles((theme) => ({
 		marginTop: '30px',
 		[theme.breakpoints.down('xs')]: {
 			marginTop: '10px',
-		},
-		'& .publishBtn': {
-			borderRadius: '3px',
-			width: 'inherit',
-			margin: 0,
-			[theme.breakpoints.down('xs')]: {
-				marginTop: '10px',
-				marginRight: 0,
-				width: '100%',
-			},
-		},
-		'& .publishLaterBtn': {
-			backgroundColor: `${theme.palette.common.white}`,
-			border: `1px solid ${theme.palette.common.adornment}`,
-			marginRight: '20px',
-		},
+		},		
 	},
 	optionContainer: {
 		borderBottom: '1px solid #DCDCE0',
@@ -123,22 +96,24 @@ const useStyle = makeStyles((theme) => ({
 }))
 
 const CreateNotification = (props) => {
-	console.log(props)
 	const classes = useStyle()
 	const history = useHistory()
 	const { id } = useParams()
-	const [openPubLater, setOpenPubLater] = useState(false)
+	const [ status, setStatus ] = useState("draft");
+	const [ disable, setDisable ] = useState(false)
 	const [title, setTitle] = useState('')
 	const [summary, setSummary] = useState('')
 	const [description, setDescription] = useState('')
 	const [errMessage, setError] = useState('')
 	const [category, setCategory] = useState('')
-	const [payment, setPayment] = useState('')
-	const [openPayment, setOpenPayment] = useState(false)
 	const [classState, setClassState] = useState([])
+	const [classIds, setClassIds] = useState([])
+	const [parent, setParent] = useState(false)
+	const [teacher, setTeacher] = useState(false)
 	const [openUserSearch, setOpenUserSearch] = useState(false)
 	const [userList, setUserList] = useState([])
-	const [searchData, setSearchData] = useState([])
+	const [searchData, setSearchData] = useState([])	
+	const [ publishDate, setPublishDate ] = useState(new Date());
 	const loadingUsers = openUserSearch && searchData.length === 0
 	const classStateNames = [
 		'All Teachers',
@@ -148,148 +123,163 @@ const CreateNotification = (props) => {
 	]
 	const categoryValues = [...Object.values(props.categories)]
 
-	let saveDataApi
 	useEffect(() => {
-		let isFormLoading = true
-		// give first api call to create
+		fetchDraft();
+	  }, [id]);
 
-		// api call to save
-		const fetchDraft = async () => {
-			try {
-				const response = await NotificationService.fetchDraftNotification(
-					id,
-					props.token
-				)
-
-				if (response.status === 200) {
-					if (isFormLoading) {
-						let tempClassCheckState = []
-						if (response.data.data.notification_lists.class_mapping) {
-							if (response.data.data.notification_lists.class_mapping.parents) {
-								setClassState(['All Parents', ...classState])
-							}
-							if (
-								response.data.data.notification_lists.class_mapping.teachers
-							) {
-								setClassState(['All Teachers', ...classState])
-							}
-							if (response.data.data.notification_lists.class_mapping.class) {
-								response.data.data.notification_lists.class_mapping.class.forEach(
-									(classId) => {
-										tempClassCheckState.push(props.classState[classId])
-									}
-								)
-								setClassState((classState) => [
-									...classState,
-									...tempClassCheckState,
-								])
-							}
-						}
-						setUserList([...response.data.data.users_list])
-
-						setDescription(
-							response.data.data.notification_lists.data.main_content
-								? response.data.data.notification_lists.data.main_content
-								: ''
-						)
-						setTitle(
-							response.data.data.notification_lists.data.title
-								? response.data.data.notification_lists.data.title
-								: ''
-						)
-						setSummary(
-							response.data.data.notification_lists.data.summary
-								? response.data.data.notification_lists.data.summary
-								: ''
-						)
-
-						setCategory(
-							response.data.data.notification_lists.type
-								? response.data.data.notification_lists.type
-								: ''
-						)
-					}
-					setSearchData([...response.data.data.users_list])
-				}
-			} catch (e) {
-				console.log(e)
+	useEffect(() => {
+		const saveDataApi = setInterval(() => {
+			saveDetails({
+				status: status,
+				date: publishDate,
+				isBack: false
 			}
-		}
-		fetchDraft()
+		   );
+		}, 10000);
+	
 		return () => {
-			isFormLoading = false
-		}
-	}, [])
-	const saveDetails = async () => {
+		  clearInterval(saveDataApi);
+		};
+	}, [title, description, summary, classState, category, userList, status, publishDate]);
+	
+	const fetchDraft = async () => {
 		try {
-			let classMapping = { class: [] }
-
-			let isSelectAll = classState.find(
-				(classname) => classname === 'Select All'
+			const response = await NotificationService.fetchDraftNotification(
+				id,
+				props.token
 			)
-			if (isSelectAll) {
-				classMapping['teachers'] = true
-				classMapping['parents'] = true
-				classMapping.class = [...Object.keys(props.classState)]
-			} else {
-				classState.forEach((classnames) => {
-					if (classnames === 'All Parents') {
-						classMapping['parents'] = true
-					} else if (classnames === 'All Teachers') {
-						classMapping['teachers'] = true
-					} else {
-						classMapping.class.push(
-							parseInt(
-								Object.keys(props.classState).find(
-									(classId) => props.classState[classId] === classnames
-								)
-							)
-						)
+
+			if (response.status === 200) {
+				let tempClassCheckState = []
+				if (response.data.data.class_mapping) {
+					if (response.data.data.class_mapping.parents) {
+						setClassState(['All Parents', ...classState])
 					}
-				})
-			}
-			if (userList.length !== 0) {
-				classMapping.individual_users = []
-				userList.forEach((user) => {
-					classMapping.individual_users.push(user.id || user.user_id)
-				})
-			}
-			let payload
+					if (
+						response.data.data.class_mapping.teachers
+					) {
+						setClassState(['All Teachers', ...classState])
+					}
+					if (response.data.data.class_mapping.class) {
+						response.data.data.class_mapping.class.forEach(
+							(classIds) => {
+								tempClassCheckState.push(props.classState[classIds])
+							}
+						)
+						setClassState((classState) => [
+							...classState,
+							...tempClassCheckState,
+						])
+					}
+				}
+				// setUserList(response.data.data.class_mapping.individual_users)
 
-			if (category === '') {
-				payload = {
-					data: {
-						title,
-						summary,
-						main_content: description,
-					},
-					published_to: classMapping,
-				}
-			} else {
-				payload = {
-					type: category,
-					data: {
-						title,
-						summary,
-						main_content: description,
-					},
-					published_to: classMapping,
-				}
+				setDescription(
+					response.data.data.data.main_content
+						? response.data.data.data.main_content
+						: ''
+				)
+				setTitle(
+					response.data.data.data.title
+						? response.data.data.data.title
+						: ''
+				)
+				setSummary(
+					response.data.data.data.summary
+						? response.data.data.data.summary
+						: ''
+				)
+				setCategory(
+					response.data.data.type
+						? response.data.data.type
+						: ''
+				)
+				setStatus(response.data.data.notify_status)
+				setPublishDate(response.data.data.published_date);						
 			}
-			if (category === 'payment') {
-				payload = {
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
+	const handleClassId = () => {
+		let tempClassIds = []	
+		let tempTeacher = false
+		let tempParent = false
+		let isSelectAll = classState.find(
+			(classname) => classname === 'Select All'
+		)
+		if (isSelectAll) {
+			tempClassIds = [...Object.keys(props.classState)]
+			tempTeacher = true
+			tempParent = true
+		} 
+		else {
+			classState.forEach((classnames) => {				
+				if (classnames === 'All Teachers') {
+					tempTeacher = true
+				}
+
+				if (classnames === 'All Parents') {
+					tempParent = true
+				}
+				
+				let matchedValue = Object.keys(props.classState).find(
+					(classId) => props.classState[classId] === classnames
+				)
+				if(matchedValue){
+					tempClassIds.push(parseInt(matchedValue))
+				}
+			})
+		}
+		setClassIds(tempClassIds)
+		setTeacher(tempTeacher)
+		setParent(tempParent)
+	}
+
+
+
+	useEffect(() => {
+		handleClassId()
+	}, [classState])
+
+	const saveDetails = async ({status,date,isBack}) => {
+		if(isBack){
+			setDisable(true)
+		}
+		try {
+			let tempIndividualUsers = []
+			userList.map((item) => {
+				let user = {
+				  id: item.id,
+				  role: item.name,
+				}
+				tempIndividualUsers.push(user)
+			})
+
+			let payload = {
+				type: category,
+				data: {
+					title,
+					summary,
+					main_content: description,
+				},
+				published_to: {
+					individual_users: tempIndividualUsers,
+					class: classIds,
+					parents: parent,
+					teachers: teacher,
+				},
+			}
+			
+			if ((status === "published" && date) || (status === "active" && date)) {
+				payload= {
 					...payload,
-					data: {
-						title,
-						summary,
-						main_content: description,
-						payment: parseInt(payment) * 100,
-					},
+					notify_status: status,
+					published_date: date,
 				}
 			}
-
-			console.log('notification payload', payload)
-			if (!payload.type) return
+			
 			const response = await NotificationService.saveNotification(
 				id,
 				payload,
@@ -297,24 +287,25 @@ const CreateNotification = (props) => {
 			)
 			if (response.status === 200) {
 				console.log(response)
+				if(isBack){
+					pushBack()
+				}
 			}
+
 		} catch (e) {
 			console.log(e)
 		}
+		if(isBack){
+			setDisable(false)
+		}
 	}
-	useEffect(() => {
-		saveDataApi = setInterval(() => {
-			saveDetails()
-		}, 10000)
-		return () => clearInterval(saveDataApi)
-	}, [title, description, summary, classState, category, userList, payment])
 
 	const styleOptions = (option) => {
-		if (option.roles.length !== 0) {
+		if (option.name) {
 			return (
 				<div className={classes.optionContainer}>
 					<Typography className={classes.optionTitle}>
-						{`${option.firstname} ${option.lastname} - ${option.roles[0].name}`}
+						{`${option.firstname} ${option.lastname} - ${option.name}`}
 					</Typography>
 
 					{option.user_classes ? (
@@ -339,6 +330,7 @@ const CreateNotification = (props) => {
 			return option.username
 		}
 	}
+
 	const handleChangeInput = (event) => {
 		let name = event.target.name
 		if (name === 'title') {
@@ -346,10 +338,15 @@ const CreateNotification = (props) => {
 		} else {
 			setSummary(event.target.value)
 		}
+		clearError()
 	}
 
 	const handleSelectClass = (event) => {
 		setClassState(event.target.value)
+	}
+
+	const hanldeDeleteClass = (value) => {
+		setClassState(classState.filter((classname) => classname !== value))
 	}
 
 	const handleDescription = (data) => {
@@ -358,17 +355,7 @@ const CreateNotification = (props) => {
 
 	const handleCategoryChange = (event) => {
 		let trimValue = event.target.value.toLowerCase().replace(/\s+/g, '')
-		if (trimValue === 'payment') {
-			setOpenPayment(true)
-		} else {
-			setOpenPayment(false)
-			setPayment('')
-		}
 		setCategory(trimValue)
-	}
-
-	const handleChangePayment = (event) => {
-		setPayment(event.target.value)
 	}
 
 	const handleSearchChange = (event, value) => {
@@ -382,111 +369,62 @@ const CreateNotification = (props) => {
 					event.target.value,
 					props.token
 				)
-				setSearchData([...searchData, ...response.data.data])
+				setSearchData(response.data.data)
 			} catch (e) {
 				console.log(e)
 			}
 		}
 	}
 
-	const handleOpenPubLater = (event) => {
-		if (classState.length === 0 || title === '' || summary === '') {
+	const validation = () => {
+		if ((classState.length === 0 && userList.length < 1) || title === '' || summary === '' || category === '') {
 			setError('Fill All Data !')
-		} else {
-			setOpenPubLater(true)
+			return false
 		}
+		return true
 	}
 
-	const handleClosePubLater = () => {
-		setOpenPubLater(false)
+	const clearError = () =>{
+		setError('')
 	}
 
-	const publishData = async (publisedDate, status) => {
-		try {
-			let classMapping = { class: [] }
-
-			let isSelectAll = classState.find(
-				(classname) => classname === 'Select All'
-			)
-			if (isSelectAll) {
-				classMapping['teachers'] = true
-				classMapping['parents'] = true
-				classMapping.class = [...Object.keys(props.classState)]
-			} else {
-				console.log(classState)
-				classState.forEach((classnames) => {
-					if (classnames === 'All Parents') {
-						classMapping['parents'] = true
-					} else if (classnames === 'All Teachers') {
-						classMapping['teachers'] = true
-					} else {
-						classMapping.class.push(
-							parseInt(
-								Object.keys(props.classState).find(
-									(classId) => props.classState[classId] === classnames
-								)
-							)
-						)
-					}
-				})
-			}
-			console.log(classMapping)
-			if (userList.length !== 0) {
-				classMapping.individual_users = []
-				userList.forEach((user) => {
-					classMapping.individual_users.push(user.id)
-				})
-			}
-			let payload = {
-				type: category,
-				data: {
-					title,
-					summary,
-					main_content: description,
-				},
-				notify_status: status,
-				published_date: publisedDate,
-
-				published_to: classMapping,
-			}
-
-			if (category === 'payment') {
-				payload = {
-					...payload,
-					data: {
-						title,
-						summary,
-						main_content: description,
-						payment: parseInt(payment) * 100,
-					},
-				}
-			}
-			const response = await NotificationService.saveNotification(
-				id,
-				payload,
-				props.token
-			)
-			if (response.status === 200) {
-				console.log(response)
-				history.replace(paths.NOTIFICATIONS)
-			}
-		} catch (e) {
-			console.log(e)
-		}
+	const handlePublishLater = () => {			
+			setStatus('active')
+			saveDetails({
+				status: 'active',
+				date: publishDate,
+				isBack: true
+			})
 	}
-	const handlePublishLater = (laterEventDate) => {
-		clearInterval(saveDataApi)
 
-		const status = 'active'
-
-		publishData(laterEventDate.toISOString(), status)
-	}
 	const submitForm = async (event) => {
 		event.preventDefault()
-		clearInterval(saveDataApi)
+		if(validation()){
+			setStatus('published')
+			let date = new Date().toISOString();
+			setPublishDate(date)
+			saveDetails({
+				status: 'published',
+				date: date,
+				isBack: true
+			})
+		}
+	}
 
-		const status = 'published'
-		publishData(new Date().toISOString(), status)
+	const handleBack = () =>{
+		saveDetails({
+				status: status,
+				date: publishDate,
+				isBack: true
+		});
+	}
+
+	const pushBack = () =>{
+		history.push({pathname : paths.NOTIFICATIONS,
+			state: {
+				tab : props.selectedTab
+			}
+		})
 	}
 
 	return (
@@ -499,14 +437,7 @@ const CreateNotification = (props) => {
 								src={BackIcon}
 								alt='Back'
 								className={classes.backImg}
-								onClick={() => {
-									saveDetails()
-									history.push({pathname : paths.NOTIFICATIONS,
-										state: {
-											tab : props.selectedTab
-										}
-									})
-								}}
+								onClick={ handleBack }
 							/>
 							<Typography
 								variant='h5'
@@ -555,13 +486,18 @@ const CreateNotification = (props) => {
 					</Box>
 					<Box className={`${classes.margin} ${classes.sideMargins}`}>
 						<FormControl className={classes.fieldStyle}>
-							<InputLabel>Categories</InputLabel>
+							<InputLabel
+								labelId='category-label'
+							>
+								Categories*
+							</InputLabel>
 							<Select
-								labelId='demo-mutiple-chip-label'
+								labelId='category-label'
 								id='demo-mutiple-chip'
 								value={category}
 								onChange={handleCategoryChange}
 								input={<Input id='select-multiple-chip' />}
+								required={true}
 								renderValue={(selected) => {
 									return (
 										<div className={classes.chips}>
@@ -593,26 +529,6 @@ const CreateNotification = (props) => {
 							</Select>
 						</FormControl>
 					</Box>
-					{openPayment ? (
-						<Box className={`${classes.margin} ${classes.sideMargins}`}>
-							<FormControl className={classes.fieldStyle}>
-								<TextField
-									id='payment'
-									name='payment'
-									label='Amount'
-									className={classes.inputBorder}
-									value={payment}
-									onChange={handleChangePayment}
-									required={true}
-									InputProps={{
-										inputComponent: NumberFormatCustom,
-									}}
-								/>
-							</FormControl>
-						</Box>
-					) : (
-						''
-					)}
 					<Box className={`${classes.margin} ${classes.sideMargins}`}>
 						<FormControl className={classes.fieldStyle}>
 							<Autocomplete
@@ -674,6 +590,10 @@ const CreateNotification = (props) => {
 										<div className={classes.chips}>
 											{selected.map((value) => (
 												<Chip
+													onDelete={() => hanldeDeleteClass(value)}
+													onMouseDown={(event) => {
+														event.stopPropagation()
+													}}
 													key={value}
 													label={value}
 													className={classes.chip}
@@ -711,42 +631,21 @@ const CreateNotification = (props) => {
 							direction='row-reverse'
 						>
 							<Grid item sm={8} xs={12} className={classes.publishBtns}>
-								<Button
-									id='publishLaterBtn'
-									variant='contained'
-									onClick={handleOpenPubLater}
-									className={`${
-										classes.fieldStyle
-									} ${'publishBtn'} ${'publishLaterBtn'}`}
-									disableElevation
-								>
-									Publish Later
-								</Button>
-								<Button
-									id='publishBtn'
-									variant='contained'
-									className={`${classes.fieldStyle} ${'publishBtn'}`}
-									color='primary'
-									type='submit'
-									disableElevation
-								>
-									Publish Now
-								</Button>
+								<PublishLaterButton
+									disabled={disable}
+									validation={validation}
+									publishDate={publishDate}
+									handlePublishDate={setPublishDate}
+									handlePublishLater={handlePublishLater}
+								/>
+								<PublishNowButton 
+									disabled={disable}
+								/>
 							</Grid>
 							<Grid item sm={4} xs={12} className={classes.textAlignLeft}>
-								<Button
-									id='cancelBtn'
-									variant='contained'
-									onClick={() => {
-										history.push('/news')
-									}}
-									className={`${
-										classes.fieldStyle
-									} ${'publishBtn'} ${'publishLaterBtn'}`}
-									disableElevation
-								>
-									Cancel
-								</Button>
+								<CancelButton 
+									handleCancel={handleBack}
+								/>
 							</Grid>
 							<br />
 							<br />
@@ -756,16 +655,7 @@ const CreateNotification = (props) => {
 				</form>
 			</div>
 			<br />
-			<br />
-			{openPubLater ? (
-				<PublishLater
-					open={openPubLater}
-					handleClose={handleClosePubLater}
-					handlePublishLater={handlePublishLater}
-				/>
-			) : (
-				''
-			)}
+			<br />			
 		</>
 	)
 }

@@ -1,95 +1,101 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/styles";
-import BackIcon from "../../../assets/images/Back.svg";
-import Typography from "@material-ui/core/Typography";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
-import MultiDiaryTabs from "./MultiDiaryTabs";
-import { useHistory, useParams, useLocation } from "react-router-dom";
-import { diarySeenUnseen } from "../../redux/actions/attendence.action";
-import { connect } from "react-redux";
-import * as moment from "moment";
-import { CircularProgress } from "@material-ui/core";
+import React, { useState, useEffect } from 'react'
+import { makeStyles } from '@material-ui/styles'
+import BackIcon from '../../../assets/images/Back.svg'
+import Typography from '@material-ui/core/Typography'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import Grid from '@material-ui/core/Grid'
+import MultiDiaryTabs from './MultiDiaryTabs'
+import { useHistory, useParams, useLocation } from 'react-router-dom'
+import { diarySeenUnseen } from '../../redux/actions/attendence.action'
+import { connect } from 'react-redux'
+import * as moment from 'moment'
+import { CircularProgress } from '@material-ui/core'
 
 const useStyle = makeStyles((theme) => ({
   card: {
-    marginBottom: "20px",
+    marginBottom: '20px',
   },
   sectionContainer: {
-    flexWrap: "wrap",
-    margin: "20px",
-    marginBottom: "85px",
+    flexWrap: 'wrap',
+    margin: '20px',
+    marginBottom: '85px',
   },
   headingDiv: {
-    margin: "20px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    margin: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backImg: {
-    float: "left",
+    float: 'left',
     // transform: 'translateY(7px)',
-    cursor: "pointer",
-    position: "absolute",
-    left: "20px",
+    cursor: 'pointer',
+    position: 'absolute',
+    left: '20px',
   },
   themeColor: {
     color: `${theme.palette.common.deluge}`,
     padding: 0,
     margin: 0,
-    fontFamily: "Avenir",
+    fontFamily: 'Avenir',
     fontSize: 14,
   },
   titleText: {
-    fontFamily: "Avenir Medium",
-    color: "#1C1C1E",
+    fontFamily: 'Avenir Medium',
+    color: '#1C1C1E',
   },
 
   textAlignRight: {
-    textAlign: "right",
-    color: "#AEAEB2",
-    fontSize: "0.85rem",
+    fontStyle: 'normal',
+    textAlign: 'right',
+    color: '#AEAEB2',
+    fontSize: 14,
+    fontFamily: 'Avenir Roman',
   },
   imgDiv: {
-    display: "flex",
-    justifyContent: "flex-end",
-    width: "100%",
-  },
-  typography: {
-    marginTop: "5px",
-    // cursor: "pointer",
-    color: "black",
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
   },
   labelText: {
-    fontStyle: "normal",
-    color: "#8E8E93",
-    fontSize: ".8rem",
+    fontStyle: 'normal',
+    color: '#1C1C1E',
+    fontSize: 14,
+    fontFamily: 'Avenir Book',
+    // marginBottom: "12px",
+    lineHeight: '19px',
   },
   span: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   circularProgress: {
-    display: "flex",
-    height: "70%",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    height: '70%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-}));
+  title: {
+    fontFamily: 'Avenir Heavy',
+    fontSize: 14,
+    color: '#2C2C2E',
+    paddingBottom: '12px',
+  },
+}))
 
 function MultiDiaryDetails(props) {
-  const classes = useStyle();
-  const { id } = useParams();
-  const history = useHistory();
-  const { data, dataLoading } = props;
-  const diary = data.diary || {};
+  const classes = useStyle()
+  const { id, student_id, selectedTab } = useParams()
+  const history = useHistory()
+  const { data, dataLoading, selectedRole } = props
+  const diary = data.diary || {}
 
   const fetchData = () => {
-    props.diarySeenUnseen(id);
-  };
+    props.diarySeenUnseen(id, selectedRole)
+  }
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   return (
     <>
@@ -105,7 +111,9 @@ function MultiDiaryDetails(props) {
               alt="Back"
               className={classes.backImg}
               onClick={() => {
-                history.push("/multiple-student");
+                history.push({
+                  pathname: `/diary/${student_id}/tab/${selectedTab}`,
+                })
               }}
             />
             <Typography
@@ -120,40 +128,30 @@ function MultiDiaryDetails(props) {
               <Grid container>
                 <Grid item xs={8}>
                   <span>
-                    <Typography variant="body1">{diary.title}</Typography>
+                    <Typography className={classes.title}>
+                      {diary.title}
+                    </Typography>
                   </span>
                 </Grid>
                 <Grid item xs={4}>
-                  <Typography
-                    className={`${classes.textAlignRight}`}
-                    variant="body2"
-                  >
-                    {moment(diary.created_at).format("DD MMM YY")}
+                  <Typography className={`${classes.textAlignRight}`}>
+                    {moment(diary.created_at).format('DD MMM,hh:mm A')}
                   </Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item xs={8}></Grid>
                 <Grid item xs={4}>
-                  <Typography
-                    className={`${classes.labelText} ${classes.textAlignRight}`}
-                    variant="body2"
-                  >
-                    <span className={`${classes.span}`}>
-                      {diary.status}
-                    </span>
+                  <Typography className={` ${classes.textAlignRight}`}>
+                    <span className={`${classes.span}`}>{diary.status}</span>
                   </Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item xs={8}>
-                  <Typography className={classes.labelText} variant="body2">
-                    <Typography
-                      className={`${classes.typography}`}
-                      variant="body2"
-                    >
-                      {diary.description}
-                    </Typography>
+                  <Typography className={classes.labelText}>
+                    <Typography></Typography>
+                    {diary.description}
                   </Typography>
                 </Grid>
                 <Grid item xs={4}></Grid>
@@ -167,21 +165,21 @@ function MultiDiaryDetails(props) {
         </div>
       )}
     </>
-  );
+  )
 }
 
 const mapStateToProps = (state) => {
-  const { diarySeenUnseen = [], diarySeenUnseenLoading } = state.Attendence;
-  const userInfo = state.auth.userInfo || {};
-  const userClasses = userInfo.user_classes || {};
+  const { diarySeenUnseen = [], diarySeenUnseenLoading } = state.Attendence
+  const userInfo = state.auth.userInfo || {}
+  const userClasses = userInfo.user_classes || {}
   return {
     data: diarySeenUnseen,
     dataLoading: diarySeenUnseenLoading,
     selectedRole: state.auth.selectedRole,
     school_id: userClasses.school_id,
-  };
-};
+  }
+}
 
 export default connect(mapStateToProps, {
   diarySeenUnseen,
-})(MultiDiaryDetails);
+})(MultiDiaryDetails)

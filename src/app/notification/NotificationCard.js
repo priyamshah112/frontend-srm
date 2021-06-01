@@ -99,9 +99,15 @@ const useStyles = makeStyles((theme) => ({
 		color: `${theme.palette.common.lightFont}`,
 		fontSize: '14px',
 		fontStyle: 'normal',
+		wordBreak: 'break-word',
 	},
 	readClass: {
-		textAlign: 'right',
+		position: 'relative',
+		'& img':{
+			position: 'absolute',
+			right: '0px',
+			bottom: '0px',
+		}
 	},
 	payBtn: {
 		width: '113px',
@@ -128,7 +134,10 @@ const NotificationCard = (props) => {
 				const token = localStorage.getItem('srmToken')
 				const response = await NotificationService.updateStatus(
 					props.notification.notify_status_id,
-					updatedStatus,
+					{
+						status : updatedStatus,
+						notifications_id: props.notification.id,
+					},
 					token
 				)
 	
@@ -142,7 +151,7 @@ const NotificationCard = (props) => {
 						props.addNotificationCount()
 						setStatus('unread')
 					} else if (updatedStatus === 'deleted' && status !== 'deleted') {
-						if (props.notificationCount !== 0) {
+						if (props.notificationCount !== 0 && props.notification.status ==='unread') {
 							props.subNotificationCount()
 						}
 						props.handleRemoveNotifcation(props.notification.id)
@@ -165,17 +174,20 @@ const NotificationCard = (props) => {
 		}
 	}
 
-	const hanldeDetails = async () => {
+	const  hanldeDetails = async () => {
 		try {
 			if (props.notification.status === 'unread') {
 				const token = localStorage.getItem('srmToken')
 				const response = await NotificationService.updateStatus(
-					props.notification.notify_status_id,
-					'read',
+					props.notification.notify_status_id,					
+					{
+						status : 'read',
+						notifications_id: props.notification.id,
+					},
 					token
 				)
 			}
-			if (props.notificationCount !== 0) {
+			if (props.notificationCount !== 0 && props.notification.status ==='unread') {
 				props.subNotificationCount()
 			}
 			history.push(`${paths.NOTIFICATIONS}/${props.notification.id}`)

@@ -1,50 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import BackIcon from "../../assets/images/Back.svg";
-import { connect } from "react-redux";
-import { getClasses } from "../redux/actions/attendence.action";
-import { lunchMenuGetByWeek } from "../redux/actions/attendence.action";
-import { lunchMenuAll } from "../redux/actions/attendence.action";
-import { lunchMenuGetByDish } from "../redux/actions/attendence.action";
-import { lunchMenuPublishNow } from "../redux/actions/attendence.action";
+import React, { useState, useEffect } from 'react'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
+import FormControl from '@material-ui/core/FormControl'
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
+import BackIcon from '../../assets/images/Back.svg'
+import { connect } from 'react-redux'
+import { getClasses } from '../redux/actions/attendence.action'
+import { lunchMenuGetByWeek } from '../redux/actions/attendence.action'
+import { lunchMenuAll } from '../redux/actions/attendence.action'
+import { lunchMenuSearch } from '../redux/actions/attendence.action'
+import { lunchMenuGetByDish } from '../redux/actions/attendence.action'
+import { lunchMenuPublishNow } from '../redux/actions/attendence.action'
 // import { lunchMenuSearch } from "../redux/actions/attendence.action";
-import HomeworkService from "../Assignment/HomeworkService";
-import Input from "@material-ui/core/Input";
-import Chip from "@material-ui/core/Chip";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import PublishBtn from "./PublishBtn";
-import PublishLater from "./PublishLtr";
-import { SnackBarRef } from "../../SnackBar";
-import { CircularProgress } from "@material-ui/core";
-import BackdropLoader from "../common/ui/backdropLoader/BackdropLoader";
-import { useLocation, useParams } from "react-router-dom";
+import HomeworkService from '../Assignment/HomeworkService'
+import Input from '@material-ui/core/Input'
+import Chip from '@material-ui/core/Chip'
+import Select from '@material-ui/core/Select'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import PublishBtn from './PublishBtn'
+import PublishLater from './PublishLtr'
+import { SnackBarRef } from '../../SnackBar'
+import { CircularProgress } from '@material-ui/core'
+import BackdropLoader from '../common/ui/backdropLoader/BackdropLoader'
+import { useLocation, useParams } from 'react-router-dom'
 
 const useStyle = makeStyles((theme) => ({
   formStyle: {
-    margin: "20px",
-    marginBottom: "85px",
-    paddingTop: "20px",
-    backgroundColor: "white",
-    justifyContent: "center",
-    textAlign: "center",
-    borderRadius: "5px",
+    margin: '20px',
+    marginBottom: '85px',
+    paddingTop: '20px',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    textAlign: 'center',
+    borderRadius: '5px',
   },
   backImg: {
-    float: "left",
-    transform: "translate(0px, 7px)",
-    cursor: "pointer",
+    float: 'left',
+    transform: 'translate(0px, 7px)',
+    cursor: 'pointer',
   },
   adornmentColor: {
-    color: "rgba(0, 0, 0, 0.54)",
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   themeColor: {
     color: `${theme.palette.common.deluge}`,
@@ -52,34 +53,34 @@ const useStyle = makeStyles((theme) => ({
     margin: 0,
   },
   errorColor: {
-    color: "red",
+    color: 'red',
   },
   titleText: {
-    textAlign: "center",
-    margin: "auto",
-    fontFamily: "Avenir Medium",
-    fontize: "1.2rem",
-    color: "#1C1C1E",
+    textAlign: 'center',
+    margin: 'auto',
+    fontFamily: 'Avenir Medium',
+    fontize: '1.2rem',
+    color: '#1C1C1E',
   },
   fieldStyle: {
-    width: "100%",
-    margin: "auto",
-    fontFamily: "Avenir Book",
-    fontSize: " 1rem",
-    "& .MuiInput-underline:before": {
-      borderBottom: "2px solid #eaeaea",
+    width: '100%',
+    margin: 'auto',
+    fontFamily: 'Avenir Book',
+    fontSize: ' 1rem',
+    '& .MuiInput-underline:before': {
+      borderBottom: '2px solid #eaeaea',
     },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-      borderBottom: "2px solid #7B72AF",
-      transitionProperty: "border-bottom-color",
-      transitionDuration: "500ms",
-      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+      borderBottom: '2px solid #7B72AF',
+      transitionProperty: 'border-bottom-color',
+      transitionDuration: '500ms',
+      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
   snackBar: {
-    "&.MuiSnackbar-root": {
+    '&.MuiSnackbar-root': {
       zIndex: theme.zIndex.drawer + 1,
-      maxWidth: "400px",
+      maxWidth: '400px',
     },
   },
   previewChip: {
@@ -87,42 +88,42 @@ const useStyle = makeStyles((theme) => ({
     maxWidth: 400,
   },
   inputBorder: {
-    height: "50px",
+    height: '50px',
   },
   datePicker: {
-    width: "100%",
-    [theme.breakpoints.down("xs")]: {
-      width: "100%",
+    width: '100%',
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
     },
   },
   paper: {
-    display: "flex",
-    minHeight: "40px",
-    backgroundColor: "none",
-    justifyContent: "left",
-    flexWrap: "wrap",
-    listStyle: "none",
+    display: 'flex',
+    minHeight: '40px',
+    backgroundColor: 'none',
+    justifyContent: 'left',
+    flexWrap: 'wrap',
+    listStyle: 'none',
     border: `1px solid ${theme.palette.common.deluge}`,
     padding: theme.spacing(0.5),
-    margin: "auto",
+    margin: 'auto',
   },
 
   showIn: {
-    paddingTop: "5px",
+    paddingTop: '5px',
   },
   textArea: {
-    width: "100%",
+    width: '100%',
   },
   paperShowIn: {
-    display: "flex",
-    minHeight: "40px",
-    backgroundColor: "none",
-    justifyContent: "left",
-    flexWrap: "wrap",
-    listStyle: "none",
+    display: 'flex',
+    minHeight: '40px',
+    backgroundColor: 'none',
+    justifyContent: 'left',
+    flexWrap: 'wrap',
+    listStyle: 'none',
 
     padding: theme.spacing(0.5),
-    margin: "auto",
+    margin: 'auto',
   },
   chip: {
     margin: theme.spacing(0.5),
@@ -131,141 +132,144 @@ const useStyle = makeStyles((theme) => ({
     boxShadow: `2px 2px 2px 0 #E5E5EA`,
   },
   textAlignLeft: {
-    textAlign: "left",
-    color: "rgba(0, 0, 0, 0.54)",
+    textAlign: 'left',
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   contentCenter: {
-    justifyContent: "left",
+    justifyContent: 'left',
   },
   chips: {
-    display: "flex",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   chip: {
     margin: 2,
   },
   publishBtns: {
-    textAlign: "right",
-    justifyContent: "right",
+    textAlign: 'right',
+    justifyContent: 'right',
+    '& .MuiButton-root': {
+      textTransform: 'capitalize',
+    },
   },
   menuItem: {
-    textAlign: "left",
-    color: "rgba(0, 0, 0, 0.54)",
+    textAlign: 'left',
+    color: 'rgba(0, 0, 0, 0.54)',
   },
   sideMargins: {
-    marginLeft: "20px",
-    marginRight: "20px",
+    marginLeft: '20px',
+    marginRight: '20px',
   },
   formControl: {
-    width: "100%",
+    width: '100%',
   },
   sideMarginright: {
-    marginRight: "50px",
+    marginRight: '50px',
   },
   radio: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   dropzone: {
-    border: "solid !important",
-    minHeight: "0px !important",
-    width: "150px !important",
+    border: 'solid !important',
+    minHeight: '0px !important',
+    width: '150px !important',
   },
   margin: {
-    marginTop: "20px",
-    [theme.breakpoints.down("xs")]: {
-      marginTop: "10px",
+    marginTop: '20px',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: '10px',
     },
-    "& .publishBtn": {
-      borderRadius: "3px",
-      width: "inherit",
+    '& .publishBtn': {
+      borderRadius: '3px',
+      width: 'inherit',
       margin: 0,
-      [theme.breakpoints.down("xs")]: {
-        marginTop: "10px",
+      [theme.breakpoints.down('xs')]: {
+        marginTop: '10px',
         marginRight: 0,
-        width: "100%",
+        width: '100%',
       },
     },
-    "& .publishLaterBtn": {
+    '& .publishLaterBtn': {
       backgroundColor: `${theme.palette.common.white}`,
       border: `1px solid ${theme.palette.common.adornment}`,
-      marginRight: "5px",
+      marginRight: '5px',
     },
   },
   circle: {
-    padding: "4px",
-    borderRadius: "50%",
-    width: "3px",
-    height: "2px",
-    marginTop: "5px",
-    marginRight: "4px",
+    padding: '4px',
+    borderRadius: '50%',
+    width: '3px',
+    height: '2px',
+    marginTop: '5px',
+    marginRight: '4px',
   },
   circleRed: {
-    backgroundColor: "#f44336",
+    backgroundColor: '#f44336',
   },
   circleGreen: {
-    backgroundColor: "#14ee14",
+    backgroundColor: '#14ee14',
   },
   red: {
-    color: "#f44336",
+    color: '#f44336',
   },
   green: {
-    color: "#14ee14",
+    color: '#14ee14',
   },
   heading: {
-    fontFamily: "Avenir medium",
+    fontFamily: 'Avenir medium',
     fontSize: 14,
-    width: "20%",
-    display: "flex",
-    marginLeft: "15px",
+    width: '20%',
+    display: 'flex',
+    marginLeft: '15px',
   },
   renderOption: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingTop: "13px",
-    paddingBottom: "8px",
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingTop: '13px',
+    paddingBottom: '8px',
   },
   optionHeading: {
-    fontFamily: "Avenir medium",
+    fontFamily: 'Avenir medium',
     fontSize: 14,
   },
   optionPrice: {
-    fontFamily: "Avenir book",
+    fontFamily: 'Avenir book',
     fontSize: 14,
-    width: "20%",
-    textAlign: "center",
+    width: '20%',
+    textAlign: 'center',
     // position: "absolute",
     // right: "0",
   },
   optionContainer: {
-    display: "flex",
-    width: "80%",
+    display: 'flex',
+    width: '80%',
   },
   headingMargin: {
-    margin: "20px",
+    margin: '20px',
   },
-}));
+}))
 
 function AddMenu(props) {
-  const IMAGE_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL;
-  const classes = useStyle();
-  const [errMessage, setError] = useState("");
-  const [dishId, setDishId] = useState([]);
-  const [title, setTitle] = useState("");
-  const [day, setDay] = useState("Select Day");
-  const [classState, setClassState] = useState([]);
-  const [classesId, setClass] = useState([]);
-  const [mappedClass, setMappedClass] = useState([]);
-  const [classUpdate, setClassUpdate] = useState("");
-  const [updateLoading, setUpdateLoading] = useState(false);
-  const [publishLoading, setPublishLoading] = useState(false);
+  const IMAGE_BASE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
+  const classes = useStyle()
+  const [errMessage, setError] = useState('')
+  const [dishId, setDishId] = useState([])
+  const [title, setTitle] = useState('')
+  const [day, setDay] = useState('Select Day')
+  const [classState, setClassState] = useState([])
+  const [classesId, setClass] = useState([])
+  const [mappedClass, setMappedClass] = useState([])
+  const [classUpdate, setClassUpdate] = useState('')
+  const [updateLoading, setUpdateLoading] = useState(false)
+  const [publishLoading, setPublishLoading] = useState(false)
   const [classesLoading, setClassesLoading] = useState(false)
-  const [update, setUpdate] = useState(false);
-  let saveDataApi;
+  const [update, setUpdate] = useState(false)
+  let saveDataApi
 
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState(false)
   const {
     menuId,
     edit,
@@ -273,9 +277,9 @@ function AddMenu(props) {
     updateTitle,
     updateClasses,
     updateDish,
-  } = props;
+  } = props
 
-  console.log("updateDayTitle", typeof updateClasses, updateClasses);
+  console.log('updateDayTitle', typeof updateClasses, updateClasses)
   const {
     data = [],
     class_id,
@@ -284,348 +288,359 @@ function AddMenu(props) {
     dishListLoading,
     weekday,
     weekdayLoading,
-  } = props;
+  } = props
 
-  console.log("class_id", class_id);
+  console.log('class_id', class_id)
 
-  const [open, setOpen] = useState(false);
-  const [openPubLtr, setOpenPubLater] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [openPubLtr, setOpenPubLater] = useState(false)
 
-  const lunch_menu_id = props.lunchMenuId;
-  const location = useLocation();
+  const lunch_menu_id = props.lunchMenuId
+  const location = useLocation()
 
   const handleUpdateClass = () => {
-    console.log("handleUpdate");
-    let array = [];
-    let classes = [];
+    console.log('handleUpdate')
+    let array = []
+    let classes = []
     updateClasses.map((item) => {
       if (classUpdate.data) {
         let findClassName = classUpdate.data.data.find(
-          (classes) => classes.id == item
-        );
-        array.push(findClassName);
+          (classes) => classes.id == item,
+        )
+        array.push(findClassName)
       }
-    });
-    setUpdateLoading(false);
+    })
+    setUpdateLoading(false)
     array.map((classname) => {
-      classes.push(classname.class_name);
-    });
-    setClassState(classes);
-  };
+      classes.push(classname.class_name)
+    })
+    setClassState(classes)
+  }
 
   useEffect(() => {
     if (classUpdate && edit) {
-      handleUpdateClass();
+      handleUpdateClass()
     }
-  }, [classUpdate]);
+  }, [classUpdate])
 
   useEffect(() => {
     const fetchClasses = async () => {
-      setClassesLoading(true);
-      const classesResponse = await HomeworkService.fetchClasses(props.token);
-      setClassesLoading(false);
-      setClassUpdate(classesResponse);
-      let initialClassState = {};
+      setClassesLoading(true)
+      const classesResponse = await HomeworkService.fetchClasses(props.token)
+      setClassesLoading(false)
+      setClassUpdate(classesResponse)
+      let initialClassState = {}
       classesResponse.data.data.forEach((className) => {
-        initialClassState[className.id] = className.class_name;
-      });
+        initialClassState[className.id] = className.class_name
+      })
 
-      console.log("classesResponse", classesResponse);
+      console.log('classesResponse', classesResponse)
 
-      setClass({ ...initialClassState });
-    };
-    if (location.pathname === `/lunch` || location.pathname === `/menu`) {
-      fetchClasses();
+      setClass({ ...initialClassState })
     }
-  }, []);
-  const classStateNames = ["All", ...Object.values(classesId)];
+    if (location.pathname === `/lunch` || location.pathname === `/menu`) {
+      fetchClasses()
+    }
+  }, [])
+  const classStateNames = ['All', ...Object.values(classesId)]
 
-  console.log("classStateNames", classStateNames, Object.values(classesId));
+  console.log('classStateNames', classStateNames, Object.values(classesId))
 
   useEffect(() => {
     if (edit) {
-      setDishId(updateDish);
-      setTitle(updateTitle);
-      setDay(updateDay);
+      setDishId(updateDish)
+      setTitle(updateTitle)
+      setDay(updateDay)
       // setUpdateLoading(true)
     }
-  }, []);
+  }, [])
 
   const validForm = () => {
-    if (day === "Select Day" && !title && !dishId[0] && !classState[0]) {
-      setError("All field are mandatory ");
-    } else if (day === "Select Day" && !title && !dishId[0]) {
-      setError("All field are mandatory ");
+    if (day === 'Select Day' && !title && !dishId[0] && !classState[0]) {
+      setError('All field are mandatory ')
+    } else if (day === 'Select Day' && !title && !dishId[0]) {
+      setError('All field are mandatory ')
     } else if (!title && !dishId[0] && !classState[0]) {
-      setError("All field are mandatory ");
-    } else if (day === "Select Day" && !title && !classState[0]) {
-      setError("All field are mandatory ");
-    } else if (day === "Select Day" && !dishId[0] && !classState[0]) {
-      setError("All field are mandatory ");
-    } else if (day === "Select Day" && !title) {
-      setError("All field are mandatory ");
+      setError('All field are mandatory ')
+    } else if (day === 'Select Day' && !title && !classState[0]) {
+      setError('All field are mandatory ')
+    } else if (day === 'Select Day' && !dishId[0] && !classState[0]) {
+      setError('All field are mandatory ')
+    } else if (day === 'Select Day' && !title) {
+      setError('All field are mandatory ')
     } else if (!title && !dishId[0]) {
-      setError("All field are mandatory ");
+      setError('All field are mandatory ')
     } else if (!dishId[0] && !classState[0]) {
-      setError("All field are mandatory ");
-    } else if (day === "Select Day" && !classState[0]) {
-      setError("All field are mandatory ");
-    } else if (day === "Select Day") {
-      setError("All field are mandatory ");
+      setError('All field are mandatory ')
+    } else if (day === 'Select Day' && !classState[0]) {
+      setError('All field are mandatory ')
+    } else if (day === 'Select Day') {
+      setError('All field are mandatory ')
     } else if (!title) {
-      setError("All field are mandatory ");
+      setError('All field are mandatory ')
     } else if (!dishId[0]) {
-      setError("All field are mandatory ");
+      setError('All field are mandatory ')
     } else if (!classState[0]) {
-      setError("All field are mandatory ");
+      setError('All field are mandatory ')
     } else {
-      return true;
+      return true
     }
-  };
+  }
 
   const handlePubNowOpen = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (validForm()) {
-      setOpen(true);
+      setOpen(true)
     }
-  };
+  }
   const handlePubNowClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
   const handleOpenPubLater = () => {
     if (validForm()) {
-      setOpenPubLater(true);
+      setOpenPubLater(true)
     }
-  };
+  }
   const handleClosePubLater = () => {
-    setOpenPubLater(false);
-  };
+    setOpenPubLater(false)
+  }
 
   const handleChangeDay = (e) => {
-    setDay(e.target.value);
-    setError("");
-  };
+    setDay(e.target.value)
+    setError('')
+  }
 
-  let currentTime = new Date();
-  let hours = currentTime.getHours();
-  let minutes = currentTime.getMinutes();
-  let seconds = currentTime.getSeconds();
-  let date = currentTime.getDate();
-  let month = currentTime.getMonth();
-  let year = currentTime.getFullYear();
-  month = parseInt(month) + 1;
+  let currentTime = new Date()
+  let hours = currentTime.getHours()
+  let minutes = currentTime.getMinutes()
+  let seconds = currentTime.getSeconds()
+  let date = currentTime.getDate()
+  let month = currentTime.getMonth()
+  let year = currentTime.getFullYear()
+  month = parseInt(month) + 1
 
-  date = (date < 10 ? "0" : "") + date;
-  month = (month < 10 ? "0" : "") + month;
-  hours = (hours < 10 ? "0" : "") + hours;
-  minutes = (minutes < 10 ? "0" : "") + minutes;
-  seconds = (seconds < 10 ? "0" : "") + seconds;
+  date = (date < 10 ? '0' : '') + date
+  month = (month < 10 ? '0' : '') + month
+  hours = (hours < 10 ? '0' : '') + hours
+  minutes = (minutes < 10 ? '0' : '') + minutes
+  seconds = (seconds < 10 ? '0' : '') + seconds
   let time =
     year +
-    "-" +
+    '-' +
     month +
-    "-" +
+    '-' +
     date +
-    " " +
+    ' ' +
     hours +
-    ":" +
+    ':' +
     minutes +
-    ":" +
-    seconds;
+    ':' +
+    seconds
 
   const handleClassId = () => {
-    let classMapping = { class: [] };
-    let isSelectAll = classState.find((classname) => classname === "All");
+    let classMapping = { class: [] }
+    let isSelectAll = classState.find((classname) => classname === 'All')
     if (isSelectAll) {
-      classMapping.class = [...Object.keys(classesId)];
-      console.log("classMapping", classMapping.class);
+      classMapping.class = [...Object.keys(classesId)]
+      console.log('classMapping', classMapping.class)
     } else {
       classState.forEach((classnames) => {
         classMapping.class.push(
           parseInt(
             Object.keys(classesId).find(
-              (classId) => classesId[classId] === classnames
-            )
-          )
-        );
-      });
+              (classId) => classesId[classId] === classnames,
+            ),
+          ),
+        )
+      })
     }
-    setMappedClass(classMapping);
-  };
+    setMappedClass(classMapping)
+  }
 
-  console.log("mappedClass", mappedClass);
+  console.log('mappedClass', mappedClass)
 
   useEffect(() => {
-    handleClassId();
-  }, [classState]);
+    handleClassId()
+  }, [classState])
 
   const handleSubmit = (status, selectedDate) => {
-    setPublishLoading(true);
-    setOpenPubLater(false);
-    let lunchDishId = [];
+    setPublishLoading(true)
+    setOpenPubLater(false)
+    let lunchDishId = []
     dishId.map((item) => {
-      lunchDishId.push(item.id);
-    });
+      lunchDishId.push(item.id)
+    })
     const publishData = {
       name: title,
       lunch_dish_id: lunchDishId,
-      weekday_id: day === "Select Day" ? "" : day,
+      weekday_id: day === 'Select Day' ? '' : day,
       school_id: school_id,
       published_to: mappedClass,
       status: status,
       published_date: selectedDate ? selectedDate : time,
-    };
+    }
     if (edit) {
       props.lunchMenuPublishNow(
         lunch_menu_id,
         publishData,
         handleSuccess,
-        handleFail
-      );
+        handleFail,
+      )
     } else {
       props.lunchMenuPublishNow(
         lunch_menu_id,
         publishData,
         handleSuccess,
-        handleFail
-      );
+        handleFail,
+      )
     }
-  };
+  }
 
   const handleSuccessPublish = (isBack) => {
     if (isBack) {
-      props.lunchMenuAll(school_id, class_id);
+      if (props.day === 'All') {
+        props.lunchMenuAll(school_id, class_id)
+      } else {
+        props.lunchMenuSearch(props.day, class_id, school_id)
+      }
+
+      props.close()
     }
-  };
+  }
 
   const saveDetails = (isBack) => {
-    if (day !== "Select Day" && title && classState) {
-      let lunchDishId = [];
+    if (day !== 'Select Day' && title && classState) {
+      let lunchDishId = []
       dishId.map((item) => {
-        lunchDishId.push(item.id);
-      });
+        lunchDishId.push(item.id)
+      })
       const publishData = {
         name: title,
         lunch_dish_id: lunchDishId,
-        weekday_id: day === "Select Day" ? "" : day,
+        weekday_id: day === 'Select Day' ? '' : day,
         school_id: school_id,
         published_to: mappedClass,
-        status: "draft",
-      };
+        status: 'draft',
+      }
       props.lunchMenuPublishNow(lunch_menu_id, publishData, () =>
-        handleSuccessPublish(isBack)
-      );
+        handleSuccessPublish(isBack),
+      )
+    } else {
+      if (isBack) {
+        props.close()
+      }
     }
-    if (isBack) {
-      props.close();
-    }
-  };
+  }
 
   useEffect(() => {
     if (update) {
-      saveDetails(false);
+      saveDetails(false)
     }
-  }, [update]);
+  }, [update])
 
   useEffect(() => {
     if (!dishListLoading && !weekdayLoading && !classesLoading) {
       saveDataApi = setInterval(() => {
-        setUpdate(Math.random());
-      }, 10000);
+        setUpdate(Math.random())
+      }, 10000)
     }
-    return () => clearInterval(saveDataApi);
-  }, [day, title, classState, dishId]);
+    return () => clearInterval(saveDataApi)
+  }, [day, title, classState, dishId])
 
   const handleBack = () => {
-    setLoader(true);
-    saveDetails(true);
-  };
+    setLoader(true)
+    saveDetails(true)
+  }
 
   const handleChangeInput = (event) => {
-    setTitle(event.target.value);
-    setError("");
-  };
-  console.log(title);
+    setTitle(event.target.value)
+    setError('')
+  }
+  console.log(title)
   const handleSelectClass = (event) => {
-    setClassState(event.target.value);
-    setError("");
-  };
+    setClassState(event.target.value)
+    setError('')
+  }
   const hanldeDeleteClass = (value) => {
-    setClassState(classState.filter((classname) => classname !== value));
-  };
+    setClassState(classState.filter((classname) => classname !== value))
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
   const fetchData = () => {
-    props.getClasses();
-    props.lunchMenuGetByDish(school_id);
-    props.lunchMenuGetByWeek();
-  };
+    props.getClasses()
+    props.lunchMenuGetByDish(school_id)
+    props.lunchMenuGetByWeek()
+  }
 
   const handleSuccess = () => {
     if (edit) {
-      SnackBarRef.open("", true, "Menu updated successfully");
-      props.close();
+      SnackBarRef.open('', true, 'Menu updated successfully')
+      props.close()
     } else {
-      SnackBarRef.open("", true, "Menu created successfully");
-      props.close();
+      SnackBarRef.open('', true, 'Menu created successfully')
+      props.close()
     }
-    handlePubNowClose();
-    props.lunchMenuAll(school_id, class_id);
-    setLoader(false);
-    setPublishLoading(false);
-  };
+    handlePubNowClose()
+    if (props.day === 'All') {
+      props.lunchMenuAll(school_id, class_id)
+    } else {
+      props.lunchMenuSearch(props.day, class_id, school_id)
+    }
+    setLoader(false)
+    setPublishLoading(false)
+  }
   const handleFail = (error) => {
-    handlePubNowClose();
-    console.log("error", error);
+    handlePubNowClose()
+    console.log('error', error)
     if (error) {
-      SnackBarRef.open("", false, error.message);
+      SnackBarRef.open('', false, error.message)
     }
-    setPublishLoading(false);
-  };
+    setPublishLoading(false)
+  }
 
   const handlePublishNow = () => {
-    setOpen(false);
-    clearInterval(saveDataApi);
-    handleSubmit("published");
-  };
+    setOpen(false)
+    clearInterval(saveDataApi)
+    handleSubmit('published')
+  }
 
   const handlePubLater = (selectedDate) => {
-    handleSubmit("active", selectedDate);
-    clearInterval(saveDataApi);
-  };
+    handleSubmit('active', selectedDate)
+    clearInterval(saveDataApi)
+  }
 
   const handleDishId = (option) => {
-    let index = null;
-    let optionId = option.id;
+    let index = null
+    let optionId = option.id
     dishId.map((p, i) => {
       if (p.id === optionId) {
-        index = i;
+        index = i
       }
-    });
+    })
     if (index != null) {
-      dishId.splice(index, 1);
+      dishId.splice(index, 1)
     } else {
-      dishId.push(option);
+      dishId.push(option)
     }
-    setDishId(dishId);
-  };
+    setDishId(dishId)
+  }
   const handleRemove = (option) => {
-    let index = null;
-    let optionId = option ? option.id : "";
-    const array = [...dishId];
+    let index = null
+    let optionId = option ? option.id : ''
+    const array = [...dishId]
     array.map((p, i) => {
-      let id = p ? p.id : "";
+      let id = p ? p.id : ''
       if (id === optionId) {
-        index = i;
+        index = i
       }
-    });
+    })
     if (index != null) {
-      array.splice(index, 1);
+      array.splice(index, 1)
     }
-    setDishId(array);
-  };
+    setDishId(array)
+  }
 
   return (
     <>
@@ -648,7 +663,7 @@ function AddMenu(props) {
                   handleClose={handleClosePubLater}
                 />
               ) : (
-                ""
+                ''
               )}
               {open ? (
                 <PublishBtn
@@ -657,7 +672,7 @@ function AddMenu(props) {
                   close={handlePubNowClose}
                 />
               ) : (
-                ""
+                ''
               )}
               <div className={classes.headingMargin}>
                 <img
@@ -670,7 +685,7 @@ function AddMenu(props) {
                   variant="h5"
                   className={`${classes.themeColor} ${classes.titleText}`}
                 >
-                  {edit ? "Update Menu" : "Create Menu"}
+                  {edit ? 'Update Menu' : 'Create Menu'}
                 </Typography>
               </div>
               {/* </Box> */}
@@ -684,7 +699,7 @@ function AddMenu(props) {
                     </div>
                   </Box>
                 ) : (
-                  ""
+                  ''
                 )}
                 <Box className={`${classes.margin} ${classes.sideMargins}`}>
                   <FormControl className={classes.fieldStyle}>
@@ -734,16 +749,16 @@ function AddMenu(props) {
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            maxHeight: "300px",
+                            maxHeight: '300px',
                           },
                         },
                         anchorOrigin: {
-                          vertical: "bottom",
-                          horizontal: "center",
+                          vertical: 'bottom',
+                          horizontal: 'center',
                         },
                         transformOrigin: {
-                          vertical: "top",
-                          horizontal: "center",
+                          vertical: 'top',
+                          horizontal: 'center',
                         },
                         getContentAnchorEl: null,
                       }}
@@ -754,7 +769,7 @@ function AddMenu(props) {
                               <Chip
                                 onDelete={() => hanldeDeleteClass(value)}
                                 onMouseDown={(event) => {
-                                  event.stopPropagation();
+                                  event.stopPropagation()
                                 }}
                                 key={value}
                                 label={value}
@@ -762,7 +777,7 @@ function AddMenu(props) {
                               />
                             ))}
                           </div>
-                        );
+                        )
                       }}
                     >
                       {classStateNames.map((classname) => (
@@ -794,7 +809,7 @@ function AddMenu(props) {
                           <Chip
                             {...getTagProps({ index })}
                             onDelete={() => handleRemove(option)}
-                            label={option ? option.name : ""}
+                            label={option ? option.name : ''}
                           />
                         ))
                       }
@@ -804,14 +819,14 @@ function AddMenu(props) {
                           className={classes.renderOption}
                         >
                           <div className={classes.optionContainer}>
-                            <div style={{ width: "15%" }}>
+                            <div style={{ width: '15%' }}>
                               <img
                                 width="40px"
                                 height="30px"
                                 src={
                                   option.lunch_images[0]
                                     ? `${IMAGE_BASE_URL}/${option.lunch_images[0].img_path}/${option.lunch_images[0].img_name}`
-                                    : ""
+                                    : ''
                                 }
                               />
                             </div>
@@ -820,19 +835,19 @@ function AddMenu(props) {
                             </div>
                             <div
                               className={
-                                option.status === "Veg"
+                                option.status === 'Veg'
                                   ? `${classes.green} ${classes.heading}`
                                   : `${classes.red} ${classes.heading}`
                               }
                             >
                               <div
                                 className={
-                                  option.status === "Veg"
+                                  option.status === 'Veg'
                                     ? `${classes.circleGreen} ${classes.circle}`
                                     : `${classes.circleRed} ${classes.circle}`
                                 }
                               ></div>
-                              {option.status === "Veg" ? "Veg" : "Non Veg"}
+                              {option.status === 'Veg' ? 'Veg' : 'Non Veg'}
                             </div>
                           </div>
                           <div className={classes.optionPrice}>
@@ -859,7 +874,7 @@ function AddMenu(props) {
                           onClick={handleOpenPubLater}
                           className={`${
                             classes.fieldStyle
-                          } ${"publishBtn"} ${"publishLaterBtn"}`}
+                          } ${'publishBtn'} ${'publishLaterBtn'}`}
                           disableElevation
                         >
                           Publish Later
@@ -867,7 +882,7 @@ function AddMenu(props) {
                         <Button
                           id="publishBtn"
                           variant="contained"
-                          className={`${classes.fieldStyle} ${"publishBtn"}`}
+                          className={`${classes.fieldStyle} ${'publishBtn'}`}
                           color="primary"
                           type="submit"
                           onClick={handlePubNowOpen}
@@ -893,7 +908,7 @@ function AddMenu(props) {
         </>
       )}
     </>
-  );
+  )
 }
 
 const mapStateToProps = (state) => {
@@ -904,7 +919,7 @@ const mapStateToProps = (state) => {
     lunchMenuGetByDishLoading,
     lunchMenuGetByWeekLoading,
     lunchMenuPublishNowLoading,
-  } = state.Attendence;
+  } = state.Attendence
   return {
     dishListData: lunchMenuGetByDish,
     dishListLoading: lunchMenuGetByDishLoading,
@@ -914,14 +929,14 @@ const mapStateToProps = (state) => {
     data: classes,
     token: state.auth.token,
     school_id: state.auth.userInfo.user_classes.school_id,
-  };
-};
+  }
+}
 
 export default connect(mapStateToProps, {
   getClasses,
-  // lunchMenuSearch,
+  lunchMenuSearch,
   lunchMenuGetByDish,
   lunchMenuGetByWeek,
   lunchMenuPublishNow,
   lunchMenuAll,
-})(AddMenu);
+})(AddMenu)

@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
   publishBtns: {
     textAlign: "right",
     justifyContent: "right",
+    "& .MuiButton-root":{
+      textTransform:"capitalize"
+    }
   },
   sideMargins: {
     marginLeft: "20px",

@@ -83,11 +83,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   head: {
-    margin: "20px 0 20px 50px",
-    position: "relative",
+    margin: "20px 20px 20px 20px",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     // backgroundColor: 'red',
   },
   heading1: {
@@ -109,11 +108,13 @@ const useStyles = makeStyles((theme) => ({
     width: "93%",
   },
   head2: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "flex-end",
+    // display: "flex",
+    // alignItems: "flex-end",
+    // justifyContent: "flex-end",
     fontFamily: "Avenir",
-    width: "7%",
+    position: "absolute",
+    right: "20px",
+    // width: "7%",
   },
   heading21: {
     position: "absolute",
@@ -157,22 +158,17 @@ function WeeklyTimeTable(props) {
         open={openAdd}
         close={handleCloseAdd}
       />
-      <div className={classes.container}>
-        <div className={classes.head}>
-          <div className={classes.head1}>
-            <span className={classes.heading1}>
-              Weekly Time Table 2020 - 21
-            </span>
+      <div className={classes.head}>
+        <span className={classes.heading1}>Weekly Time Table 2020 - 21</span>
+        {selectedRole === "teacher" || selectedRole === "admin" ? (
+          <div className={classes.head2}>
+            {length ? <span className={classes.heading2}>{status}</span> : ""}
           </div>
-          {selectedRole === "teacher" || selectedRole === "admin" ? (
-            <div className={classes.head2}>
-              {length ? <span className={classes.heading2}>{status}</span> : ""}
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-
+        ) : (
+          ""
+        )}
+      </div>
+      <div className={classes.container}>
         {selectedRole === "teacher" || selectedRole === "admin" ? (
           <div className={classes.sectionContainer}>
             <div className={classes.header}>

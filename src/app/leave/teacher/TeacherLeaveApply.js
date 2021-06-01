@@ -189,6 +189,7 @@ const useStyle = makeStyles((theme) => ({
       borderRadius: "3px",
       width: "inherit",
       margin: 0,
+      textTransform: 'none',
       [theme.breakpoints.down("xs")]: {
         marginTop: "10px",
         marginRight: 0,
@@ -525,7 +526,7 @@ const TeacherLeaveApply = (props) => {
                 type="submit"
                 disableElevation
               >
-                SUBMIT
+                Submit
               </Button>
             </Grid>
           </Grid>

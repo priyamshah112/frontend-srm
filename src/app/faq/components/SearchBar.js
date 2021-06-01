@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const SearchBar = ({ handleSearch, handleSearchChange }) => {
+const SearchBar = (props) => {
+	const { handleSearch, handleSearchChange, placeholder = 'Search' } = props
 	const classes = useStyles();
 	return (
 	  <Box
@@ -40,7 +41,7 @@ const SearchBar = ({ handleSearch, handleSearchChange }) => {
 	  >
 		<Box className={classes.searchContainer}>
 		  <Input
-			placeholder="Search…"
+			placeholder={placeholder}
 			className={classes.search}
 			disableUnderline={true}
 			onChange={handleSearchChange}

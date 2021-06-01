@@ -93,19 +93,20 @@ function a11yProps(index) {
 }
 
 const TeacherNotifications = (props) => {
-	console.log(props)
+	// console.log(props)
 	const classes = useStyles()
 	const location = useLocation()
 	const { id } = useParams()
 	const [value, setValue] = useState( location.state !== undefined ? location.state.tab : 0)
 	const [classState, setClassState] = useState(null)
 	const [category, setcategory] = useState(null)
-	const [isClassLoading, setIsClassLoading] = useState(true)
+	const [isClassLoading, setIsClassLoading] = useState(true)	
+    const token = localStorage.getItem('srmToken')
 
 	useEffect(() => {
 		const fetchClasses = async () => {
 			const classesResponse = await AnnouncementService.fetchClasses(
-				props.token
+				token
 			)
 			let initialClassState = {}
 			classesResponse.data.data.forEach((className) => {
@@ -113,7 +114,7 @@ const TeacherNotifications = (props) => {
 			})
 
 			const categoryResponse = await AnnouncementService.fetchCategories(
-				props.token,
+				token,
 				'notifications'
 			)
 			let categoryList = {}

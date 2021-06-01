@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { connect } from 'react-redux'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import Avatar from '@material-ui/core/Avatar'
-import Badge from '@material-ui/core/Badge'
-import { Typography } from '@material-ui/core'
-import ChatService from './ChatService'
+import { Typography, Input, List, ListItem, ListItemText,ListItemAvatar } from '@material-ui/core'
+import { Avatar, Badge } from '@material-ui/core'
 import groupicon from '../../assets/images/chat/group.png'
 import moment from 'moment'
-var CryptoJS = require('crypto-js')
+import { useReactToPrint } from 'react-to-print'
+import { setChatUser } from '../redux/actions/chat.action'
 
 const StyledBadge = withStyles((theme) => ({
 	badge: {
@@ -36,9 +32,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 	ListItemText: {
 		width: '60%',
-	},
-	inline: {
-		display: 'inline',
 	},
 	listItem: {
 		backgroundColor: theme.palette.common.whiteSmoke,
@@ -67,187 +60,71 @@ const useStyles = makeStyles((theme) => ({
 	avatarBackground: {
 		background: theme.palette.primary.main,
 	},
-	groupIconContainer: {
-		height: 35,
-		width: 35,
-		borderRadius: '50%',
+	inputContainer: {
+		borderBottomWidth: 1,
+		borderBottomStyle: 'solid',
+		borderBottomColor: '#ccc',
+		flexDirection: 'row',
+		width: '100%',
 		padding: 5,
-		justifyContent: 'center',
-		verticalAlign: 'middle',
-		background: theme.palette.primary.main,
+	},	
+	inputBorder: {
+		width: '90%',
 	},
 }))
 
 const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
-export default function Chat({
-	filter,
-	updateGroup = false,
-	selectContact,
-	selectedRole,
-	newGroup,
-	userInfo,
-	showContact,
-	refreshChat,
-	setRefreshChat,
-}) {
+
+const Chat = (props) => {
+	const {
+		userInfo,
+		chatUsers
+	} = props
 	const classes = useStyles()
-	const [Chats, setChats] = useState([])
-	const [Users, setUsers] = useState([])
-	const [filteredChat, setFilteredChats] = useState([])
-	const [offset, setOffset] = useState(100)
-	const [currentPage, setCurrentPage] = useState(0)
-
+	const [filteredUsers, setFilteredUsers] = useState([])
+	const [filter, setFilter] = useState('')
+	
 	useEffect(() => {
-		if (updateGroup) {
-			setFilteredChats([...Users])
-		} else if (filter == '') {
-			setFilteredChats([...Chats])
-		} else {
-			if (Chats.length > 0) {
-				let chat = Chats.filter((c) => {
-					let name
-					let role
-					if (c.members != null) {
-						if (c.group != null) {
-							name = c.group.name
-						} else {
-							return false
-						}
-						role = ''
-					} else {
-						name = c.firstname + ' ' + c.lastname
-						role = c.roles[0].name
-					}
-					return (
-						name.toLowerCase().includes(filter.toLowerCase()) ||
-						role.toLowerCase().includes(filter.toLowerCase())
-					)
-				})
-				setFilteredChats([...chat])
-			}
-		}
-	}, [filter])
+		setFilteredUsers(chatUsers)
+	},[chatUsers])
 
-	useEffect(() => {
-		if (refreshChat) {
-			fetchChats()
-			setRefreshChat(false)
-		}
-	}, [refreshChat])
-
-	useEffect(() => {
-		if (showContact) {
-			setChats([])
-			setFilteredChats([])
-			fetchContacts()
-		} else {
-			setChats([])
-			setFilteredChats([])
-			fetchChats()
-		}
-	}, [showContact])
-
-	useEffect(() => {
-		if (newGroup) {
-			setChats([])
-			setFilteredChats([])
-			fetchContacts()
-		}
-	}, [newGroup])
-
-	useEffect(() => {
-		if (updateGroup) {
-			showContacts()
-		}
-	}, [updateGroup])
-
-	const showContacts = async () => {
-		try {
-			const token = localStorage.getItem('srmToken')
-			const response = await ChatService.fetchChats({ selectedRole }, token)
-			if (response.status === 200) {
-				const { data } = response
-				let chats = data.users
-				setFilteredChats(chats.slice(currentPage, offset))
-			}
-		} catch (error) {
-			console.log(error)
-		}
+	const handleFilter = (event) => {
+		setFilter(event.target.value)
+		setFilteredUsers(chatUsers.filter((item) => 
+			item.name.toLowerCase().search(event.target.value.toLowerCase()) !== -1
+		))
 	}
-
-	const fetchContacts = async () => {
-		if (newGroup) {
-			if (Users.length == 0) {
-				await fetchChats()
-			}
-			console.log(Users)
-			setChats([...Users])
-			let chats = [...Users]
-			setFilteredChats(chats.slice(currentPage, offset))
-		} else {
-			setChats([...Chats, ...Users])
-			let chats = [...Chats, ...Users]
-			setFilteredChats(chats.slice(currentPage, offset))
-		}
-	}
-
-	const fetchChats = async () => {
-		try {
-			const token = localStorage.getItem('srmToken')
-			const response = await ChatService.fetchChats({ selectedRole }, token)
-			if (response.status === 200) {
-				const { data } = response
-				setChats([...data.chats])
-				setFilteredChats([...data.chats])
-				setUsers([...data.users])
-			}
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
-	const loadMoreItems = (event) => {
-		console.log(event)
-		if (event.target.scrollTop === event.target.scrollHeight) {
-			//user is at the end of the list so load more items
-			let start = currentPage + 1 * offset
-			setCurrentPage(currentPage + 1)
-			let chats = Chats.slice(start, offset)
-			setFilteredChats([...filteredChat, ...chats])
-		}
-	}
-
-	const getPlainMessage = (message, chat) => {
-		var bytes = CryptoJS.AES.decrypt(message, 'chat' + chat.id)
-		var msg = bytes.toString(CryptoJS.enc.Utf8)
-		if (msg == '') {
-			bytes = CryptoJS.AES.decrypt(
-				message,
-				'chat' + chat.messages[0].recievers[0].reciever.id
-			)
-			msg = bytes.toString(CryptoJS.enc.Utf8)
-		}
-		return msg
-	}
-
 	return (
-		<div onScroll={(evt) => loadMoreItems(evt)}>
+		<div>
+			<ListItem className={classes.inputContainer} alignItems='flex-start'>
+				<Input
+					id='search'
+					placeholder='Search - Name/User ID'
+					name='search'
+					value={filter}
+					onChange={handleFilter}
+					className={classes.inputBorder}
+					required={true}
+					autoComplete={false}
+					disableUnderline={true}
+				/>
+			</ListItem>
 			<List className={classes.root}>
-				{filteredChat.map((chat) => {
-					let name = chat.firstname + ' ' + chat.lastname
-					let img = chat.thumbnail
+				{filteredUsers.map((user) => {
+					let name = user.name
+					let img = user.thumbnail
 					let avatar = {}
 					let message = ''
-					let date = chat.created_at
-					if (chat != undefined) {
-						if (chat.type == 'group') {
-							name = chat.group.name
-							let groupimg = encodeURI(chat.group.image)
+					let date = user.created_at
+					if (user != undefined) {
+						if (user.type == 'group') {
+							name = user.group.name
+							let groupimg = encodeURI(useReactToPrint.group.image)
 							img = groupimg ? BACKEND_IMAGE_URL + '/' + groupimg : groupicon
 							avatar = classes.avatarBackground
 						} else {
-							if (chat.members != undefined) {
-								let rec = chat.members.filter((c) => {
+							if (useReactToPrint.members != undefined) {
+								let rec = useReactToPrint.members.filter((c) => {
 									return c.id != userInfo.id
 								})[0]
 								name = rec.firstname + ' ' + rec.lastname
@@ -255,16 +132,10 @@ export default function Chat({
 							}
 						}
 					}
-					if (chat.messages != undefined && chat.messages.length > 0) {
-						message = getPlainMessage(
-							chat.messages[chat.messages.length - 1].message,
-							chat
-						)
-						date = chat.messages[chat.messages.length - 1].created_at
-					}
 					return (
+
 						<ListItem
-							onClick={() => selectContact(chat)}
+							onClick={() => props.setChatUser(user)}
 							alignItems='flex-start'
 							className={classes.listItem}
 						>
@@ -275,7 +146,7 @@ export default function Chat({
 										vertical: 'bottom',
 										horizontal: 'right',
 									}}
-									variant={chat.status}
+									variant={user.status}
 								>
 									<Avatar alt={name} src={img} className={avatar} />
 								</StyledBadge>
@@ -298,3 +169,5 @@ export default function Chat({
 		</div>
 	)
 }
+
+export default connect(null,{ setChatUser })(Chat);

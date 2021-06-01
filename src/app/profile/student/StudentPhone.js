@@ -67,7 +67,7 @@ const StudentPhone = (props) => {
 	const gender = props.gender
 	const userPhones = props.userPhones[0]
 	const userEmails = props.userEmails[0]
-	console.log('UserPhones from phone', userPhones)
+	console.log('UserPhones from phone', props.userPhones)
 	console.log('UserEmails from phone', userEmails)
 
 	return (

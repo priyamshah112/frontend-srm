@@ -1,4 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles'
+import { fonts } from '../appStyles'
 
 const srmDeluge = '#7B72AF'
 const srmBlackRussian = '#1C1C1E'
@@ -44,13 +45,39 @@ export default createMuiTheme({
 			'Arial',
 			'sans-serif',
 		].join(','),
+		h2:{
+			fontFamily: fonts.avenirMedium,
+			fontSize: '18px',
+		},
+		h3:{
+			fontSize: '2.7rem',
+		},
+		h4:{
+			fontSize: '2rem'
+		},
+		h6:{
+			fontFamily: fonts.avenirMedium,
+			fontSize: '14px',
+		},
 		body1: {
-			fontFamily: 'Avenir Medium',
+			fontFamily: fonts.avenirMedium,
 			fontSize: '1rem',
 		},
 		body2: {
-			fontFamily: 'Avenir Book',
+			fontFamily: fonts.avenirBook,
 			fontSize: '1rem',
+		},
+		title:{
+			fontFamily: fonts.avenirHeavy,
+			fontSize: '18px',
+		},
+		subtitle1:{
+			fontFamily: fonts.avenirHeavy,
+			fontSize: '14px',
+		},
+		subtitle2: {
+			fontFamily: fonts.avenirBook,
+			fontSize: '14px',
 		},
 	},
 	boxHeadingContainer: {

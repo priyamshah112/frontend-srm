@@ -1,97 +1,108 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import StudentImage from "../../lunch/images/dummy.png";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Avatar from "@material-ui/core/Avatar";
-import "./Multiple.css";
+import React from 'react'
+import PropTypes from 'prop-types'
+import { makeStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box'
+import StudentImage from '../../lunch/images/dummy.png'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import Avatar from '@material-ui/core/Avatar'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    "& .MuiBox-root": {
-      padding: "0px !important",
+    '& .MuiBox-root': {
+      padding: '0px !important',
     },
-    "& .PrivateTabIndicator-colorSecondary": {
-      backgroundColor: "#7B72AF",
+    '& .PrivateTabIndicator-colorSecondary': {
+      backgroundColor: '#7B72AF',
     },
-    "& .MuiTabs-indicator": {
-      backgroundColor: "#7B72AF !important",
+    '& .MuiTabs-indicator': {
+      backgroundColor: '#7B72AF !important',
     },
   },
   rootCard: {
-    margin: "20px 0 20px 0",
-    display: "flex",
+    margin: '20px 0 20px 0',
+    display: 'flex',
   },
   Avatar: {
-    margin: "20px 0 20px 20px",
+    margin: '20px 0 20px 20px',
   },
   name: {
-    fontFamily: "Avenir medium",
-    fontSize: 18,
-    marginTop: "12px",
-    marginLeft: "10px",
+    fontFamily: 'Avenir Heavy',
+    fontSize: 16,
+    marginTop: '15px',
+    marginLeft: '10px',
+  },
+  class_name: {
+    // fontFamily: "Avenir Roman",
+    // fontSize: 14,
+    // marginTop: "4px",
+    // marginLeft: "10px",
   },
   stuName: {
-    fontFamily: "Avenir medium",
+    fontFamily: 'Avenir medium',
     fontSize: 14,
-    marginTop: "-32px",
-    marginLeft: "10px",
+    marginTop: '-32px',
+    marginLeft: '10px',
   },
   borderLeft: {
-    borderLeft: "1px solid #aeaeb2",
-    height: "48px",
-    textAlign: "center",
+    borderLeft: '1px solid #aeaeb2',
+    height: '48px',
+    textAlign: 'center',
   },
   stuClass: {
-    fontFamily: "Avenir medium",
+    fontFamily: 'Avenir Roman',
     fontSize: 14,
-    position: "absolute",
-    marginTop: "14px",
-    right: "41px",
-    textTransform: "uppercase",
-    color: "rgba(0,0,0,0.54)",
+    position: 'absolute',
+    marginTop: '14px',
+    right: '41px',
+    textTransform: 'uppercase',
+    color: 'rgba(0,0,0,0.54)',
   },
   tabPanel: {
-    "& .MuiBox-root:before": {
-      padding: "none !important",
+    '& .MuiBox-root:before': {
+      padding: 'none !important',
     },
   },
   tabBar: {
     backgroundColor: theme.palette.mainBackground,
     color: theme.palette.common.deluge,
-    boxShadow: "none",
+    boxShadow: 'none',
   },
   eventsTab: {
-    padding: "6px 0px",
-    borderBottom: "1px solid #aeaeb2",
+    padding: '6px 0px',
+    borderBottom: '1px solid #aeaeb2',
 
-    "& .MuiTab-wrapper": {
-      height: "30px",
+    '& .MuiTab-wrapper': {
+      height: '30px',
     },
-    [theme.breakpoints.down("sm")]: {
-      fontSize: "14px",
-      fontFamily: "Avenir medium",
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '14px',
+      fontFamily: 'Avenir medium',
     },
   },
   borderRight: {
-    "& .MuiTab-wrapper": {
-      borderRight: "1px solid  #aeaeb2",
+    '& .MuiTab-wrapper': {
+      borderRight: '1px solid  #aeaeb2',
     },
   },
   display: {
-    display: "none",
+    display: 'none',
   },
-}));
+  message: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Avenir Book',
+    padding: '20px',
+  },
+}))
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props
 
   return (
     <div
@@ -107,20 +118,20 @@ function TabPanel(props) {
         </Box>
       )}
     </div>
-  );
+  )
 }
 
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired,
-};
+}
 
 function a11yProps(index) {
   return {
     id: `nav-tab-${index}`,
-    "aria-controls": `nav-tabpanel-${index}`,
-  };
+    'aria-controls': `nav-tabpanel-${index}`,
+  }
 }
 
 function LinkTab(props) {
@@ -128,28 +139,28 @@ function LinkTab(props) {
     <Tab
       component="a"
       onClick={(event) => {
-        event.preventDefault();
+        event.preventDefault()
       }}
       {...props}
     />
-  );
+  )
 }
 
 export default function NavTabs(props) {
-  const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-  const { seenUsers, unseenUsers } = props;
+  const classes = useStyles()
+  const [value, setValue] = React.useState(0)
+  const { seenUsers, unseenUsers } = props
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   return (
     <div className={classes.root}>
       <AppBar
         position="static"
         className={classes.tabBar}
-        style={{ backgroundColor: "none", color: "black" }}
+        style={{ backgroundColor: 'none', color: 'black' }}
       >
         <Tabs
           variant="fullWidth"
@@ -160,14 +171,14 @@ export default function NavTabs(props) {
         >
           <LinkTab
             className={`${classes.eventsTab} ${classes.borderRight}`}
-            label={seenUsers ? `Seen (${seenUsers.length})` : "Seen (0)"}
+            label={seenUsers ? `Seen (${seenUsers.length})` : 'Seen (0)'}
             href="/drafts"
             {...a11yProps(0)}
           />
           <LinkTab
             className={`${classes.eventsTab}`}
             label={
-              unseenUsers ? `Unseen (${unseenUsers.length})` : "Unseen (0)"
+              unseenUsers ? `Unseen (${unseenUsers.length})` : 'Unseen (0)'
             }
             href="/trash"
             {...a11yProps(1)}
@@ -175,25 +186,23 @@ export default function NavTabs(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0} className={classes.tabPanel}>
-        {seenUsers
-          ? seenUsers.map((item) => (
-              <Card className={classes.rootCard}>
-                <div style={{ width: "7%" }}>
-                  <Avatar
-                    className={classes.Avatar}
-                    alt="Student image"
-                    src={StudentImage}
-                  />
-                </div>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <CardContent>
-                    <Typography className={classes.name} variant="body2">
-                      {item.firstname}
-                    </Typography>
-                  </CardContent>
-                  {/* <CardContent>
+        {seenUsers ? (
+          seenUsers.map((item) => (
+            <Card className={classes.rootCard}>
+              <div style={{ width: '7%' }}>
+                <Avatar
+                  className={classes.Avatar}
+                  alt="Student image"
+                  src={item.thumbnail ? `${item.thumbnail}` : StudentImage}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <CardContent>
+                  <Typography className={classes.name}>
+                    {item.firstname}
+                  </Typography>
+                </CardContent>
+                {/* <CardContent>
                 <div
                   className={
                     item.role === "Parent"
@@ -205,40 +214,38 @@ export default function NavTabs(props) {
                   {item.childName}
                 </Typography>
               </CardContent> */}
-                  <CardContent>
-                    <Typography
-                      className={classes.stuClass}
-                      variant="body2"
-                      component="p"
-                    >
-                      {item.lastname}
-                    </Typography>
-                  </CardContent>
-                </div>
-              </Card>
-            ))
-          : ""}
+                <CardContent>
+                  <Typography className={classes.stuClass}>
+                    {item.lastname}
+                  </Typography>
+                </CardContent>
+              </div>
+            </Card>
+          ))
+        ) : (
+          <Typography className={classes.message}>
+            No students available yet!
+          </Typography>
+        )}
       </TabPanel>
       <TabPanel value={value} index={1}>
-        {unseenUsers
-          ? unseenUsers.map((item) => (
-              <Card className={classes.rootCard}>
-                <div style={{ width: "7%" }}>
-                  <Avatar
-                    className={classes.Avatar}
-                    alt="Student image"
-                    src={StudentImage}
-                  />
-                </div>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <CardContent>
-                    <Typography className={classes.name} variant="body2">
-                      {item.firstname}
-                    </Typography>
-                  </CardContent>
-                  {/* <CardContent>
+        {unseenUsers ? (
+          unseenUsers.map((item) => (
+            <Card className={classes.rootCard}>
+              <div style={{ width: '7%' }}>
+                <Avatar
+                  className={classes.Avatar}
+                  alt="Student image"
+                  src={item.thumbnail ? `${item.thumbnail}` : StudentImage}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <CardContent>
+                  <Typography className={classes.name}>
+                    {item.firstname}
+                  </Typography>
+                </CardContent>
+                {/* <CardContent>
                 <div
                   className={
                     item.role === "Parent"
@@ -250,20 +257,24 @@ export default function NavTabs(props) {
                   {item.childName}
                 </Typography>
               </CardContent> */}
-                  <CardContent>
-                    <Typography
-                      className={classes.stuClass}
-                      variant="body2"
-                      component="p"
-                    >
-                      {item.lastname}
-                    </Typography>
-                  </CardContent>
-                </div>
-              </Card>
-            ))
-          : ""}
+                <CardContent>
+                  <Typography
+                    className={classes.stuClass}
+                    variant="body2"
+                    component="p"
+                  >
+                    {item.lastname}
+                  </Typography>
+                </CardContent>
+              </div>
+            </Card>
+          ))
+        ) : (
+          <Typography className={classes.message}>
+            No students available yet!{' '}
+          </Typography>
+        )}
       </TabPanel>
     </div>
-  );
+  )
 }

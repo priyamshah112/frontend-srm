@@ -72,7 +72,11 @@ const FileMove = () => {
 	const [folderCurrentPage, setFolderCurrentPage] = useState(1)
 	const [folderViewData, setFolderViewData ] = useState([])
 	const [ checkedImages, setCheckedImages ] = useState([])
-	const token = localStorage.getItem('srmToken')
+	const role = JSON.parse(localStorage.getItem('srmSelectedRole'))
+	let token = localStorage.getItem('srmToken')
+	if (role === 'parent') {
+		token = localStorage.getItem('srmSelected_Child_token')
+	}
 
 	useEffect(() => {
 		if(!mounted){

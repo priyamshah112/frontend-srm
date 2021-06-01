@@ -75,21 +75,39 @@ const ParentNotification = (props) => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [notifications, setNotifications] = useState([])
 	const [filter, setFilter] = useState('All')
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(true)				
+	const token = localStorage.getItem('srmToken')
+	const selectedRole = JSON.parse(localStorage.getItem('srmSelectedRole'))
+	let srmSelectedChild = null
+	let srmChild = null
+	
+	if(selectedRole === 'parent'){
+		srmSelectedChild = localStorage.getItem('srmSelected_Child')
+		srmChild = JSON.parse(localStorage.getItem('srmChild_dict'))
+	}
+
 	let content
 
 	useEffect(() => {
 		let isNotificationLoading = true
 		const fetchNotification = async () => {
+			let params = {
+				current_role: selectedRole,
+				created_by: false,
+				page: currentPage,					
+				status: filter.toLowerCase()
+			}
+
+			if(selectedRole === 'parent'){
+				params = {
+					...params,
+					student_id: srmChild[srmSelectedChild].userDetails.id || null,
+				}
+			}
 			try {
-				const token = localStorage.getItem('srmToken')
-				const selectedRole = localStorage.getItem('srmSelectedRole')
 				const response = await NotificationService.fetchNotification(
 					token,
-					false,
-					selectedRole,
-					currentPage,
-					filter.toLowerCase()
+					params
 				)
 				setLoading(false)
 				if (response.status === 200) {
@@ -117,13 +135,23 @@ const ParentNotification = (props) => {
 	}, [])
 
 	const fetchNotifcationOnScroll = async () => {
+		let params = {
+			current_role: selectedRole,
+			created_by: false,
+			page: currentPage,					
+			status: filter.toLowerCase()
+		}
+
+		if(selectedRole === 'parent'){
+			params = {
+				...params,
+				student_id: srmChild[srmSelectedChild].userDetails.id || null,
+			}
+		}
 		try {
 			const response = await NotificationService.fetchNotification(
 				props.token,
-				false,
-				props.selectedRole,
-				currentPage,
-				filter.toLowerCase()
+				params,
 			)
 			if (response.status === 200) {
 				if (response.data.data.last_page === response.data.data.current_page) {
@@ -139,19 +167,32 @@ const ParentNotification = (props) => {
 		}
 	}
 	const handleFilterChange = async (event) => {
-		if (event.target.value !== filter) {
+		if (event.target.value !== filter) {			
+			setCurrentPage(1)
+			setFilter(event.target.value)
+
+			let params = {
+				current_role: selectedRole,
+				created_by: false,
+				page: 1,					
+				status: event.target.value.toLowerCase()
+			}
+
+			if(selectedRole === 'parent'){
+				params = {
+					...params,
+					student_id: srmChild[srmSelectedChild].userDetails.id || null,
+				}
+			}
+
 			try {
-				setCurrentPage(1)
-				setFilter(event.target.value)
 
 				const token = localStorage.getItem('srmToken')
 				const selectedRole = localStorage.getItem('srmSelectedRole')
 				const response = await NotificationService.fetchNotification(
 					token,
-					false,
-					selectedRole,
-					1,
-					event.target.value.toLowerCase()
+					params,
+					
 				)
 				if (response.status === 200) {
 					if (

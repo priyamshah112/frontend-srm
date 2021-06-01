@@ -1,66 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import 'date-fns'
 import { useHistory, useParams } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
 import FormControl from '@material-ui/core/FormControl'
-import Input from '@material-ui/core/Input'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-import Chip from '@material-ui/core/Chip'
 import DateFnsUtils from '@date-io/date-fns'
-import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
 import { MuiPickersUtilsProvider, DateTimePicker } from '@material-ui/pickers'
 import EventIcon from '@material-ui/icons/Event'
-import BackIcon from '../../../assets/images/Back.svg'
 import RichTextEditor from '../../../shared/richTextEditor'
-import BackdropLoader from '../../common/ui/backdropLoader/BackdropLoader'
-import PublishLater from './PublishLater'
 import HomeworkService from '../HomeworkService'
 import moment from 'moment'
 import { IconButton } from '@material-ui/core'
+import { Card, DropArea, DropdownCS, BackHeader, Container, PublishLaterButton,PublishNowButton, DocsDeleteViewer, AlertPop, BackdropLoader } from '../../common'
 
 const useStyle = makeStyles((theme) => ({
-	formStyle: {
-		margin: 'auto',
-		width: '95%',
-
-		// marginLeft: '20px',
-		// marginRight: '20px',
-
-		backgroundColor: 'white',
-		justifyContent: 'center',
-		textAlign: 'center',
-		borderRadius: '5px',
-	},
-	backImg: {
-		float: 'left',
-		transform: 'translate(0px, 7px)',
-		cursor: 'pointer',
-	},
 	adornmentColor: {
 		color: 'rgba(0, 0, 0, 0.54)',
 	},
-	themeColor: {
-		color: `${theme.palette.common.deluge}`,
-		padding: 0,
-		margin: 0,
-	},
-	errorColor: {
+	errorMsg: {
 		color: 'red',
-	},
-	titleText: {
-		textAlign: 'center',
-		margin: 'auto',
-		fontFamily: 'Avenir Medium',
-		fontize: '1.2rem',
-		color: '#1C1C1E',
+		textAlign: 'center'
 	},
 	fieldStyle: {
 		width: '100%',
@@ -137,11 +102,6 @@ const useStyle = makeStyles((theme) => ({
 		textAlign: 'right',
 		justifyContent: 'right',
 	},
-
-	sideMargins: {
-		marginLeft: '20px',
-		marginRight: '20px',
-	},
 	sideMarginright: {
 		marginRight: '50px',
 	},
@@ -166,255 +126,283 @@ const useStyle = makeStyles((theme) => ({
 			marginRight: '20px',
 		},
 	},	
-	header:{
-		paddingTop: '20px',
-	}
 }))
 
 const CreateHomework = (props) => {
 	const classes = useStyle()
 	const history = useHistory()
 	const { id } = useParams()
-
-	const [openPubLater, setOpenPubLater] = useState(false)
-	const [eventDate, setEventDate] = useState(null)
+	const [ isLoading, setLoading ] = useState(true)
+	const [ disable, setDisable ] = useState(false)
 	const [title, setTitle] = useState('')
-	const [summary, setSummary] = useState('')
 	const [description, setDescription] = useState('')
+	const [fileList, setFileList] = useState([])
 	const [errMessage, setError] = useState('')
-	const [submissionDate, setSubmissionDate] = useState(null)
-	const [classState, setClassState] = useState([])
+	const [submissionDate, setSubmissionDate] = useState(getSubmissionDate())
+	const [ publishDate, setPublishDate ] = useState(new Date());
+	const [subjectID, setSubjectID] = useState('')
+	const [subjectMenu, setSubjectMenu] = useState([])
+	const [subjectMenuLoading, setSubjectMenuLoading] = useState(true)
+	const [classID, setClassID] = useState('')
+	const [classMenu, setClassMenu] = useState([])
+	const [classMenuLoading, setClassMenuLoading] = useState(true)
+	const [status, setStatus] = useState('draft')
+	const [documents,setDocuments] = useState([])
+	const [ openSnackbar, setOpenSnackbar] = useState(false)
+	const [ snackBarStatus, setSnackBarStatus ] = useState('')
+	const [ snackBarMsg, setSnackBarMsg ] = useState('')
+	const token = localStorage.getItem('srmToken')
+	const userInfo = JSON.parse(localStorage.getItem('srmUserInfo'))
 
-	const classStateNames = ['Select All', ...Object.values(props.classState)]
-
-	let saveDataApi
 	useEffect(() => {
-		let isFormLoading = true
-		// give first api call to create
+		fetchDraft();
+	}, [id]);
 
-		// api call to save
-		const fetchDraft = async () => {
-			try {
-				const response = await HomeworkService.fetchDraftHomework(
-					{ id },
-					props.token
-				)
-				if (response.status === 200) {
-					if (isFormLoading) {
-						let tempClassCheckState = []
-						response.data.data.class_mapping.class.forEach((classId) => {
-							tempClassCheckState.push(props.classState[classId])
-						})
-						setClassState([...tempClassCheckState])
-						setDescription(
-							response.data.data.main_content
-								? response.data.data.main_content
-								: ''
-						)
-						setTitle(response.data.data.title ? response.data.data.title : '')
-						setSubmissionDate(
-							response.data.data.submission_date
-								? new Date(response.data.data.submission_date)
-								: new Date()
-						)
-					}
-				}
-			} catch (e) {
-				console.log(e)
-			}
-		}
-		fetchDraft()
-		return () => {
-			isFormLoading = false
-		}
-	}, [])
-	const handleSelectClass = (event) => {
-		setClassState(event.target.value)
-	}
+	useEffect(() => {
+		const saveDataApi = setInterval(() => {
+			saveDetails({
+				status: status,
+				date: publishDate,
+				isBack: false
+			})
+		}, 10000)
+		return () => clearInterval(saveDataApi)
+	}, [title,classID,subjectID, fileList ,description, status,publishDate,submissionDate])
 
-	const saveDetails = async (isBack) => {
+	const fetchDraft = async () => {
+		setLoading(true)
 		try {
-			let classMapping = { class: [] }
-			let isSelectAll = classState.find(
-				(classname) => classname === 'Select All'
-			)
-			if (isSelectAll) {
-				classMapping.class = [...Object.keys(props.classState)]
-			} else {
-				classState.forEach((classnames) => {
-					classMapping.class.push(
-						parseInt(
-							Object.keys(props.classState).find(
-								(classId) => props.classState[classId] === classnames
-							)
-						)
-					)
-				})
-			}
-			let submissionData = {}
-			if (submissionDate) {
-				submissionData = {
-					title: title,
-					main_content: description,
-					submission_date: submissionDate.toISOString(),
-					published_to: classMapping,
-				}
-			} else {
-				submissionData = {
-					title: title,
-					main_content: description,
-					published_to: classMapping,
-				}
-			}
-
-			const response = await HomeworkService.saveHomework(
+			const response = await HomeworkService.fetchDraftHomework(
 				{ id },
-				submissionData,
-				props.token
+				token
 			)
 			if (response.status === 200) {
-				console.log('Saved')
+				// console.log(response.data.data.homework)
+				let homework = response.data.data.homework;
+				setClassID(
+					homework.class_mapping[0]
+						? homework.class_mapping[0]
+					: ''
+				)
+				setSubjectID(
+					homework.subject_id
+						? homework.subject_id
+					: ''
+				)
+				setDescription(
+					homework.main_content
+						? homework.main_content
+						: ''
+				)
+				setTitle(homework.title ? homework.title : '')
+				setSubmissionDate(
+					homework.submission_date
+						? homework.submission_date
+						: getSubmissionDate()
+				)
+				setPublishDate(homework.published_date ? homework.published_date : null)
+				setStatus(homework.status ? homework.status : 'draft' )
+				setDocuments(homework.teacher_document ? homework.teacher_document : [] )
 			}
 		} catch (e) {
 			console.log(e)
 		}
-		if (isBack) {
+		setLoading(false)
+	}
+
+	useEffect(()=>{
+		fetchClassMenus()
+	},[])
+
+	useEffect(()=>{
+		if(classID !== ''){
+			fetchSubjectMenus()
+		}
+	},[classID])
+
+	function getSubmissionDate(){
+		let d = new Date()
+		if(d.getDay() === 4){
+			return moment(d).add(4,'days')
+		}
+		else if(d.getDay() === 5){
+			return moment(d).add(3,'days')
+		}
+		else{
+			return moment(d).add(2,'days')
+		}
+	}
+	const fetchClassMenus = async () => {
+		setClassMenuLoading(true)
+		try{			
+			const res = await HomeworkService.fetchClasses(token)
+			if(res.status === 200){
+				console.log(res.data)
+				setClassMenu(res.data.data)
+			}
+		}
+		catch(e){
+			console.log(e)
+		}
+		setClassMenuLoading(false)
+	}
+	const fetchSubjectMenus = async () => {
+		setSubjectMenuLoading(true)
+		try {
+			const res = await HomeworkService.getSubjectsByClass(token, classID)
+			if (res.status === 200) {
+				setSubjectMenu(res.data.data)
+			}
+		} catch (e) {
+			console.log(e)
+		}
+		setSubjectMenuLoading(false)
+	}
+
+	const saveDetails = async ({status,date,isBack}) => {
+		if(isBack){
+			setDisable(true)
+		}	
+		try {
+			const formData = new FormData()
+			for(let key in fileList){
+				formData.append(`upload_document[${key}]`,fileList[key])
+			}
+			formData.append('title',title)
+			formData.append('main_content',description)
+			formData.append(`published_to`,classID)
+			formData.append('subject_id',subjectID)
+			formData.append('school_id',userInfo.user_classes.school_id)
+			formData.append('status',status)
+			if ((status === "published" && date) || (status === "active" && date)) {
+				formData.append('published_date',publishDate)
+				formData.append('submission_date', submissionDate)
+			}
+			const response = await HomeworkService.saveHomework(
+				{ id },
+				formData,
+				token
+			)
+			console.log(response)
+			if (response.status === 200) {
+				console.log('Saved')
+				if(response.data.status === "failure"){
+					setSnackBarStatus('warning')
+					setSnackBarMsg(response.data.message)
+					setOpenSnackbar(true)
+					setSubjectID('')
+					setDisable(false)
+					return
+				}
+			}
+		} catch (e) {
+			console.log(e)
+		}
+		if(isBack){
+			setDisable(false)
 			history.push('/assignment')
 		}
 	}
-
-	useEffect(() => {
-		saveDataApi = setInterval(() => {
-			saveDetails(false)
-		}, 10000)
-		return () => clearInterval(saveDataApi)
-	}, [title, description, submissionDate, classState])
 
 	const handleChangeInput = (event) => {
 		let name = event.target.name
 		if (name === 'title') {
 			setTitle(event.target.value)
-		} else {
-			setSummary(event.target.value)
 		}
 	}
-
-	const hanldeDeleteClass = (value) => {
-		setClassState(classState.filter((classname) => classname !== value))
+	const handleClassChange = (value) => {
+		setSubjectID('')
+		setClassID(value)
+	}
+	const handleSubjectChange = (value) => {
+		setSubjectID(value)
 	}
 
 	const handleDescription = (data) => {
 		setDescription(data)
 	}
-	const handleOpenPubLater = (event) => {
-		if (moment(submissionDate).isAfter(new Date())) {
-			if (title === '' || submissionDate === null) {
-				setError('Fill All Data !')
-			} else {
-				setOpenPubLater(true)
-			}
-		} else {
-			setError('Check submission date')
-		}
-	}
-
-	const handleClosePubLater = () => {
-		setOpenPubLater(false)
-	}
-
-	const publishData = async (publisedDate, status) => {
-		try {
-			let classMapping = { class: [] }
-			let isSelectAll = classState.find(
-				(classname) => classname === 'Select All'
-			)
-			if (isSelectAll) {
-				classMapping.class = [...Object.keys(props.classState)]
-			} else {
-				classState.forEach((classnames) => {
-					classMapping.class.push(
-						parseInt(
-							Object.keys(props.classState).find(
-								(classId) => props.classState[classId] === classnames
-							)
-						)
-					)
-				})
-			}
-
-			const response = await HomeworkService.publishHomework(
-				{ id },
-				{
-					title: title,
-					main_content: description,
-					status: status,
-					published_to: classMapping,
-					published_date: publisedDate,
-					submission_date: submissionDate.toISOString(),
-				},
-				props.token
-			)
-			if (response.status === 200) {
-				console.log('Published')
-				history.replace('/assignment')
-			}
-		} catch (e) {
-			console.log(e)
-		}
-	}
 
 	const handlesubmissionDate = (date) => {
 		setSubmissionDate(date)
+
 	}
 
-	const handleBack = (event) => {
-		saveDetails(true)
+	const handleBack = () => {
+		saveDetails({
+			status: status,
+			date: publishDate,
+			isBack: true
+		})
 	}
 
-	const handlePublishLater = (laterEventDate) => {
-		const status = 'active'
-		publishData(laterEventDate.toISOString(), status)
+	const handlePublishLater = () => {
+		setStatus('active')
+		saveDetails({
+			status: 'active',
+			date: publishDate,
+			isBack: true
+		})
 	}
 
 	const submitForm = async (event) => {
 		event.preventDefault()
+		if(validation()){
+			let date = new Date().toISOString()
+			setStatus('published')
+			setPublishDate(date)
+			saveDetails({
+				status: 'published',
+				date: date,
+				isBack: true
+			})
+		}		
+	}
+
+	const validation = () =>{
 		if (moment(submissionDate).isAfter(new Date())) {
-			if (title === '' || submissionDate === null) {
+			if (title === '' || submissionDate === null || ( description === ''  && fileList.length < 1)) {
 				setError('Fill All Data !')
-			} else {
-				clearInterval(saveDataApi)
-				const status = 'published'
-				publishData(new Date().toISOString(), status)
+				return false
 			}
 		} else {
 			setError('Check submission date')
+			return false
+		}
+		return true
+	}
+	const handleQuestionDoc = (files) =>{
+		console.log(files)
+		setFileList(files)
+	}
+	const handleDeleteFile = async(id) =>{
+		try{
+			const res = await HomeworkService.deleteHomeworkFile(id,token)
+			if(res.status === 200){				
+				setSnackBarStatus('success')
+				setSnackBarMsg('File Deleted Successfully')
+				setOpenSnackbar(true)
+				setDocuments(documents.filter((document) => document.id !== id))
+			}
+		}
+		catch(e){
+			setSnackBarStatus('error')
+			setSnackBarMsg('Something Went Wrong, While Deleting File !! ')
+			setOpenSnackbar(true)
+			console.log(e)
 		}
 	}
-
 	return (
-		<>
-			<div>
-				<form className={classes.formStyle} onSubmit={submitForm}>
-					<Box className={`${classes.margin} ${classes.sideMargins} ${classes.header}`}>
-						<div>
-							<img
-								src={BackIcon}
-								alt='Back'
-								className={classes.backImg}
-								onClick={handleBack}
-							/>
-							<Typography
-								variant='h5'
-								className={`${classes.themeColor} ${classes.titleText}`}
-							>
-								Create Homework
-							</Typography>
-						</div>
-					</Box>
+		<Container>
+			{
+				isLoading ? <BackdropLoader open={true} /> : null
+			}
+			<Card>
+				<form onSubmit={submitForm}>
+					<BackHeader handleBack={handleBack} title='Create Homework'/>
 					{errMessage ? (
 						<Box className={classes.margin} pt={2}>
 							<div>
-								<Typography className={`${classes.errorColor}`}>
+								<Typography className={`${classes.errorMsg}`}>
 									{errMessage}
 								</Typography>
 							</div>
@@ -422,7 +410,7 @@ const CreateHomework = (props) => {
 					) : (
 						''
 					)}
-					<Box className={`${classes.margin} ${classes.sideMargins}`}>
+					<Box className={classes.margin}>
 						<FormControl className={classes.fieldStyle}>
 							<TextField
 								id='title'
@@ -435,7 +423,7 @@ const CreateHomework = (props) => {
 							/>
 						</FormControl>
 					</Box>
-					<Box className={`${classes.margin} ${classes.sideMargins}`}>
+					<Box className={classes.margin}>
 						<MuiPickersUtilsProvider utils={DateFnsUtils}>
 							<Grid container className={classes.fieldStyle}>
 								<Grid item xs={12}>
@@ -462,133 +450,85 @@ const CreateHomework = (props) => {
 							</Grid>
 						</MuiPickersUtilsProvider>
 					</Box>
-					<Box className={`${classes.margin} ${classes.sideMargins}`}>
+					<Box className={classes.margin}>
 						<FormControl className={classes.fieldStyle}>
-							<InputLabel>Select classes</InputLabel>
-							<Select
-								labelId='demo-mutiple-chip-label'
-								id='demo-mutiple-chip'
-								value={classState}
-								multiple
-								onChange={handleSelectClass}
-								input={<Input id='select-multiple-chip' />}
-								MenuProps={{
-									PaperProps: {
-										style: {
-											maxHeight: '300px',
-										},
-									},
-									anchorOrigin: {
-										vertical: 'bottom',
-										horizontal: 'center',
-									},
-									transformOrigin: {
-										vertical: 'top',
-										horizontal: 'center',
-									},
-									getContentAnchorEl: null,
-								}}
-								renderValue={(selected) => {
-									return (
-										<div className={classes.chips}>
-											{selected.map((value) => (
-												<Chip
-													onDelete={() => hanldeDeleteClass(value)}
-													onMouseDown={(event) => {
-														event.stopPropagation()
-													}}
-													key={value}
-													label={value}
-													className={classes.chip}
-												/>
-											))}
-										</div>
-									)
-								}}
-							>
-								<MenuItem value='all teacher'>All Teachers</MenuItem>
-								{classStateNames.map((classname) => (
-									<MenuItem key={classname} value={classname}>
-										{classname}
-									</MenuItem>
-								))}
-							</Select>
+							<InputLabel 
+								labelId='class-label'
+							>Select class</InputLabel>
+							<DropdownCS
+								data={classMenu}
+								loading={classMenuLoading}
+								labelId='class-label'
+								onChange={handleClassChange}
+								value={classID}
+							/>
 						</FormControl>
 					</Box>
-					<Box className={`${classes.margin} ${classes.sideMargins}`}>
+					<Box className={classes.margin}>
+						<FormControl className={classes.fieldStyle}>
+							<InputLabel 
+								labelId='subject-label'
+							>Select subject</InputLabel>
+							<DropdownCS
+								data={subjectMenu}
+								loading={subjectMenuLoading}
+								labelId='subject-label'
+								onChange={handleSubjectChange}
+								required={true}
+								value={subjectID}
+							/>
+						</FormControl>
+					</Box>
+					<Box className={classes.margin}>
 						<Grid className={classes.fieldStyle}>
 							<Typography className={classes.textAlignLeft}>
-								Description
+								Questions
 							</Typography>
 							<RichTextEditor
 								handleDescription={handleDescription}
 								value={description}
-								token={props.token}
+								token={token}
 							/>
 						</Grid>
 					</Box>
-					<Box className={`${classes.margin} ${classes.sideMargins}`}>
+					<DropArea handleChange={handleQuestionDoc}/>
+					{
+						documents.length > 0 && documents ?
+							<DocsDeleteViewer data={documents} handleDelete={handleDeleteFile}/>
+						: null
+					}
+					<Box className={classes.margin}>
 						<Grid
 							container
 							className={classes.fieldStyle}
 							direction='row-reverse'
 						>
-							<Grid item sm={6} xs={12} className={classes.publishBtns}>
-								<Button
-									id='publishLaterBtn'
-									variant='contained'
-									onClick={handleOpenPubLater}
-									className={`${
-										classes.fieldStyle
-									} ${'publishBtn'} ${'publishLaterBtn'}`}
-									disableElevation
-								>
-									Publish Later
-								</Button>
-								<Button
-									id='publishBtn'
-									variant='contained'
-									className={`${classes.fieldStyle} ${'publishBtn'}`}
-									color='primary'
-									type='submit'
-									disableElevation
-								>
-									Publish Now
-								</Button>
+							<Grid item xs={12} className={classes.publishBtns}>
+								<PublishLaterButton
+									disabled={disable}
+									validation={validation}
+									publishDate={publishDate}
+									handlePublishDate={setPublishDate}
+									handlePublishLater={handlePublishLater}
+								/>
+								<PublishNowButton 
+									disabled={disable}
+								/>
 							</Grid>
-							<Grid item sm={6} xs={12} className={classes.textAlignLeft}>
-								<br />
-								<br />
-							</Grid>
-
-							<br />
-							<br />
-							<br />
 						</Grid>
 					</Box>
 				</form>
-			</div>
+			</Card>
 			<br />
 			<br />
-			{openPubLater ? (
-				<PublishLater
-					open={openPubLater}
-					submissionDate={submissionDate}
-					handleClose={handleClosePubLater}
-					handlePublishLater={handlePublishLater}
-				/>
-			) : (
-				''
-			)}
-			<BackdropLoader open={props.openLoader} />
-		</>
+			<AlertPop 
+				openSnackbar={openSnackbar} 
+				onOpenSnackBar={setOpenSnackbar} 
+				status={snackBarStatus} 
+				msg={snackBarMsg}
+			/> 
+		</Container>
 	)
 }
 
-const mapStateToProps = (state) => {
-	return {
-		token: state.auth.token,
-	}
-}
-
-export default connect(mapStateToProps)(CreateHomework)
+export default CreateHomework;

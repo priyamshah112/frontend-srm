@@ -32,6 +32,7 @@ const styles = {
 }
 
 const RenderUsers = ({ user, removeContact }) => {
+	console.log(user)
 	return (
 		<ListItemAvatar
 			onClick={() => removeContact(user)}

@@ -27,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: '2px',
 		fill: 'gray',
 		cursor: 'pointer',
+		width: '17px',
+		height: '17px'
 	},
 	root: {
 		backgroundColor: '#fff',
@@ -110,6 +112,8 @@ const useStyles = makeStyles((theme) => ({
 		padding: '0px 5px',
 		flexBasis: '5%',
 		marginBottom: '5px',
+		alignItems: 'flex-end',
+		paddingRight: '20px',
 	},
 }))
 

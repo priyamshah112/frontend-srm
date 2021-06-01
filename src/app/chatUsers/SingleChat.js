@@ -8,7 +8,7 @@ import Avatar from '@material-ui/core/Avatar'
 import Badge from '@material-ui/core/Badge'
 import tick from '../../assets/images/chat/tick.svg'
 import doubleTick from '../../assets/images/chat/double-tick.svg'
-import { Input, TextField, Typography } from '@material-ui/core'
+import { Input, Typography } from '@material-ui/core'
 import smile from '../../assets/images/chat/smile.svg'
 import attach from '../../assets/images/chat/attach.svg'
 import closeIcon from '../../assets/images/chat/remove.svg'
@@ -16,18 +16,15 @@ import Picker from 'emoji-picker-react'
 import Group from '../../assets/images/chat/group.png'
 import moment from 'moment'
 import ChatService from '../chat/ChatService'
-import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded'
 import ChatGroupCard from './ChatGroupCard'
-import Select from '@material-ui/core/Select'
-import FormControl from '@material-ui/core/FormControl'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Menu from '@material-ui/core/Menu'
-import * as actions from '../../app/auth/store/actions'
-import * as ChatActions from '../../app/chatUsers/store/action'
-import { IconButton, Grid, Button } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { updateChat } from '../redux/actions/chat.action'
+
 var CryptoJS = require('crypto-js')
 
 const BACKEND_IMAGE_URL = process.env.REACT_APP_BACKEND_IMAGE_URL
@@ -235,7 +232,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
-function SingleChat({ fullScreen = false, closeEmoji, props }) {
+function SingleChat(props) {
+	const { fullScreen = false, closeEmoji, userInfo, singleChatUser } = props
+
 	const classes = useStyles()
 	const [chosenEmoji, setChosenEmoji] = useState(null)
 	const fileRef = useRef()
@@ -246,58 +245,55 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	const [showAttachments, setShowAttachments] = useState(true)
 	const [filter, setFilter] = useState('All')
 	const [anchorEl, setAnchorEl] = useState(null)
-	const [chat, setChat] = useState({})
 	let messagesEnd = createRef()
 	const history = useHistory()
 	let rootClass = [classes.root]
 	useEffect(() => {
 		showEmoji(false)
 		setShowAttachments(!closeEmoji)
-		if (!closeEmoji) {
+		if (!closeEmoji && singleChatUser.chat_type) {
 			scrollToBottom()
 		}
 	}, [closeEmoji])
-	useEffect(() => {
-		if (props.chat != null) {
-			if (props.chat.id != null) {
-				setChat(props.chat)
-			}
-		}
-	}, [props])
+
 	let timer = null
 	useEffect(() => {
 		if (timer != null) {
 			clearInterval(timer)
 		}
-		if (chat.messages == undefined) {
-			setMessages([])
-		} else {
-			setMessages(chat.messages)
+		if (singleChatUser.school_chat_message) {
+			setMessages(singleChatUser.school_chat_message)
 			// timer = setInterval(()=>fetchChat(chat), 1000)
 		}
-	}, [chat])
+	}, [singleChatUser])
+
 	const scrollToBottom = async () => {
 		messagesEnd.current.scrollIntoView({ behavior: 'smooth' })
-		if (chat.messages == undefined) {
+		if (singleChatUser.school_chat_message.length < 1) {
 			return
 		}
-		try {
-			const token = localStorage.getItem('srmToken')
-			// const selectedRole = props.selectedRole;
+		// try {
+		//   const token = localStorage.getItem('srmToken');
 
-			const response = await ChatService.markRead(token, chat.id)
+		//   const response = await ChatService.markRead(
+		//     token,
+		//     chat.id
+		//   );
 
-			// console.log('Scroll response', response);
-			if (response.status === 200) {
-				// console.log('Chat', response);
-			}
-		} catch (error) {
-			console.log(error.response)
-		}
+		//   // console.log('Scroll response', response);
+		//   if (response.status === 200) {
+		//     console.log('Chat', response);
+		//     chats().child(chat.id).set(chat)
+		//   }
+		// } catch (error) {
+		//   console.log(error.response);
+		// }
 	}
+
 	if (fullScreen) {
 		rootClass.push(classes.fullScreen)
 	}
+
 	const onEmojiClick = (event, emojiObject) => {
 		// console.log(emojiObject)
 		showEmoji(false)
@@ -306,41 +302,38 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		setMessage(m)
 		setChosenEmoji(emojiObject)
 	}
-	let date = ''
+
 	const fileSelectHandler = (event) => {
 		// console.log(event.target.files)
 		attachments.push(...event.target.files)
 		event.target.value = null
 		setAttachments([...attachments])
 	}
+
 	const pickFile = () => {
 		fileRef.current.click()
 	}
+
 	const removeAttachment = (item) => {
 		let index = attachments.indexOf(item)
 		attachments.splice(index, 1)
 		// console.log(attachments)
 		setAttachments([...attachments])
 	}
-	let name = chat.firstname + ' ' + chat.lastname
-	let img = chat.thumbnail
+
+	let name = singleChatUser.name
+	let img = singleChatUser.image
 	let avatar = {}
 	let subheading = ''
 	let cls = {}
-	if (chat.type == 'group') {
-		name = chat.group.name
-		let groupimg = encodeURI(chat.group.image)
+
+	if (singleChatUser.chat_type == 'group') {
+		name = singleChatUser.name
+		let groupimg = encodeURI(singleChatUser.image)
 		img = groupimg ? BACKEND_IMAGE_URL + '/' + groupimg : Group
 		avatar = classes.avatarBackground
 		subheading = 'Group'
 		cls = classes.groupIconContainer
-	} else if (chat.members != undefined) {
-		let rec = chat.members.filter((c) => {
-			return c.id != props.userInfo.id
-		})[0]
-		name = rec.firstname + ' ' + rec.lastname
-		subheading = rec.roles[0].name
-		img = rec.thumbnail
 	}
 
 	const onKeyDown = (event) => {
@@ -353,54 +346,35 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	}
 
 	useEffect(() => {
-		if (!closeEmoji) {
+		console.log(closeEmoji)
+		if (!closeEmoji && singleChatUser.chat_type) {
 			scrollToBottom()
 		}
 	}, [messages])
 
 	const submitChat = async () => {
-		let data = {
-			message: getMessage(),
+		let frmdata = new FormData()
+		frmdata.append('message', getMessage())
+		attachments.forEach((a) => {
+			frmdata.append('attachment[]', a)
+		})
+		if (singleChatUser.chat_type) {
+			frmdata.append('room_id', singleChatUser.id)
+		} else {
+			frmdata.append('users[]', userInfo.id)
+			frmdata.append('users[]', singleChatUser.id)
 		}
 		try {
 			const token = localStorage.getItem('srmToken')
-			// const selectedRole = props.selectedRole;
-			if (chat.messages == undefined) {
-				data.reciever = chat.id
-				// console.log(data)
-				const response = await ChatService.newChat(data, token)
-				// console.log('Scroll response', response);
-				if (response.status === 200) {
-					console.log('Chat', response)
-					const { data } = response
-					setMessage('')
-					setMessages(data.chat.messages)
-					// data.chat.members = JSON.parse(data.chat.members)
-					props.onUpdateChat(data.chat)
-					setChat(data.chat)
-				} else {
-					return
-				}
-			} else {
-				let frmdata = new FormData()
-				frmdata.append('message', getMessage())
-				attachments.forEach((a) => {
-					frmdata.append('attachment[]', a)
-				})
-
-				const response = await ChatService.submitChat(frmdata, token, chat.id)
-
-				// console.log('Scroll response', response);
-				if (response.status === 200) {
-					// console.log('Chat', response);
-					const { data } = response
-					setMessage('')
-					setAttachments([])
-					setMessages(data.chat.messages)
+			const response = await ChatService.submitChat(frmdata, token)
+			if (response.status === 200) {
+				setMessage('')
+				if (!singleChatUser.chat_type) {
+					props.updateChat(response.data.data)
 				}
 			}
 		} catch (error) {
-			console.log(error.response)
+			console.log(error)
 		}
 	}
 
@@ -414,21 +388,17 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	}
 
 	const getMessage = () => {
-		var msg = CryptoJS.AES.encrypt(message, 'chat' + chat.id).toString()
-		// console.log(msg)
+		var msg = CryptoJS.AES.encrypt(message, 'chat' + userInfo.id).toString()
 		return msg
 	}
 
 	const getPlainMessage = (message, msgobj) => {
 		var msg = ''
 		try {
-			var bytes = CryptoJS.AES.decrypt(message, 'chat' + chat.id)
+			var bytes = CryptoJS.AES.decrypt(message, 'chat' + userInfo.id)
 			msg = bytes.toString(CryptoJS.enc.Utf8)
-			if (msg == '') {
-				bytes = CryptoJS.AES.decrypt(
-					message,
-					'chat' + msgobj.recievers[0].reciever.id
-				)
+			if (msg === '') {
+				bytes = CryptoJS.AES.decrypt(message, 'chat' + msgobj.sender.id)
 				msg = bytes.toString(CryptoJS.enc.Utf8)
 			}
 		} catch (e) {
@@ -438,21 +408,12 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		return msg
 	}
 
-	const handleFilterChange = async (event) => {
-		if (event.target.value !== filter) {
-			try {
-			} catch (e) {
-				console.log(e)
-			}
-		}
-	}
-
 	const chatMessage = (message) => {
-		if (message.attachment != 'null' && message.attachment != null) {
+		if (message.document.length > 0) {
 			return (
 				<div>
 					{' '}
-					{JSON.parse(message.attachment).map((at) => {
+					{JSON.parse(message.document).map((at) => {
 						if (checkValidURLImage(at)) {
 							return (
 								<a
@@ -496,9 +457,10 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 			)
 		}
 	}
+
 	let content = ''
 	if (props.created_by) {
-		content = <ChatGroupCard key={chat.id} chat={chat} />
+		content = <ChatGroupCard key={singleChatUser.id} chat={singleChatUser} />
 	}
 
 	const handleClick = (event) => {
@@ -510,18 +472,17 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 		setAnchorEl(null)
 
 		try {
-			const token = localStorage.getItem('srmToken')
 			switch (updatedStatus) {
 				case 'Add':
-					props.setChatGroup(chat)
+					props.setChatGroup(singleChatUser)
 					history.push('/updateGroup')
 					break
 				case 'Delete':
-					props.setChatGroup(chat)
+					props.setChatGroup(singleChatUser)
 					history.push('/updateGroup')
 					break
 				default:
-					props.setChatGroup(chat)
+					props.setChatGroup(singleChatUser)
 					history.push('/updateGroup')
 					break
 			}
@@ -529,6 +490,52 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 			console.log(e)
 		}
 	}
+
+	const chatMessages = singleChatUser.school_chat_message
+		? singleChatUser.school_chat_message.map((message) => {
+				let date = moment(message.created_at).fromNow()
+				let cls = {}
+				let senderName = ''
+				if (message.sender.id === userInfo.id) {
+					cls = classes.owner
+					senderName = 'Me'
+				} else {
+					senderName = message.sender.fullName
+				}
+				let allread = false
+
+				let readers = []
+				allread = readers.length === 0
+
+				return (
+					<>
+						<div className={classes.date}>
+							<span className={classes.dateTextContainer}>
+								<span className={classes.dateText}>{date}</span>
+							</span>
+						</div>
+
+						<ListItem
+							alignItems='flex-start'
+							className={[classes.listItem, cls].join(' ')}
+						>
+							<ListItemText
+								classes={{ primary: classes.primary }}
+								primary={senderName}
+								secondary={chatMessage(message)}
+							/>
+							<div className={classes.right}>
+								<Typography className={classes.time}>{message.time}</Typography>
+								<img
+									src={allread ? doubleTick : tick}
+									className={classes.tick}
+								/>
+							</div>
+						</ListItem>
+					</>
+				)
+		  })
+		: null
 
 	return (
 		<List className={rootClass.join(' ')}>
@@ -548,7 +555,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 							</StyledBadge>
 						</ListItemAvatar>
 						<ListItemText primary={name} secondary={subheading} />
-						{chat.group != null && (
+						{singleChatUser.chat_type === 'group' && (
 							<div style={{ float: 'right', flexDirection: 'flex-end' }}>
 								<IconButton
 									aria-label='more'
@@ -621,58 +628,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 				</>
 			)}
 			<div className={classes.chatList}>
-				{messages.map((message) => {
-					let showDate = moment(message.created_at).fromNow() != date
-					if (showDate) {
-						date = moment(message.created_at).fromNow()
-					}
-					let cls = {}
-					let senderName =
-						message.sender.firstname + ' ' + message.sender.lastname
-					if (message.sender.id == props.userInfo.id) {
-						cls = classes.owner
-						senderName = 'Me'
-					}
-					let allread = false
-
-					let readers = message.recievers.filter((r) => {
-						return r.readAt == null
-					})
-
-					allread = readers.length == 0
-
-					return (
-						<>
-							{showDate && (
-								<div className={classes.date}>
-									<span className={classes.dateTextContainer}>
-										<span className={classes.dateText}>{date}</span>
-									</span>
-								</div>
-							)}
-
-							<ListItem
-								alignItems='flex-start'
-								className={[classes.listItem, cls].join(' ')}
-							>
-								<ListItemText
-									classes={{ primary: classes.primary }}
-									primary={senderName}
-									secondary={chatMessage(message)}
-								/>
-								<div className={classes.right}>
-									<Typography className={classes.time}>
-										{message.time}
-									</Typography>
-									<img
-										src={allread ? doubleTick : tick}
-										className={classes.tick}
-									/>
-								</div>
-							</ListItem>
-						</>
-					)
-				})}
+				{chatMessages}
 				<div style={{ float: 'left', clear: 'both' }} ref={messagesEnd}></div>
 			</div>
 			{showAttachments && (
@@ -699,6 +655,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 										src={closeIcon}
 										onClick={() => removeAttachment(attachment)}
 										className={classes.close}
+										alt=''
 									/>
 								</div>
 							</ListItem>
@@ -716,6 +673,7 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 								src={smile}
 								className={classes.smiley}
 								onClick={() => showEmoji(!emojiShow)}
+								alt=''
 							/>
 						</Typography>
 						<Input
@@ -732,7 +690,12 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 							disableUnderline={true}
 						/>
 						<Typography className={classes.emojiContainer}>
-							<img src={attach} className={classes.smiley} onClick={pickFile} />
+							<img
+								src={attach}
+								className={classes.smiley}
+								onClick={pickFile}
+								alt=''
+							/>
 							<input
 								multiple
 								accept='image/x-png,image/gif,image/jpeg,application/pdf,application/msword,
@@ -756,76 +719,11 @@ function SingleChat({ fullScreen = false, closeEmoji, props }) {
 	)
 }
 
-/* import React from "react";
-import Badge from "@material-ui/core/Badge";
-import Avatar from "@material-ui/core/Avatar";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-
-const StyledBadge = withStyles((theme) => ({
-  badge: {
-    backgroundColor: "#44b700",
-    color: "#44b700",
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    "&::after": {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      borderRadius: "50%",
-      animation: "$ripple 1.2s infinite ease-in-out",
-      border: "1px solid currentColor",
-      content: '""',
-    },
-  },
-  "@keyframes ripple": {
-    "0%": {
-      transform: "scale(.8)",
-      opacity: 1,
-    },
-    "100%": {
-      transform: "scale(2.4)",
-      opacity: 0,
-    },
-  },
-}))(Badge);
-
-const SmallAvatar = withStyles((theme) => ({
-  root: {
-    width: 22,
-    height: 22,
-    border: `2px solid ${theme.palette.background.paper}`,
-  },
-}))(Avatar);
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-}));
-
-export default function Chat() {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.root}>
-      <StyledBadge
-        overlap="circle"
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        variant="dot"
-      >
-        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-      </StyledBadge>
-      Mani
-    </div>
-  );
+const mapStateToProps = ({ auth, Chat }) => {
+	return {
+		userInfo: auth.userInfo,
+		singleChatUser: Chat.singleChatUser,
+	}
 }
- */
 
-export default SingleChat
+export default connect(mapStateToProps, { updateChat })(SingleChat)

@@ -79,22 +79,21 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   paper: {
-    textAlign: "",
-    margin: "0",
-    height: "auto",
-    boxShadow: "none",
-    padding: "10px",
-    background: "#FFFFFF",
-    borderBottom: "2px solid grey",
-    borderTopRightRadius: "5px",
-    borderTopLeftRadius: "5px",
+    // // textAlign: "",
+    // padding: "10px",
+    // background: "#FFFFFF",
+    fontSize: 14,
+    fontFamily: "Avenir",
+    fontWeight: "400",
+    lineHeight: "1.5",
+    marginRight: "5%",
   },
   subjectname: {
     fontSize: 14,
     fontFamily: "Avenir",
     fontWeight: "400",
     lineHeight: "1.5",
-    marginRight: "5%",
+    // marginRight: "5%",
   },
   date: {
     fontSize: 14,
@@ -102,6 +101,9 @@ const useStyles = makeStyles(() => ({
     fontWeight: "400",
     lineHeight: "1.5",
     color: "rgb(150, 150, 150)",
+    position: "absolute",
+    right: "35px",
+    marginTop: "-41px",
   },
   loading: {
     width: "100%",
@@ -118,7 +120,7 @@ const useStyles = makeStyles(() => ({
     fontFamily: "Avenir",
     fontSize: 14,
     textAlign: "center",
-    marginTop: "45px",
+    marginTop: "20px",
   },
   CircularProgress: {
     display: "flex",
@@ -138,6 +140,15 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
     display: "flex",
     justifyContent: "center",
+  },
+  tableTitle: {
+    display: "flex",
+    borderBottom: "1px solid grey",
+    borderTopRightRadius: "5px",
+    borderTopLeftRadius: "5px",
+    justifyContent: "center",
+    backgroundColor: "white",
+    padding: "20px",
   },
 }));
 
@@ -200,13 +211,11 @@ function TimeTable(props) {
   const handleDelete = () => {
     console.log("Deleting row");
     props.deleteRowWeeklyTimeTable(deleteId, handleSuccess, handleFail);
-    handleCloseNO()
+    handleCloseNO();
   };
 
   useEffect(() => {
-    if (class_id) {
-      fetchData();
-    }
+    fetchData();
   }, [class_id]);
 
   console.log("class_id", class_id);
@@ -338,32 +347,14 @@ function TimeTable(props) {
           </div>
         ) : length ? (
           <>
-            <Grid container lg={12} sm={12} xs={12}>
-              <Grid lg={8} sm={8} xs={8}>
-                <Typography
-                  display=""
-                  align="right"
-                  gutterBottom
-                  className={classes.paper}
-                >
-                  <span className={classes.subjectname}>
-                    {props.name} Weekly Time Table
-                  </span>
-                </Typography>
-              </Grid>
-              <Grid lg={4} sm={4} xs={4}>
-                <Typography
-                  display=""
-                  align="right"
-                  gutterBottom
-                  className={classes.paper}
-                >
-                  <span className={classes.date}>
-                    {currentDate} {currentMonth}, {currentTimeStr}
-                  </span>
-                </Typography>
-              </Grid>
-            </Grid>
+            <div className={classes.tableTitle}>
+              <Typography className={classes.subjectname}>
+                {props.name} Weekly Time Table
+              </Typography>
+            </div>
+            <Typography className={classes.date}>
+              {currentDate} {currentMonth}, {currentTimeStr}
+            </Typography>
             <TableContainer style={{ marginBottom: "30px" }} component={Paper}>
               <Table className={classes.table}>
                 <TableHead>

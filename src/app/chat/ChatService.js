@@ -4,7 +4,7 @@ const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL
 
 class ChatService {
 	createGroup(params, token) {
-		return axios.post(`${BACKEND_API_URL}/chat/group/create`, params, {
+		return axios.post(`${BACKEND_API_URL}/chats/group/create`, params, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
@@ -35,24 +35,28 @@ class ChatService {
 			}
 		)
 	}
-	fetchChats(params, token) {
-		return axios.get(`${BACKEND_API_URL}/chats/get`, {
+	fetchChats(role, token) {
+		return axios.get(`${BACKEND_API_URL}/chats`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
+			params:{
+				current_role : role,
+				get_by: 'user',
+			}
 		})
 	}
 	fetchChat(param, token) {
-		return axios.get(`${BACKEND_API_URL}/chats/get/` + param, {
+		return axios.get(`${BACKEND_API_URL}/chats` + param, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
 		})
 	}
-	submitChat(param, token, id) {
-		return axios.post(`${BACKEND_API_URL}/chats/get/` + id, param, {
+	submitChat(param, token) {
+		return axios.post(`${BACKEND_API_URL}/chats`, param, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
 				Authorization: `Bearer ${token}`,

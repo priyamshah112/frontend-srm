@@ -111,6 +111,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 	actions:{
 		padding: 20,
+		'& Button': {
+			textTransform: 'none',			
+		},
 	},
 	formControl: {
 		width: '100%',
@@ -327,7 +330,6 @@ const StudentGalleryContainer = (props) => {
 							)
 							:(
 								<FolderView 
-									token={token} 
 									folderView={folderView} 
 									reload={reload} 
 									onReload={setReload} 

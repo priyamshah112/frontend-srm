@@ -11,6 +11,13 @@ import { useHistory } from 'react-router-dom'
 import Axios from 'axios'
 import { exportAttendanceEndpoint } from '../../redux/api/endpoint-constants'
 import axiosService from '../../redux/api/axios-service'
+import { Dialog, DialogTitle, DialogContent,DialogActions, FormControl, TextField,Button } from '@material-ui/core'
+import { MuiPickersUtilsProvider,DatePicker } from "@material-ui/pickers";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import EventIcon from "@material-ui/icons/Event";
+import DateFnsUtils from "@date-io/date-fns";
+import moment from 'moment'
+import { fonts,colors } from '../../common/ui/appStyles'
 
 const useStyles = makeStyles((theme) => ({
 	VerticalAlignTopIcon: {
@@ -23,12 +30,35 @@ const useStyles = makeStyles((theme) => ({
 	menuButton: {
 		margin: '5px',
 	},
+	title:{
+		padding: '20px',
+		'& h2':{
+			fontSize: '18px',
+		}
+	},
+	content:{
+		paddingTop: 0,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingBottom: 10
+	},
+	actions:{
+		padding: '20px',
+		paddingTop: '0px',
+	},
+	formControl: {
+		width: '100%',
+		paddingBottom: '20px',
+	},
 }))
 
 const ImportExport = (props) => {
 	const [openSnackbar, setOpenSnackbar] = useState(false)
 	const [snackbar, setSnackbar] = useState({})
 	const [loading, setLoading] = useState(false)
+	const [fromDate,setFromDate] = useState(null)
+	const [toDate,setToDate] = useState(null)
+	const [ openModel, setOpenModel] = useState(false)
 
 	const classes = useStyles()
 	const history = useHistory()
@@ -47,9 +77,10 @@ const ImportExport = (props) => {
 	}
 
 	const onExport = () => {
+		setOpenModel(false)
 		const params = {
-			from_date: props.from_date,
-			to_date: props.to_date,
+			from_date: moment(fromDate).format('YYYY-MM-DD'),
+			to_date: moment(toDate).format('YYYY-MM-DD'),
 			class_id: props.class_id,
 		}
 		setLoading(true)
@@ -86,8 +117,80 @@ const ImportExport = (props) => {
 		showSnackbar({ message: error.message })
 	}
 
+	const handleClose = () =>{
+		setOpenModel(false)
+	}
+	const handleFromDate = (date) => {
+		setFromDate(date);
+	};
+	const handleToDate = (date) => {
+		setToDate(date);
+	};
 	return (
 		<div className={classes.topButton}>
+
+			<Dialog open={openModel} onClose={handleClose} aria-labelledby="form-dialog-title" className={classes.modelConatiner}>
+				<DialogTitle id="form-dialog-title" className={classes.title}>Export Attendance</DialogTitle>
+				<DialogContent className={classes.content}>
+					<FormControl className={classes.formControl}>					
+					<MuiPickersUtilsProvider utils={DateFnsUtils}>
+						<DatePicker
+							id="from_date"
+							label="From Date"
+							variant="dialog"
+							format="dd/MM/yyyy"
+							value={fromDate}
+							onChange={handleFromDate}
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end">
+									<IconButton>
+									<EventIcon />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							className={classes.datePicker}
+							required={true}
+							/>
+							</MuiPickersUtilsProvider>
+					</FormControl>
+					<FormControl className={classes.formControl}>					
+					<MuiPickersUtilsProvider utils={DateFnsUtils}>
+						<DatePicker
+							id="to_date"
+							label="To Date"
+							variant="dialog"
+							format="dd/MM/yyyy"
+							value={toDate}
+							onChange={handleToDate}
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end">
+									<IconButton>
+									<EventIcon />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							className={classes.datePicker}
+							required={true}
+							/>
+							</MuiPickersUtilsProvider>
+					</FormControl>
+				</DialogContent>
+				<DialogActions className={classes.actions}>
+					<Button	
+						variant='contained' 
+						onClick={onExport} 
+						color="primary"
+						disableRipple 
+						disableElevation
+					>
+						Download
+					</Button>
+				</DialogActions>
+			</Dialog>
 			<IconButton
 				color='inherit'
 				aria-label='open drawer'
@@ -101,7 +204,7 @@ const ImportExport = (props) => {
 				color='inherit'
 				aria-label='open drawer'
 				edge='start'
-				onClick={onExport}
+				onClick={setOpenModel}
 				className={classes.menuButton}
 			>
 				{loading ? (
@@ -122,6 +225,7 @@ const ImportExport = (props) => {
 					{snackbar.message || 'Something went wrong!! Please try again.'}
 				</Alert>
 			</Snackbar>
+
 		</div>
 	)
 }

@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import * as moment from 'moment'
 import {
 	Typography,
 	makeStyles,
@@ -14,6 +13,7 @@ import { paths } from '../../../Constants/Routes'
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
 import NotificationService from '../NotificationService'
 import Confirm from '../../common/confirm'
+import { calculateDate3 } from '../../common/function'
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -134,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TeacherNotificationCard = (props) => {
-	console.log(props)
+	// console.log(props)
 	const classes = useStyles()
 	const history = useHistory()
 	const [anchorEl, setAnchorEl] = useState(null)
@@ -201,7 +201,7 @@ const TeacherNotificationCard = (props) => {
 						<Typography
 							className={`${classes.contentStyle} ${classes.dateStyle}`}
 						>
-							{moment(props.notification.created_at).format('DD MMM, hh.mma')}
+							{calculateDate3(props.notification.created_at)}
 							{props.notification.notify_status !== 'published' ? (
 								<>
 								<span
@@ -233,9 +233,11 @@ const TeacherNotificationCard = (props) => {
 						<Typography
 							className={classes.cardTitle}
 							onClick={() =>
-								history.push(
-									`${paths.NOTIFICATIONS}/${props.notification.id}?cby=true`
-								)
+								history.push({ pathname: `${paths.NOTIFICATIONS}/${props.notification.id}?cby=true`,
+									state:{
+										selectedTab: props.selectedTab
+									}
+								})
 							}
 						>
 							{props.notification.data
@@ -250,7 +252,10 @@ const TeacherNotificationCard = (props) => {
 				<CardContent classes={{ root: classes.cardContent }}>
 					<Grid container>
 						<Grid item xs={10}>
-							<Typography className={classes.contentStyle}>
+							<Typography 
+								className={classes.contentStyle}
+								variant="subtitle2"
+							>
 								{props.notification.data
 									? props.notification.data.summary
 										? props.notification.data.summary
